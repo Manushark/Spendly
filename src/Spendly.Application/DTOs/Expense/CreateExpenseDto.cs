@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Spendly.Application.DTOs.Expense
 {
+    // DTO for creating a new Expense
     public class CreateExpenseDto
     {
         public decimal Amount { get; set; }
