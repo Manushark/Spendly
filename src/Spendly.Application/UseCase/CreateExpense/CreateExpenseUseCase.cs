@@ -20,6 +20,14 @@ namespace Spendly.Application.UseCase.CreateExpense
 
         public void Execute(CreateExpenseDto dto)
         {
+           
+            var expense = new Expense(
+              dto.Amount,
+              dto.Description,
+              dto.Date,
+              dto.Category
+            );
+            expenseRepository.Add(expense);
 
         }
 
