@@ -1,0 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Spendly.Domain.Entities;
+using Spendly.Application.Interfaces;
+using Spendly.Infrastructure.Persistence;
+
+namespace Spendly.Infrastructure.Repositories
+{
+    public class ExpenseRepository : IExpenseRepository
+    {
+        private readonly SpendlyDbContext _context;
+        public ExpenseRepository(SpendlyDbContext dbContext)
+        {
+            _context = dbContext;
+        }
+
+        public void Add(Expense expense)
+        {
+            _context.Add(expense);
+            _context.SaveChanges();
+        }
+
+
+    }
+}
