@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Spendly.Application\Spendly.Application.csproj" />
+    <ProjectReference Include="..\Spendly.Domain\Spendly.Domain.csproj" />
     <ProjectReference Include="..\Spendly.Infrastructure\Spendly.Infrastructure.csproj" />
   </ItemGroup>
 
