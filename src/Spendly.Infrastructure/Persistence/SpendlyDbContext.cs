@@ -16,5 +16,12 @@ namespace Spendly.Infrastructure.Persistence
         {
 
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Expense>()
+                .Property(e => e.Amount)
+                .HasPrecision(18, 2);
+        }
+
     }
 }
