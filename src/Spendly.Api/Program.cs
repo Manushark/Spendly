@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Spendly.Application.Interfaces;
 using Spendly.Infrastructure.Persistence;
 using Spendly.Infrastructure.Repositories;
+using Spendly.Application.UseCase.CreateExpense;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,9 @@ builder.Services.AddDbContext<SpendlyDbContext>(options =>
 
 // Dependency Injection
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+
+// Use Cases
+builder.Services.AddScoped<CreateExpenseUseCase>();
 
 var app = builder.Build();
 

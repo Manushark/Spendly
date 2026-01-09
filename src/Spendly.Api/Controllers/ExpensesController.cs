@@ -1,25 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Spendly.Application.Interfaces;
-using Spendly.Domain.Entities;
+using Spendly.Application.DTOs.Expense;
+using Spendly.Application.UseCase.CreateExpense;
 
 namespace Spendly.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ExpensesController : Controller
+    public class ExpensesController : ControllerBase
     {
-        private readonly IExpenseRepository _expenseRepository;
+        private readonly CreateExpenseUseCase _createExpenseUseCase;
 
-        public ExpensesController(IExpenseRepository expenseRepository)
+        public ExpensesController(CreateExpenseUseCase createExpenseUseCase)
         {
-            _expenseRepository = expenseRepository;
+            _createExpenseUseCase = createExpenseUseCase;
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Expense expense)
+        public IActionResult Create([FromBody] CreateExpenseDto dto)
         {
-            _expenseRepository.Add(expense);
-            return Ok(expense);
+            _createExpenseUseCase.Execute(dto);
+            return Ok();
         }
     }
 }
