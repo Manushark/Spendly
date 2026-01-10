@@ -4,6 +4,7 @@ using Spendly.Infrastructure.Persistence;
 using Spendly.Infrastructure.Repositories;
 using Spendly.Application.UseCase.CreateExpense;
 using Spendly.Application.UseCase.ListExpenses;
+using Spendly.Application.UseCase.GetExpenseById;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,9 @@ builder.Services.AddScoped<CreateExpenseUseCase>();
 
 // List Expenses Use Case
 builder.Services.AddScoped<ListExpensesUseCase>();
+
+// Get Expense By Id Use Case
+builder.Services.AddScoped<GetExpenseByIdUseCase>();
 
 
 var app = builder.Build();
