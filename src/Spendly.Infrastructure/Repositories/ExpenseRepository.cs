@@ -28,6 +28,10 @@ namespace Spendly.Infrastructure.Repositories
         {
             return _context.Set<Expense>().ToList();
         }
+        public Expense? GetById(int id)
+        {
+            return _context.Set<Expense>().FirstOrDefault(e => e.Id == id);
+        }
 
 
     }
