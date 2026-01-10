@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Spendly.Application.DTOs.Expense;
 using Spendly.Application.UseCase.CreateExpense;
+using Spendly.Application.UseCase.ListExpenses;
 
 namespace Spendly.Api.Controllers
 {
@@ -9,10 +10,12 @@ namespace Spendly.Api.Controllers
     public class ExpensesController : ControllerBase
     {
         private readonly CreateExpenseUseCase _createExpenseUseCase;
+        private readonly ListExpensesUseCase _listExpensesUseCase;
 
-        public ExpensesController(CreateExpenseUseCase createExpenseUseCase)
+        public ExpensesController(CreateExpenseUseCase createExpenseUseCase, ListExpensesUseCase listExpensesUseCase)
         {
             _createExpenseUseCase = createExpenseUseCase;
+            _listExpensesUseCase = listExpensesUseCase;
         }
 
         [HttpPost]
@@ -21,5 +24,13 @@ namespace Spendly.Api.Controllers
             _createExpenseUseCase.Execute(dto);
             return Ok();
         }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var result = _listExpensesUseCase.Execute();
+            return Ok(result);
+        }
+
     }
 }

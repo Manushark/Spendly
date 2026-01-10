@@ -24,6 +24,11 @@ namespace Spendly.Infrastructure.Repositories
             _context.SaveChanges();
         }
 
+        public List<Expense> GetAll()
+        {
+            return _context.Set<Expense>().ToList();
+        }
+
 
     }
 }
