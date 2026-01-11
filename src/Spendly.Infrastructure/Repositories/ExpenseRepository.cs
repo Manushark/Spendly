@@ -33,6 +33,20 @@ namespace Spendly.Infrastructure.Repositories
             return _context.Set<Expense>().FirstOrDefault(e => e.Id == id);
         }
 
+        // Deletes an expense by its ID. Returns true if deletion was successful, false if the expense was not found.
+        public bool Delete(int id)
+        {
+            var expense = _context.Set<Expense>().Find(id);
+
+            if (expense == null)
+                return false;
+
+            _context.Remove(expense);
+            _context.SaveChanges();
+
+            return true;
+        }
+
 
     }
 }

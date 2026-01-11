@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Spendly.Application.DTOs.Expense;
 using Spendly.Application.UseCase.CreateExpense;
+using Spendly.Application.UseCase.DeleteExpense;
 using Spendly.Application.UseCase.GetExpenseById;
 using Spendly.Application.UseCase.ListExpenses;
 
@@ -13,12 +14,16 @@ namespace Spendly.Api.Controllers
         private readonly CreateExpenseUseCase _createExpenseUseCase;
         private readonly ListExpensesUseCase _listExpensesUseCase;
         private readonly GetExpenseByIdUseCase _getExpenseByIdUseCase;
+        private readonly DeleteExpenseUseCase _deleteExpenseUseCase;
 
-        public ExpensesController(CreateExpenseUseCase createExpenseUseCase, ListExpensesUseCase listExpensesUseCase,GetExpenseByIdUseCase getExpenseByIdUseCase )
+        public ExpensesController(CreateExpenseUseCase createExpenseUseCase, ListExpensesUseCase listExpensesUseCase,
+            GetExpenseByIdUseCase getExpenseByIdUseCase,
+            DeleteExpenseUseCase deleteExpenseUseCase)
         {
             _createExpenseUseCase = createExpenseUseCase;
             _listExpensesUseCase = listExpensesUseCase;
             _getExpenseByIdUseCase = getExpenseByIdUseCase;
+            _deleteExpenseUseCase = deleteExpenseUseCase;
         }
 
         [HttpPost]
@@ -45,6 +50,20 @@ namespace Spendly.Api.Controllers
 
             return Ok(result);
         }
+
+        [HttpDelete("{id:int}")]
+        public IActionResult Delete(int id)
+        {
+            var deleted = _deleteExpenseUseCase.Execute(id);
+
+            if (!deleted)
+                return NotFound();
+
+            return NoContent();
+        }
+
+
+
 
 
     }
