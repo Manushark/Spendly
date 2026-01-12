@@ -37,6 +37,7 @@ builder.Services.AddScoped<GetExpenseByIdUseCase>();
 // Delete Expense Use Case
 builder.Services.AddScoped<DeleteExpenseUseCase>();
 
+// Update Expense Use Case
 builder.Services.AddScoped<UpdateExpenseUseCase>();
 
 var app = builder.Build();

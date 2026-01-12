@@ -18,12 +18,14 @@ namespace Spendly.Infrastructure.Repositories
             _context = dbContext;
         }
 
+        // Adds a new expense.
         public void Add(Expense expense)
         {
             _context.Add(expense);
             _context.SaveChanges();
         }
 
+        // Retrieves all expenses from the database.
         public List<Expense> GetAll()
         {
             return _context.Set<Expense>().ToList();
@@ -47,6 +49,7 @@ namespace Spendly.Infrastructure.Repositories
             return true;
         }
 
+        // Updates an existing expense in the database.
         public void Update(Expense expense)
         {
             _context.Expenses.Update(expense);
