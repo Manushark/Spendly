@@ -47,6 +47,14 @@ namespace Spendly.Infrastructure.Repositories
             return true;
         }
 
+        public void Update(Expense expense)
+        {
+            _context.Expenses.Update(expense);
+            _context.SaveChanges();
+        }
+
+
+
 
     }
 }

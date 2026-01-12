@@ -15,6 +15,8 @@ namespace Spendly.Domain.Entities
         public DateTime Date { get; private set; }
         public string Category { get; private set; }
 
+        protected Expense() { } 
+
         public Expense(decimal amount, string description, DateTime date, string category)
         {
             // A payment must always have a positive amount
@@ -32,6 +34,17 @@ namespace Spendly.Domain.Entities
             {
                 throw new ArgumentException("Category cannot be empty.", nameof(category));
             }
+
+            Amount = amount;
+            Description = description;
+            Date = date;
+            Category = category;
+        }
+
+        public void Update(decimal amount, string description, DateTime date, string category)
+        {
+            if (amount <= 0)
+                throw new ArgumentException("Amount must be greater than zero");
 
             Amount = amount;
             Description = description;

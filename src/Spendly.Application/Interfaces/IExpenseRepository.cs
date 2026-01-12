@@ -14,5 +14,7 @@ namespace Spendly.Application.Interfaces
         List<Expense> GetAll();
         Expense? GetById(int id);
         bool Delete(int id);
+        void Update(Expense expense);
+
     }
 }

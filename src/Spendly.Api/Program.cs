@@ -6,6 +6,7 @@ using Spendly.Application.UseCase.CreateExpense;
 using Spendly.Application.UseCase.ListExpenses;
 using Spendly.Application.UseCase.GetExpenseById;
 using Spendly.Application.UseCase.DeleteExpense;
+using Spendly.Application.UseCases.Expenses;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,8 @@ builder.Services.AddScoped<GetExpenseByIdUseCase>();
 
 // Delete Expense Use Case
 builder.Services.AddScoped<DeleteExpenseUseCase>();
+
+builder.Services.AddScoped<UpdateExpenseUseCase>();
 
 var app = builder.Build();
 

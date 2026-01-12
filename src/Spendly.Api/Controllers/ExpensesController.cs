@@ -4,6 +4,7 @@ using Spendly.Application.UseCase.CreateExpense;
 using Spendly.Application.UseCase.DeleteExpense;
 using Spendly.Application.UseCase.GetExpenseById;
 using Spendly.Application.UseCase.ListExpenses;
+using Spendly.Application.UseCases.Expenses;
 
 namespace Spendly.Api.Controllers
 {
@@ -15,15 +16,17 @@ namespace Spendly.Api.Controllers
         private readonly ListExpensesUseCase _listExpensesUseCase;
         private readonly GetExpenseByIdUseCase _getExpenseByIdUseCase;
         private readonly DeleteExpenseUseCase _deleteExpenseUseCase;
+        private readonly UpdateExpenseUseCase _updateExpenseUseCase;
 
         public ExpensesController(CreateExpenseUseCase createExpenseUseCase, ListExpensesUseCase listExpensesUseCase,
             GetExpenseByIdUseCase getExpenseByIdUseCase,
-            DeleteExpenseUseCase deleteExpenseUseCase)
+            DeleteExpenseUseCase deleteExpenseUseCase, UpdateExpenseUseCase updateExpenseUseCase)
         {
             _createExpenseUseCase = createExpenseUseCase;
             _listExpensesUseCase = listExpensesUseCase;
             _getExpenseByIdUseCase = getExpenseByIdUseCase;
             _deleteExpenseUseCase = deleteExpenseUseCase;
+            _updateExpenseUseCase = updateExpenseUseCase;
         }
 
         [HttpPost]
@@ -62,6 +65,16 @@ namespace Spendly.Api.Controllers
             return NoContent();
         }
 
+        [HttpPut("{id:int}")]
+        public IActionResult Update(int id, [FromBody] UpdateExpenseDto dto)
+        {
+            var updated = _updateExpenseUseCase.Execute(id, dto);
+
+            if (!updated)
+                return NotFound();
+
+            return NoContent();
+        }
 
 
 
