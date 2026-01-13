@@ -65,16 +65,13 @@ namespace Spendly.Api.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id:int}")]
-        public IActionResult Update(int id, [FromBody] UpdateExpenseDto dto)
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, UpdateExpenseDto dto)
         {
-            var updated = _updateExpenseUseCase.Execute(id, dto);
-
-            if (!updated)
-                return NotFound();
-
+            _updateExpenseUseCase.Execute(id, dto);
             return NoContent();
         }
+
 
 
 

@@ -1,6 +1,7 @@
 ﻿using Spendly.Application.DTOs;
 using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
+using Spendly.Domain.Exceptions;
 
 
 namespace Spendly.Application.UseCases.Expenses
@@ -14,12 +15,12 @@ namespace Spendly.Application.UseCases.Expenses
             _expenseRepository = expenseRepository;
         }
 
-        public bool Execute(int id, UpdateExpenseDto dto)
+        public void Execute(int id, UpdateExpenseDto dto)
         {
             var expense = _expenseRepository.GetById(id);
 
             if (expense == null)
-                return false;
+                throw new ExpenseNotFoundException(id);
 
             expense.Update(
                 dto.Amount,
@@ -29,8 +30,6 @@ namespace Spendly.Application.UseCases.Expenses
             );
 
             _expenseRepository.Update(expense);
-
-            return true;
         }
 
 
