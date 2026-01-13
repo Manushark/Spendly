@@ -10,11 +10,12 @@ namespace Spendly.Application.Interfaces
     // Repository interface for managing Expense entities
     public interface IExpenseRepository
     {
-        void Add(Expense expense); 
-        List<Expense> GetAll();
-        Expense? GetById(int id);
+        void Add(Expense expense);
         bool Delete(int id);
         void Update(Expense expense);
+
+        Expense? GetById(int id);
+        List<Expense> GetAll();
 
     }
 }
