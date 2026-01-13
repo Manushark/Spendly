@@ -25,14 +25,11 @@ namespace Spendly.Infrastructure.Repositories
             _context.SaveChanges();
         }
 
-        // Retrieves all expenses from the database.
-        public List<Expense> GetAll()
+        // Updates an existing expense in the database.
+        public void Update(Expense expense)
         {
-            return _context.Set<Expense>().ToList();
-        }
-        public Expense? GetById(int id)
-        {
-            return _context.Set<Expense>().FirstOrDefault(e => e.Id == id);
+            _context.Expenses.Update(expense);
+            _context.SaveChanges();
         }
 
         // Deletes an expense by its ID. Returns true if deletion was successful, false if the expense was not found.
@@ -49,15 +46,18 @@ namespace Spendly.Infrastructure.Repositories
             return true;
         }
 
-        // Updates an existing expense in the database.
-        public void Update(Expense expense)
+        // Retrieves an expense by its ID.
+        public Expense? GetById(int id)
         {
-            _context.Expenses.Update(expense);
-            _context.SaveChanges();
+            return _context.Set<Expense>().FirstOrDefault(e => e.Id == id);
         }
 
-
-
+        // Retrieves all expenses from the database.
+        public List<Expense> GetAll()
+        {
+            return _context.Set<Expense>().ToList();
+        }
+ 
 
     }
 }
