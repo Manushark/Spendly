@@ -1,8 +1,6 @@
-﻿using Spendly.Application.DTOs;
-using Spendly.Application.DTOs.Expense;
+﻿using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
 using Spendly.Domain.Exceptions;
-
 
 namespace Spendly.Application.UseCases.Expenses
 {
@@ -31,7 +29,5 @@ namespace Spendly.Application.UseCases.Expenses
 
             _expenseRepository.Update(expense);
         }
-
-
     }
 }

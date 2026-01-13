@@ -7,6 +7,7 @@ using Spendly.Application.UseCase.ListExpenses;
 using Spendly.Application.UseCase.GetExpenseById;
 using Spendly.Application.UseCase.DeleteExpense;
 using Spendly.Application.UseCases.Expenses;
+using Spendly.Api.Middlewares;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,8 @@ builder.Services.AddDbContext<SpendlyDbContext>(options =>
 
 // Dependency Injection
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+
+
 
 // Use Cases
 builder.Services.AddScoped<CreateExpenseUseCase>();
@@ -48,6 +51,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Exception Handling Middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
