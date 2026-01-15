@@ -2,7 +2,7 @@
 
 namespace Spendly.Domain.Exceptions
 {
-    public class InvalidDomainException : Exception
+    public class InvalidDomainException : DomainException 
     {
         public InvalidDomainException(string message) : base(message) { }
     }
