@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Spendly.Domain.Exceptions;
 
 namespace Spendly.Domain.Entities
 {
@@ -19,21 +15,7 @@ namespace Spendly.Domain.Entities
 
         public Expense(decimal amount, string description, DateTime date, string category)
         {
-            // A payment must always have a positive amount
-            if (amount <= 0)
-            {
-                throw new ArgumentException("Amount must be greater than zero.", nameof(amount));
-            }
-
-            if (string.IsNullOrWhiteSpace(description))
-            {
-                throw new ArgumentException("Description cannot be empty.", nameof(description));
-            }
-
-            if (string.IsNullOrWhiteSpace(category))
-            {
-                throw new ArgumentException("Category cannot be empty.", nameof(category));
-            }
+            Validate(amount, description, date, category);
 
             Amount = amount;
             Description = description;
@@ -43,13 +25,28 @@ namespace Spendly.Domain.Entities
 
         public void Update(decimal amount, string description, DateTime date, string category)
         {
-            if (amount <= 0)
-                throw new ArgumentException("Amount must be greater than zero");
+            Validate(amount, description, date, category);
 
             Amount = amount;
             Description = description;
             Date = date;
             Category = category;
         }
+
+        private void Validate(decimal amount, string description, DateTime date, string category)
+        {
+            if (amount <= 0)
+                throw new InvalidDomainException("Amount must be greater than zero.");
+
+            if (string.IsNullOrWhiteSpace(description))
+                throw new InvalidDomainException("Description cannot be empty.");
+
+            if (string.IsNullOrWhiteSpace(category))
+                throw new InvalidDomainException("Category cannot be empty.");
+
+            if (date > DateTime.UtcNow)
+                throw new InvalidDomainException("Date cannot be in the future.");
+        }
     }
+    
 }
