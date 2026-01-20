@@ -1,6 +1,7 @@
 ﻿using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
 using Spendly.Domain.Exceptions;
+using Spendly.Domain.ValueObjects;
 
 namespace Spendly.Application.UseCases.Expenses
 {
@@ -20,8 +21,9 @@ namespace Spendly.Application.UseCases.Expenses
             if (expense is null)
                 throw new ExpenseNotFoundException(id);
 
+            var money = Money.FromDecimal(dto.Amount); 
             expense.Update(
-                dto.Amount,
+                money,
                 dto.Description,
                 dto.Date,
                 dto.Category
