@@ -17,7 +17,7 @@ namespace Spendly.Application.UseCases.Expenses
         {
             var expense = _expenseRepository.GetById(id);
 
-            if (expense == null)
+            if (expense is null)
                 throw new ExpenseNotFoundException(id);
 
             expense.Update(
