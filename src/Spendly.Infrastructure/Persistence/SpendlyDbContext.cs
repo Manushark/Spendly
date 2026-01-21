@@ -21,6 +21,9 @@ namespace Spendly.Infrastructure.Persistence
             modelBuilder.Entity<Expense>()
                 .Property(e => e.Amount)
                 .HasPrecision(18, 2);
+
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(SpendlyDbContext).Assembly);
+
         }
 
     }
