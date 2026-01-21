@@ -27,7 +27,7 @@ namespace Spendly.Application.UseCase.GetExpenseById
             return new ExpenseResponseDto
             {
                 Id = expense.Id,
-                Amount = expense.Amount,
+                Amount = expense.Amount.Value,
                 Description = expense.Description,
                 Date = expense.Date,
                 Category = expense.Category

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
 using Spendly.Domain.Entities;
+using Spendly.Domain.ValueObjects;
 
 namespace Spendly.Application.UseCase.CreateExpense
 {
@@ -22,7 +23,7 @@ namespace Spendly.Application.UseCase.CreateExpense
         {
            
             var expense = new Expense(
-              dto.Amount,
+              Money.FromDecimal(dto.Amount),
               dto.Description,
               dto.Date,
               dto.Category

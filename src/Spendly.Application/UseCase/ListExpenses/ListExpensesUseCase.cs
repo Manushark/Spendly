@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
+using Spendly.Domain.Entities;
 
 namespace Spendly.Application.UseCase.ListExpenses
 {
@@ -24,7 +25,7 @@ namespace Spendly.Application.UseCase.ListExpenses
             return expenses.Select(e => new ExpenseResponseDto
             {
                 Id = e.Id,
-                Amount = e.Amount,
+                Amount = e.Amount.Value,
                 Description = e.Description,
                 Date = e.Date,
                 Category = e.Category

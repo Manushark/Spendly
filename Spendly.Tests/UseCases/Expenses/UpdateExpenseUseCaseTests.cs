@@ -2,6 +2,7 @@
 using Spendly.Application.UseCases.Expenses;
 using Spendly.Domain.Entities;
 using Spendly.Domain.Exceptions;
+using Spendly.Domain.ValueObjects;
 using Spendly.Tests.Fakes;
 using Xunit;
 
@@ -14,7 +15,7 @@ namespace Spendly.Tests.UseCases.Expenses
         {
             // -------- Arrange --------
             var expense = new Expense(
-                100,
+                Money.FromDecimal(100),   
                 "Lunch",
                 DateTime.Now,
                 "Food"
@@ -27,7 +28,7 @@ namespace Spendly.Tests.UseCases.Expenses
 
             var dto = new UpdateExpenseDto
             {
-                Amount = 150,
+                Amount = 150,              // DTO sigue usando decimal 
                 Description = "Dinner",
                 Date = DateTime.Now,
                 Category = "Food"
@@ -37,9 +38,8 @@ namespace Spendly.Tests.UseCases.Expenses
             useCase.Execute(expense.Id, dto);
 
             // -------- Assert --------
-            Assert.Equal(150, expense.Amount);
+            Assert.Equal(150, expense.Amount.Value); 
             Assert.Equal("Dinner", expense.Description);
-
         }
 
         [Fact]
@@ -60,6 +60,5 @@ namespace Spendly.Tests.UseCases.Expenses
                 useCase.Execute(999, dto)
             );
         }
-
     }
 }
