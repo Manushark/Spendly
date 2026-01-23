@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
+using Spendly.Application.Mappers;
 using Spendly.Domain.Entities;
 
 namespace Spendly.Application.UseCase.ListExpenses
@@ -19,18 +20,11 @@ namespace Spendly.Application.UseCase.ListExpenses
         }
 
         // Retrieves all expenses and maps them to ExpenseResponseDto
-        public List<ExpenseResponseDto> Execute()
+        public IEnumerable<ExpenseResponseDto> Execute()
         {
             var expenses = _expenseRepository.GetAll();
-            return expenses.Select(e => new ExpenseResponseDto
-            {
-                Id = e.Id,
-                Amount = e.Amount.Value,
-                Description = e.Description,
-                Date = e.Date,
-                Category = e.Category
-            }).ToList();
-        }
 
+            return expenses.Select(ExpenseMapper.ToDto);
+        }
     }
 }
