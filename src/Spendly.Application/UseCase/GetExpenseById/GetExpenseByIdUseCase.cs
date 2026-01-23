@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
+using Spendly.Application.Mappers;
 
 namespace Spendly.Application.UseCase.GetExpenseById
 {
@@ -21,17 +22,27 @@ namespace Spendly.Application.UseCase.GetExpenseById
         {
             var expense = _expenseRepository.GetById(id);
 
-            if (expense == null)
+            if (expense is null)
                 return null;
 
-            return new ExpenseResponseDto
-            {
-                Id = expense.Id,
-                Amount = expense.Amount.Value,
-                Description = expense.Description,
-                Date = expense.Date,
-                Category = expense.Category
-            };
+            return ExpenseMapper.ToDto(expense);
         }
     }
 }
+//alternative implementation without mapper
+//public ExpenseResponseDto? Execute(int id)
+//{
+//    var expense = _expenseRepository.GetById(id);
+
+//    if (expense == null)
+//        return null;
+
+//    return new ExpenseResponseDto
+//    {
+//        Id = expense.Id,
+//        Amount = expense.Amount.Value,
+//        Description = expense.Description,
+//        Date = expense.Date,
+//        Category = expense.Category
+//    };
+//}
