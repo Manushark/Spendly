@@ -51,13 +51,31 @@ namespace Spendly.Infrastructure.Repositories
         {
             return _context.Set<Expense>().FirstOrDefault(e => e.Id == id);
         }
+      
+        public IEnumerable<Expense> GetAll(
+            string? category,
+            int page,
+            int pageSize)
+        {
+            var query = _context.Expenses.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                query = query.Where(e => e.Category == category);
+            }
+
+            return query
+                .OrderByDescending(e => e.Date)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
 
         // Retrieves all expenses from the database.
-        public List<Expense> GetAll()
-        {
-            return _context.Set<Expense>().ToList();
-        }
- 
+        //public List<Expense> GetAll()
+        //{
+        //    return _context.Set<Expense>().ToList();
+        //}
 
     }
 }

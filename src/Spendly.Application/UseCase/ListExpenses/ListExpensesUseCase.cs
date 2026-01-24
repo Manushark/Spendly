@@ -20,9 +20,12 @@ namespace Spendly.Application.UseCase.ListExpenses
         }
 
         // Retrieves all expenses and maps them to ExpenseResponseDto
-        public IEnumerable<ExpenseResponseDto> Execute()
+        public IEnumerable<ExpenseResponseDto> Execute(
+            string? category,
+            int page,
+            int pageSize)
         {
-            var expenses = _expenseRepository.GetAll();
+            var expenses = _expenseRepository.GetAll(category, page, pageSize);
 
             return expenses.Select(ExpenseMapper.ToDto);
         }
