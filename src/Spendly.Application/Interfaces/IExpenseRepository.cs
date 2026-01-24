@@ -15,7 +15,12 @@ namespace Spendly.Application.Interfaces
         void Update(Expense expense);
 
         Expense? GetById(int id);
-        List<Expense> GetAll();
+
+        IEnumerable<Expense> GetAll(
+            string? category,
+            int page,
+            int pageSize
+            );
 
     }
 }
