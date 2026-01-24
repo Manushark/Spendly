@@ -37,11 +37,20 @@ namespace Spendly.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
-        {
-            var result = _listExpensesUseCase.Execute();
+        public IActionResult GetAll(
+            [FromQuery] string? category,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
+
+        {    if (page <= 0 || pageSize <= 0)
+                return BadRequest("Page and pageSize must be greater than zero.");
+
+            var result = _listExpensesUseCase.Execute(category, page, pageSize);
+
             return Ok(result);
         }
+
+
 
         [HttpGet("{id:int}")]
         public IActionResult GetById(int id)
