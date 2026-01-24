@@ -28,3 +28,16 @@ namespace Spendly.Application.UseCase.ListExpenses
         }
     }
 }
+//alternative implementation without mapper
+//public List<ExpenseResponseDto> Execute()
+//{
+//    var expenses = _expenseRepository.GetAll();
+//    return expenses.Select(e => new ExpenseResponseDto
+//    {
+//        Id = e.Id,
+//        Amount = e.Amount.Value,
+//        Description = e.Description,
+//        Date = e.Date,
+//        Category = e.Category
+//    }).ToList();
+//}
