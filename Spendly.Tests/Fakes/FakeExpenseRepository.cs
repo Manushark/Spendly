@@ -17,10 +17,11 @@ namespace Spendly.Tests.Fakes
             return _expenses.FirstOrDefault(e => e.Id == id);
         }
 
-        public List<Expense> GetAll() // Updated return type to match the interface
+        public IEnumerable<Expense> GetAll(string? category, int page, int pageSize)
         {
             return _expenses;
         }
+
 
         public void Update(Expense expense)
         {
