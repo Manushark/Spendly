@@ -13,8 +13,8 @@ namespace Spendly.Tests.Mappers
             // Arrange
             var money = Money.FromDecimal(250);
 
-            var expense = new Expense(
-                money,
+            var expense = Expense.Create(
+                Money.FromDecimal(100),
                 "Lunch",
                 DateTime.Now,
                 "Food"

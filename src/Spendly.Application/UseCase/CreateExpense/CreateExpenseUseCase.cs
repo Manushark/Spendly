@@ -21,14 +21,14 @@ namespace Spendly.Application.UseCase.CreateExpense
 
         public void Execute(CreateExpenseDto dto)
         {
-           
-            var expense = new Expense(
-              Money.FromDecimal(dto.Amount),
-              dto.Description,
-              dto.Date,
-              dto.Category
+
+            Expense.Create(
+             Money.FromDecimal(dto.Amount),
+             dto.Description,
+             dto.Date,
+             dto.Category
             );
-            expenseRepository.Add(expense);
+
 
         }
 

@@ -14,7 +14,7 @@ namespace Spendly.Domain.Entities
 
         protected Expense() { } 
 
-        public Expense(Money amount, string description, DateTime date, string category)
+        protected Expense(Money amount, string description, DateTime date, string category)
         {
             Validate(amount, description, date, category);
 
@@ -34,7 +34,7 @@ namespace Spendly.Domain.Entities
             Category = category;
         }
 
-        private void Validate(Money amount, string description, DateTime date, string category)
+        private static void Validate(Money amount, string description, DateTime date, string category)
         {
             if (amount is null)
                 throw new InvalidDomainException("Amount is required.");
@@ -48,6 +48,16 @@ namespace Spendly.Domain.Entities
             if (date > DateTime.UtcNow)
                 throw new InvalidDomainException("Date cannot be in the future.");
         }
+
+        public static Expense Create(
+            Money amount,
+            string description,
+            DateTime date,
+            string category)
+         {
+            return new Expense(amount, description, date, category);
+        }
+
     }
-    
+
 }
