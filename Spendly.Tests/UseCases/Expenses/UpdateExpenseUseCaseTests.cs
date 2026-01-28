@@ -14,12 +14,12 @@ namespace Spendly.Tests.UseCases.Expenses
         public void Execute_Should_Update_Expense_When_Expense_Exists()
         {
             // -------- Arrange --------
-            var expense = new Expense(
-                Money.FromDecimal(100),   
-                "Lunch",
-                DateTime.Now,
-                "Food"
-            );
+            var expense = Expense.Create(
+                 Money.FromDecimal(100),
+                 "Lunch",
+                 DateTime.Now,
+                 "Food"
+             );
 
             var repository = new FakeExpenseRepository();
             repository.Add(expense);

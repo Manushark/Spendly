@@ -15,13 +15,12 @@ namespace Spendly.Tests.UseCases.Expenses
             // Arrange
             var repository = new FakeExpenseRepository();
 
-            var expense = new Expense(
+            var expense = Expense.Create(
                 Money.FromDecimal(100),
                 "Lunch",
                 DateTime.Now,
                 "Food"
             );
-
             repository.Add(expense);
 
             var useCase = new DeleteExpenseUseCase(repository);
