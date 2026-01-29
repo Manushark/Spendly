@@ -11,19 +11,15 @@ namespace Spendly.Tests.Mappers
         public void ToDto_Should_Map_Expense_To_ExpenseResponseDto_Correctly()
         {
             // Arrange
-            var money = Money.FromDecimal(250);
-
             var expense = Expense.Create(
-                Money.FromDecimal(100),
-                "Lunch",
-                DateTime.Now,
-                "Food"
+            Money.FromDecimal(250),
+            "Lunch",
+            DateTime.Now,
+            "Food"
             );
 
-            // Act
             var dto = ExpenseMapper.ToDto(expense);
 
-            // Assert
             Assert.Equal(expense.Id, dto.Id);
             Assert.Equal(250, dto.Amount);
             Assert.Equal("Lunch", dto.Description);
