@@ -1,0 +1,44 @@
+﻿namespace Spendly.Web.Views.Expenses
+{
+    public class Index
+    {
+        @model List<Spendly.Web.Contracts.Expenses.ExpenseDto>
+
+<h2>Expenses</h2>
+
+<form asp-action="Create" method="post">
+    <input name="Description" placeholder="Description" />
+    <input name="Amount" type="number" step="0.01" />
+    <input name="Category" placeholder="Category" />
+    <input name="Date" type="date" />
+    <button type="submit">Add</button>
+</form>
+
+<hr />
+
+<table>
+    <thead>
+        <tr>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in Model)
+        {
+            <tr>
+                <td>@e.Description</td>
+                <td>@e.Amount</td>
+                <td>@e.Category</td>
+                <td>
+                    <a asp-action="Delete" asp-route-id="@e.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+    }
+}

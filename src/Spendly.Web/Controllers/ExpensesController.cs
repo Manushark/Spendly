@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Spendly.Contracts.Expenses;
 using Spendly.Web.Contracts.Expenses;
 using Spendly.Web.Services;
 
