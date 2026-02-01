@@ -1,7 +1,15 @@
+using Spendly.Web.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add ExpenseApiClient with HttpClient configuration
+builder.Services.AddHttpClient<ExpenseApiClient>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7267/");
+});
 
 var app = builder.Build();
 
