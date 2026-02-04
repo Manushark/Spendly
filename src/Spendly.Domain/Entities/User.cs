@@ -1,4 +1,6 @@
 ﻿using Spendly.Domain.Exceptions;
+using BCrypt.Net;
+
 
 namespace Spendly.Domain.Entities
 {
@@ -17,6 +19,10 @@ namespace Spendly.Domain.Entities
 
             Email = email;
             PasswordHash = passwordHash;
+        }
+        public bool VerifyPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, PasswordHash);
         }
 
         public static User Create(string email, string passwordHash)
