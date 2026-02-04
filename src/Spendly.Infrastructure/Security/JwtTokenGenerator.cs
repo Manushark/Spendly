@@ -1,12 +1,13 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using Spendly.Application.Interfaces;
+using Spendly.Domain.Entities;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using Spendly.Domain.Entities;
 
 namespace Spendly.Infrastructure.Security
 {
-    public class JwtTokenGenerator
+    public class JwtTokenGenerator : IJwtTokenGenerator
     {
         private readonly string _key;
 
