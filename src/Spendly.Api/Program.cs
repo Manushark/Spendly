@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Spendly.Application.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer; // Add this using directive for JwtBearer authentication
+using Microsoft.IdentityModel.Tokens; 
+using System.Text; 
 using Spendly.Infrastructure.Persistence;
 using Spendly.Infrastructure.Repositories;
 using Spendly.Application.UseCase.CreateExpense;
@@ -8,6 +11,7 @@ using Spendly.Application.UseCase.GetExpenseById;
 using Spendly.Application.UseCase.DeleteExpense;
 using Spendly.Application.UseCases.Expenses;
 using Spendly.Api.Middlewares;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +47,24 @@ builder.Services.AddScoped<DeleteExpenseUseCase>();
 // Update Expense Use Case
 builder.Services.AddScoped<UpdateExpenseUseCase>();
 
+builder.Services.AddAuthentication("Bearer")
+.AddJwtBearer("Bearer", options =>
+{
+    options.TokenValidationParameters = new()
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey =
+            new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("SUPER_SECRET_KEY_123")
+            )
+    };
+});
+
+builder.Services.AddAuthorization();
+
+// Ensure these namespaces are included at the top of your file
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Spendly.Application.DTOs.Expense;
 using Spendly.Application.UseCase.CreateExpense;
 using Spendly.Application.UseCase.DeleteExpense;
@@ -8,6 +9,7 @@ using Spendly.Application.UseCases.Expenses;
 
 namespace Spendly.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ExpensesController : ControllerBase
@@ -16,7 +18,8 @@ namespace Spendly.Api.Controllers
         private readonly ListExpensesUseCase _listExpensesUseCase;
         private readonly GetExpenseByIdUseCase _getExpenseByIdUseCase;
         private readonly DeleteExpenseUseCase _deleteExpenseUseCase;
-        private readonly UpdateExpenseUseCase _updateExpenseUseCase;
+        private readonly UpdateExpenseUseCase _updateExpenseUseCase; 
+
 
         public ExpensesController(CreateExpenseUseCase createExpenseUseCase, ListExpensesUseCase listExpensesUseCase,
             GetExpenseByIdUseCase getExpenseByIdUseCase,
