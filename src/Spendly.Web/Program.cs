@@ -5,10 +5,30 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Add ExpenseApiClient with HttpClient configuration
+// Session configuration
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(2);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+// HttpContext accessor for services
+builder.Services.AddHttpContextAccessor();
+
+var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7267/";
+
+// Add AuthApiClient with HttpClient configuration
+builder.Services.AddHttpClient<AuthApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
+// Add ExpenseApiClient with HttpClient configuration (includes JWT token)
 builder.Services.AddHttpClient<ExpenseApiClient>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7267/");
+    client.BaseAddress = new Uri(apiBaseUrl);
 });
 
 var app = builder.Build();
@@ -17,7 +37,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -26,6 +45,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(
