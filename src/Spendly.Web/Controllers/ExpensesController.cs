@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Spendly.Web.Contracts.Expenses;
 using Spendly.Web.Services;
 
@@ -11,6 +12,17 @@ namespace Spendly.Web.Controllers
         public ExpensesController(ExpenseApiClient api)
         {
             _api = api;
+        }
+
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            var token = HttpContext.Session.GetString("token");
+            if (string.IsNullOrEmpty(token))
+            {
+                context.Result = RedirectToAction("Login", "Auth");
+                return;
+            }
+            base.OnActionExecuting(context);
         }
 
         public async Task<IActionResult> Index()
