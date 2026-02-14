@@ -1,0 +1,48 @@
+@model Spendly.Web.Contracts.Auth.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white text-center">
+                    <h4><i class="bi bi-person-plus"></i> Create Account</h4>
+                </div>
+                <div class="card-body p-4">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i> @ViewBag.Error
+                        </div>
+                    }
+
+                    <form asp-action="Register" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="Email" class="form-control" placeholder="your@email.com" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="Password" class="form-control" placeholder="Min. 6 characters" required minlength="6" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" name="ConfirmPassword" class="form-control" placeholder="Repeat password" required />
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-person-plus"></i> Register
+                        </button>
+                    </form>
+
+                    <hr />
+                    <p class="text-center mb-0">
+                        Already have an account? <a asp-action="Login">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
