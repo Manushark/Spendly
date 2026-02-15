@@ -18,10 +18,9 @@ namespace Spendly.Web.Services
         private void SetAuthHeader()
         {
             var token = _httpContextAccessor.HttpContext?.Session.GetString("token");
-            if (!string.IsNullOrEmpty(token))
-            {
-                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
+            _http.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(token)
+                ? null
+                : new AuthenticationHeaderValue("Bearer", token);
         }
 
         public async Task<List<ExpenseDto>> GetAllAsync()
@@ -31,22 +30,36 @@ namespace Spendly.Web.Services
                    ?? new List<ExpenseDto>();
         }
 
+        public async Task<ExpenseDto?> GetByIdAsync(int id)
+        {
+            SetAuthHeader();
+            var response = await _http.GetAsync($"api/expenses/{id}");
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<ExpenseDto>();
+        }
+
         public async Task CreateAsync(ExpenseDto dto)
         {
             SetAuthHeader();
-            await _http.PostAsJsonAsync("api/expenses", dto);
+            var response = await _http.PostAsJsonAsync("api/expenses", dto);
+            response.EnsureSuccessStatusCode();
         }
 
         public async Task UpdateAsync(int id, ExpenseDto dto)
         {
             SetAuthHeader();
-            await _http.PutAsJsonAsync($"api/expenses/{id}", dto);
+            var response = await _http.PutAsJsonAsync($"api/expenses/{id}", dto);
+            response.EnsureSuccessStatusCode();
         }
 
         public async Task DeleteAsync(int id)
         {
             SetAuthHeader();
-            await _http.DeleteAsync($"api/expenses/{id}");
+            var response = await _http.DeleteAsync($"api/expenses/{id}");
+            response.EnsureSuccessStatusCode();
         }
     }
 }
