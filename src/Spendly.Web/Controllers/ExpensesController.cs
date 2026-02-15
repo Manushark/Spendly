@@ -22,6 +22,7 @@ namespace Spendly.Web.Controllers
                 context.Result = RedirectToAction("Login", "Auth");
                 return;
             }
+
             base.OnActionExecuting(context);
         }
 
@@ -31,13 +32,45 @@ namespace Spendly.Web.Controllers
             return View(expenses);
         }
 
+        public async Task<IActionResult> Edit(int id)
+        {
+            var expense = await _api.GetByIdAsync(id);
+            if (expense is null)
+            {
+                TempData["Error"] = "Expense not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(expense);
+        }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ExpenseDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                var expenses = await _api.GetAllAsync();
+                return View("Index", expenses);
+            }
+
             await _api.CreateAsync(dto);
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, ExpenseDto dto)
+        {
+            if (!ModelState.IsValid)
+                return View(dto);
+
+            await _api.UpdateAsync(id, dto);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             await _api.DeleteAsync(id);
