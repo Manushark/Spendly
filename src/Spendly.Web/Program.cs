@@ -25,6 +25,13 @@ builder.Services.AddHttpClient<AuthApiClient>(client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+// Add AuthApiClient with HttpClient configuration
+builder.Services.AddHttpClient<AuthApiClient>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7267/");
+});
+
+
 // Add ExpenseApiClient with HttpClient configuration (includes JWT token)
 builder.Services.AddHttpClient<ExpenseApiClient>(client =>
 {
