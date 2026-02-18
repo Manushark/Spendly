@@ -1,8 +1,144 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
+    var token = Context.Session.GetString("token");
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<style>
+    body {
+        background-color: #f8f9fc;
+    }
+
+    .hero {
+        padding: 120px 0;
+        background: linear-gradient(120deg, #4e73df, #224abe);
+        color: white;
+    }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+    .btn-primary-custom {
+        background-color: white;
+        color: #224abe;
+        border-radius: 50px;
+        padding: 12px 32px;
+        font-weight: 600;
+        border: none;
+    }
+
+        .btn-primary-custom:hover {
+            background-color: #e2e6ea;
+        }
+
+    .feature-card {
+        border: none;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+        }
+
+    .section-padding {
+        padding: 80px 0;
+    }
+</style>
+
+<!-- HERO -->
+<section class="hero text-center">
+    <div class="container">
+        <h1>Take Control of Your Spending</h1>
+        <p class="mt-4 mb-5">
+            Track your expenses, understand your habits, and make smarter financial decisions — all in one place.
+        </p>
+
+        @if (string.IsNullOrEmpty(token))
+        {
+            <a asp-controller="Auth" asp-action="Login" class="btn btn-primary-custom me-3">
+                Get Started
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Expenses" asp-action="Index" class="btn btn-primary-custom">
+                Go to Dashboard
+            </a>
+        }
+    </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="section-padding bg-white">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-3">Simple. Clear. Effective.</h2>
+        <p class="text-muted mb-5">
+            Designed to help you focus on what matters — your financial clarity.
+        </p>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="card feature-card shadow-sm p-4 h-100">
+                    <h5 class="mb-3">📊 Clear Overview</h5>
+                    <p class="text-muted">
+                        See all your expenses organized and easy to understand at a glance.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card feature-card shadow-sm p-4 h-100">
+                    <h5 class="mb-3">⚡ Fast Tracking</h5>
+                    <p class="text-muted">
+                        Add and manage expenses in seconds without unnecessary steps.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card feature-card shadow-sm p-4 h-100">
+                    <h5 class="mb-3">🔒 Secure Access</h5>
+                    <p class="text-muted">
+                        Your data stays private and protected.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- CALL TO ACTION -->
+<section class="section-padding text-center">
+    <div class="container">
+        <h3 class="fw-bold mb-3">Start managing your expenses today</h3>
+        <p class="text-muted mb-4">
+            Build better financial habits with clarity and confidence.
+        </p>
+
+        @if (string.IsNullOrEmpty(token))
+        {
+            <a asp-controller="Auth" asp-action="Register" class="btn btn-primary btn-lg px-5">
+                Create Account
+            </a>
+        }
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-light py-4 text-center">
+    <div class="container">
+        <small class="text-muted">
+            © @DateTime.Now.Year Spendly. All rights reserved.
+        </small>
+    </div>
+</footer>
