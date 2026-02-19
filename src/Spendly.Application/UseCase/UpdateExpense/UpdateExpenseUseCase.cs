@@ -14,16 +14,18 @@ namespace Spendly.Application.UseCases.Expenses
             _expenseRepository = expenseRepository;
         }
 
-        public void Execute(int id, UpdateExpenseDto dto)
+        public void Execute(int userId, int id, UpdateExpenseDto dto)
         {
             var expense = _expenseRepository.GetById(id);
 
             if (expense is null)
                 throw new ExpenseNotFoundException(id);
 
-            var money = Money.FromDecimal(dto.Amount); 
+            // Verifica que el gasto pertenezca al usuario antes de modificar
+            expense.EnsureOwnership(userId);
+
             expense.Update(
-                money,
+                Money.FromDecimal(dto.Amount),
                 dto.Description,
                 dto.Date,
                 dto.Category
