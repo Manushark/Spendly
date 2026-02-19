@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Spendly.Domain.Entities;
+﻿using Spendly.Domain.Entities;
 
 namespace Spendly.Application.Interfaces
 {
@@ -17,10 +12,12 @@ namespace Spendly.Application.Interfaces
         Expense? GetById(int id);
 
         IEnumerable<Expense> GetAll(
+            int userId,
             string? category,
             int page,
             int pageSize
             );
 
+        int Count(int userId, string? category);
     }
 }
