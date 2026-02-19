@@ -1,16 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Spendly.Application.DTOs.Expense;
+﻿using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
 using Spendly.Application.Mappers;
-using Spendly.Domain.Entities;
 
 namespace Spendly.Application.UseCase.ListExpenses
 {
-    public class ListExpensesUseCase  
+    public class PagedResult<T>
+    {
+        public IEnumerable<T> Items { get; set; } = [];
+        public int TotalCount { get; set; }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
+        public bool HasPreviousPage => Page > 1;
+        public bool HasNextPage => Page < TotalPages;
+    }
+
+    public class ListExpensesUseCase
     {
         private readonly IExpenseRepository _expenseRepository;
 
@@ -19,15 +24,18 @@ namespace Spendly.Application.UseCase.ListExpenses
             _expenseRepository = expenseRepository;
         }
 
-        // Retrieves all expenses and maps them to ExpenseResponseDto
-        public IEnumerable<ExpenseResponseDto> Execute(
-            string? category,
-            int page,
-            int pageSize)
+        public PagedResult<ExpenseResponseDto> Execute(int userId, string? category, int page, int pageSize)
         {
-            var expenses = _expenseRepository.GetAll(category, page, pageSize);
+            var expenses = _expenseRepository.GetAll(userId, category, page, pageSize);
+            var total = _expenseRepository.Count(userId, category);
 
-            return expenses.Select(ExpenseMapper.ToDto);
+            return new PagedResult<ExpenseResponseDto>
+            {
+                Items = expenses.Select(ExpenseMapper.ToDto),
+                TotalCount = total,
+                Page = page,
+                PageSize = pageSize
+            };
         }
     }
 }
