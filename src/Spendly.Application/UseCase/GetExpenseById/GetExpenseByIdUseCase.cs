@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Spendly.Application.DTOs.Expense;
+﻿using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
 using Spendly.Application.Mappers;
 
@@ -18,12 +13,14 @@ namespace Spendly.Application.UseCase.GetExpenseById
             _expenseRepository = expenseRepository;
         }
 
-        public ExpenseResponseDto? Execute(int id)
+        public ExpenseResponseDto? Execute(int userId, int id)
         {
             var expense = _expenseRepository.GetById(id);
 
-            if (expense is null)
-                return null;
+            if (expense is null) return null;
+
+            // Verifica que el gasto pertenezca al usuario
+            expense.EnsureOwnership(userId);
 
             return ExpenseMapper.ToDto(expense);
         }
