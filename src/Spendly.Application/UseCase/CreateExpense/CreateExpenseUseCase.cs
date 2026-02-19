@@ -5,10 +5,6 @@ using Spendly.Domain.ValueObjects;
 
 namespace Spendly.Application.UseCase.CreateExpense
 {
-    /// <summary>
-    /// Use case for creating a new expense.
-    /// Implements the business logic for expense creation.
-    /// </summary>
     public class CreateExpenseUseCase
     {
         private readonly IExpenseRepository _expenseRepository;
@@ -18,14 +14,11 @@ namespace Spendly.Application.UseCase.CreateExpense
             _expenseRepository = expenseRepository;
         }
 
-        /// <summary>
-        /// Executes the use case to create a new expense.
-        /// </summary>
-        /// <param name="dto">The expense data transfer object</param>
-        public void Execute(CreateExpenseDto dto)
+        public void Execute(int userId, CreateExpenseDto dto)
         {
             // Create the expense entity
             var expense = Expense.Create(
+                userId,
                 Money.FromDecimal(dto.Amount),
                 dto.Description,
                 dto.Date,
