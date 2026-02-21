@@ -22,14 +22,24 @@ namespace Spendly.Web.Controllers
                 context.Result = RedirectToAction("Login", "Auth");
                 return;
             }
-
             base.OnActionExecuting(context);
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            [FromQuery] string? category = null,
+            [FromQuery] int page = 1)
         {
-            var expenses = await _api.GetAllAsync();
-            return View(expenses);
+            var result = await _api.GetAllAsync(category, page, pageSize: 10);
+
+            // Si la sesión expiró en el servidor, redirigir al login
+            if (result.TotalCount == 0 && HttpContext.Session.GetString("token") != null)
+            {
+                // Podría ser token expirado; se muestra vacío sin crash
+            }
+
+            ViewBag.Category = category;
+            ViewBag.CurrentPage = page;
+            return View(result);
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -37,10 +47,9 @@ namespace Spendly.Web.Controllers
             var expense = await _api.GetByIdAsync(id);
             if (expense is null)
             {
-                TempData["Error"] = "Expense not found.";
+                TempData["Error"] = "Expense not found or you don't have access to it.";
                 return RedirectToAction(nameof(Index));
             }
-
             return View(expense);
         }
 
@@ -50,11 +59,16 @@ namespace Spendly.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var expenses = await _api.GetAllAsync();
-                return View("Index", expenses);
+                var result = await _api.GetAllAsync();
+                return View("Index", result);
             }
 
-            await _api.CreateAsync(dto);
+            var (success, error) = await _api.CreateAsync(dto);
+            if (!success)
+            {
+                TempData["Error"] = error ?? "Failed to create expense.";
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -65,7 +79,14 @@ namespace Spendly.Web.Controllers
             if (!ModelState.IsValid)
                 return View(dto);
 
-            await _api.UpdateAsync(id, dto);
+            var (success, error) = await _api.UpdateAsync(id, dto);
+            if (!success)
+            {
+                TempData["Error"] = error ?? "Failed to update expense.";
+                return View(dto);
+            }
+
+            TempData["Success"] = "Expense updated successfully.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -73,7 +94,10 @@ namespace Spendly.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            await _api.DeleteAsync(id);
+            var success = await _api.DeleteAsync(id);
+            if (!success)
+                TempData["Error"] = "Could not delete expense.";
+
             return RedirectToAction(nameof(Index));
         }
     }
