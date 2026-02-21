@@ -11,6 +11,9 @@ namespace Spendly.Infrastructure.Persistence.Configurations
         {
             builder.HasKey(e => e.Id);
 
+            builder.Property(e => e.UserId)
+                   .IsRequired();
+
             builder.Property(e => e.Description)
                    .IsRequired()
                    .HasMaxLength(200);
@@ -22,14 +25,21 @@ namespace Spendly.Infrastructure.Persistence.Configurations
             builder.Property(e => e.Date)
                    .IsRequired();
 
-            ///MONEY MAPPING 
             builder.Property(e => e.Amount)
                    .HasConversion(
-                        money => money.Value,              // Money → decimal (guardar)
-                        value => Money.FromDecimal(value)  // decimal → Money (leer)
-                   )
+                        money => money.Value,
+                        value => Money.FromDecimal(value))
                    .HasColumnType("decimal(18,2)")
                    .IsRequired();
+
+            // Índice para filtrar gastos por usuario eficientemente
+            builder.HasIndex(e => e.UserId);
+
+            // Relación con User (opcional pero recomendado)
+            builder.HasOne<User>()
+                   .WithMany()
+                   .HasForeignKey(e => e.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
