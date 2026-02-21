@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Spendly.Web.Contracts.Expenses;
@@ -23,11 +24,29 @@ namespace Spendly.Web.Services
                 : new AuthenticationHeaderValue("Bearer", token);
         }
 
-        public async Task<List<ExpenseDto>> GetAllAsync()
+        private bool IsTokenExpiredOrUnauthorized(HttpResponseMessage response)
+            => response.StatusCode == HttpStatusCode.Unauthorized;
+
+        public async Task<PagedExpenseResult> GetAllAsync(
+            string? category = null,
+            int page = 1,
+            int pageSize = 10)
         {
             SetAuthHeader();
-            return await _http.GetFromJsonAsync<List<ExpenseDto>>("api/expenses")
-                   ?? new List<ExpenseDto>();
+
+            var url = $"api/expenses?page={page}&pageSize={pageSize}";
+            if (!string.IsNullOrWhiteSpace(category))
+                url += $"&category={Uri.EscapeDataString(category)}";
+
+            var response = await _http.GetAsync(url);
+
+            if (IsTokenExpiredOrUnauthorized(response))
+                return PagedExpenseResult.Empty();
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<PagedExpenseResult>()
+                   ?? PagedExpenseResult.Empty();
         }
 
         public async Task<ExpenseDto?> GetByIdAsync(int id)
@@ -35,31 +54,59 @@ namespace Spendly.Web.Services
             SetAuthHeader();
             var response = await _http.GetAsync($"api/expenses/{id}");
 
-            if (!response.IsSuccessStatusCode)
-                return null;
+            if (!response.IsSuccessStatusCode) return null;
 
             return await response.Content.ReadFromJsonAsync<ExpenseDto>();
         }
 
-        public async Task CreateAsync(ExpenseDto dto)
+        public async Task<(bool Success, string? Error)> CreateAsync(ExpenseDto dto)
         {
             SetAuthHeader();
             var response = await _http.PostAsJsonAsync("api/expenses", dto);
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await TryReadError(response);
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
-        public async Task UpdateAsync(int id, ExpenseDto dto)
+        public async Task<(bool Success, string? Error)> UpdateAsync(int id, ExpenseDto dto)
         {
             SetAuthHeader();
             var response = await _http.PutAsJsonAsync($"api/expenses/{id}", dto);
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await TryReadError(response);
+                return (false, error);
+            }
+
+            return (true, null);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             SetAuthHeader();
             var response = await _http.DeleteAsync($"api/expenses/{id}");
-            response.EnsureSuccessStatusCode();
+            return response.IsSuccessStatusCode;
+        }
+
+        private static async Task<string> TryReadError(HttpResponseMessage response)
+        {
+            try
+            {
+                var body = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+                return body?.Error ?? response.ReasonPhrase ?? "Unknown error";
+            }
+            catch
+            {
+                return response.ReasonPhrase ?? "Unknown error";
+            }
         }
     }
+
+    public record ApiErrorResponse(int Status, string Error);
 }
