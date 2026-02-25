@@ -75,10 +75,61 @@ namespace Spendly.Infrastructure.Repositories
 
             return query.Count();
         }
+
+        // ─── Métodos para Dashboard ───
+
+        public IEnumerable<Expense> GetByDateRange(int userId, DateTime startDate, DateTime endDate)
+        {
+            return _context.Expenses
+                .Where(e => e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
+                .OrderByDescending(e => e.Date)
+                .ToList();
+        }
+
+        public Dictionary<string, decimal> GetTotalByCategory(int userId, DateTime startDate, DateTime endDate)
+        {
+            return _context.Expenses
+                .Where(e => e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
+                .GroupBy(e => e.Category)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Sum(e => e.Amount.Value)
+                );
+        }
+
+        public IEnumerable<Expense> GetRecent(int userId, int count)
+        {
+            return _context.Expenses
+                .Where(e => e.UserId == userId)
+                .OrderByDescending(e => e.Date)
+                .Take(count)
+                .ToList();
+        }
+
+        public decimal GetTotalAmount(int userId, DateTime startDate, DateTime endDate)
+        {
+            return _context.Expenses
+                .Where(e => e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
+                .Sum(e => (decimal?)e.Amount.Value) ?? 0m;
+        }
+
+        public Dictionary<DateTime, decimal> GetMonthlyTotals(int userId, int monthsBack)
+        {
+            var startDate = DateTime.UtcNow.AddMonths(-monthsBack).Date;
+
+            return _context.Expenses
+                .Where(e => e.UserId == userId && e.Date >= startDate)
+                .GroupBy(e => new DateTime(e.Date.Year, e.Date.Month, 1))
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Sum(e => e.Amount.Value)
+                );
+        }
     }
 }
-        // Retrieves all expenses from the database.
-        //public List<Expense> GetAll()
-        //{
-        //    return _context.Set<Expense>().ToList();
-        //}
+
+// Retrieves all expenses from the database.
+//public List<Expense> GetAll()
+//{
+//    return _context.Set<Expense>().ToList();
+//}
