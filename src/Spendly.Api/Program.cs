@@ -13,6 +13,7 @@ using Spendly.Application.UseCase.DeleteExpense;
 using Spendly.Application.UseCases.Expenses;
 using Spendly.Application.UseCases.Auth;
 using Spendly.Api.Middlewares;
+using Spendly.Application.UseCase.Dashboard;  
 
 
 
@@ -50,10 +51,13 @@ builder.Services.AddScoped<DeleteExpenseUseCase>();
 
 // Update Expense Use Case
 builder.Services.AddScoped<UpdateExpenseUseCase>();
+// Dashboard use cases
+builder.Services.AddScoped<GetDashboardStatsUseCase>();
 
 // Use Cases - Auth
 builder.Services.AddScoped<LoginUseCase>();
 builder.Services.AddScoped<RegisterUseCase>();
+
 
 builder.Services.AddAuthentication("Bearer")
 .AddJwtBearer("Bearer", options =>
