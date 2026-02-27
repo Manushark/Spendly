@@ -1,0 +1,460 @@
+﻿@model Spendly.Web.Contracts.Dashboard.DashboardStatsDto
+
+@{
+    ViewData["Title"] = "Dashboard";
+    var hasData = Model.TotalExpensesCount > 0;
+}
+
+<style>
+    .stat-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: none;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+    }
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 24px;
+    }
+    .chart-card {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    .progress-bar {
+        transition: width 0.6s ease;
+    }
+    .empty-state {
+        padding: 60px 20px;
+        text-align: center;
+    }
+    .empty-state-icon {
+        font-size: 80px;
+        opacity: 0.3;
+        margin-bottom: 20px;
+    }
+    .badge-category {
+        padding: 6px 12px;
+        font-weight: 500;
+        border-radius: 20px;
+    }
+    .list-expense-item {
+        border-left: 4px solid transparent;
+        transition: all 0.2s ease;
+    }
+    .list-expense-item:hover {
+        border-left-color: #0d6efd;
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+    }
+</style>
+
+<div class="container-fluid py-4">
+    @* Header *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="bi bi-speedometer2 text-primary"></i> 
+                Dashboard
+            </h2>
+            <small class="text-muted">
+                <i class="bi bi-calendar3"></i> @DateTime.Now.ToString("MMMM yyyy")
+            </small>
+        </div>
+        @if (hasData)
+        {
+                <a asp-controller="Expenses" asp-action="Index" class="btn btn-outline-primary">
+                    <i class="bi bi-plus-circle"></i> Add Expense
+                </a>
+        }
+    </div>
+
+    @if (!hasData)
+    {
+        @* Empty State *@
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 chart-card">
+                        <div class="card-body empty-state">
+                            <div class="empty-state-icon">
+                                <i class="bi bi-inbox"></i>
+                            </div>
+                            <h3 class="mb-3">No expenses yet this month</h3>
+                            <p class="text-muted mb-4">Start tracking your spending by adding your first expense</p>
+                            <a asp-controller="Expenses" asp-action="Index" class="btn btn-primary btn-lg">
+                                <i class="bi bi-plus-circle me-2"></i>Add Your First Expense
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    }
+    else
+    {
+        @* Stats Cards *@
+            <div class="row g-4 mb-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Total This Month</p>
+                                    <h3 class="mb-0 fw-bold">$@Model.CurrentMonthTotal.ToString("N2")</h3>
+                                </div>
+                                <div class="stat-icon bg-primary bg-opacity-10">
+                                    <i class="bi bi-wallet2 text-primary"></i>
+                                </div>
+                            </div>
+                        @if (Model.PreviousMonthTotal > 0)
+                        {
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge @(Model.IsIncreaseFromLastMonth ? "bg-danger" : "bg-success") bg-opacity-10 @(Model.IsIncreaseFromLastMonth ? "text-danger" : "text-success") me-2">
+                                            <i class="bi bi-@(Model.IsIncreaseFromLastMonth ? "arrow-up" : "arrow-down") me-1"></i>
+                                    @Math.Abs(Model.MonthComparisonPercentage).ToString("N1")%
+                                        </span>
+                                        <small class="text-muted">vs last month</small>
+                                    </div>
+                        }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Daily Average</p>
+                                    <h3 class="mb-0 fw-bold">$@Model.DailyAverage.ToString("N2")</h3>
+                                </div>
+                                <div class="stat-icon bg-success bg-opacity-10">
+                                    <i class="bi bi-calendar-day text-success"></i>
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>Based on @DateTime.Now.Day days
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Highest Expense</p>
+                                    <h3 class="mb-0 fw-bold">$@Model.HighestExpense.ToString("N2")</h3>
+                                </div>
+                                <div class="stat-icon bg-warning bg-opacity-10">
+                                    <i class="bi bi-graph-up-arrow text-warning"></i>
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-lightning-charge me-1"></i>Single transaction
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Top Category</p>
+                                    <h3 class="mb-0 fw-bold text-truncate" title="@Model.TopCategory" style="max-width: 120px;">
+                                    @Model.TopCategory
+                                    </h3>
+                                </div>
+                                <div class="stat-icon bg-info bg-opacity-10">
+                                    <i class="bi bi-tag text-info"></i>
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-receipt me-1"></i>@Model.TotalExpensesCount transactions
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        @* Charts Row *@
+            <div class="row g-4 mb-4">
+                <div class="col-lg-8">
+                    <div class="card chart-card shadow-sm">
+                        <div class="card-header bg-white border-0 pt-4 pb-3">
+                            <h5 class="mb-0 fw-semibold">
+                                <i class="bi bi-graph-up text-primary me-2"></i>Spending Trend
+                                <span class="badge bg-light text-muted ms-2">Last 30 days</span>
+                            </h5>
+                        </div>
+                        <div class="card-body pt-2">
+                            <canvas id="trendChart" height="80"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card chart-card shadow-sm h-100">
+                        <div class="card-header bg-white border-0 pt-4 pb-3">
+                            <h5 class="mb-0 fw-semibold">
+                                <i class="bi bi-pie-chart text-primary me-2"></i>By Category
+                            </h5>
+                        </div>
+                        <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 300px;">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        @* Bottom Row *@
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div class="card chart-card shadow-sm">
+                        <div class="card-header bg-white border-0 pt-4 pb-3">
+                            <h5 class="mb-0 fw-semibold">
+                                <i class="bi bi-list-ul text-primary me-2"></i>Category Breakdown
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0 align-middle">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="border-0 py-3 ps-4">Category</th>
+                                            <th class="border-0 py-3 text-end">Amount</th>
+                                            <th class="border-0 py-3 text-center">Count</th>
+                                            <th class="border-0 py-3 pe-4" style="width: 200px">% of Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach (var cat in Model.CategoryBreakdown)
+                                    {
+                                                <tr>
+                                                    <td class="ps-4">
+                                                        <span class="badge-category bg-secondary bg-opacity-10 text-dark">
+                                                            <i class="bi bi-tag-fill me-1"></i>@cat.Category
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-end fw-bold">$@cat.Total.ToString("N2")</td>
+                                                    <td class="text-center">
+                                                        <span class="badge bg-light text-dark">@cat.Count</span>
+                                                    </td>
+                                                    <td class="pe-4">
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <div class="progress flex-grow-1" style="height: 10px; border-radius: 10px;">
+                                                                <div class="progress-bar bg-primary" 
+                                                                     role="progressbar"
+                                                                     style="width: @cat.Percentage%"
+                                                                     aria-valuenow="@cat.Percentage"
+                                                                     aria-valuemin="0"
+                                                                     aria-valuemax="100"></div>
+                                                            </div>
+                                                            <span class="text-muted fw-semibold" style="min-width: 45px; font-size: 0.9rem;">
+                                                        @cat.Percentage.ToString("N0")%
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="card chart-card shadow-sm">
+                        <div class="card-header bg-white border-0 pt-4 pb-3 d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-semibold">
+                                <i class="bi bi-star-fill text-warning me-2"></i>Top 5 Expenses
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                        @if (Model.TopExpenses.Any())
+                        {
+                                    <div class="list-group list-group-flush">
+                                @foreach (var exp in Model.TopExpenses)
+                                {
+                                                <div class="list-group-item list-expense-item border-0 py-3 px-4">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div class="flex-grow-1 me-3">
+                                                            <h6 class="mb-2 fw-semibold">@exp.Description</h6>
+                                                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                                <span class="badge-category bg-secondary bg-opacity-10 text-dark">
+                                                                    <i class="bi bi-tag-fill me-1"></i>@exp.Category
+                                                                </span>
+                                                                <small class="text-muted">
+                                                                    <i class="bi bi-calendar3 me-1"></i>@exp.Date.ToString("MMM dd")
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                        <span class="badge bg-danger fs-6 px-3 py-2" style="border-radius: 20px;">
+                                                            $@exp.Amount.ToString("N2")
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                }
+                                    </div>
+                        }
+                        </div>
+                    </div>
+                </div>
+            </div>
+    }
+</div>
+
+@section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+        <script>
+        @if (hasData)
+        {
+            <text>
+                    const trendData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DailyTrend));
+                    const categoryData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategoryBreakdown));
+
+                    // Enhanced color palette
+                    const colors = [
+                        { bg: 'rgba(13, 110, 253, 0.8)', border: 'rgb(13, 110, 253)' },      // Primary blue
+                        { bg: 'rgba(220, 53, 69, 0.8)', border: 'rgb(220, 53, 69)' },        // Red
+                        { bg: 'rgba(255, 193, 7, 0.8)', border: 'rgb(255, 193, 7)' },        // Yellow
+                        { bg: 'rgba(25, 135, 84, 0.8)', border: 'rgb(25, 135, 84)' },        // Green
+                        { bg: 'rgba(111, 66, 193, 0.8)', border: 'rgb(111, 66, 193)' },      // Purple
+                        { bg: 'rgba(255, 99, 71, 0.8)', border: 'rgb(255, 99, 71)' },        // Tomato
+                        { bg: 'rgba(32, 201, 151, 0.8)', border: 'rgb(32, 201, 151)' },      // Teal
+                        { bg: 'rgba(253, 126, 20, 0.8)', border: 'rgb(253, 126, 20)' }       // Orange
+                    ];
+
+                    // ─── Trend Chart (Line with gradient) ──────────────────────────
+                    const trendCtx = document.getElementById('trendChart').getContext('2d');
+                    const gradient = trendCtx.createLinearGradient(0, 0, 0, 300);
+                    gradient.addColorStop(0, 'rgba(13, 110, 253, 0.3)');
+                    gradient.addColorStop(1, 'rgba(13, 110, 253, 0.01)');
+
+                    new Chart(trendCtx, {
+                        type: 'line',
+                        data: {
+                            labels: trendData.map(d => d.date),
+                            datasets: [{
+                                label: 'Daily Spending',
+                                data: trendData.map(d => d.amount),
+                                borderColor: 'rgb(13, 110, 253)',
+                                backgroundColor: gradient,
+                                fill: true,
+                                tension: 0.4,
+                                borderWidth: 3,
+                                pointRadius: 4,
+                                pointHoverRadius: 8,
+                                pointBackgroundColor: 'rgb(13, 110, 253)',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                pointHoverBackgroundColor: 'rgb(13, 110, 253)',
+                                pointHoverBorderColor: '#fff',
+                                pointHoverBorderWidth: 3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                intersect: false,
+                                mode: 'index'
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    padding: 12,
+                                    cornerRadius: 8,
+                                    titleFont: { size: 14, weight: 'bold' },
+                                    bodyFont: { size: 13 },
+                                    callbacks: {
+                                        label: (ctx) => 'Spent: $' + ctx.parsed.y.toFixed(2)
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.05)',
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        font: { size: 12 },
+                                        callback: (val) => '$' + val
+                                    }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { font: { size: 11 } }
+                                }
+                            }
+                        }
+                    });
+
+                    // ─── Category Chart (Doughnut with animations) ─────────────────
+                    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+                    new Chart(categoryCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: categoryData.map(c => c.category),
+                            datasets: [{
+                                data: categoryData.map(c => c.total),
+                                backgroundColor: colors.map(c => c.bg),
+                                borderColor: colors.map(c => c.border),
+                                borderWidth: 2,
+                                hoverOffset: 15
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            cutout: '65%',
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        font: { size: 12, weight: '500' },
+                                        usePointStyle: true,
+                                        pointStyle: 'circle'
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    padding: 12,
+                                    cornerRadius: 8,
+                                    titleFont: { size: 14, weight: 'bold' },
+                                    bodyFont: { size: 13 },
+                                    callbacks: {
+                                        label: (ctx) => {
+                                            const label = ctx.label || '';
+                                            const value = '$' + ctx.parsed.toFixed(2);
+                                            const pct = categoryData[ctx.dataIndex].percentage.toFixed(1) + '%';
+                                            return `${label}: ${value} (${pct})`;
+                                        }
+                                    }
+                                }
+                            },
+                            animation: {
+                                animateRotate: true,
+                                animateScale: true
+                            }
+                        }
+                    });
+            </text>
+        }
+        </script>
+}
