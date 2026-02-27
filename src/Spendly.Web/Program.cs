@@ -25,6 +25,13 @@ builder.Services.AddHttpClient<AuthApiClient>(client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+// Dashboard API client
+builder.Services.AddHttpClient<DashboardApiClient>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]
+        ?? "https://localhost:7267/");
+});
+
 // Add AuthApiClient with HttpClient configuration
 builder.Services.AddHttpClient<AuthApiClient>(client =>
 {
