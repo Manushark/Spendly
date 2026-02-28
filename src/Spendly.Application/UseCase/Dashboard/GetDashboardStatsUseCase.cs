@@ -11,27 +11,35 @@ namespace Spendly.Application.UseCase.Dashboard
 
         public DashboardStatsDto Execute(int userId)
         {
-            var now = DateTime.UtcNow;
+            // Usar hora local en vez de UTC para evitar problemas de zona horaria
+            var now = DateTime.Now;
             var currentMonthStart = new DateTime(now.Year, now.Month, 1);
+            var currentMonthEnd = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month), 23, 59, 59);
+
             var previousMonthStart = currentMonthStart.AddMonths(-1);
-            var previousMonthEnd = currentMonthStart.AddDays(-1);
+            var previousMonthEnd = currentMonthStart.AddSeconds(-1);
 
-            // Obtener todos los gastos del usuario (sin límite de paginación)
-            var allExpenses = _repo.GetAll(userId, category: null, page: 1, pageSize: 10000);
+            // Obtener TODOS los gastos del usuario (últimos 12 meses para el gráfico)
+            var allExpenses = _repo.GetAll(userId, category: null, page: 1, pageSize: 10000)
+                .Where(e => e.Date >= now.AddMonths(-12))  // Solo últimos 12 meses
+                .ToList();
 
+            // Filtrar por mes actual (comparando solo año y mes, no la hora)
             var currentMonthExpenses = allExpenses
-                .Where(e => e.Date >= currentMonthStart && e.Date <= now)
+                .Where(e => e.Date.Year == now.Year && e.Date.Month == now.Month)
                 .ToList();
 
             var previousMonthExpenses = allExpenses
-                .Where(e => e.Date >= previousMonthStart && e.Date <= previousMonthEnd)
+                .Where(e => e.Date.Year == previousMonthStart.Year && e.Date.Month == previousMonthStart.Month)
                 .ToList();
 
             // Métricas principales
             var currentMonthTotal = currentMonthExpenses.Sum(e => e.Amount.Value);
             var previousMonthTotal = previousMonthExpenses.Sum(e => e.Amount.Value);
-            var daysInMonth = DateTime.DaysInMonth(now.Year, now.Month);
-            var dailyAverage = currentMonthTotal / now.Day;
+
+            var dailyAverage = currentMonthExpenses.Any()
+                ? currentMonthTotal / now.Day
+                : 0m;
 
             var highestExpense = currentMonthExpenses.Any()
                 ? currentMonthExpenses.Max(e => e.Amount.Value)
@@ -58,7 +66,7 @@ namespace Spendly.Application.UseCase.Dashboard
                 .OrderByDescending(c => c.Total)
                 .ToList();
 
-            // Tendencia diaria (últimos 30 días)
+            // Tendencia diaria (últimos 30 días desde HOY)
             var last30Days = Enumerable.Range(0, 30)
                 .Select(i => now.AddDays(-29 + i).Date)
                 .ToList();
