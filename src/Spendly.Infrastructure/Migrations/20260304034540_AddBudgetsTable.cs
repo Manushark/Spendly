@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -35,21 +36,22 @@ namespace Spendly.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Budgets_UserYearMonth",
-                table: "Budgets",
-                columns: new[] { "UserId", "Year", "Month" });
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Budgets_UserCategoryYearMonth",
                 table: "Budgets",
                 columns: new[] { "UserId", "Category", "Year", "Month" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Budgets_UserYearMonth",
+                table: "Budgets",
+                columns: new[] { "UserId", "Category", "Year", "Month" });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(name: "Budgets");
+            migrationBuilder.DropTable(
+                name: "Budgets");
         }
     }
 }
