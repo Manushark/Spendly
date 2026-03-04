@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Spendly.Domain.Entities;
+using Spendly.Infrastructure.Persistence.Configurations;
 
 namespace Spendly.Infrastructure.Persistence
 {
@@ -12,19 +13,17 @@ namespace Spendly.Infrastructure.Persistence
     {
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Budget> Budgets { get; set; } = null!;
 
-        public SpendlyDbContext(DbContextOptions<SpendlyDbContext> options) : base(options)
+        public SpendlyDbContext(DbContextOptions<SpendlyDbContext> options)
+            : base(options)
         {
-
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Expense>()
-                .Property(e => e.Amount)
-                .HasPrecision(18, 2);
-
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(SpendlyDbContext).Assembly);
-
+            modelBuilder.ApplyConfiguration(new ExpenseConfiguration());
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new BudgetConfiguration());  
         }
 
     }
