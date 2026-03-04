@@ -13,7 +13,8 @@ using Spendly.Application.UseCase.DeleteExpense;
 using Spendly.Application.UseCases.Expenses;
 using Spendly.Application.UseCases.Auth;
 using Spendly.Api.Middlewares;
-using Spendly.Application.UseCase.Dashboard;  
+using Spendly.Application.UseCase.Dashboard;
+using Spendly.Application.UseCases.Budgets;
 
 
 
@@ -32,6 +33,10 @@ builder.Services.AddDbContext<SpendlyDbContext>(options =>
 
 // Dependency Injection
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+
+#region Expenses
+
+// User Repository
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured");
@@ -51,6 +56,18 @@ builder.Services.AddScoped<DeleteExpenseUseCase>();
 
 // Update Expense Use Case
 builder.Services.AddScoped<UpdateExpenseUseCase>();
+#endregion
+
+#region Budgets
+// Budget Repository
+builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
+builder.Services.AddScoped<CreateBudgetUseCase>();
+builder.Services.AddScoped<UpdateBudgetUseCase>();
+builder.Services.AddScoped<DeleteBudgetUseCase>();
+builder.Services.AddScoped<GetBudgetByIdUseCase>();
+builder.Services.AddScoped<GetBudgetSummaryUseCase>();
+#endregion 
+
 // Dashboard use cases
 builder.Services.AddScoped<GetDashboardStatsUseCase>();
 
