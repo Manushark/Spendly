@@ -1,0 +1,244 @@
+﻿@model Spendly.Web.Contracts.Budgets.BudgetSummaryDto
+
+@{
+    ViewData["Title"] = "Budgets";
+    var monthName = ViewBag.MonthName as string ?? DateTime.Now.ToString("MMMM yyyy");
+}
+
+<style>
+    .budget-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: none;
+    }
+    .budget-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+    }
+    .progress-bar-safe {
+        background: linear-gradient(90deg, #10b981, #34d399);
+    }
+    .progress-bar-warning {
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    }
+    .progress-bar-critical {
+        background: linear-gradient(90deg, #ef4444, #f87171);
+    }
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        font-size: 20px;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    @* Header *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="bi bi-piggy-bank text-primary"></i> Budgets
+            </h2>
+            <small class="text-muted">
+                <i class="bi bi-calendar3"></i> @monthName
+            </small>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Budget
+        </a>
+    </div>
+
+    @* Alerts *@
+    @if (TempData["Error"] is string errorMsg)
+    {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMsg
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+    }
+    @if (TempData["Success"] is string successMsg)
+    {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>@successMsg
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+    }
+
+    @if (!Model.Budgets.Any())
+    {
+        @* Empty State *@
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4" style="font-size: 80px; opacity: 0.3;">
+                        <i class="bi bi-piggy-bank"></i>
+                    </div>
+                    <h3 class="mb-3">No budgets set for this month</h3>
+                    <p class="text-muted mb-4">Start controlling your spending by setting budgets for your categories</p>
+                    <a asp-action="Create" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Create Your First Budget
+                    </a>
+                </div>
+            </div>
+    }
+    else
+    {
+        @* Summary Cards *@
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <p class="text-muted mb-1 small fw-semibold text-uppercase">Total Budget</p>
+                                    <h4 class="mb-0 fw-bold">$@Model.TotalLimit.ToString("N2")</h4>
+                                </div>
+                                <div class="stat-icon bg-primary bg-opacity-10">
+                                    <i class="bi bi-cash-stack text-primary"></i>
+                                </div>
+                            </div>
+                            <small class="text-muted">@Model.TotalBudgets budgets set</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <p class="text-muted mb-1 small fw-semibold text-uppercase">Total Spent</p>
+                                    <h4 class="mb-0 fw-bold">$@Model.TotalSpent.ToString("N2")</h4>
+                                </div>
+                                <div class="stat-icon bg-warning bg-opacity-10">
+                                    <i class="bi bi-receipt text-warning"></i>
+                                </div>
+                            </div>
+                        @{
+                            var totalPercentage = Model.TotalLimit > 0 ? (Model.TotalSpent / Model.TotalLimit) * 100 : 0;
+                        }
+                            <small class="text-muted">@totalPercentage.ToString("N0")% of total budget</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <p class="text-muted mb-1 small fw-semibold text-uppercase">Remaining</p>
+                                    <h4 class="mb-0 fw-bold">$@Model.TotalRemaining.ToString("N2")</h4>
+                                </div>
+                                <div class="stat-icon bg-success bg-opacity-10">
+                                    <i class="bi bi-wallet2 text-success"></i>
+                                </div>
+                            </div>
+                            <small class="text-muted">Available to spend</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <p class="text-muted mb-1 small fw-semibold text-uppercase">Over Budget</p>
+                                    <h4 class="mb-0 fw-bold">@Model.BudgetsExceeded</h4>
+                                </div>
+                                <div class="stat-icon bg-danger bg-opacity-10">
+                                    <i class="bi bi-exclamation-triangle text-danger"></i>
+                                </div>
+                            </div>
+                            <small class="text-muted">Categories exceeded</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        @* Budget List *@
+            <div class="row g-3">
+            @foreach (var budget in Model.Budgets)
+            {
+                var progressClass = budget.PercentageUsed >= 100 ? "progress-bar-critical" :
+                                   budget.PercentageUsed >= 80 ? "progress-bar-warning" : "progress-bar-safe";
+
+                var badgeClass = budget.PercentageUsed >= 100 ? "bg-danger" :
+                                budget.PercentageUsed >= 80 ? "bg-warning" : "bg-success";
+
+                        <div class="col-md-6">
+                            <div class="card budget-card shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1 fw-semibold">
+                                                <i class="bi bi-tag-fill me-2 text-primary"></i>@budget.Category
+                                            </h5>
+                                            <small class="text-muted">
+                                        @budget.Month/@budget.Year
+                                            </small>
+                                        </div>
+                                        <div class="d-flex gap-1">
+                                            <a asp-action="Edit" asp-route-id="@budget.Id" 
+                                               class="btn btn-sm btn-outline-primary" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form asp-action="Delete" asp-route-id="@budget.Id" 
+                                                  method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                        title="Delete"
+                                                        onclick="return confirm('Delete this budget?');">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="small fw-semibold">
+                                                Spent: <span class="text-danger">$@budget.Spent.ToString("N2")</span>
+                                            </span>
+                                            <span class="small fw-semibold">
+                                                Limit: <span class="text-success">$@budget.MonthlyLimit.ToString("N2")</span>
+                                            </span>
+                                        </div>
+                                        <div class="progress" style="height: 12px; border-radius: 10px;">
+                                            <div class="progress-bar @progressClass" 
+                                                 role="progressbar"
+                                                 style="width: @Math.Min(budget.PercentageUsed, 100)%"
+                                                 aria-valuenow="@budget.PercentageUsed"
+                                                 aria-valuemin="0"
+                                                 aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge @badgeClass px-3 py-2">
+                                    @budget.PercentageUsed.ToString("N0")% used
+                                        </span>
+                                @if (budget.Remaining >= 0)
+                                {
+                                                <span class="text-muted small">
+                                                    <i class="bi bi-check-circle me-1"></i>
+                                                    $@budget.Remaining.ToString("N2") remaining
+                                                </span>
+                                }
+                                else
+                                {
+                                                <span class="text-danger small fw-semibold">
+                                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                                    $@Math.Abs(budget.Remaining).ToString("N2") over budget
+                                                </span>
+                                }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            }
+            </div>
+    }
+</div>
