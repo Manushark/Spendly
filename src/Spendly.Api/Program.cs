@@ -15,6 +15,9 @@ using Spendly.Application.UseCases.Auth;
 using Spendly.Api.Middlewares;
 using Spendly.Application.UseCase.Dashboard;
 using Spendly.Application.UseCases.Budgets;
+using Spendly.Application.Services;
+using Spendly.Application.UseCases.RecurringExpenses;
+using Spendly.Infrastructure.Jobs;
 
 
 
@@ -75,6 +78,24 @@ builder.Services.AddScoped<GetDashboardStatsUseCase>();
 builder.Services.AddScoped<LoginUseCase>();
 builder.Services.AddScoped<RegisterUseCase>();
 
+#region Recurring Expenses
+// Recurrent Expenses
+builder.Services.AddScoped<IRecurringExpenseRepository, RecurringExpenseRepository>();
+
+// Recurring Expense Generation Service
+builder.Services.AddScoped<RecurringExpenseGenerationService>();
+
+// Use Cases - Recurring Expenses
+builder.Services.AddScoped<CreateRecurringExpenseUseCase>();
+builder.Services.AddScoped<UpdateRecurringExpenseUseCase>();
+builder.Services.AddScoped<DeleteRecurringExpenseUseCase>();
+builder.Services.AddScoped<ToggleRecurringExpenseUseCase>();
+builder.Services.AddScoped<GetRecurringExpenseSummaryUseCase>();
+builder.Services.AddScoped<GetRecurringExpenseByIdUseCase>();
+
+// Background Service for Recurring Expense Generation
+builder.Services.AddHostedService<RecurringExpenseBackgroundService>();
+#endregion
 
 builder.Services.AddAuthentication("Bearer")
 .AddJwtBearer("Bearer", options =>

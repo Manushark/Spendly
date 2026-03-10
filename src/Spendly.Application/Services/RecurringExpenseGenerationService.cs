@@ -58,7 +58,7 @@ namespace Spendly.Application.Services
             var expense = Expense.Create(
                 userId: recurrence.UserId,
                 description: recurrence.Description,
-                amount: recurrence.Amount.Value,
+                amount: recurrence.Amount,
                 category: recurrence.Category,
                 date: DateTime.Today
             );
