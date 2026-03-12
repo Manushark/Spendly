@@ -1,0 +1,185 @@
+﻿@model Spendly.Web.Contracts.RecurringExpenses.UpdateRecurringExpenseDto
+
+@{
+    ViewData["Title"] = "Edit Recurring Expense";
+    var recurringId = ViewBag.RecurringId as int? ?? 0;
+    var isActive = ViewBag.IsActive as bool? ?? true;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>Edit Recurring Expense
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    @if (TempData["Error"] is string errorMsg)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMsg
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Edit" asp-route-id="@recurringId" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-text-left me-1"></i>Description
+                                </label>
+                                <input asp-for="Description" 
+                                       class="form-control form-control-lg" 
+                                       required 
+                                       maxlength="200" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-cash-stack me-1"></i>Amount
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="Amount" 
+                                           type="number" 
+                                           step="0.01" 
+                                           min="0.01"
+                                           class="form-control" 
+                                           required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-tag me-1"></i>Category
+                                </label>
+                                <input asp-for="Category" 
+                                       class="form-control form-control-lg" 
+                                       required 
+                                       maxlength="100"
+                                       list="categoryList" />
+                                <datalist id="categoryList">
+                                    <option value="Entertainment"/>
+                                    <option value="Utilities"/>
+                                    <option value="Transportation"/>
+                                    <option value="Food"/>
+                                    <option value="Health"/>
+                                    <option value="Insurance"/>
+                                    <option value="Subscriptions"/>
+                                </datalist>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-arrow-repeat me-1"></i>Frequency
+                                </label>
+                                <select asp-for="Frequency" class="form-select form-select-lg" required>
+                                    <option value="1">Daily</option>
+                                    <option value="2">Weekly</option>
+                                    <option value="3">Monthly</option>
+                                    <option value="4">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-play-circle me-1"></i>Start Date
+                                </label>
+                                <input asp-for="StartDate" 
+                                       type="date"
+                                       class="form-control form-control-lg" 
+                                       required />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-stop-circle me-1"></i>End Date (Optional)
+                                </label>
+                                <input asp-for="EndDate" 
+                                       type="date"
+                                       class="form-control form-control-lg" />
+                            </div>
+                        </div>
+
+                        <div class="alert @(isActive ? "alert-success" : "alert-warning") border-0">
+                            <strong>Status:</strong> 
+                            This recurring expense is currently 
+                            <strong>@(isActive ? "ACTIVE" : "PAUSED")</strong>.
+                            @if (!isActive)
+                            {
+                                <span>No expenses will be generated while paused.</span>
+                            }
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-x-circle me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle me-1"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @* Danger Zone *@
+            <div class="card border-danger mt-3">
+                <div class="card-body">
+                    <h6 class="text-danger fw-semibold mb-3">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Danger Zone
+                    </h6>
+                    
+                    <div class="d-flex gap-2">
+                        <form asp-action="Toggle" asp-route-id="@recurringId" asp-route-activate="@(!isActive)"
+                              method="post" class="flex-grow-1">
+                            @Html.AntiForgeryToken()
+                            @if (isActive)
+                            {
+                                <button type="submit" class="btn btn-outline-warning w-100">
+                                    <i class="bi bi-pause me-1"></i>Pause Recurring Expense
+                                </button>
+                                <small class="text-muted d-block mt-1">
+                                    Stop generating expenses (keeps template)
+                                </small>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-outline-success w-100">
+                                    <i class="bi bi-play me-1"></i>Activate Recurring Expense
+                                </button>
+                                <small class="text-muted d-block mt-1">
+                                    Resume generating expenses
+                                </small>
+                            }
+                        </form>
+
+                        <form asp-action="Delete" asp-route-id="@recurringId" method="post" class="flex-grow-1">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" 
+                                    class="btn btn-outline-danger w-100"
+                                    onclick="return confirm('Delete this recurring expense permanently? Past expenses will NOT be deleted.');">
+                                <i class="bi bi-trash me-1"></i>Delete Permanently
+                            </button>
+                            <small class="text-muted d-block mt-1">
+                                Cannot be undone
+                            </small>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
