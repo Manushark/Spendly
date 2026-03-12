@@ -1,0 +1,168 @@
+﻿@model Spendly.Web.Contracts.RecurringExpenses.CreateRecurringExpenseDto
+
+@{
+    ViewData["Title"] = "Create Recurring Expense";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-plus-circle me-2"></i>Create Recurring Expense
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    @if (TempData["Error"] is string errorMsg)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMsg
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-text-left me-1"></i>Description
+                                </label>
+                                <input asp-for="Description" 
+                                       class="form-control form-control-lg" 
+                                       placeholder="e.g. Netflix Subscription, Gym Membership"
+                                       required 
+                                       maxlength="200" />
+                                <small class="text-muted">What is this recurring expense?</small>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-cash-stack me-1"></i>Amount
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="Amount" 
+                                           type="number" 
+                                           step="0.01" 
+                                           min="0.01"
+                                           class="form-control" 
+                                           placeholder="0.00"
+                                           required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-tag me-1"></i>Category
+                                </label>
+                                <input asp-for="Category" 
+                                       class="form-control form-control-lg" 
+                                       placeholder="e.g. Entertainment, Utilities"
+                                       required 
+                                       maxlength="100"
+                                       list="categoryList" />
+                                <datalist id="categoryList">
+                                    <option value="Entertainment"/>
+                                    <option value="Utilities"/>
+                                    <option value="Transportation"/>
+                                    <option value="Food"/>
+                                    <option value="Health"/>
+                                    <option value="Insurance"/>
+                                    <option value="Subscriptions"/>
+                                    <option value="Other"/>
+                                </datalist>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-arrow-repeat me-1"></i>Frequency
+                                </label>
+                                <select asp-for="Frequency" class="form-select form-select-lg" required>
+                                    <option value="1">Daily</option>
+                                    <option value="2">Weekly</option>
+                                    <option value="3" selected>Monthly</option>
+                                    <option value="4">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-play-circle me-1"></i>Start Date
+                                </label>
+                                <input asp-for="StartDate" 
+                                       type="date"
+                                       class="form-control form-control-lg" 
+                                       required />
+                                <small class="text-muted">When should this start generating?</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-stop-circle me-1"></i>End Date (Optional)
+                                </label>
+                                <input asp-for="EndDate" 
+                                       type="date"
+                                       class="form-control form-control-lg" />
+                                <small class="text-muted">Leave blank for indefinite</small>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info border-0 bg-info bg-opacity-10">
+                            <h6 class="fw-semibold mb-2">
+                                <i class="bi bi-info-circle me-2"></i>How it works
+                            </h6>
+                            <ul class="mb-0 small">
+                                <li>Recurring expenses are generated automatically based on the frequency you choose</li>
+                                <li>You can pause or delete them anytime without affecting past expenses</li>
+                                <li>The system checks every hour for expenses that need to be generated</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-x-circle me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle me-1"></i>Create Recurring Expense
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @* Examples *@
+            <div class="card border-0 bg-light mt-3">
+                <div class="card-body">
+                    <h6 class="fw-semibold mb-3">
+                        <i class="bi bi-lightbulb text-warning me-2"></i>Common Examples
+                    </h6>
+                    <div class="row g-2 small">
+                        <div class="col-md-6">
+                            <strong>Netflix:</strong> $15.99, Monthly, Entertainment
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Gym:</strong> $50, Monthly, Health
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Internet:</strong> $60, Monthly, Utilities
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Car Insurance:</strong> $120, Monthly, Insurance
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
