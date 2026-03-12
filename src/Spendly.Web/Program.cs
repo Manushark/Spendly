@@ -31,6 +31,11 @@ builder.Services.AddHttpClient<DashboardApiClient>(client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+// Recurring expenses API client
+builder.Services.AddHttpClient<RecurringExpenseApiClient>(client => {  
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+});
+
 // Add BudgetApiClient with HttpClient configuration (includes JWT token)
 builder.Services.AddHttpClient<BudgetApiClient>(client => {
     client.BaseAddress = new Uri(apiBaseUrl);
