@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Spendly.Application.DTOs.RecurringExpense;
 using Spendly.Web.Contracts.RecurringExpenses;
 using Spendly.Web.Services;
-using CreateRecurringExpenseDto = Spendly.Web.Contracts.RecurringExpenses.CreateRecurringExpenseDto;
-using RecurringExpenseSummaryDto = Spendly.Web.Contracts.RecurringExpenses.RecurringExpenseSummaryDto;
-using UpdateRecurringExpenseDto = Spendly.Web.Contracts.RecurringExpenses.UpdateRecurringExpenseDto;
 
 namespace Spendly.Web.Controllers
 {
@@ -88,12 +84,22 @@ namespace Spendly.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            // Convertir string a int (Daily=1, Weekly=2, Monthly=3, Yearly=4)
+            var frequencyInt = recurring.Frequency switch
+            {
+                "Daily" => 1,
+                "Weekly" => 2,
+                "Monthly" => 3,
+                "Yearly" => 4,
+                _ => 3  // Default Monthly
+            };
+
             var model = new UpdateRecurringExpenseDto
             {
                 Description = recurring.Description,
                 Amount = recurring.Amount,
                 Category = recurring.Category,
-                Frequency = int.Parse(recurring.Frequency),
+                Frequency = frequencyInt,
                 StartDate = recurring.StartDate,
                 EndDate = recurring.EndDate
             };
