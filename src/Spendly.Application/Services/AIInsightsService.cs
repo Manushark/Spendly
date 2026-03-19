@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Json;
+using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -214,7 +214,7 @@ Focus on: spending patterns, budget adherence, savings opportunities, unusual tr
             if (dailyTotals.Any())
             {
                 var stdDev = CalculateStandardDeviation(dailyTotals);
-                var mean = dailyTotals.Average();
+                var mean = (double)dailyTotals.Average();
 
                 if (mean > 0 && stdDev / mean > 0.5) // Coeficiente de variación > 50%
                     score -= 15;
