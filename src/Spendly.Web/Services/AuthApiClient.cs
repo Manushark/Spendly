@@ -1,4 +1,4 @@
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using Spendly.Web.Contracts.Auth;
 
 namespace Spendly.Web.Services

@@ -13,25 +13,35 @@ namespace Spendly.Web.Controllers
             _authApi = authApi;
         }
 
+        [HttpGet]
         public IActionResult Login() => View(new LoginViewModel());
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            var result = await _authApi.LoginAsync(model);
-
-            if (result == null)
+            try
             {
-                ViewBag.Error = "Invalid email or password.";
+                var result = await _authApi.LoginAsync(model);
+
+                if (result == null)
+                {
+                    ViewBag.Error = "Invalid email or password.";
+                    return View(model);
+                }
+
+                HttpContext.Session.SetString("token", result.Token);
+                HttpContext.Session.SetString("userEmail", model.Email);
+
+                return RedirectToAction("Index", "Expenses");
+            }
+            catch (Exception)
+            {
+                ViewBag.Error = "Could not connect to the server. Please make sure the API is running.";
                 return View(model);
             }
-
-            HttpContext.Session.SetString("token", result.Token);
-            HttpContext.Session.SetString("userEmail", model.Email);
-
-            return RedirectToAction("Index", "Expenses");
         }
 
+        [HttpGet]
         public IActionResult Register() => View(new RegisterViewModel());
 
         [HttpPost]
@@ -43,18 +53,26 @@ namespace Spendly.Web.Controllers
                 return View(model);
             }
 
-            var result = await _authApi.RegisterAsync(model);
-
-            if (result == null)
+            try
             {
-                ViewBag.Error = "Registration failed. Email may already be in use.";
+                var result = await _authApi.RegisterAsync(model);
+
+                if (result == null)
+                {
+                    ViewBag.Error = "Registration failed. Email may already be in use.";
+                    return View(model);
+                }
+
+                HttpContext.Session.SetString("token", result.Token);
+                HttpContext.Session.SetString("userEmail", model.Email);
+
+                return RedirectToAction("Index", "Expenses");
+            }
+            catch (Exception)
+            {
+                ViewBag.Error = "Could not connect to the server. Please make sure the API is running.";
                 return View(model);
             }
-
-            HttpContext.Session.SetString("token", result.Token);
-            HttpContext.Session.SetString("userEmail", model.Email);
-
-            return RedirectToAction("Index", "Expenses");
         }
 
         public IActionResult Logout()

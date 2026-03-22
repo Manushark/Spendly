@@ -1,0 +1,596 @@
+﻿@model Spendly.Application.Services.InsightsSummaryDto
+
+@{
+    ViewData["Title"] = "AI Insights";
+}
+
+<div class="insights-page">
+    <!-- Header -->
+    <div class="insights-header">
+        <div>
+            <h1>
+                <i class="bi bi-stars"></i>
+                AI Insights
+                <span class="badge-new">BETA</span>
+            </h1>
+            <p>Powered by artificial intelligence to help you make smarter financial decisions</p>
+        </div>
+        <button class="btn btn-primary" onclick="refreshInsights()">
+            <i class="bi bi-arrow-clockwise"></i>
+            Refresh Analysis
+        </button>
+    </div>
+
+    <!-- Financial Score -->
+    <div class="score-card">
+        <div class="score-content">
+            <div class="score-label">Financial Health Score</div>
+            <div class="score-value">@Model.OverallScore</div>
+            <div class="score-bar">
+                <div class="score-progress" style="width: @Model.OverallScore%"></div>
+            </div>
+            <div class="score-description">
+                @if (Model.OverallScore >= 80)
+                {
+                        <span class="text-success">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Excellent! You're managing your finances very well.
+                        </span>
+                }
+                else if (Model.OverallScore >= 60)
+                {
+                        <span class="text-warning">
+                            <i class="bi bi-exclamation-circle-fill"></i>
+                            Good, but there's room for improvement.
+                        </span>
+                }
+                else
+                {
+                        <span class="text-danger">
+                            <i class="bi bi-x-circle-fill"></i>
+                            Needs attention. Review the recommendations below.
+                        </span>
+                }
+            </div>
+        </div>
+        <div class="score-visualization">
+            <canvas id="scoreChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="insights-grid">
+
+        <!-- Key Insights -->
+        <div class="insights-section">
+            <div class="section-header">
+                <h2>
+                    <i class="bi bi-lightbulb"></i>
+                    Key Insights
+                </h2>
+            </div>
+            <div class="insights-list">
+                @foreach (var insight in Model.Insights)
+                {
+                        <div class="insight-card insight-@insight.Type">
+                            <div class="insight-icon">
+                            @switch (insight.Type)
+                            {
+                                case "warning":
+                                                <i class="bi bi-exclamation-triangle"></i>
+                                    break;
+                                case "success":
+                                                <i class="bi bi-check-circle"></i>
+                                    break;
+                                default:
+                                                <i class="bi bi-info-circle"></i>
+                                    break;
+                            }
+                            </div>
+                            <div class="insight-content">
+                                <h3>@insight.Title</h3>
+                                <p>@insight.Description</p>
+                            @if (insight.Actionable)
+                            {
+                                        <span class="insight-badge">Actionable</span>
+                            }
+                                <span class="insight-impact">Impact: @insight.Impact</span>
+                            </div>
+                        </div>
+                }
+
+                @if (!Model.Insights.Any())
+                {
+                        <div class="empty-state">
+                            <i class="bi bi-lightbulb"></i>
+                            <p>No insights available yet. Add more expenses to get AI-powered analysis.</p>
+                        </div>
+                }
+            </div>
+        </div>
+
+        <!-- Predictions -->
+        <div class="insights-section">
+            <div class="section-header">
+                <h2>
+                    <i class="bi bi-graph-up-arrow"></i>
+                    Spending Predictions
+                </h2>
+            </div>
+            <div class="predictions-list">
+                @foreach (var prediction in Model.Predictions.Take(5))
+                {
+                        <div class="prediction-item">
+                            <div class="prediction-header">
+                                <span class="prediction-category">@prediction.Category</span>
+                                <span class="prediction-trend trend-@prediction.Trend">
+                                @if (prediction.Trend == "increasing")
+                                {
+                                            <i class="bi bi-arrow-up"></i>
+                                }
+                                else if (prediction.Trend == "decreasing")
+                                {
+                                            <i class="bi bi-arrow-down"></i>
+                                }
+                                else
+                                {
+                                            <i class="bi bi-arrow-right"></i>
+                                }
+                                @prediction.Trend
+                                </span>
+                            </div>
+                            <div class="prediction-amount">
+                                <strong>$@prediction.PredictedAmount.ToString("N2")</strong>
+                                <span class="prediction-confidence">
+                                @((int)(prediction.Confidence * 100))% confidence
+                                </span>
+                            </div>
+                            <div class="prediction-bar">
+                                <div class="prediction-progress" 
+                                     style="width: @((prediction.Confidence * 100))%"></div>
+                            </div>
+                        </div>
+                }
+
+                @if (!Model.Predictions.Any())
+                {
+                        <div class="empty-state-small">
+                            <i class="bi bi-graph-up"></i>
+                            <p>Need more data to generate predictions</p>
+                        </div>
+                }
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="insights-section">
+            <div class="section-header">
+                <h2>
+                    <i class="bi bi-bookmark-star"></i>
+                    Recommendations
+                </h2>
+            </div>
+            <div class="recommendations-list">
+                @foreach (var rec in Model.Recommendations)
+                {
+                        <div class="recommendation-card priority-@rec.Priority">
+                            <div class="recommendation-priority">
+                                <span class="priority-badge">@rec.Priority</span>
+                            </div>
+                            <h3>@rec.Title</h3>
+                            <p>@rec.Description</p>
+                        @if (!string.IsNullOrEmpty(rec.ActionUrl))
+                        {
+                                    <a href="@rec.ActionUrl" class="btn btn-sm btn-primary">
+                                        Take Action
+                                        <i class="bi bi-arrow-right"></i>
+                                    </a>
+                        }
+                        </div>
+                }
+
+                @if (!Model.Recommendations.Any())
+                {
+                        <div class="empty-state-small">
+                            <i class="bi bi-bookmark-check"></i>
+                            <p>You're doing great! No recommendations at the moment.</p>
+                        </div>
+                }
+            </div>
+        </div>
+
+        <!-- Patterns -->
+        <div class="insights-section">
+            <div class="section-header">
+                <h2>
+                    <i class="bi bi-diagram-3"></i>
+                    Spending Patterns
+                </h2>
+            </div>
+            <div class="patterns-list">
+                @foreach (var pattern in Model.Patterns)
+                {
+                        <div class="pattern-item">
+                            <div class="pattern-icon">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </div>
+                            <div class="pattern-content">
+                                <span class="pattern-type">@pattern.Type pattern</span>
+                                <p>@pattern.Description</p>
+                                <span class="pattern-frequency">Occurs @pattern.Frequency</span>
+                            </div>
+                        </div>
+                }
+
+                @if (!Model.Patterns.Any())
+                {
+                        <div class="empty-state-small">
+                            <i class="bi bi-diagram-3"></i>
+                            <p>No patterns detected yet</p>
+                        </div>
+                }
+            </div>
+        </div>
+
+        <!-- Anomalies -->
+        <div class="insights-section">
+            <div class="section-header">
+                <h2>
+                    <i class="bi bi-exclamation-octagon"></i>
+                    Unusual Transactions
+                </h2>
+            </div>
+            <div class="anomalies-list">
+                @foreach (var anomaly in Model.Anomalies.Take(5))
+                {
+                        <div class="anomaly-item severity-@anomaly.Severity">
+                            <div class="anomaly-header">
+                                <span class="anomaly-amount">$@anomaly.Amount.ToString("N2")</span>
+                                <span class="anomaly-date">@anomaly.Date.ToString("MMM dd")</span>
+                            </div>
+                            <div class="anomaly-description">@anomaly.Description</div>
+                            <div class="anomaly-reason">@anomaly.Reason</div>
+                        </div>
+                }
+
+                @if (!Model.Anomalies.Any())
+                {
+                        <div class="empty-state-small">
+                            <i class="bi bi-check-circle"></i>
+                            <p>No unusual transactions detected</p>
+                        </div>
+                }
+            </div>
+        </div>
+
+        <!-- AI Assistant -->
+        <div class="insights-section ai-assistant">
+            <div class="section-header">
+                <h2>
+                    <i class="bi bi-chat-dots"></i>
+                    Ask AI Assistant
+                </h2>
+            </div>
+            <div class="ai-chat">
+                <div class="ai-input-group">
+                    <input type="text" 
+                           class="input-modern" 
+                           placeholder="Ask me anything about your finances..."
+                           id="aiQuestion" />
+                    <button class="btn btn-primary" onclick="askAI()">
+                        <i class="bi bi-send"></i>
+                    </button>
+                </div>
+                <div class="ai-suggestions">
+                    <span>Try asking:</span>
+                    <button class="suggestion-btn" onclick="askAI('How can I save more money?')">
+                        "How can I save more?"
+                    </button>
+                    <button class="suggestion-btn" onclick="askAI('What are my biggest expenses?')">
+                        "Biggest expenses?"
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        <script src="~/lib/chart.js/chart.umd.min.js"></script>
+        <script>
+            // Score Chart
+            const scoreCtx = document.getElementById('scoreChart');
+            if (scoreCtx) {
+                new Chart(scoreCtx, {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: [@Model.OverallScore, 100 - @Model.OverallScore],
+                            backgroundColor: [
+                                'rgb(99, 102, 241)',
+                                'rgb(229, 231, 235)'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        cutout: '75%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { enabled: false }
+                        }
+                    }
+                });
+            }
+
+            function refreshInsights() {
+                window.location.reload();
+            }
+
+            function askAI(question) {
+                const input = document.getElementById('aiQuestion');
+                if (question) input.value = question;
+
+                alert('AI Assistant coming soon! This feature will allow you to ask questions about your finances.');
+            }
+        </script>
+}
+
+<style>
+/* Insights Page Styles */
+.insights-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-6);
+}
+
+.insights-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: var(--space-8);
+}
+
+.insights-header h1 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 2.5rem;
+    margin-bottom: var(--space-2);
+}
+
+.insights-header p {
+    color: var(--text-secondary);
+    font-size: 1.125rem;
+}
+
+.score-card {
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    color: white;
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: var(--space-8);
+    margin-bottom: var(--space-6);
+    box-shadow: var(--shadow-xl);
+}
+
+.score-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.score-value {
+    font-size: 4rem;
+    font-weight: 800;
+    margin: var(--space-2) 0;
+}
+
+.score-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin: var(--space-4) 0;
+}
+
+.score-progress {
+    height: 100%;
+    background: white;
+    border-radius: var(--radius-full);
+    transition: width 1s ease;
+}
+
+.score-visualization {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: var(--space-6);
+}
+
+.insights-section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+}
+
+.section-header {
+    margin-bottom: var(--space-4);
+}
+
+.section-header h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.insight-card {
+    display: flex;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-3);
+    border-left: 4px solid;
+}
+
+.insight-warning {
+    background: var(--warning-50);
+    border-color: var(--warning-500);
+}
+
+.insight-success {
+    background: var(--success-50);
+    border-color: var(--success-500);
+}
+
+.insight-info {
+    background: var(--info-50);
+    border-color: var(--info-500);
+}
+
+.insight-icon {
+    font-size: 1.5rem;
+}
+
+.insight-content h3 {
+    font-size: 1rem;
+    margin-bottom: var(--space-2);
+}
+
+.insight-content p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: var(--space-2);
+}
+
+.insight-badge, .insight-impact {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: rgba(0, 0, 0, 0.1);
+    margin-right: var(--space-2);
+}
+
+.empty-state {
+    text-align: center;
+    padding: var(--space-8);
+    color: var(--text-tertiary);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: var(--space-4);
+    opacity: 0.3;
+}
+
+.prediction-item {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.prediction-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+}
+
+.prediction-category {
+    font-weight: 600;
+}
+
+.prediction-trend {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+}
+
+.trend-increasing {
+    background: var(--danger-50);
+    color: var(--danger-600);
+}
+
+.trend-decreasing {
+    background: var(--success-50);
+    color: var(--success-600);
+}
+
+.recommendation-card {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-light);
+    margin-bottom: var(--space-3);
+}
+
+.priority-high {
+    border-color: var(--danger-500);
+}
+
+.priority-badge {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: var(--primary-100);
+    color: var(--primary-700);
+    text-transform: uppercase;
+}
+
+.ai-chat {
+    padding: var(--space-4);
+}
+
+.ai-input-group {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.ai-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.suggestion-btn {
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.suggestion-btn:hover {
+    background: var(--primary-100);
+    color: var(--primary-600);
+}
+
+@@media (max-width: 768px) {
+    .insights-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .score-card {
+        grid-template-columns: 1fr;
+    }
+
+    .score-visualization {
+        max-width: 200px;
+        margin: 0 auto;
+    }
+}
+</style>

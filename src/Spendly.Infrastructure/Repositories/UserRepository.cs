@@ -23,5 +23,11 @@ namespace Spendly.Infrastructure.Repositories
             _context.Users.Add(user);
             _context.SaveChanges();
         }
+
+        public void Update(User user)
+        {
+            _context.Users.Update(user);
+            _context.SaveChanges();
+        }
     }
 }
