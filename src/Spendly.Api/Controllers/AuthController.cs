@@ -21,6 +21,10 @@ namespace Spendly.Api.Controllers
         public IActionResult Login([FromBody] LoginDto dto)
         {
             var result = _loginUseCase.Execute(dto);
+            if (result == null) 
+            {
+                return Unauthorized(new { error = "Invalid credentials" });
+            }
             return Ok(result);
         }
 
@@ -28,6 +32,10 @@ namespace Spendly.Api.Controllers
         public IActionResult Register([FromBody] RegisterDto dto)
         {
             var result = _registerUseCase.Execute(dto);
+            if (result == null)
+            {
+                return BadRequest(new { error = "Registration failed" });
+            }
             return Ok(result);
         }
     }

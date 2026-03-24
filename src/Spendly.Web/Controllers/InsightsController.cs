@@ -1,26 +1,29 @@
-﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Spendly.Api.Extensions;
-using Spendly.Application.Services;
-using Spendly.Domain.Entities;
 
-[Authorize]
-[ApiController]
-[Route("api/[controller]")]
-public class InsightsController : ControllerBase
+namespace Spendly.Web.Controllers
 {
-    private readonly AIInsightsService _aiService;
-
-    public InsightsController(AIInsightsService aiService)
+    public class InsightsController : Controller
     {
-        _aiService = aiService;
-    }
+        private readonly InsightsApiClient _insightsClient;
 
-    [HttpGet]
-    public async Task<IActionResult> GetInsights()
-    {
-        var userId = User.GetUserId();
-        var insights = await _aiService.GenerateInsightsAsync(userId);
-        return Ok(insights);
+        public InsightsController(InsightsApiClient insightsClient)
+        {
+            _insightsClient = insightsClient;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            try
+            {
+                var insights = await _insightsClient.GetInsightsAsync();
+                return View(insights);
+            }
+            catch (Exception)
+            {
+                ViewBag.Error = "Could not load insights. Please try again later.";
+                return View(null);
+            }
+        }
     }
 }

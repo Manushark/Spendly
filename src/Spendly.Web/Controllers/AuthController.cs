@@ -7,14 +7,21 @@ namespace Spendly.Web.Controllers
     public class AuthController : Controller
     {
         private readonly AuthApiClient _authApi;
+        private readonly IConfiguration _config;
 
-        public AuthController(AuthApiClient authApi)
+        public AuthController(AuthApiClient authApi, IConfiguration config)
         {
             _authApi = authApi;
+            _config = config;
         }
 
         [HttpGet]
-        public IActionResult Login() => View(new LoginViewModel());
+        public IActionResult Login()
+        {
+            var apiBase = _config["ApiBaseUrl"]?.TrimEnd('/') ?? "https://localhost:7267";
+            ViewBag.GoogleLoginUrl = $"{apiBase}/api/auth/google/login";
+            return View(new LoginViewModel());
+        }
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
