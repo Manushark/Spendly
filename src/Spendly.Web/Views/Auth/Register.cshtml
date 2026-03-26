@@ -1,48 +1,367 @@
 @model Spendly.Web.Contracts.Auth.RegisterViewModel
-
 @{
     ViewData["Title"] = "Register";
+    Layout = null;
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white text-center">
-                    <h4><i class="bi bi-person-plus"></i> Create Account</h4>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crear Cuenta - Spendly</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Modern Design CSS -->
+    <link rel="stylesheet" href="~/css/modern-design.css" />
+
+    <!-- Dark Mode Script -->
+    <script src="~/js/dark-mode.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-secondary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 1100px;
+            width: 100%;
+            min-height: 600px;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-2xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-2xl);
+            border: 1px solid var(--border-light);
+        }
+
+        .auth-main {
+            padding: var(--space-12);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-8);
+        }
+
+        .auth-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .auth-logo-text {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .auth-header {
+            margin-bottom: var(--space-6);
+        }
+
+        .auth-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .auth-header p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+        }
+
+        .auth-error {
+            background: var(--danger-50);
+            color: var(--danger-600);
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            margin-bottom: var(--space-4);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .form-group label {
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .form-group input {
+            padding: var(--space-3) var(--space-4);
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-md);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-family: var(--font-sans);
+            transition: all 150ms ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: var(--space-4);
+            background: linear-gradient(135deg, var(--success-500) 0%, var(--success-600) 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: 0.9375rem;
+            font-family: var(--font-sans);
+            cursor: pointer;
+            transition: all 150ms ease;
+            margin-top: var(--space-4);
+            letter-spacing: 0.01em;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+            opacity: 0.95;
+        }
+
+        .auth-footer {
+            margin-top: var(--space-6);
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .auth-footer a {
+            color: var(--primary-500);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-sidebar {
+            background: linear-gradient(135deg, var(--success-500) 0%, #047857 100%);
+            padding: var(--space-12);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+        }
+
+        .sidebar-content h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: var(--space-6);
+            line-height: 1.2;
+            color: white;
+        }
+
+        .sidebar-content p {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: var(--space-8);
+            color: rgba(255,255,255,0.9);
+        }
+
+        .benefits {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .benefit {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: 0.9375rem;
+        }
+
+        .benefit-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(255,255,255,0.2);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+        }
+
+        .theme-toggle-float {
+            position: fixed;
+            top: var(--space-4);
+            right: var(--space-4);
+            width: 40px;
+            height: 40px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            box-shadow: var(--shadow-md);
+            transition: all 150ms ease;
+            z-index: 100;
+        }
+
+        .theme-toggle-float:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        @@media (max-width: 992px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+            }
+            .auth-sidebar { display: none; }
+        }
+
+        @@media (max-width: 576px) {
+            .auth-main { padding: var(--space-6); }
+            .auth-header h1 { font-size: 1.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <button id="theme-toggle" class="theme-toggle-float" aria-label="Toggle dark mode">
+        <span>🌙</span>
+    </button>
+
+    <div class="auth-container">
+        <div class="auth-main">
+            <div class="auth-logo">
+                <div class="auth-logo-icon">💰</div>
+                <span class="auth-logo-text">Spendly</span>
+            </div>
+
+            <div class="auth-header">
+                <h1>Crea tu cuenta</h1>
+                <p>Comienza a controlar tus gastos hoy</p>
+            </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="auth-error">
+                    ⚠️ @ViewBag.Error
                 </div>
-                <div class="card-body p-4">
-                    @if (ViewBag.Error != null)
-                    {
-                        <div class="alert alert-danger">
-                            <i class="bi bi-exclamation-triangle"></i> @ViewBag.Error
-                        </div>
-                    }
+            }
 
-                    <form asp-action="Register" method="post">
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="Email" class="form-control" placeholder="your@email.com" required />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="password" name="Password" class="form-control" placeholder="Min. 6 characters" required minlength="6" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Confirm Password</label>
-                            <input type="password" name="ConfirmPassword" class="form-control" placeholder="Repeat password" required />
-                        </div>
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="bi bi-person-plus"></i> Register
-                        </button>
-                    </form>
+            <form asp-action="Register" method="post" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="Email" class="form-control" placeholder="tu@email.com" required />
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="Password" placeholder="Mínimo 6 caracteres" required minlength="6" />
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmar Contraseña</label>
+                    <input type="password" id="confirmPassword" name="ConfirmPassword" placeholder="Repite tu contraseña" required />
+                </div>
+                <button type="submit" class="submit-btn">Crear Cuenta</button>
+            </form>
 
-                    <hr />
-                    <p class="text-center mb-0">
-                        Already have an account? <a asp-action="Login">Login here</a>
-                    </p>
+            <div class="auth-footer">
+                ¿Ya tienes cuenta? <a asp-controller="Auth" asp-action="Login">Inicia sesión</a>
+            </div>
+        </div>
+
+        <div class="auth-sidebar">
+            <div class="sidebar-content">
+                <h2>Toma el control de tus finanzas</h2>
+                <p>Únete a Spendly y empieza a tomar decisiones financieras más inteligentes.</p>
+
+                <div class="benefits">
+                    <div class="benefit">
+                        <div class="benefit-icon">✓</div>
+                        <span>Dashboard con métricas en tiempo real</span>
+                    </div>
+                    <div class="benefit">
+                        <div class="benefit-icon">✓</div>
+                        <span>Seguimiento de gastos por categoría</span>
+                    </div>
+                    <div class="benefit">
+                        <div class="benefit-icon">✓</div>
+                        <span>Presupuestos personalizables</span>
+                    </div>
+                    <div class="benefit">
+                        <div class="benefit-icon">✓</div>
+                        <span>Gastos recurrentes automatizados</span>
+                    </div>
+                    <div class="benefit">
+                        <div class="benefit-icon">✓</div>
+                        <span>100% gratis</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <script>
+        const toggleBtn = document.getElementById('theme-toggle');
+        const updateIcon = () => {
+            const theme = document.documentElement.getAttribute('data-theme');
+            toggleBtn.querySelector('span').textContent = theme === 'dark' ? '☀️' : '🌙';
+        };
+        toggleBtn.addEventListener('click', () => {
+            window.DarkMode.toggle();
+            updateIcon();
+        });
+        document.addEventListener('DOMContentLoaded', updateIcon);
+    </script>
+</body>
+</html>

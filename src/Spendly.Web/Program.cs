@@ -1,4 +1,4 @@
-﻿using Spendly.Web.Services;
+using Spendly.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,12 +38,6 @@ builder.Services.AddHttpClient<AuthApiClient>(client =>
 
 // Dashboard API client
 builder.Services.AddHttpClient<DashboardApiClient>(client =>
-{
-    client.BaseAddress = new Uri(apiBaseUrl);
-}).ConfigurePrimaryHttpMessageHandler(CreateApiHandler);
-
-// Insights API client
-builder.Services.AddHttpClient<InsightsApiClient>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
 }).ConfigurePrimaryHttpMessageHandler(CreateApiHandler);

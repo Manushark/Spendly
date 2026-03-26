@@ -1,144 +1,228 @@
-﻿@{
+@{
     ViewData["Title"] = "Home";
     var token = Context.Session.GetString("token");
 }
 
 <style>
-    body {
-        background-color: #f8f9fc;
-    }
-
     .hero {
-        padding: 120px 0;
-        background: linear-gradient(120deg, #4e73df, #224abe);
+        padding: 100px 0 80px;
+        background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
         color: white;
+        text-align: center;
     }
 
-        .hero h1 {
-            font-size: 3.2rem;
-            font-weight: 700;
-        }
+    .hero h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: var(--space-4);
+        color: white;
+        line-height: 1.1;
+    }
 
-        .hero p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
+    .hero p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 600px;
+        margin: 0 auto var(--space-8);
+    }
 
-    .btn-primary-custom {
-        background-color: white;
-        color: #224abe;
-        border-radius: 50px;
-        padding: 12px 32px;
-        font-weight: 600;
+    .btn-hero {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        background: white;
+        color: var(--primary-600);
+        border-radius: var(--radius-full);
+        padding: var(--space-4) var(--space-8);
+        font-weight: 700;
+        font-size: 1rem;
         border: none;
+        text-decoration: none;
+        transition: all 200ms ease;
+        box-shadow: var(--shadow-lg);
     }
 
-        .btn-primary-custom:hover {
-            background-color: #e2e6ea;
-        }
+    .btn-hero:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+        color: var(--primary-700);
+    }
+
+    .benefits-section {
+        padding: 80px 0;
+        background: var(--bg-primary);
+    }
+
+    .benefits-section h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: var(--space-2);
+        color: var(--text-primary);
+    }
+
+    .benefits-subtitle {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-bottom: var(--space-10);
+        font-size: 1.05rem;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--space-6);
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 var(--space-4);
+    }
 
     .feature-card {
-        border: none;
-        border-radius: 15px;
-        transition: all 0.3s ease;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-xl);
+        padding: var(--space-8);
+        text-align: center;
+        transition: all 300ms ease;
     }
 
-        .feature-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-        }
+    .feature-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-lg);
+    }
 
-    .section-padding {
+    .feature-card .emoji {
+        font-size: 2.5rem;
+        margin-bottom: var(--space-4);
+    }
+
+    .feature-card h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: var(--space-2);
+        color: var(--text-primary);
+    }
+
+    .feature-card p {
+        color: var(--text-secondary);
+        font-size: 0.9375rem;
+        line-height: 1.5;
+    }
+
+    .cta-section {
         padding: 80px 0;
+        text-align: center;
+        background: var(--bg-secondary);
+    }
+
+    .cta-section h3 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: var(--space-2);
+        color: var(--text-primary);
+    }
+
+    .cta-section p {
+        color: var(--text-secondary);
+        margin-bottom: var(--space-6);
+        font-size: 1.05rem;
+    }
+
+    .btn-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+        color: #ffffff;
+        border-radius: var(--radius-lg);
+        padding: var(--space-4) var(--space-8);
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        text-decoration: none;
+        transition: all 200ms ease;
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: #ffffff;
     }
 </style>
 
 <!-- HERO -->
-<section class="hero text-center">
+<section class="hero">
     <div class="container">
-        <h1>Take Control of Your Spending</h1>
-        <p class="mt-4 mb-5">
-            Track your expenses, understand your habits, and make smarter financial decisions — all in one place.
+        <h1>Toma el Control de tus Gastos</h1>
+        <p>
+            Rastrea tus gastos, entiende tus hábitos y toma decisiones financieras más inteligentes — todo en un solo lugar.
         </p>
 
         @if (string.IsNullOrEmpty(token))
         {
-            <a asp-controller="Auth" asp-action="Login" class="btn btn-primary-custom me-3">
-                Get Started
+            <a asp-controller="Auth" asp-action="Login" class="btn-hero">
+                Comenzar Gratis →
             </a>
         }
         else
         {
-            <a asp-controller="Expenses" asp-action="Index" class="btn btn-primary-custom">
-                Go to Dashboard
+            <a asp-controller="Dashboard" asp-action="Index" class="btn-hero">
+                Ir al Dashboard →
             </a>
         }
     </div>
 </section>
 
 <!-- BENEFITS -->
-<section class="section-padding bg-white">
-    <div class="container text-center">
-        <h2 class="fw-bold mb-3">Simple. Clear. Effective.</h2>
-        <p class="text-muted mb-5">
-            Designed to help you focus on what matters — your financial clarity.
+<section class="benefits-section">
+    <div class="container">
+        <h2>Simple. Claro. Efectivo.</h2>
+        <p class="benefits-subtitle">
+            Diseñado para ayudarte a enfocarte en lo que importa — tu claridad financiera.
         </p>
 
-        <div class="row g-4">
-
-            <div class="col-md-4">
-                <div class="card feature-card shadow-sm p-4 h-100">
-                    <h5 class="mb-3">📊 Clear Overview</h5>
-                    <p class="text-muted">
-                        See all your expenses organized and easy to understand at a glance.
-                    </p>
-                </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="emoji">📊</div>
+                <h3>Vista Clara</h3>
+                <p>
+                    Ve todos tus gastos organizados y fáciles de entender de un vistazo.
+                </p>
             </div>
 
-            <div class="col-md-4">
-                <div class="card feature-card shadow-sm p-4 h-100">
-                    <h5 class="mb-3">⚡ Fast Tracking</h5>
-                    <p class="text-muted">
-                        Add and manage expenses in seconds without unnecessary steps.
-                    </p>
-                </div>
+            <div class="feature-card">
+                <div class="emoji">⚡</div>
+                <h3>Seguimiento Rápido</h3>
+                <p>
+                    Agrega y gestiona gastos en segundos sin pasos innecesarios.
+                </p>
             </div>
 
-            <div class="col-md-4">
-                <div class="card feature-card shadow-sm p-4 h-100">
-                    <h5 class="mb-3">🔒 Secure Access</h5>
-                    <p class="text-muted">
-                        Your data stays private and protected.
-                    </p>
-                </div>
+            <div class="feature-card">
+                <div class="emoji">🔒</div>
+                <h3>Acceso Seguro</h3>
+                <p>
+                    Tus datos se mantienen privados y protegidos.
+                </p>
             </div>
-
         </div>
     </div>
 </section>
 
 <!-- CALL TO ACTION -->
-<section class="section-padding text-center">
-    <div class="container">
-        <h3 class="fw-bold mb-3">Start managing your expenses today</h3>
-        <p class="text-muted mb-4">
-            Build better financial habits with clarity and confidence.
-        </p>
-
-        @if (string.IsNullOrEmpty(token))
-        {
-            <a asp-controller="Auth" asp-action="Register" class="btn btn-primary btn-lg px-5">
-                Create Account
+@if (string.IsNullOrEmpty(token))
+{
+    <section class="cta-section">
+        <div class="container">
+            <h3>Empieza a gestionar tus gastos hoy</h3>
+            <p>
+                Construye mejores hábitos financieros con claridad y confianza.
+            </p>
+            <a asp-controller="Auth" asp-action="Register" class="btn-cta">
+                Crear Cuenta Gratis
             </a>
-        }
-    </div>
-</section>
-
-<!-- FOOTER -->
-<footer class="bg-light py-4 text-center">
-    <div class="container">
-        <small class="text-muted">
-            © @DateTime.Now.Year Spendly. All rights reserved.
-        </small>
-    </div>
-</footer>
+        </div>
+    </section>
+}

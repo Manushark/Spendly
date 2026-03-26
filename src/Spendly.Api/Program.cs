@@ -92,9 +92,6 @@ builder.Configuration.AddUserSecrets<Program>();
 // Dashboard use cases
 builder.Services.AddScoped<GetDashboardStatsUseCase>();
 
-// AI Insights Service (with HttpClient)
-builder.Services.AddHttpClient<AIInsightsService>();
-
 // Use Cases - Auth
 builder.Services.AddScoped<LoginUseCase>();
 builder.Services.AddScoped<RegisterUseCase>();
@@ -169,9 +166,11 @@ if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientS
             return Task.CompletedTask;
         };
     });
-
-    builder.Services.AddScoped<GoogleAuthService>();
 }
+
+// Always register GoogleAuthService so DI doesn't crash 
+// (controller checks if Google is configured before using it)
+builder.Services.AddScoped<GoogleAuthService>();
 
 #endregion
 

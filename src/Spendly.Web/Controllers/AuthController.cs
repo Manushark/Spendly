@@ -18,8 +18,17 @@ namespace Spendly.Web.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            // If already logged in, redirect to dashboard
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("token")))
+                return RedirectToAction("Index", "Dashboard");
+
             var apiBase = _config["ApiBaseUrl"]?.TrimEnd('/') ?? "https://localhost:7267";
             ViewBag.GoogleLoginUrl = $"{apiBase}/api/auth/google/login";
+
+            // Prevent caching of login page
+            Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
+            Response.Headers["Pragma"] = "no-cache";
+
             return View(new LoginViewModel());
         }
 
@@ -32,31 +41,46 @@ namespace Spendly.Web.Controllers
 
                 if (result == null)
                 {
-                    ViewBag.Error = "Invalid email or password.";
+                    ViewBag.Error = "Email o contraseña inválidos.";
+                    var apiBase = _config["ApiBaseUrl"]?.TrimEnd('/') ?? "https://localhost:7267";
+                    ViewBag.GoogleLoginUrl = $"{apiBase}/api/auth/google/login";
                     return View(model);
                 }
 
                 HttpContext.Session.SetString("token", result.Token);
                 HttpContext.Session.SetString("userEmail", model.Email);
 
-                return RedirectToAction("Index", "Expenses");
+                return RedirectToAction("Index", "Dashboard");
             }
             catch (Exception)
             {
-                ViewBag.Error = "Could not connect to the server. Please make sure the API is running.";
+                ViewBag.Error = "No se pudo conectar al servidor. Asegúrate de que el API esté corriendo.";
+                var apiBase = _config["ApiBaseUrl"]?.TrimEnd('/') ?? "https://localhost:7267";
+                ViewBag.GoogleLoginUrl = $"{apiBase}/api/auth/google/login";
                 return View(model);
             }
         }
 
         [HttpGet]
-        public IActionResult Register() => View(new RegisterViewModel());
+        public IActionResult Register()
+        {
+            // If already logged in, redirect to dashboard
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("token")))
+                return RedirectToAction("Index", "Dashboard");
+
+            // Prevent caching
+            Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
+            Response.Headers["Pragma"] = "no-cache";
+
+            return View(new RegisterViewModel());
+        }
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (model.Password != model.ConfirmPassword)
             {
-                ViewBag.Error = "Passwords do not match.";
+                ViewBag.Error = "Las contraseñas no coinciden.";
                 return View(model);
             }
 
@@ -66,18 +90,18 @@ namespace Spendly.Web.Controllers
 
                 if (result == null)
                 {
-                    ViewBag.Error = "Registration failed. Email may already be in use.";
+                    ViewBag.Error = "Registro fallido. El email puede estar en uso.";
                     return View(model);
                 }
 
                 HttpContext.Session.SetString("token", result.Token);
                 HttpContext.Session.SetString("userEmail", model.Email);
 
-                return RedirectToAction("Index", "Expenses");
+                return RedirectToAction("Index", "Dashboard");
             }
             catch (Exception)
             {
-                ViewBag.Error = "Could not connect to the server. Please make sure the API is running.";
+                ViewBag.Error = "No se pudo conectar al servidor. Asegúrate de que el API esté corriendo.";
                 return View(model);
             }
         }

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -18,6 +18,262 @@
 
     <!-- Dark Mode Script (must be in head to prevent flash) -->
     <script src="~/js/dark-mode.js"></script>
+
+    <style>
+    /* ===================================
+       MODERN NAVBAR STYLES
+       =================================== */
+    .navbar-modern {
+        background: var(--bg-elevated);
+        border-bottom: 1px solid var(--border-light);
+        padding: var(--space-3) 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .navbar-content {
+        display: flex;
+        align-items: center;
+        gap: var(--space-8);
+    }
+
+    .navbar-brand-modern {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        text-decoration: none;
+        transition: transform var(--transition-base);
+    }
+
+    .navbar-brand-modern:hover {
+        transform: scale(1.02);
+    }
+
+    .logo-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+    }
+
+    .logo-text {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text-primary);
+    }
+
+    .navbar-links {
+        display: flex;
+        gap: var(--space-2);
+        flex: 1;
+    }
+
+    .nav-link-modern {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-3);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: all var(--transition-base);
+        position: relative;
+    }
+
+    .nav-link-modern:hover {
+        color: var(--text-primary);
+        background: var(--bg-tertiary);
+    }
+
+    .nav-link-modern.active {
+        color: var(--primary-600);
+        background: var(--primary-50);
+    }
+
+    [data-theme="dark"] .nav-link-modern.active {
+        background: rgba(99, 102, 241, 0.1);
+    }
+
+    .navbar-actions {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+    }
+
+    .btn-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all var(--transition-base);
+    }
+
+    .btn-icon:hover {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-full);
+        border: 2px solid var(--border-light);
+        background: transparent;
+        cursor: pointer;
+        transition: all var(--transition-base);
+        padding: 0;
+    }
+
+    .user-avatar:hover {
+        border-color: var(--primary-500);
+        transform: scale(1.05);
+    }
+
+    .avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .user-dropdown {
+        min-width: 240px;
+        border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-xl);
+        border-radius: var(--radius-lg);
+        padding: var(--space-2);
+        background: var(--bg-elevated);
+    }
+
+    .user-info {
+        padding: var(--space-2);
+    }
+
+    .user-email {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .user-plan {
+        font-size: 0.75rem;
+        color: var(--text-tertiary);
+    }
+
+    .user-dropdown .dropdown-item {
+        padding: var(--space-2) var(--space-3);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        color: var(--text-secondary);
+        transition: all var(--transition-fast);
+    }
+
+    .user-dropdown .dropdown-item:hover {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+    }
+
+    .user-dropdown .dropdown-item.text-danger:hover {
+        background: var(--danger-50);
+    }
+
+    /* ===================================
+       MAIN CONTENT
+       =================================== */
+    .main-content {
+        min-height: calc(100vh - 200px);
+        padding: var(--space-8) 0;
+    }
+
+    /* ===================================
+       FOOTER
+       =================================== */
+    .footer-modern {
+        background: var(--bg-elevated);
+        border-top: 1px solid var(--border-light);
+        padding: var(--space-8) 0;
+        margin-top: var(--space-16);
+    }
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--space-4);
+    }
+
+    .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .footer-links {
+        display: flex;
+        gap: var(--space-6);
+    }
+
+    .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: color var(--transition-base);
+    }
+
+    .footer-links a:hover {
+        color: var(--primary-600);
+    }
+
+    .footer-copyright {
+        color: var(--text-tertiary);
+        font-size: 0.875rem;
+    }
+
+    /* ===================================
+       RESPONSIVE
+       =================================== */
+    @@media (max-width: 768px) {
+        .navbar-links {
+            display: none;
+        }
+
+        .navbar-content {
+            gap: var(--space-4);
+        }
+
+        .footer-content {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+    </style>
 </head>
 <body>
     <!-- Modern Navbar -->
@@ -30,7 +286,6 @@
                         <i class="bi bi-wallet2"></i>
                     </div>
                     <span class="logo-text">Spendly</span>
-                    <span class="logo-badge">AI</span>
                 </a>
 
                 <!-- Main Navigation -->
@@ -52,10 +307,6 @@
                             <a class="nav-link-modern" asp-controller="RecurringExpenses" asp-action="Index">
                                 <i class="bi bi-arrow-repeat"></i>
                                 <span>Recurring</span>
-                            </a>
-                            <a class="nav-link-modern" asp-controller="Insights" asp-action="Index">
-                                <i class="bi bi-graph-up"></i>
-                                <span>Insights <span class="badge-new">AI</span></span>
                             </a>
                         </div>
                 }
@@ -98,12 +349,6 @@
                                         <a class="dropdown-item" href="#">
                                             <i class="bi bi-bell"></i>
                                             Notifications
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#">
-                                            <i class="bi bi-credit-card"></i>
-                                            Billing
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
@@ -162,279 +407,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-
-<style>
-/* ===================================
-   MODERN NAVBAR STYLES
-   =================================== */
-.navbar-modern {
-    background: var(--bg-elevated);
-    border-bottom: 1px solid var(--border-light);
-    padding: var(--space-3) 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
-
-.navbar-content {
-    display: flex;
-    align-items: center;
-    gap: var(--space-8);
-}
-
-.navbar-brand-modern {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    text-decoration: none;
-    transition: transform var(--transition-base);
-}
-
-.navbar-brand-modern:hover {
-    transform: scale(1.02);
-}
-
-.logo-icon {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.25rem;
-}
-
-.logo-text {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: var(--text-primary);
-}
-
-.logo-badge {
-    background: linear-gradient(135deg, #f59e0b, #ef4444);
-    color: white;
-    padding: 2px 8px;
-    border-radius: var(--radius-full);
-    font-size: 0.625rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}
-
-.navbar-links {
-    display: flex;
-    gap: var(--space-2);
-    flex: 1;
-}
-
-.nav-link-modern {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-md);
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.875rem;
-    transition: all var(--transition-base);
-    position: relative;
-}
-
-.nav-link-modern:hover {
-    color: var(--text-primary);
-    background: var(--bg-tertiary);
-}
-
-.nav-link-modern.active {
-    color: var(--primary-600);
-    background: var(--primary-50);
-}
-
-[data-theme="dark"] .nav-link-modern.active {
-    background: rgba(99, 102, 241, 0.1);
-}
-
-.badge-new {
-    background: linear-gradient(135deg, #f59e0b, #ef4444);
-    color: white;
-    padding: 2px 6px;
-    border-radius: var(--radius-full);
-    font-size: 0.625rem;
-    font-weight: 700;
-    margin-left: var(--space-1);
-}
-
-.navbar-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-}
-
-.btn-icon {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    border-radius: var(--radius-md);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.btn-icon:hover {
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-}
-
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-full);
-    border: 2px solid var(--border-light);
-    background: transparent;
-    cursor: pointer;
-    transition: all var(--transition-base);
-    padding: 0;
-}
-
-.user-avatar:hover {
-    border-color: var(--primary-500);
-    transform: scale(1.05);
-}
-
-.avatar-placeholder {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-    font-size: 1rem;
-}
-
-.user-dropdown {
-    min-width: 240px;
-    border: 1px solid var(--border-light);
-    box-shadow: var(--shadow-xl);
-    border-radius: var(--radius-lg);
-    padding: var(--space-2);
-    background: var(--bg-elevated);
-}
-
-.user-info {
-    padding: var(--space-2);
-}
-
-.user-email {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-.user-plan {
-    font-size: 0.75rem;
-    color: var(--text-tertiary);
-}
-
-.user-dropdown .dropdown-item {
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    color: var(--text-secondary);
-    transition: all var(--transition-fast);
-}
-
-.user-dropdown .dropdown-item:hover {
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-}
-
-.user-dropdown .dropdown-item.text-danger:hover {
-    background: var(--danger-50);
-}
-
-/* ===================================
-   MAIN CONTENT
-   =================================== */
-.main-content {
-    min-height: calc(100vh - 200px);
-    padding: var(--space-8) 0;
-}
-
-/* ===================================
-   FOOTER
-   =================================== */
-.footer-modern {
-    background: var(--bg-elevated);
-    border-top: 1px solid var(--border-light);
-    padding: var(--space-8) 0;
-    margin-top: var(--space-16);
-}
-
-.footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--space-4);
-}
-
-.footer-brand {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-.footer-links {
-    display: flex;
-    gap: var(--space-6);
-}
-
-.footer-links a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-size: 0.875rem;
-    transition: color var(--transition-base);
-}
-
-.footer-links a:hover {
-    color: var(--primary-600);
-}
-
-.footer-copyright {
-    color: var(--text-tertiary);
-    font-size: 0.875rem;
-}
-
-/* ===================================
-   RESPONSIVE
-   =================================== */
-@@media (max-width: 768px) {
-    .navbar-links {
-        display: none;
-    }
-
-    .navbar-content {
-        gap: var(--space-4);
-    }
-
-    .footer-content {
-        flex-direction: column;
-        text-align: center;
-    }
-}
-</style>

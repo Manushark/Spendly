@@ -19,6 +19,9 @@
     <!-- Modern Design CSS -->
     <link rel="stylesheet" href="~/css/modern-design.css" />
 
+    <!-- Dark Mode Script -->
+    <script src="~/js/dark-mode.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -27,8 +30,8 @@
         }
 
         body {
-            font-family: var(--font-body);
-            background: var(--bg-primary);
+            font-family: var(--font-sans);
+            background: var(--bg-secondary);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -38,13 +41,14 @@
         .auth-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            max-width: 1200px;
+            max-width: 1100px;
             width: 100%;
             min-height: 600px;
             background: var(--bg-elevated);
             border-radius: var(--radius-2xl);
             overflow: hidden;
             box-shadow: var(--shadow-2xl);
+            border: 1px solid var(--border-light);
         }
 
         /* Left Side - Login Form */
@@ -53,6 +57,31 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+        }
+
+        .auth-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-8);
+        }
+
+        .auth-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .auth-logo-text {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
         }
 
         .auth-header {
@@ -71,6 +100,17 @@
             font-size: 0.9375rem;
         }
 
+        /* Error alert */
+        .auth-error {
+            background: var(--danger-50);
+            color: var(--danger-600);
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            margin-bottom: var(--space-4);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
         /* Google Login Button */
         .google-btn {
             display: flex;
@@ -79,7 +119,7 @@
             gap: var(--space-3);
             width: 100%;
             padding: var(--space-4);
-            border: 1px solid var(--border-secondary);
+            border: 1px solid var(--border-light);
             border-radius: var(--radius-lg);
             background: var(--bg-primary);
             color: var(--text-primary);
@@ -91,10 +131,11 @@
         }
 
         .google-btn:hover {
-            background: var(--bg-secondary);
-            border-color: var(--border-primary);
+            background: var(--bg-tertiary);
+            border-color: var(--border-medium);
             transform: translateY(-1px);
             box-shadow: var(--shadow-md);
+            color: var(--text-primary);
         }
 
         .google-icon {
@@ -116,7 +157,7 @@
             content: "";
             flex: 1;
             height: 1px;
-            background: var(--border-secondary);
+            background: var(--border-light);
         }
 
         /* Traditional Login Form */
@@ -139,19 +180,24 @@
         }
 
         .form-group input {
-            padding: var(--space-3);
-            border: 1px solid var(--border-secondary);
+            padding: var(--space-3) var(--space-4);
+            border: 1.5px solid var(--border-light);
             border-radius: var(--radius-md);
             background: var(--bg-primary);
             color: var(--text-primary);
             font-size: 0.9375rem;
+            font-family: var(--font-sans);
             transition: all 150ms ease;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: var(--primary-500);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-tertiary);
         }
 
         .form-actions {
@@ -171,7 +217,7 @@
 
         .forgot-password {
             font-size: 0.875rem;
-            color: var(--primary);
+            color: var(--primary-500);
             text-decoration: none;
             font-weight: 500;
         }
@@ -183,18 +229,21 @@
         .submit-btn {
             width: 100%;
             padding: var(--space-4);
-            background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+            color: #ffffff;
             border: none;
             border-radius: var(--radius-lg);
             font-weight: 600;
             font-size: 0.9375rem;
+            font-family: var(--font-sans);
             cursor: pointer;
             transition: all 150ms ease;
             margin-top: var(--space-4);
+            letter-spacing: 0.01em;
         }
 
         .submit-btn:hover {
+            background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
             transform: translateY(-1px);
             box-shadow: var(--shadow-lg);
         }
@@ -207,7 +256,7 @@
         }
 
         .auth-footer a {
-            color: var(--primary);
+            color: var(--primary-500);
             text-decoration: none;
             font-weight: 500;
         }
@@ -218,7 +267,7 @@
 
         /* Right Side - Feature Showcase */
         .auth-sidebar {
-            background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
             padding: var(--space-12);
             display: flex;
             flex-direction: column;
@@ -235,18 +284,12 @@
             gap: var(--space-2);
         }
 
-        .ai-badge {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: var(--radius-md);
-        }
-
         .sidebar-content h2 {
             font-size: 1.75rem;
             font-weight: 700;
             margin-bottom: var(--space-6);
             line-height: 1.2;
+            color: white;
         }
 
         .features {
@@ -262,31 +305,61 @@
         }
 
         .feature-icon {
-            width: 24px;
-            height: 24px;
+            width: 36px;
+            height: 36px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            font-size: 1rem;
         }
 
         .feature-content h3 {
             font-size: 1rem;
             font-weight: 600;
             margin-bottom: var(--space-1);
+            color: white;
         }
 
         .feature-content p {
             font-size: 0.875rem;
             opacity: 0.9;
+            color: rgba(255, 255, 255, 0.9);
         }
 
-        /* Responsive - ESCAPADO con @@ */
+        /* Theme toggle */
+        .theme-toggle-float {
+            position: fixed;
+            top: var(--space-4);
+            right: var(--space-4);
+            width: 40px;
+            height: 40px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            box-shadow: var(--shadow-md);
+            transition: all 150ms ease;
+            z-index: 100;
+        }
+
+        .theme-toggle-float:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* Responsive */
         @@media (max-width: 992px) {
             .auth-container {
                 grid-template-columns: 1fr;
+                max-width: 500px;
             }
 
             .auth-sidebar {
@@ -295,7 +368,7 @@
         }
 
         @@media (max-width: 576px) {
-            .auth-card {
+            .auth-main {
                 padding: var(--space-6);
             }
 
@@ -306,13 +379,30 @@
     </style>
 </head>
 <body>
+    <!-- Theme toggle -->
+    <button id="theme-toggle" class="theme-toggle-float" aria-label="Toggle dark mode">
+        <span>🌙</span>
+    </button>
+
     <div class="auth-container">
         <!-- Left Side - Login Form -->
         <div class="auth-main">
+            <div class="auth-logo">
+                <div class="auth-logo-icon">💰</div>
+                <span class="auth-logo-text">Spendly</span>
+            </div>
+
             <div class="auth-header">
                 <h1>Bienvenido de vuelta</h1>
                 <p>Inicia sesión para continuar con Spendly</p>
             </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="auth-error">
+                    ⚠️ @ViewBag.Error
+                </div>
+            }
 
             <!-- Google Login -->
             <a href="@ViewBag.GoogleLoginUrl" class="google-btn">
@@ -359,21 +449,12 @@
         <div class="auth-sidebar">
             <div class="sidebar-logo">
                 <span>Spendly</span>
-                <span class="ai-badge">AI</span>
             </div>
 
             <div class="sidebar-content">
-                <h2>Controla tus gastos con inteligencia artificial</h2>
+                <h2>Controla tus gastos de forma inteligente</h2>
 
                 <div class="features">
-                    <div class="feature">
-                        <div class="feature-icon">🤖</div>
-                        <div class="feature-content">
-                            <h3>Insights AI</h3>
-                            <p>Obtén recomendaciones personalizadas basadas en tus hábitos de gasto</p>
-                        </div>
-                    </div>
-
                     <div class="feature">
                         <div class="feature-icon">📊</div>
                         <div class="feature-content">
@@ -391,6 +472,14 @@
                     </div>
 
                     <div class="feature">
+                        <div class="feature-icon">🔄</div>
+                        <div class="feature-content">
+                            <h3>Gastos Recurrentes</h3>
+                            <p>Automatiza el seguimiento de tus suscripciones y pagos fijos</p>
+                        </div>
+                    </div>
+
+                    <div class="feature">
                         <div class="feature-icon">🔒</div>
                         <div class="feature-content">
                             <h3>100% Seguro</h3>
@@ -401,5 +490,19 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Update theme toggle icon
+        const toggleBtn = document.getElementById('theme-toggle');
+        const updateIcon = () => {
+            const theme = document.documentElement.getAttribute('data-theme');
+            toggleBtn.querySelector('span').textContent = theme === 'dark' ? '☀️' : '🌙';
+        };
+        toggleBtn.addEventListener('click', () => {
+            window.DarkMode.toggle();
+            updateIcon();
+        });
+        document.addEventListener('DOMContentLoaded', updateIcon);
+    </script>
 </body>
 </html>
