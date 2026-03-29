@@ -41,7 +41,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("https://localhost:7024", "http://localhost:5115", "http://localhost:5242")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials(); // Required for Google OAuth cookies
     });
 });
 
@@ -117,11 +118,12 @@ builder.Services.AddHostedService<RecurringExpenseBackgroundService>();
 
 #region Authentication & Google OAuth
 
-// ✅ AUTENTICACIÓN - JWT + Google OAuth (opcional)
+// JWT Bearer as default for API auth + Cookie scheme for Google OAuth sign-in flow
 var authBuilder = builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = "Bearer";
+    options.DefaultAuthenticateScheme = "Bearer";
     options.DefaultChallengeScheme = "Bearer";
+    options.DefaultSignInScheme = "Cookies"; // Required for Google OAuth intermediate step
 })
 .AddJwtBearer("Bearer", options =>
 {
@@ -135,6 +137,12 @@ var authBuilder = builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKeyValue))
     };
+})
+.AddCookie("Cookies", options =>
+{
+    // Cookie scheme only used temporarily during Google OAuth flow
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 });
 
 // Google OAuth - solo si las credenciales están configuradas
@@ -147,6 +155,7 @@ if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientS
     {
         options.ClientId = googleClientId;
         options.ClientSecret = googleClientSecret;
+        options.SignInScheme = "Cookies"; // Use cookie scheme for OAuth flow
 
         options.Scope.Add("profile");
         options.Scope.Add("email");
@@ -154,6 +163,9 @@ if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientS
 
         options.ClaimActions.MapJsonKey("picture", "picture");
         options.ClaimActions.MapJsonKey("verified_email", "verified_email");
+
+        // Callback URL must match what's registered in Google Console
+        options.CallbackPath = "/signin-google";
 
         options.Events.OnCreatingTicket = context =>
         {
@@ -169,7 +181,6 @@ if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientS
 }
 
 // Always register GoogleAuthService so DI doesn't crash 
-// (controller checks if Google is configured before using it)
 builder.Services.AddScoped<GoogleAuthService>();
 
 #endregion

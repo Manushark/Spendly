@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using Spendly.Infrastructure.Services;
@@ -12,13 +12,16 @@ namespace Spendly.Api.Controllers
     {
         private readonly GoogleAuthService _googleAuthService;
         private readonly ILogger<GoogleAuthController> _logger;
+        private readonly IConfiguration _configuration;
 
         public GoogleAuthController(
             GoogleAuthService googleAuthService,
-            ILogger<GoogleAuthController> logger)
+            ILogger<GoogleAuthController> logger,
+            IConfiguration configuration)
         {
             _googleAuthService = googleAuthService;
             _logger = logger;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -26,12 +29,12 @@ namespace Spendly.Api.Controllers
         /// GET: /api/auth/google/login
         /// </summary>
         [HttpGet("login")]
-        public IActionResult GoogleLogin(string returnUrl = "/")
+        public IActionResult GoogleLogin()
         {
             var properties = new AuthenticationProperties
             {
                 RedirectUri = Url.Action(nameof(GoogleCallback)),
-                Items = { { "returnUrl", returnUrl } }
+                Items = { { "scheme", GoogleDefaults.AuthenticationScheme } }
             };
 
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
@@ -46,67 +49,42 @@ namespace Spendly.Api.Controllers
         {
             try
             {
-                // Autenticar con Google
-                var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+                // Authenticate with the Cookies scheme (where Google stored the result)
+                var authenticateResult = await HttpContext.AuthenticateAsync("Cookies");
 
                 if (!authenticateResult.Succeeded)
                 {
-                    _logger.LogWarning("Google authentication failed");
-                    return BadRequest(new { error = "Google authentication failed" });
+                    _logger.LogWarning("Google authentication failed: {Error}",
+                        authenticateResult.Failure?.Message ?? "Unknown error");
+                    
+                    // Redirect to Web frontend with error
+                    return Redirect("http://localhost:5242/Auth/Login?error=google_auth_failed");
                 }
 
-                // Procesar usuario y generar token
+                // Process the user and generate JWT token
                 var result = await _googleAuthService.HandleGoogleCallbackAsync(authenticateResult.Principal);
 
                 if (!result.IsSuccess)
                 {
                     _logger.LogError("Failed to process Google user: {Error}", result.Error);
-                    return BadRequest(new { error = result.Error });
+                    return Redirect("http://localhost:5242/Auth/Login?error=google_processing_failed");
                 }
 
-                // Obtener returnUrl de las propiedades
-                var returnUrl = authenticateResult.Properties?.Items["returnUrl"] ?? "/";
+                _logger.LogInformation("Google login successful for user {Email}, redirecting to Web frontend",
+                    result.User?.Email);
 
-                // Redirigir al frontend con el token
-                // En producción, usar tu dominio del frontend
-                var frontendUrl = $"{Request.Scheme}://{Request.Host}{returnUrl}?token={result.Token}";
+                // Sign out of the temporary cookie scheme
+                await HttpContext.SignOutAsync("Cookies");
 
-                return Redirect(frontendUrl);
+                // Redirect to Web frontend with the JWT token
+                var webFrontendUrl = $"http://localhost:5242/Auth/GoogleCallback?token={Uri.EscapeDataString(result.Token)}&email={Uri.EscapeDataString(result.User?.Email ?? "")}";
+                return Redirect(webFrontendUrl);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing Google callback");
-                return StatusCode(500, new { error = "An error occurred during authentication" });
+                return Redirect("http://localhost:5242/Auth/Login?error=internal_error");
             }
-        }
-
-        /// <summary>
-        /// Endpoint para obtener información del usuario autenticado con Google
-        /// GET: /api/auth/google/userinfo
-        /// </summary>
-        [HttpGet("userinfo")]
-        public async Task<IActionResult> GetUserInfo()
-        {
-            var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
-
-            if (!authenticateResult.Succeeded)
-            {
-                return Unauthorized();
-            }
-
-            var claims = authenticateResult.Principal.Claims.Select(c => new
-            {
-                Type = c.Type,
-                Value = c.Value
-            });
-
-            return Ok(new
-            {
-                Email = authenticateResult.Principal.FindFirstValue(ClaimTypes.Email),
-                Name = authenticateResult.Principal.FindFirstValue(ClaimTypes.Name),
-                Picture = authenticateResult.Principal.FindFirstValue("picture"),
-                Claims = claims
-            });
         }
     }
 }

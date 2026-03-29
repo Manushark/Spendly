@@ -106,6 +106,24 @@ namespace Spendly.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// Receives the JWT token from Google OAuth callback redirect
+        /// </summary>
+        [HttpGet]
+        public IActionResult GoogleCallback(string token, string email)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["Error"] = "Google authentication failed. Please try again.";
+                return RedirectToAction("Login");
+            }
+
+            HttpContext.Session.SetString("token", token);
+            HttpContext.Session.SetString("userEmail", email ?? "Google User");
+
+            return RedirectToAction("Index", "Dashboard");
+        }
+
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
