@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Spendly.Web.Contracts.Expenses;
 
 namespace Spendly.Web.Services
@@ -9,6 +10,10 @@ namespace Spendly.Web.Services
     {
         private readonly HttpClient _http;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private static readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
 
         public ExpenseApiClient(HttpClient http, IHttpContextAccessor httpContextAccessor)
         {
@@ -45,7 +50,7 @@ namespace Spendly.Web.Services
 
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonAsync<PagedExpenseResult>()
+            return await response.Content.ReadFromJsonAsync<PagedExpenseResult>(_jsonOptions)
                    ?? PagedExpenseResult.Empty();
         }
 
@@ -56,7 +61,7 @@ namespace Spendly.Web.Services
 
             if (!response.IsSuccessStatusCode) return null;
 
-            return await response.Content.ReadFromJsonAsync<ExpenseDto>();
+            return await response.Content.ReadFromJsonAsync<ExpenseDto>(_jsonOptions);
         }
 
         public async Task<(bool Success, string? Error)> CreateAsync(ExpenseDto dto)
@@ -98,7 +103,7 @@ namespace Spendly.Web.Services
         {
             try
             {
-                var body = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+                var body = await response.Content.ReadFromJsonAsync<ApiErrorResponse>(_jsonOptions);
                 return body?.Error ?? response.ReasonPhrase ?? "Unknown error";
             }
             catch

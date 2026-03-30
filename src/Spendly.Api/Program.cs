@@ -39,7 +39,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowWebApp", policy =>
     {
-        policy.WithOrigins("https://localhost:7024", "http://localhost:5115", "http://localhost:5242")
+        policy.WithOrigins("https://localhost:7024", "http://localhost:5115")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials(); // Required for Google OAuth cookies
@@ -123,7 +123,7 @@ var authBuilder = builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = "Bearer";
     options.DefaultChallengeScheme = "Bearer";
-    options.DefaultSignInScheme = "Cookies"; // Required for Google OAuth intermediate step
+    options.DefaultScheme = "Bearer";
 })
 .AddJwtBearer("Bearer", options =>
 {
@@ -141,7 +141,7 @@ var authBuilder = builder.Services.AddAuthentication(options =>
 .AddCookie("Cookies", options =>
 {
     // Cookie scheme only used temporarily during Google OAuth flow
-    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SameSite = SameSiteMode.Unspecified;
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 });
 
@@ -155,7 +155,7 @@ if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientS
     {
         options.ClientId = googleClientId;
         options.ClientSecret = googleClientSecret;
-        options.SignInScheme = "Cookies"; // Use cookie scheme for OAuth flow
+        options.SignInScheme = "Cookies"; // Explicitly mapped to the Cookie scheme registered above
 
         options.Scope.Add("profile");
         options.Scope.Add("email");

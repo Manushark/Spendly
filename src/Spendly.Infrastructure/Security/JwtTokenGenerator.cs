@@ -1,4 +1,4 @@
-﻿using Spendly.Application.Interfaces;
+using Spendly.Application.Interfaces;
 using Spendly.Domain.Entities;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -20,6 +20,7 @@ namespace Spendly.Infrastructure.Security
         {
             var claims = new[]
             {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email)
             };

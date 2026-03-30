@@ -1,5 +1,6 @@
-﻿using System.Net.Http.Headers;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Spendly.Web.Contracts.Budgets;
 
 namespace Spendly.Web.Services
@@ -8,6 +9,10 @@ namespace Spendly.Web.Services
     {
         private readonly HttpClient _http;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private static readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
 
         public BudgetApiClient(HttpClient http, IHttpContextAccessor httpContextAccessor)
         {
@@ -30,7 +35,7 @@ namespace Spendly.Web.Services
 
             if (!response.IsSuccessStatusCode) return null;
 
-            return await response.Content.ReadFromJsonAsync<BudgetSummaryDto>();
+            return await response.Content.ReadFromJsonAsync<BudgetSummaryDto>(_jsonOptions);
         }
 
         public async Task<BudgetDto?> GetByIdAsync(int id)
@@ -40,7 +45,7 @@ namespace Spendly.Web.Services
 
             if (!response.IsSuccessStatusCode) return null;
 
-            return await response.Content.ReadFromJsonAsync<BudgetDto>();
+            return await response.Content.ReadFromJsonAsync<BudgetDto>(_jsonOptions);
         }
 
         public async Task<(bool Ok, string? Error)> CreateAsync(CreateBudgetDto dto)
@@ -52,7 +57,7 @@ namespace Spendly.Web.Services
 
             try
             {
-                var error = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+                var error = await response.Content.ReadFromJsonAsync<ApiErrorResponse>(_jsonOptions);
                 return (false, error?.Error ?? "Could not create budget");
             }
             catch
@@ -70,7 +75,7 @@ namespace Spendly.Web.Services
 
             try
             {
-                var error = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+                var error = await response.Content.ReadFromJsonAsync<ApiErrorResponse>(_jsonOptions);
                 return (false, error?.Error ?? "Could not update budget");
             }
             catch

@@ -1,5 +1,6 @@
-﻿using System.Net.Http.Headers;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Spendly.Web.Contracts.RecurringExpenses;
 
 namespace Spendly.Web.Services
@@ -8,6 +9,10 @@ namespace Spendly.Web.Services
     {
         private readonly HttpClient _http;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private static readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
 
         public RecurringExpenseApiClient(HttpClient http, IHttpContextAccessor httpContextAccessor)
         {
@@ -32,7 +37,7 @@ namespace Spendly.Web.Services
                 var response = await _http.GetAsync("api/recurring-expenses");
                 if (!response.IsSuccessStatusCode) return null;
 
-                return await response.Content.ReadFromJsonAsync<RecurringExpenseSummaryDto>();
+                return await response.Content.ReadFromJsonAsync<RecurringExpenseSummaryDto>(_jsonOptions);
             }
             catch
             {
@@ -49,7 +54,7 @@ namespace Spendly.Web.Services
                 var response = await _http.GetAsync($"api/recurring-expenses/{id}");
                 if (!response.IsSuccessStatusCode) return null;
 
-                return await response.Content.ReadFromJsonAsync<RecurringExpenseDto>();
+                return await response.Content.ReadFromJsonAsync<RecurringExpenseDto>(_jsonOptions);
             }
             catch
             {

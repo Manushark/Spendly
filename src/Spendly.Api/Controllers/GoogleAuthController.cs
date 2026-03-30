@@ -13,6 +13,7 @@ namespace Spendly.Api.Controllers
         private readonly GoogleAuthService _googleAuthService;
         private readonly ILogger<GoogleAuthController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly string _webFrontendUrl;
 
         public GoogleAuthController(
             GoogleAuthService googleAuthService,
@@ -22,6 +23,8 @@ namespace Spendly.Api.Controllers
             _googleAuthService = googleAuthService;
             _logger = logger;
             _configuration = configuration;
+            _webFrontendUrl = configuration["WebFrontendUrl"]?.TrimEnd('/')
+                ?? "https://localhost:7024";
         }
 
         /// <summary>
@@ -58,7 +61,7 @@ namespace Spendly.Api.Controllers
                         authenticateResult.Failure?.Message ?? "Unknown error");
                     
                     // Redirect to Web frontend with error
-                    return Redirect("http://localhost:5242/Auth/Login?error=google_auth_failed");
+                    return Redirect($"{_webFrontendUrl}/Auth/Login?error=google_auth_failed");
                 }
 
                 // Process the user and generate JWT token
@@ -67,7 +70,7 @@ namespace Spendly.Api.Controllers
                 if (!result.IsSuccess)
                 {
                     _logger.LogError("Failed to process Google user: {Error}", result.Error);
-                    return Redirect("http://localhost:5242/Auth/Login?error=google_processing_failed");
+                    return Redirect($"{_webFrontendUrl}/Auth/Login?error=google_processing_failed");
                 }
 
                 _logger.LogInformation("Google login successful for user {Email}, redirecting to Web frontend",
@@ -77,13 +80,13 @@ namespace Spendly.Api.Controllers
                 await HttpContext.SignOutAsync("Cookies");
 
                 // Redirect to Web frontend with the JWT token
-                var webFrontendUrl = $"http://localhost:5242/Auth/GoogleCallback?token={Uri.EscapeDataString(result.Token)}&email={Uri.EscapeDataString(result.User?.Email ?? "")}";
-                return Redirect(webFrontendUrl);
+                var webCallbackUrl = $"{_webFrontendUrl}/Auth/GoogleCallback?token={Uri.EscapeDataString(result.Token)}&email={Uri.EscapeDataString(result.User?.Email ?? "")}";
+                return Redirect(webCallbackUrl);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing Google callback");
-                return Redirect("http://localhost:5242/Auth/Login?error=internal_error");
+                return Redirect($"{_webFrontendUrl}/Auth/Login?error=internal_error");
             }
         }
     }
