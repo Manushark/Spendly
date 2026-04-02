@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using System.Text.Json;
 using Spendly.Web.Contracts.Auth;
 
 namespace Spendly.Web.Services
@@ -7,10 +6,6 @@ namespace Spendly.Web.Services
     public class AuthApiClient
     {
         private readonly HttpClient _http;
-        private static readonly JsonSerializerOptions _jsonOptions = new()
-        {
-            PropertyNameCaseInsensitive = true
-        };
 
         public AuthApiClient(HttpClient http)
         {
@@ -24,7 +19,7 @@ namespace Spendly.Web.Services
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return await response.Content.ReadFromJsonAsync<AuthResponse>(_jsonOptions);
+            return await response.Content.ReadFromJsonAsync<AuthResponse>();
         }
 
         public async Task<AuthResponse?> RegisterAsync(RegisterViewModel model)
@@ -34,7 +29,7 @@ namespace Spendly.Web.Services
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return await response.Content.ReadFromJsonAsync<AuthResponse>(_jsonOptions);
+            return await response.Content.ReadFromJsonAsync<AuthResponse>();
         }
     }
 }

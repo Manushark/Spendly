@@ -1,4 +1,4 @@
-using Spendly.Domain.Entities;
+﻿using Spendly.Domain.Entities;
 
 namespace Spendly.Application.Interfaces
 {
@@ -6,6 +6,5 @@ namespace Spendly.Application.Interfaces
     {
         User? GetByEmail(string email);
         void Add(User user);
-        void Update(User user);
     }
 }

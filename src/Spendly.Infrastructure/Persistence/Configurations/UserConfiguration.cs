@@ -18,7 +18,7 @@ namespace Spendly.Infrastructure.Persistence.Configurations
                 .IsUnique();
 
             builder.Property(u => u.PasswordHash)
-                .IsRequired(false);
+                .IsRequired();
         }
     }
 }

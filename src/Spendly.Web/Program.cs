@@ -1,9 +1,11 @@
-﻿using Spendly.Web.Services;
+using Spendly.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Session configuration
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -12,58 +14,43 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// HttpContext accessor for services
 builder.Services.AddHttpContextAccessor();
 
-// ✅ CRITICAL: Register AuthHeaderHandler
-builder.Services.AddTransient<AuthHeaderHandler>();
-
 var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7267/";
-var isDevelopment = builder.Environment.IsDevelopment();
 
-HttpClientHandler CreateApiHandler() => new HttpClientHandler
-{
-    ServerCertificateCustomValidationCallback = isDevelopment
-        ? HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        : null
-};
-
-// AuthApiClient - NO auth needed (for login/register)
+// Add AuthApiClient with HttpClient configuration
 builder.Services.AddHttpClient<AuthApiClient>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-}).ConfigurePrimaryHttpMessageHandler(CreateApiHandler);
+});
 
-// All other clients need authentication
+// Dashboard API client
 builder.Services.AddHttpClient<DashboardApiClient>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-})
-.ConfigurePrimaryHttpMessageHandler(CreateApiHandler)
-.AddHttpMessageHandler<AuthHeaderHandler>();
+});
 
-builder.Services.AddHttpClient<RecurringExpenseApiClient>(client =>
-{
+// Recurring expenses API client
+builder.Services.AddHttpClient<RecurringExpenseApiClient>(client => {  
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+});
+
+// Add BudgetApiClient with HttpClient configuration (includes JWT token)
+builder.Services.AddHttpClient<BudgetApiClient>(client => {
     client.BaseAddress = new Uri(apiBaseUrl);
-})
-.ConfigurePrimaryHttpMessageHandler(CreateApiHandler)
-.AddHttpMessageHandler<AuthHeaderHandler>();
+});
 
-builder.Services.AddHttpClient<BudgetApiClient>(client =>
-{
-    client.BaseAddress = new Uri(apiBaseUrl);
-})
-.ConfigurePrimaryHttpMessageHandler(CreateApiHandler)
-.AddHttpMessageHandler<AuthHeaderHandler>();
 
+// Add ExpenseApiClient with HttpClient configuration (includes JWT token)
 builder.Services.AddHttpClient<ExpenseApiClient>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-})
-.ConfigurePrimaryHttpMessageHandler(CreateApiHandler)
-.AddHttpMessageHandler<AuthHeaderHandler>();
+});
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -72,7 +59,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
+
 app.UseSession();
 app.UseAuthorization();
 

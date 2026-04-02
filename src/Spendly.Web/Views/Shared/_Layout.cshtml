@@ -4,403 +4,104 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Spendly</title>
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Styles -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="~/css/modern-design.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-
-    <!-- Dark Mode Script (must be in head to prevent flash) -->
-    <script src="~/js/dark-mode.js"></script>
-
-    <style>
-    /* ===================================
-       MODERN NAVBAR STYLES
-       =================================== */
-    .navbar-modern {
-        background: var(--bg-elevated);
-        border-bottom: 1px solid var(--border-light);
-        padding: var(--space-3) 0;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-    }
-
-    .navbar-content {
-        display: flex;
-        align-items: center;
-        gap: var(--space-8);
-    }
-
-    .navbar-brand-modern {
-        display: flex;
-        align-items: center;
-        gap: var(--space-3);
-        text-decoration: none;
-        transition: transform var(--transition-base);
-    }
-
-    .navbar-brand-modern:hover {
-        transform: scale(1.02);
-    }
-
-    .logo-icon {
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-        border-radius: var(--radius-md);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.25rem;
-    }
-
-    .logo-text {
-        font-size: 1.25rem;
-        font-weight: 800;
-        color: var(--text-primary);
-    }
-
-    .navbar-links {
-        display: flex;
-        gap: var(--space-2);
-        flex: 1;
-    }
-
-    .nav-link-modern {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        padding: var(--space-2) var(--space-3);
-        border-radius: var(--radius-md);
-        color: var(--text-secondary);
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 0.875rem;
-        transition: all var(--transition-base);
-        position: relative;
-    }
-
-    .nav-link-modern:hover {
-        color: var(--text-primary);
-        background: var(--bg-tertiary);
-    }
-
-    .nav-link-modern.active {
-        color: var(--primary-600);
-        background: var(--primary-50);
-    }
-
-    [data-theme="dark"] .nav-link-modern.active {
-        background: rgba(99, 102, 241, 0.1);
-    }
-
-    .navbar-actions {
-        display: flex;
-        align-items: center;
-        gap: var(--space-3);
-    }
-
-    .btn-icon {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: transparent;
-        border: none;
-        border-radius: var(--radius-md);
-        color: var(--text-secondary);
-        cursor: pointer;
-        transition: all var(--transition-base);
-    }
-
-    .btn-icon:hover {
-        background: var(--bg-tertiary);
-        color: var(--text-primary);
-    }
-
-    .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: var(--radius-full);
-        border: 2px solid var(--border-light);
-        background: transparent;
-        cursor: pointer;
-        transition: all var(--transition-base);
-        padding: 0;
-    }
-
-    .user-avatar:hover {
-        border-color: var(--primary-500);
-        transform: scale(1.05);
-    }
-
-    .avatar-placeholder {
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-        border-radius: var(--radius-full);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 700;
-        font-size: 1rem;
-    }
-
-    .user-dropdown {
-        min-width: 240px;
-        border: 1px solid var(--border-light);
-        box-shadow: var(--shadow-xl);
-        border-radius: var(--radius-lg);
-        padding: var(--space-2);
-        background: var(--bg-elevated);
-    }
-
-    .user-info {
-        padding: var(--space-2);
-    }
-
-    .user-email {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--text-primary);
-    }
-
-    .user-plan {
-        font-size: 0.75rem;
-        color: var(--text-tertiary);
-    }
-
-    .user-dropdown .dropdown-item {
-        padding: var(--space-2) var(--space-3);
-        border-radius: var(--radius-sm);
-        display: flex;
-        align-items: center;
-        gap: var(--space-3);
-        color: var(--text-secondary);
-        transition: all var(--transition-fast);
-    }
-
-    .user-dropdown .dropdown-item:hover {
-        background: var(--bg-tertiary);
-        color: var(--text-primary);
-    }
-
-    .user-dropdown .dropdown-item.text-danger:hover {
-        background: var(--danger-50);
-    }
-
-    /* ===================================
-       MAIN CONTENT
-       =================================== */
-    .main-content {
-        min-height: calc(100vh - 200px);
-        padding: var(--space-8) 0;
-    }
-
-    /* ===================================
-       FOOTER
-       =================================== */
-    .footer-modern {
-        background: var(--bg-elevated);
-        border-top: 1px solid var(--border-light);
-        padding: var(--space-8) 0;
-        margin-top: var(--space-16);
-    }
-
-    .footer-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: var(--space-4);
-    }
-
-    .footer-brand {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        font-weight: 700;
-        color: var(--text-primary);
-    }
-
-    .footer-links {
-        display: flex;
-        gap: var(--space-6);
-    }
-
-    .footer-links a {
-        color: var(--text-secondary);
-        text-decoration: none;
-        font-size: 0.875rem;
-        transition: color var(--transition-base);
-    }
-
-    .footer-links a:hover {
-        color: var(--primary-600);
-    }
-
-    .footer-copyright {
-        color: var(--text-tertiary);
-        font-size: 0.875rem;
-    }
-
-    /* ===================================
-       RESPONSIVE
-       =================================== */
-    @@media (max-width: 768px) {
-        .navbar-links {
-            display: none;
-        }
-
-        .navbar-content {
-            gap: var(--space-4);
-        }
-
-        .footer-content {
-            flex-direction: column;
-            text-align: center;
-        }
-    }
-    </style>
+    <link rel="stylesheet" href="~/Spendly.Web.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <!-- Modern Navbar -->
-    <nav class="navbar-modern">
-        <div class="container-fluid">
-            <div class="navbar-content">
-                <!-- Logo -->
-                <a class="navbar-brand-modern" asp-controller="Dashboard" asp-action="Index">
-                    <div class="logo-icon">
-                        <i class="bi bi-wallet2"></i>
-                    </div>
-                    <span class="logo-text">Spendly</span>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-primary shadow-sm mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" asp-area="" asp-controller="Dashboard" asp-action="Index">
+                    <i class="bi bi-wallet2"></i> Spendly
                 </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" 
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        @if (Context.Session.GetString("token") != null)
+                        {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index">
+                                        <i class="bi bi-house-door"></i> Home
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Expenses" asp-action="Index">
+                                        <i class="bi bi-list-ul"></i> My Expenses
+                                    </a>
+                                </li>
 
-                <!-- Main Navigation -->
-                @if (Context.Session.GetString("token") != null)
-                {
-                        <div class="navbar-links">
-                            <a class="nav-link-modern" asp-controller="Dashboard" asp-action="Index">
-                                <i class="bi bi-grid-fill"></i>
-                                <span>Dashboard</span>
-                            </a>
-                            <a class="nav-link-modern" asp-controller="Expenses" asp-action="Index">
-                                <i class="bi bi-receipt"></i>
-                                <span>Expenses</span>
-                            </a>
-                            <a class="nav-link-modern" asp-controller="Budgets" asp-action="Index">
-                                <i class="bi bi-piggy-bank-fill"></i>
-                                <span>Budgets</span>
-                            </a>
-                            <a class="nav-link-modern" asp-controller="RecurringExpenses" asp-action="Index">
-                                <i class="bi bi-arrow-repeat"></i>
-                                <span>Recurring</span>
-                            </a>
-                        </div>
-                }
-
-                <!-- Right Side Actions -->
-                <div class="navbar-actions">
-                    <!-- Dark Mode Toggle -->
-                    <button id="theme-toggle" class="btn-icon" aria-label="Toggle dark mode">
-                        <i class="bi bi-moon-fill"></i>
-                    </button>
-
-                    @if (Context.Session.GetString("token") != null)
-                    {
-                            <!-- User Menu -->
-                            <div class="user-menu">
-                                <button class="user-avatar" data-bs-toggle="dropdown">
-                                    <div class="avatar-placeholder">
-                                    @{
-                                        var email = Context.Session.GetString("userEmail") ?? "U";
-                                        var initial = email.Substring(0, 1).ToUpper();
-                                    }
-                                    @initial
-                                    </div>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end user-dropdown">
-                                    <li class="dropdown-header">
-                                        <div class="user-info">
-                                            <div class="user-email">@Context.Session.GetString("userEmail")</div>
-                                            <div class="user-plan">Free Plan</div>
-                                        </div>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item" href="#">
-                                            <i class="bi bi-person"></i>
-                                            Profile Settings
+                                <li class="nav-item">  
+                                    <a class="nav-link" asp-controller="Budgets" asp-action="Index">
+                                        <i class="bi bi-piggy-bank"></i> Budgets
+                                    </a>
+                                </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-controller="RecurringExpenses" asp-action="Index">
+                                            <i class="bi bi-arrow-repeat"></i> Recurring
                                         </a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#">
-                                            <i class="bi bi-bell"></i>
-                                            Notifications
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout">
-                                            <i class="bi bi-box-arrow-right"></i>
-                                            Logout
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                    }
-                    else
-                    {
-                            <a asp-controller="Auth" asp-action="Login" class="btn btn-ghost">
-                                Login
-                            </a>
-                            <a asp-controller="Auth" asp-action="Register" class="btn btn-primary">
-                                Get Started
-                            </a>
-                    }
+                        
+                        }    
+                        else
+                        {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                                        <i class="bi bi-house"></i> Home
+                                    </a>
+                                </li>
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav">
+                        @if (Context.Session.GetString("token") != null)
+                        {
+                                <li class="nav-item">
+                                    <span class="nav-link text-light">
+                                        <i class="bi bi-person-circle"></i> @Context.Session.GetString("userEmail")
+                                    </span>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Auth" asp-action="Logout">
+                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                    </a>
+                                </li>
+                        }
+                        else
+                        {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Auth" asp-action="Login">
+                                        <i class="bi bi-box-arrow-in-right"></i> Login
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Auth" asp-action="Register">
+                                        <i class="bi bi-person-plus"></i> Register
+                                    </a>
+                                </li>
+                        }
+                    </ul>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        @RenderBody()
-    </main>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
 
-    <!-- Footer -->
-    <footer class="footer-modern">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <i class="bi bi-wallet2"></i>
-                    <span>Spendly</span>
-                </div>
-                <div class="footer-links">
-                    <a href="#">Privacy</a>
-                    <a href="#">Terms</a>
-                    <a href="#">Help</a>
-                </div>
-                <div class="footer-copyright">
-                    © 2026 Spendly. Built with ❤️
-                </div>
-            </div>
+    <footer class="border-top footer text-muted mt-5">
+        <div class="container py-3">
+            <i class="bi bi-wallet2"></i> &copy; 2026 - Spendly - Personal Expense Manager
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

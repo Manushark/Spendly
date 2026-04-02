@@ -19,10 +19,6 @@ using Spendly.Application.Services;
 using Spendly.Application.UseCases.RecurringExpenses;
 using Spendly.Infrastructure.Jobs;
 
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication;
-using Spendly.Infrastructure.Services;
-using System.Security.Claims;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,18 +29,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// CORS - Allow Web frontend to call this API
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowWebApp", policy =>
-    {
-        policy.WithOrigins("https://localhost:7024", "http://localhost:5115")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials(); // Required for Google OAuth cookies
-    });
-});
 
 //  Database connection
 builder.Services.AddDbContext<SpendlyDbContext>(options =>
@@ -87,9 +71,6 @@ builder.Services.AddScoped<GetBudgetByIdUseCase>();
 builder.Services.AddScoped<GetBudgetSummaryUseCase>();
 #endregion 
 
-// register user secrets for development
-builder.Configuration.AddUserSecrets<Program>();
-
 // Dashboard use cases
 builder.Services.AddScoped<GetDashboardStatsUseCase>();
 
@@ -116,76 +97,17 @@ builder.Services.AddScoped<GetRecurringExpenseByIdUseCase>();
 builder.Services.AddHostedService<RecurringExpenseBackgroundService>();
 #endregion
 
-#region Authentication & Google OAuth
-
-// JWT Bearer as default for API auth + Cookie scheme for Google OAuth sign-in flow
-var authBuilder = builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = "Bearer";
-    options.DefaultChallengeScheme = "Bearer";
-    options.DefaultScheme = "Bearer";
-})
+builder.Services.AddAuthentication("Bearer")
 .AddJwtBearer("Bearer", options =>
 {
-    var jwtKeyValue = builder.Configuration["Jwt:Key"]
-        ?? throw new InvalidOperationException("JWT Key not configured");
-
     options.TokenValidationParameters = new()
     {
         ValidateIssuer = false,
         ValidateAudience = false,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKeyValue))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
-})
-.AddCookie("Cookies", options =>
-{
-    // Cookie scheme only used temporarily during Google OAuth flow
-    options.Cookie.SameSite = SameSiteMode.Unspecified;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 });
-
-// Google OAuth - solo si las credenciales están configuradas
-var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
-var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-
-if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret))
-{
-    authBuilder.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
-    {
-        options.ClientId = googleClientId;
-        options.ClientSecret = googleClientSecret;
-        options.SignInScheme = "Cookies"; // Explicitly mapped to the Cookie scheme registered above
-
-        options.Scope.Add("profile");
-        options.Scope.Add("email");
-        options.SaveTokens = true;
-
-        options.ClaimActions.MapJsonKey("picture", "picture");
-        options.ClaimActions.MapJsonKey("verified_email", "verified_email");
-
-        // Callback URL must match what's registered in Google Console
-        options.CallbackPath = "/signin-google";
-
-        options.Events.OnCreatingTicket = context =>
-        {
-            var logger = context.HttpContext.RequestServices
-                .GetRequiredService<ILogger<Program>>();
-
-            logger.LogInformation("Google user authenticated: {Email}",
-                context.Principal?.FindFirstValue(ClaimTypes.Email));
-
-            return Task.CompletedTask;
-        };
-    });
-}
-
-// Always register GoogleAuthService so DI doesn't crash 
-builder.Services.AddScoped<GoogleAuthService>();
-
-#endregion
-
-// ✅ ELIMINADO: La segunda llamada a AddAuthentication que causaba el error
 
 builder.Services.AddAuthorization();
 
@@ -203,8 +125,6 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
-
-app.UseCors("AllowWebApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
