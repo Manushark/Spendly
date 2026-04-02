@@ -14,6 +14,7 @@ namespace Spendly.Web.Controllers
             _api = api;
         }
 
+        // Redirigir al login si no hay token
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             var token = HttpContext.Session.GetString("token");
@@ -25,78 +26,93 @@ namespace Spendly.Web.Controllers
             base.OnActionExecuting(context);
         }
 
-        public async Task<IActionResult> Index(
-            [FromQuery] string? category = null,
-            [FromQuery] int page = 1)
+        // GET /Expenses
+        public async Task<IActionResult> Index(string? category, int page = 1)
         {
-            var result = await _api.GetAllAsync(category, page, pageSize: 10);
-
-            // Si la sesión expiró en el servidor, redirigir al login
-            if (result.TotalCount == 0 && HttpContext.Session.GetString("token") != null)
-            {
-                // Podría ser token expirado; se muestra vacío sin crash
-            }
+            var result = await _api.GetAllAsync(category, page, 10);
 
             ViewBag.Category = category;
             ViewBag.CurrentPage = page;
+
             return View(result);
         }
 
-        public async Task<IActionResult> Edit(int id)
-        {
-            var expense = await _api.GetByIdAsync(id);
-            if (expense is null)
-            {
-                TempData["Error"] = "Expense not found or you don't have access to it.";
-                return RedirectToAction(nameof(Index));
-            }
-            return View(expense);
-        }
-
+        // POST /Expenses/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ExpenseDto dto)
         {
             if (!ModelState.IsValid)
             {
-                var result = await _api.GetAllAsync();
-                return View("Index", result);
+                TempData["Error"] = "Invalid expense data.";
+                return RedirectToAction(nameof(Index));
             }
 
             var (success, error) = await _api.CreateAsync(dto);
+
             if (!success)
             {
-                TempData["Error"] = error ?? "Failed to create expense.";
+                TempData["Error"] = error ?? "Could not create expense.";
+            }
+            else
+            {
+                TempData["Success"] = "Expense created successfully!";
             }
 
             return RedirectToAction(nameof(Index));
         }
 
+        // GET /Expenses/Edit/5
+        public async Task<IActionResult> Edit(int id)
+        {
+            var expense = await _api.GetByIdAsync(id);
+
+            if (expense == null)
+            {
+                TempData["Error"] = "Expense not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(expense);
+        }
+
+        // POST /Expenses/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ExpenseDto dto)
         {
             if (!ModelState.IsValid)
-                return View(dto);
-
-            var (success, error) = await _api.UpdateAsync(id, dto);
-            if (!success)
             {
-                TempData["Error"] = error ?? "Failed to update expense.";
                 return View(dto);
             }
 
-            TempData["Success"] = "Expense updated successfully.";
+            var (success, error) = await _api.UpdateAsync(id, dto);
+
+            if (!success)
+            {
+                TempData["Error"] = error ?? "Could not update expense.";
+                return View(dto);
+            }
+
+            TempData["Success"] = "Expense updated successfully!";
             return RedirectToAction(nameof(Index));
         }
 
+        // POST /Expenses/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _api.DeleteAsync(id);
-            if (!success)
+            var deleted = await _api.DeleteAsync(id);
+
+            if (!deleted)
+            {
                 TempData["Error"] = "Could not delete expense.";
+            }
+            else
+            {
+                TempData["Success"] = "Expense deleted successfully!";
+            }
 
             return RedirectToAction(nameof(Index));
         }
