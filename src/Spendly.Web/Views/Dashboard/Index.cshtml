@@ -1,4 +1,4 @@
-﻿@model Spendly.Web.Contracts.Dashboard.DashboardStatsDto
+@model Spendly.Web.Contracts.Dashboard.DashboardStatsDto
 
 @{
     ViewData["Title"] = "Dashboard";
@@ -187,131 +187,133 @@
                 </div>
             </div>
 
-        @* Charts Row *@
-            <div class="row g-4 mb-4">
-                <div class="col-lg-8">
-                    <div class="card chart-card shadow-sm">
-                        <div class="card-header bg-white border-0 pt-4 pb-3">
-                            <h5 class="mb-0 fw-semibold">
-                                <i class="bi bi-graph-up text-primary me-2"></i>Spending Trend
-                                <span class="badge bg-light text-muted ms-2">Last 30 days</span>
-                            </h5>
-                        </div>
-                        <div class="card-body pt-2">
-                            <canvas id="trendChart" height="80"></canvas>
-                        </div>
+        @* Row 2: Trend & Top 5 *@
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="card chart-card shadow-sm h-100">
+                    <div class="card-header bg-white border-0 pt-4 pb-3">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-graph-up text-primary me-2"></i>Spending Trend
+                            <span class="badge bg-light text-muted ms-2">Last 30 days</span>
+                        </h5>
                     </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <div class="card chart-card shadow-sm h-100">
-                        <div class="card-header bg-white border-0 pt-4 pb-3">
-                            <h5 class="mb-0 fw-semibold">
-                                <i class="bi bi-pie-chart text-primary me-2"></i>By Category
-                            </h5>
-                        </div>
-                        <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 300px;">
-                            <canvas id="categoryChart"></canvas>
+                    <div class="card-body pt-2">
+                        <div style="position: relative; height: 250px; width: 100%;">
+                            <canvas id="trendChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
 
-        @* Bottom Row *@
-            <div class="row g-4">
-                <div class="col-lg-7">
-                    <div class="card chart-card shadow-sm">
-                        <div class="card-header bg-white border-0 pt-4 pb-3">
-                            <h5 class="mb-0 fw-semibold">
-                                <i class="bi bi-list-ul text-primary me-2"></i>Category Breakdown
-                            </h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover mb-0 align-middle">
-                                    <thead class="bg-light">
-                                        <tr>
-                                            <th class="border-0 py-3 ps-4">Category</th>
-                                            <th class="border-0 py-3 text-end">Amount</th>
-                                            <th class="border-0 py-3 text-center">Count</th>
-                                            <th class="border-0 py-3 pe-4" style="width: 200px">% of Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach (var cat in Model.CategoryBreakdown)
-                                    {
-                                                <tr>
-                                                    <td class="ps-4">
-                                                        <span class="badge-category bg-secondary bg-opacity-10 text-dark">
-                                                            <i class="bi bi-tag-fill me-1"></i>@cat.Category
-                                                        </span>
-                                                    </td>
-                                                    <td class="text-end fw-bold">$@cat.Total.ToString("N2")</td>
-                                                    <td class="text-center">
-                                                        <span class="badge bg-light text-dark">@cat.Count</span>
-                                                    </td>
-                                                    <td class="pe-4">
-                                                        <div class="d-flex align-items-center gap-2">
-                                                            <div class="progress flex-grow-1" style="height: 10px; border-radius: 10px;">
-                                                                <div class="progress-bar bg-primary" 
-                                                                     role="progressbar"
-                                                                     style="width: @cat.Percentage%"
-                                                                     aria-valuenow="@cat.Percentage"
-                                                                     aria-valuemin="0"
-                                                                     aria-valuemax="100"></div>
-                                                            </div>
-                                                            <span class="text-muted fw-semibold" style="min-width: 45px; font-size: 0.9rem;">
-                                                        @cat.Percentage.ToString("N0")%
-                                                            </span>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                    }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+            <div class="col-lg-4">
+                <div class="card chart-card shadow-sm h-100">
+                    <div class="card-header bg-white border-0 pt-4 pb-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-star-fill text-warning me-2"></i>Top 5 Expenses
+                        </h5>
                     </div>
-                </div>
-
-                <div class="col-lg-5">
-                    <div class="card chart-card shadow-sm">
-                        <div class="card-header bg-white border-0 pt-4 pb-3 d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0 fw-semibold">
-                                <i class="bi bi-star-fill text-warning me-2"></i>Top 5 Expenses
-                            </h5>
-                        </div>
-                        <div class="card-body p-0">
-                        @if (Model.TopExpenses.Any())
-                        {
-                                    <div class="list-group list-group-flush">
-                                @foreach (var exp in Model.TopExpenses)
-                                {
-                                                <div class="list-group-item list-expense-item border-0 py-3 px-4">
-                                                    <div class="d-flex justify-content-between align-items-start">
-                                                        <div class="flex-grow-1 me-3">
-                                                            <h6 class="mb-2 fw-semibold">@exp.Description</h6>
-                                                            <div class="d-flex align-items-center gap-2 flex-wrap">
-                                                                <span class="badge-category bg-secondary bg-opacity-10 text-dark">
-                                                                    <i class="bi bi-tag-fill me-1"></i>@exp.Category
-                                                                </span>
-                                                                <small class="text-muted">
-                                                                    <i class="bi bi-calendar3 me-1"></i>@exp.Date.ToString("MMM dd")
-                                                                </small>
-                                                            </div>
-                                                        </div>
-                                                        <span class="badge bg-danger fs-6 px-3 py-2" style="border-radius: 20px;">
-                                                            $@exp.Amount.ToString("N2")
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                }
+                    <div class="card-body p-0">
+                    @if (Model.TopExpenses.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var exp in Model.TopExpenses)
+                            {
+                                <div class="list-group-item list-expense-item border-0 py-3 px-4">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="mb-2 fw-semibold">@exp.Description</h6>
+                                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                <span class="badge-category bg-secondary bg-opacity-10 text-dark" style="font-size:0.75rem;">
+                                                    <i class="bi bi-tag-fill me-1"></i>@exp.Category
+                                                </span>
+                                                <small class="text-muted" style="font-size:0.75rem;">
+                                                    <i class="bi bi-calendar3 me-1"></i>@exp.Date.ToString("dd MMM")
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <span class="badge bg-danger px-2 py-1" style="border-radius: 8px; font-size:0.8rem;">
+                                            $@exp.Amount.ToString("N2")
+                                        </span>
                                     </div>
-                        }
+                                </div>
+                            }
+                        </div>
+                    }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Row 3: Category Breakdown & Pie Chart *@
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card chart-card shadow-sm h-100">
+                    <div class="card-header bg-white border-0 pt-4 pb-3">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-list-ul text-primary me-2"></i>Category Breakdown
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="border-0 py-3 ps-4">Category</th>
+                                        <th class="border-0 py-3 text-end">Amount</th>
+                                        <th class="border-0 py-3 text-center">Count</th>
+                                        <th class="border-0 py-3 pe-4" style="width: 200px">% of Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var cat in Model.CategoryBreakdown)
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            <span class="badge-category bg-secondary bg-opacity-10 text-dark">
+                                                <i class="bi bi-tag-fill me-1"></i>@cat.Category
+                                            </span>
+                                        </td>
+                                        <td class="text-end fw-bold">$@cat.Total.ToString("N2")</td>
+                                        <td class="text-center">
+                                            <span class="badge bg-light text-dark">@cat.Count</span>
+                                        </td>
+                                        <td class="pe-4">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="progress flex-grow-1" style="height: 10px; border-radius: 10px;">
+                                                    <div class="progress-bar bg-primary" 
+                                                         role="progressbar"
+                                                         style="width: @cat.Percentage%"
+                                                         aria-valuenow="@cat.Percentage"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100"></div>
+                                                </div>
+                                                <span class="text-muted fw-semibold" style="min-width: 45px; font-size: 0.9rem;">
+                                                    @cat.Percentage.ToString("N0")%
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="col-lg-4">
+                <div class="card chart-card shadow-sm h-100">
+                    <div class="card-header bg-white border-0 pt-4 pb-3">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-pie-chart text-primary me-2"></i>Percentage
+                        </h5>
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 250px;">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     }
 </div>
 
