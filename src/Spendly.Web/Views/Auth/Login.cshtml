@@ -4,41 +4,105 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white text-center">
-                    <h4><i class="bi bi-box-arrow-in-right"></i> Login</h4>
-                </div>
-                <div class="card-body p-4">
-                    @if (ViewBag.Error != null)
-                    {
-                        <div class="alert alert-danger">
-                            <i class="bi bi-exclamation-triangle"></i> @ViewBag.Error
-                        </div>
-                    }
+<style>
+    .auth-bg {
+        background-color: #f8f9fc;
+        min-height: calc(100vh - 150px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        margin-top: -48px; /* Offset bootstrap mt-5 in layout */
+    }
+    .auth-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        background: #fff;
+        padding: 40px;
+        width: 100%;
+        max-width: 450px;
+    }
+    .auth-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(108, 92, 231, 0.1);
+        color: #6c5ce7;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        margin: 0 auto 24px;
+        box-shadow: inset 0 0 0 1px rgba(108, 92, 231, 0.2);
+    }
+    .form-control-custom {
+        border-radius: 12px;
+        padding: 14px 20px;
+        border: 1px solid #e1e5ee;
+        background-color: #f8f9fc;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+    .form-control-custom:focus {
+        background-color: #fff;
+        border-color: #a29bfe;
+        box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+        outline: none;
+    }
+    .btn-auth {
+        background: linear-gradient(135deg, #6c5ce7 0%, #4834d4 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 14px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+    .btn-auth:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(108, 92, 231, 0.25);
+        color: white;
+    }
+</style>
 
-                    <form asp-action="Login" method="post">
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="Email" class="form-control" placeholder="your@email.com" required />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="password" name="Password" class="form-control" placeholder="••••••••" required />
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="bi bi-box-arrow-in-right"></i> Login
-                        </button>
-                    </form>
-
-                    <hr />
-                    <p class="text-center mb-0">
-                        Don't have an account? <a asp-action="Register">Register here</a>
-                    </p>
-                </div>
+<div class="auth-bg">
+    <div class="auth-card">
+        <div class="text-center mb-4">
+            <div class="auth-icon">
+                <i class="bi bi-wallet2"></i>
             </div>
+            <h3 class="fw-bold text-dark">Welcome Back</h3>
+            <p class="text-muted">Enter your credentials to access your account.</p>
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger" style="border-radius: 10px; font-size: 0.9rem;">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
+            </div>
+        }
+
+        <form asp-action="Login" method="post">
+            <div class="mb-4">
+                <label class="form-label text-muted fw-semibold" style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">Email Address</label>
+                <input type="email" name="Email" class="form-control form-control-custom" placeholder="name@company.com" required />
+            </div>
+            <div class="mb-4">
+                <label class="form-label text-muted fw-semibold" style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">Password</label>
+                <input type="password" name="Password" class="form-control form-control-custom" placeholder="••••••••" required />
+            </div>
+            <button type="submit" class="btn btn-auth w-100">
+                Sign In to Spendly
+            </button>
+        </form>
+
+        <div class="text-center mt-4 pt-4 border-top">
+            <p class="text-muted mb-0" style="font-size: 0.95rem;">
+                Don't have an account? <a asp-action="Register" class="text-primary fw-semibold text-decoration-none">Create free account</a>
+            </p>
         </div>
     </div>
 </div>

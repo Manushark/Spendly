@@ -1,4 +1,4 @@
-﻿@model Spendly.Web.Contracts.Budgets.BudgetSummaryDto
+@model Spendly.Web.Contracts.Budgets.BudgetSummaryDto
 
 @{
     ViewData["Title"] = "Budgets";
@@ -159,7 +159,7 @@
             </div>
 
         @* Budget List *@
-            <div class="row g-3">
+            <div class="row g-4">
             @foreach (var budget in Model.Budgets)
             {
                 var progressClass = budget.PercentageUsed >= 100 ? "progress-bar-critical" :
@@ -168,8 +168,8 @@
                 var badgeClass = budget.PercentageUsed >= 100 ? "bg-danger" :
                                 budget.PercentageUsed >= 80 ? "bg-warning" : "bg-success";
 
-                        <div class="col-md-6">
-                            <div class="card budget-card shadow-sm">
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card budget-card shadow-sm h-100" style="border-radius:12px;">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div class="flex-grow-1">

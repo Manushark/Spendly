@@ -1,144 +1,304 @@
-﻿@{
-    ViewData["Title"] = "Home";
+@{
+    ViewData["Title"] = "Spendly - Smart Expense Tracking";
     var token = Context.Session.GetString("token");
 }
 
 <style>
+    /* Dark Theme Base */
     body {
-        background-color: #f8f9fc;
+        background-color: #0d0a1a !important; /* Force override for home */
+        color: #ffffff;
+        font-family: 'Inter', sans-serif;
     }
 
-    .hero {
-        padding: 120px 0;
-        background: linear-gradient(120deg, #4e73df, #224abe);
+    /* Navbar override (makes it dark on the home page if it acts up, though _Layout handles it) */
+    .navbar {
+        background-color: transparent !important;
+        border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+    }
+    .navbar-brand, .nav-link {
+        color: #fff !important;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        position: relative;
+        padding: 140px 0 100px;
+        overflow: hidden;
+        background: radial-gradient(circle at top right, #38246a 0%, #0d0a1a 40%),
+                    radial-gradient(circle at bottom left, #291a4c 0%, #0d0a1a 40%);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: 24px;
+        background: linear-gradient(135deg, #ffffff 0%, #a695d6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: #b3a5d8;
+        margin-bottom: 40px;
+        font-weight: 400;
+        line-height: 1.6;
+    }
+
+    /* Floating Image Animation */
+    @@keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+        100% { transform: translateY(0px); }
+    }
+
+    .hero-mockup-wrapper {
+        position: relative;
+        z-index: 2;
+        animation: float 6s ease-in-out infinite;
+        border-radius: 24px;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 100px rgba(108, 92, 231, 0.2);
+    }
+    
+    .hero-mockup-wrapper img {
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        width: 100%;
+        display: block;
+    }
+
+    /* Glow Elements in background */
+    .glow-circle {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.5;
+        z-index: 1;
+    }
+    .glow-1 { top: 10%; right: 10%; width: 400px; height: 400px; background: #6c5ce7; }
+    .glow-2 { bottom: 10%; left: 0; width: 300px; height: 300px;background: #a29bfe; }
+
+    /* Custom Buttons */
+    .btn-glow {
+        background: linear-gradient(135deg, #6c5ce7 0%, #4834d4 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 14px 36px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+    }
+
+    .btn-glow:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 25px rgba(108, 92, 231, 0.5);
         color: white;
     }
 
-        .hero h1 {
-            font-size: 3.2rem;
-            font-weight: 700;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-    .btn-primary-custom {
-        background-color: white;
-        color: #224abe;
+    .btn-glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 50px;
-        padding: 12px 32px;
+        padding: 14px 36px;
+        font-size: 1.1rem;
         font-weight: 600;
-        border: none;
-    }
-
-        .btn-primary-custom:hover {
-            background-color: #e2e6ea;
-        }
-
-    .feature-card {
-        border: none;
-        border-radius: 15px;
         transition: all 0.3s ease;
     }
+    
+    .btn-glass:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        transform: translateY(-3px);
+    }
 
-        .feature-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-        }
+    /* Benefits Section Glassmorphism */
+    .features-section {
+        padding: 100px 0;
+        background-color: #0d0a1a;
+        position: relative;
+    }
 
-    .section-padding {
-        padding: 80px 0;
+    .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 40px 30px;
+        height: 100%;
+        transition: all 0.3s ease;
+        text-align: left;
+    }
+
+    .glass-card:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(108, 92, 231, 0.4);
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 0 20px rgba(108, 92, 231, 0.1);
+    }
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(108, 92, 231, 0.15);
+        color: #a29bfe;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        margin-bottom: 24px;
+        border: 1px solid rgba(108, 92, 231, 0.2);
+    }
+
+    /* Footer styling */
+    .dark-footer {
+        background-color: #080612;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 40px 0;
     }
 </style>
 
-<!-- HERO -->
-<section class="hero text-center">
+<!-- HERO SECTION -->
+<section class="hero-section">
+    <div class="glow-circle glow-1"></div>
+    <div class="glow-circle glow-2"></div>
     <div class="container">
-        <h1>Take Control of Your Spending</h1>
-        <p class="mt-4 mb-5">
-            Track your expenses, understand your habits, and make smarter financial decisions — all in one place.
-        </p>
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 hero-content text-center text-lg-start">
+                <h1 class="hero-title">Master Your <br/>Financial Future</h1>
+                <p class="hero-subtitle">
+                    Spendly is the premium financial companion that helps you track expenses, manage budgets, and gain absolute clarity over your money.
+                </p>
+                <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                    @if (string.IsNullOrEmpty(token))
+                    {
+                        <a asp-controller="Auth" asp-action="Register" class="btn btn-glow">
+                            Create Free Account <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                        <a asp-controller="Auth" asp-action="Login" class="btn btn-glass">
+                            Sign In
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Expenses" asp-action="Index" class="btn btn-glow">
+                            Open Dashboard <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    }
+                </div>
+                
+                <div class="mt-5 d-flex align-items-center justify-content-center justify-content-lg-start gap-3 opacity-75">
+                    <div class="d-flex">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                    </div>
+                    <span class="small">Trusted by thousands of users worldwide</span>
+                </div>
+            </div>
 
-        @if (string.IsNullOrEmpty(token))
-        {
-            <a asp-controller="Auth" asp-action="Login" class="btn btn-primary-custom me-3">
-                Get Started
-            </a>
-        }
-        else
-        {
-            <a asp-controller="Expenses" asp-action="Index" class="btn btn-primary-custom">
-                Go to Dashboard
-            </a>
-        }
+            <!-- 3D MOCKUP -->
+            <div class="col-lg-6">
+                <div class="hero-mockup-wrapper">
+                    <!-- The mockup image was automatically generated and copied to this path -->
+                    <img src="~/images/mockup.png" alt="Spendly Platform Dashboard" class="img-fluid" />
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- BENEFITS -->
-<section class="section-padding bg-white">
+<!-- BENEFITS SECTION -->
+<section class="features-section">
     <div class="container text-center">
-        <h2 class="fw-bold mb-3">Simple. Clear. Effective.</h2>
-        <p class="text-muted mb-5">
-            Designed to help you focus on what matters — your financial clarity.
-        </p>
+        <div class="mb-5 pb-3">
+            <h2 class="fw-bold" style="font-size: 2.5rem; color: #fff;">Smarter Wealth Management</h2>
+            <p class="text-muted" style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                Experience a completely reimagined interface that turns complex financial tracking into a beautiful, seamless habit.
+            </p>
+        </div>
 
         <div class="row g-4">
-
-            <div class="col-md-4">
-                <div class="card feature-card shadow-sm p-4 h-100">
-                    <h5 class="mb-3">📊 Clear Overview</h5>
-                    <p class="text-muted">
-                        See all your expenses organized and easy to understand at a glance.
+            <div class="col-lg-4">
+                <div class="glass-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-bar-chart-fill"></i>
+                    </div>
+                    <h4 class="mb-3 fw-bold text-white">Visual Analytics</h4>
+                    <p class="text-muted mb-0">
+                        Stop guessing. Get instant visual feedback on your spending trends with interactive, real-time charts.
                     </p>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card feature-card shadow-sm p-4 h-100">
-                    <h5 class="mb-3">⚡ Fast Tracking</h5>
-                    <p class="text-muted">
-                        Add and manage expenses in seconds without unnecessary steps.
+            <div class="col-lg-4">
+                <div class="glass-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-bullseye"></i>
+                    </div>
+                    <h4 class="mb-3 fw-bold text-white">Precision Budgets</h4>
+                    <p class="text-muted mb-0">
+                        Set smart limits for categories and receive intelligent warnings before you overspend.
                     </p>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card feature-card shadow-sm p-4 h-100">
-                    <h5 class="mb-3">🔒 Secure Access</h5>
-                    <p class="text-muted">
-                        Your data stays private and protected.
+            <div class="col-lg-4">
+                <div class="glass-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
+                    <h4 class="mb-3 fw-bold text-white">Automation</h4>
+                    <p class="text-muted mb-0">
+                        Setup your recurring expenses just once, and let Spendly predict and track your upcoming commitments.
                     </p>
                 </div>
             </div>
-
         </div>
     </div>
 </section>
 
 <!-- CALL TO ACTION -->
-<section class="section-padding text-center">
+<section class="py-5" style="background: linear-gradient(0deg, #080612 0%, #0d0a1a 100%);">
     <div class="container">
-        <h3 class="fw-bold mb-3">Start managing your expenses today</h3>
-        <p class="text-muted mb-4">
-            Build better financial habits with clarity and confidence.
-        </p>
-
-        @if (string.IsNullOrEmpty(token))
-        {
-            <a asp-controller="Auth" asp-action="Register" class="btn btn-primary btn-lg px-5">
-                Create Account
-            </a>
-        }
+        <div class="glass-card text-center" style="padding: 60px 20px; background: rgba(108, 92, 231, 0.05); border-color: rgba(108, 92, 231, 0.2);">
+            <h2 class="fw-bold text-white mb-3">Ready to reclaim your finances?</h2>
+            <p class="text-muted mb-4 fs-5" style="color: #b3a5d8 !important;">
+                Join Spendly today and track your money with elegance.
+            </p>
+            @if (string.IsNullOrEmpty(token))
+            {
+                <a asp-controller="Auth" asp-action="Register" class="btn btn-glow btn-lg px-5">
+                    Start Your Journey
+                </a>
+            }
+        </div>
     </div>
 </section>
 
 <!-- FOOTER -->
-<footer class="bg-light py-4 text-center">
+<footer class="dark-footer text-center">
     <div class="container">
+        <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
+            <i class="bi bi-wallet2 text-primary fs-4"></i>
+            <h5 class="mb-0 fw-bold text-white tracking-widest">Spendly</h5>
+        </div>
         <small class="text-muted">
-            © @DateTime.Now.Year Spendly. All rights reserved.
+            © @DateTime.Now.Year Spendly Inc. Built with quality and privacy in mind.
         </small>
     </div>
 </footer>
