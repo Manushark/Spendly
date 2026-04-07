@@ -19,116 +19,148 @@ using Spendly.Application.Services;
 using Spendly.Application.UseCases.RecurringExpenses;
 using Spendly.Infrastructure.Jobs;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ────────────────────────────────────────────────────────────────
+// Configuration: Environment variables override appsettings.json
+// Priority: appsettings.json < appsettings.{Env}.json < env vars
+// ────────────────────────────────────────────────────────────────
 
+var configuration = builder.Configuration;
+var isDevelopment = builder.Environment.IsDevelopment();
+
+// Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//  Database connection
+// ────────────────────────────────────────────────────────────
+// Database Configuration
+// ────────────────────────────────────────────────────────────
+var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "Database connection string is not configured. " +
+        "Set 'ConnectionStrings__DefaultConnection' environment variable " +
+        "or configure it in appsettings.{Environment}.json.");
+}
+
 builder.Services.AddDbContext<SpendlyDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));
 
-// Dependency Injection
+// ────────────────────────────────────────────────────────────
+// JWT Configuration
+// ────────────────────────────────────────────────────────────
+var jwtKey = configuration["Jwt:Key"];
+var jwtIssuer = configuration["Jwt:Issuer"] ?? "Spendly";
+var jwtAudience = configuration["Jwt:Audience"] ?? "SpendlyUsers";
+var jwtExpirationMinutes = int.TryParse(configuration["Jwt:ExpirationMinutes"], out var expMin) ? expMin : 120;
+
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    throw new InvalidOperationException(
+        "JWT signing key is not configured. " +
+        "Set 'Jwt__Key' environment variable " +
+        "or configure it in appsettings.{Environment}.json.");
+}
+
+if (!isDevelopment && jwtKey.Length < 32)
+{
+    throw new InvalidOperationException(
+        "JWT key must be at least 32 characters in production. " +
+        "Set a strong key via 'Jwt__Key' environment variable.");
+}
+
+builder.Services.AddSingleton<IJwtTokenGenerator>(
+    new JwtTokenGenerator(jwtKey, jwtIssuer, jwtAudience, jwtExpirationMinutes));
+
+// ────────────────────────────────────────────────────────────
+// Authentication
+// ────────────────────────────────────────────────────────────
+builder.Services.AddAuthentication("Bearer")
+.AddJwtBearer("Bearer", options =>
+{
+    options.TokenValidationParameters = new()
+    {
+        ValidateIssuer = !isDevelopment,
+        ValidIssuer = jwtIssuer,
+        ValidateAudience = !isDevelopment,
+        ValidAudience = jwtAudience,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.FromMinutes(1)
+    };
+});
+
+builder.Services.AddAuthorization();
+
+// ────────────────────────────────────────────────────────────
+// Repositories
+// ────────────────────────────────────────────────────────────
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
-
-#region Expenses
-
-// User Repository
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured");
-builder.Services.AddSingleton<IJwtTokenGenerator>(new JwtTokenGenerator(jwtKey));
-
-// Use Cases - Expenses
-builder.Services.AddScoped<CreateExpenseUseCase>();
-
-// List Expenses Use Case
-builder.Services.AddScoped<ListExpensesUseCase>();
-
-// Get Expense By Id Use Case
-builder.Services.AddScoped<GetExpenseByIdUseCase>();
-
-// Delete Expense Use Case
-builder.Services.AddScoped<DeleteExpenseUseCase>();
-
-// Update Expense Use Case
-builder.Services.AddScoped<UpdateExpenseUseCase>();
-#endregion
-
-#region Budgets
-// Budget Repository
 builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
+builder.Services.AddScoped<IRecurringExpenseRepository, RecurringExpenseRepository>();
+
+// ────────────────────────────────────────────────────────────
+// Use Cases — Expenses
+// ────────────────────────────────────────────────────────────
+builder.Services.AddScoped<CreateExpenseUseCase>();
+builder.Services.AddScoped<ListExpensesUseCase>();
+builder.Services.AddScoped<GetExpenseByIdUseCase>();
+builder.Services.AddScoped<DeleteExpenseUseCase>();
+builder.Services.AddScoped<UpdateExpenseUseCase>();
+
+// ────────────────────────────────────────────────────────────
+// Use Cases — Budgets
+// ────────────────────────────────────────────────────────────
 builder.Services.AddScoped<CreateBudgetUseCase>();
 builder.Services.AddScoped<UpdateBudgetUseCase>();
 builder.Services.AddScoped<DeleteBudgetUseCase>();
 builder.Services.AddScoped<GetBudgetByIdUseCase>();
 builder.Services.AddScoped<GetBudgetSummaryUseCase>();
-#endregion 
 
-// Dashboard use cases
+// ────────────────────────────────────────────────────────────
+// Use Cases — Dashboard
+// ────────────────────────────────────────────────────────────
 builder.Services.AddScoped<GetDashboardStatsUseCase>();
 
-// Use Cases - Auth
+// ────────────────────────────────────────────────────────────
+// Use Cases — Auth
+// ────────────────────────────────────────────────────────────
 builder.Services.AddScoped<LoginUseCase>();
 builder.Services.AddScoped<RegisterUseCase>();
 
-#region Recurring Expenses
-// Recurrent Expenses
-builder.Services.AddScoped<IRecurringExpenseRepository, RecurringExpenseRepository>();
-
-// Recurring Expense Generation Service
+// ────────────────────────────────────────────────────────────
+// Use Cases — Recurring Expenses
+// ────────────────────────────────────────────────────────────
 builder.Services.AddScoped<RecurringExpenseGenerationService>();
-
-// Use Cases - Recurring Expenses
 builder.Services.AddScoped<CreateRecurringExpenseUseCase>();
 builder.Services.AddScoped<UpdateRecurringExpenseUseCase>();
 builder.Services.AddScoped<DeleteRecurringExpenseUseCase>();
 builder.Services.AddScoped<ToggleRecurringExpenseUseCase>();
 builder.Services.AddScoped<GetRecurringExpenseSummaryUseCase>();
 builder.Services.AddScoped<GetRecurringExpenseByIdUseCase>();
-
-// Background Service for Recurring Expense Generation
 builder.Services.AddHostedService<RecurringExpenseBackgroundService>();
-#endregion
 
-builder.Services.AddAuthentication("Bearer")
-.AddJwtBearer("Bearer", options =>
-{
-    options.TokenValidationParameters = new()
-    {
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
-    };
-});
-
-builder.Services.AddAuthorization();
-
-// Ensure these namespaces are included at the top of your file
+// ════════════════════════════════════════════════════════════
+// Pipeline
+// ════════════════════════════════════════════════════════════
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (isDevelopment)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Exception Handling Middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
