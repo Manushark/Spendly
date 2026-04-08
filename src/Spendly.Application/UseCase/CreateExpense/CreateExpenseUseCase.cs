@@ -1,4 +1,4 @@
-﻿using Spendly.Application.DTOs.Expense;
+using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
 using Spendly.Domain.Entities;
 using Spendly.Domain.ValueObjects;
@@ -14,7 +14,7 @@ namespace Spendly.Application.UseCase.CreateExpense
             _expenseRepository = expenseRepository;
         }
 
-        public void Execute(int userId, CreateExpenseDto dto)
+        public async Task<int> ExecuteAsync(int userId, CreateExpenseDto dto)
         {
             // Create the expense entity
             var expense = Expense.Create(
@@ -26,7 +26,9 @@ namespace Spendly.Application.UseCase.CreateExpense
             );
 
             // Persist the expense
-            _expenseRepository.Add(expense);
+            await _expenseRepository.AddAsync(expense);
+
+            return expense.Id;
         }
     }
 }
