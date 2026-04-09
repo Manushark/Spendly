@@ -18,18 +18,17 @@ namespace Spendly.Api.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginDto dto)
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            var result = _loginUseCase.Execute(dto);
+            var result = await _loginUseCase.ExecuteAsync(dto);
             return Ok(result);
         }
 
         [HttpPost("register")]
-        public IActionResult Register([FromBody] RegisterDto dto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
-            var result = _registerUseCase.Execute(dto);
+            var result = await _registerUseCase.ExecuteAsync(dto);
             return Ok(result);
         }
     }
 }
-

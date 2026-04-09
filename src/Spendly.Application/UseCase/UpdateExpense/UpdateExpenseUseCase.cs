@@ -1,4 +1,4 @@
-﻿using Spendly.Application.DTOs.Expense;
+using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
 using Spendly.Domain.Exceptions;
 using Spendly.Domain.ValueObjects;
@@ -14,9 +14,9 @@ namespace Spendly.Application.UseCases.Expenses
             _expenseRepository = expenseRepository;
         }
 
-        public void Execute(int userId, int id, UpdateExpenseDto dto)
+        public async Task ExecuteAsync(int userId, int id, UpdateExpenseDto dto)
         {
-            var expense = _expenseRepository.GetById(id);
+            var expense = await _expenseRepository.GetByIdAsync(id);
 
             if (expense is null)
                 throw new ExpenseNotFoundException(id);
@@ -31,7 +31,7 @@ namespace Spendly.Application.UseCases.Expenses
                 dto.Category
             );
 
-            _expenseRepository.Update(expense);
+            await _expenseRepository.UpdateAsync(expense);
         }
     }
 }

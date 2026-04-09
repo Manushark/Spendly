@@ -1,4 +1,4 @@
-﻿using Spendly.Application.DTOs.Expense;
+using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
 using Spendly.Application.Mappers;
 
@@ -13,9 +13,9 @@ namespace Spendly.Application.UseCase.GetExpenseById
             _expenseRepository = expenseRepository;
         }
 
-        public ExpenseResponseDto? Execute(int userId, int id)
+        public async Task<ExpenseResponseDto?> ExecuteAsync(int userId, int id)
         {
-            var expense = _expenseRepository.GetById(id);
+            var expense = await _expenseRepository.GetByIdAsync(id);
 
             if (expense is null) return null;
 
@@ -26,20 +26,3 @@ namespace Spendly.Application.UseCase.GetExpenseById
         }
     }
 }
-//alternative implementation without mapper
-//public ExpenseResponseDto? Execute(int id)
-//{
-//    var expense = _expenseRepository.GetById(id);
-
-//    if (expense == null)
-//        return null;
-
-//    return new ExpenseResponseDto
-//    {
-//        Id = expense.Id,
-//        Amount = expense.Amount.Value,
-//        Description = expense.Description,
-//        Date = expense.Date,
-//        Category = expense.Category
-//    };
-//}

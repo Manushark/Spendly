@@ -1,4 +1,4 @@
-﻿using Spendly.Application.DTOs.Expense;
+using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
 using Spendly.Application.Mappers;
 
@@ -24,10 +24,10 @@ namespace Spendly.Application.UseCase.ListExpenses
             _expenseRepository = expenseRepository;
         }
 
-        public PagedResult<ExpenseResponseDto> Execute(int userId, string? category, int page, int pageSize)
+        public async Task<PagedResult<ExpenseResponseDto>> ExecuteAsync(int userId, string? category, int page, int pageSize)
         {
-            var expenses = _expenseRepository.GetAll(userId, category, page, pageSize);
-            var total = _expenseRepository.Count(userId, category);
+            var expenses = await _expenseRepository.GetAllAsync(userId, category, page, pageSize);
+            var total = await _expenseRepository.CountAsync(userId, category);
 
             return new PagedResult<ExpenseResponseDto>
             {
@@ -39,16 +39,3 @@ namespace Spendly.Application.UseCase.ListExpenses
         }
     }
 }
-//alternative implementation without mapper
-//public List<ExpenseResponseDto> Execute()
-//{
-//    var expenses = _expenseRepository.GetAll();
-//    return expenses.Select(e => new ExpenseResponseDto
-//    {
-//        Id = e.Id,
-//        Amount = e.Amount.Value,
-//        Description = e.Description,
-//        Date = e.Date,
-//        Category = e.Category
-//    }).ToList();
-//}

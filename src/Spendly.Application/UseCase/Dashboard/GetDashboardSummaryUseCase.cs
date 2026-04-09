@@ -1,4 +1,4 @@
-﻿using Spendly.Application.DTOs.Dashboard;
+using Spendly.Application.DTOs.Dashboard;
 using Spendly.Application.Interfaces;
 
 namespace Spendly.Application.UseCases.Dashboard
@@ -9,7 +9,7 @@ namespace Spendly.Application.UseCases.Dashboard
 
         public GetDashboardSummaryUseCase(IExpenseRepository repo) => _repo = repo;
 
-        public DashboardSummaryDto Execute(int userId)
+        public async Task<DashboardSummaryDto> ExecuteAsync(int userId)
         {
             var now = DateTime.UtcNow;
             var currentMonthStart = new DateTime(now.Year, now.Month, 1);
@@ -18,8 +18,8 @@ namespace Spendly.Application.UseCases.Dashboard
             var lastMonthEnd = currentMonthStart.AddDays(-1);
 
             // Totales del mes actual y anterior
-            var totalCurrentMonth = _repo.GetTotalAmount(userId, currentMonthStart, currentMonthEnd);
-            var totalLastMonth = _repo.GetTotalAmount(userId, lastMonthStart, lastMonthEnd);
+            var totalCurrentMonth = await _repo.GetTotalAmountAsync(userId, currentMonthStart, currentMonthEnd);
+            var totalLastMonth = await _repo.GetTotalAmountAsync(userId, lastMonthStart, lastMonthEnd);
 
             // Porcentaje de cambio
             var percentageChange = totalLastMonth > 0
@@ -27,8 +27,8 @@ namespace Spendly.Application.UseCases.Dashboard
                 : 0;
 
             // Gastos por categoría (mes actual)
-            var categoryTotals = _repo.GetTotalByCategory(userId, currentMonthStart, currentMonthEnd);
-            var expensesCurrentMonth = _repo.GetByDateRange(userId, currentMonthStart, currentMonthEnd).ToList();
+            var categoryTotals = await _repo.GetTotalByCategoryAsync(userId, currentMonthStart, currentMonthEnd);
+            var expensesCurrentMonth = (await _repo.GetByDateRangeAsync(userId, currentMonthStart, currentMonthEnd)).ToList();
 
             var spendingByCategory = categoryTotals
                 .Select(kvp => new CategorySpendingDto
@@ -45,23 +45,21 @@ namespace Spendly.Application.UseCases.Dashboard
             var topCategory = spendingByCategory.FirstOrDefault();
 
             // Tendencia mensual (últimos 6 meses)
-            var monthlyTotals = _repo.GetMonthlyTotals(userId, 6);
-            var monthlyTrend = monthlyTotals
-                .OrderBy(kvp => kvp.Key)
-                .Select(kvp =>
+            var monthlyTotals = await _repo.GetMonthlyTotalsAsync(userId, 6);
+            var monthlyTrend = new List<MonthlyTrendDto>();
+            foreach (var kvp in monthlyTotals.OrderBy(k => k.Key))
+            {
+                var expenses = await _repo.GetByDateRangeAsync(userId, kvp.Key, kvp.Key.AddMonths(1).AddDays(-1));
+                monthlyTrend.Add(new MonthlyTrendDto
                 {
-                    var expenses = _repo.GetByDateRange(userId, kvp.Key, kvp.Key.AddMonths(1).AddDays(-1));
-                    return new MonthlyTrendDto
-                    {
-                        Month = kvp.Key.ToString("MMM yyyy"),
-                        Amount = kvp.Value,
-                        Count = expenses.Count()
-                    };
-                })
-                .ToList();
+                    Month = kvp.Key.ToString("MMM yyyy"),
+                    Amount = kvp.Value,
+                    Count = expenses.Count()
+                });
+            }
 
             // Gastos recientes (últimos 5)
-            var recentExpenses = _repo.GetRecent(userId, 5)
+            var recentExpenses = (await _repo.GetRecentAsync(userId, 5))
                 .Select(e => new RecentExpenseDto
                 {
                     Id = e.Id,

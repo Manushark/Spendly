@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Spendly.Api.Extensions;
 using Spendly.Application.UseCase.Dashboard;
@@ -21,9 +21,9 @@ namespace Spendly.Api.Controllers
         /// Devuelve todas las métricas del dashboard para el usuario autenticado.
         /// </summary>
         [HttpGet]
-        public IActionResult GetStats()
+        public async Task<IActionResult> GetStats()
         {
-            var stats = _getDashboardStats.Execute(User.GetUserId());
+            var stats = await _getDashboardStats.ExecuteAsync(User.GetUserId());
             return Ok(stats);
         }
     }

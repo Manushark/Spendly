@@ -1,4 +1,4 @@
-﻿using Spendly.Application.DTOs.Budget;
+using Spendly.Application.DTOs.Budget;
 using Spendly.Application.Interfaces;
 using Spendly.Domain.Exceptions;
 
@@ -10,14 +10,14 @@ namespace Spendly.Application.UseCases.Budgets
 
         public UpdateBudgetUseCase(IBudgetRepository repo) => _repo = repo;
 
-        public void Execute(int userId, int id, UpdateBudgetDto dto)
+        public async Task ExecuteAsync(int userId, int id, UpdateBudgetDto dto)
         {
-            var budget = _repo.GetById(id)
+            var budget = await _repo.GetByIdAsync(id)
                 ?? throw new InvalidDomainException($"Budget {id} not found.");
 
             budget.EnsureOwnership(userId);
             budget.Update(dto.Category, dto.MonthlyLimit, dto.Year, dto.Month);
-            _repo.Update(budget);
+            await _repo.UpdateAsync(budget);
         }
     }
 
@@ -27,13 +27,13 @@ namespace Spendly.Application.UseCases.Budgets
 
         public DeleteBudgetUseCase(IBudgetRepository repo) => _repo = repo;
 
-        public bool Execute(int userId, int id)
+        public async Task<bool> ExecuteAsync(int userId, int id)
         {
-            var budget = _repo.GetById(id);
+            var budget = await _repo.GetByIdAsync(id);
             if (budget == null) return false;
 
             budget.EnsureOwnership(userId);
-            return _repo.Delete(id);
+            return await _repo.DeleteAsync(id);
         }
     }
 
@@ -48,16 +48,20 @@ namespace Spendly.Application.UseCases.Budgets
             _expenseRepo = expenseRepo;
         }
 
-        public BudgetResponseDto? Execute(int userId, int id)
+        public async Task<BudgetResponseDto?> ExecuteAsync(int userId, int id)
         {
-            var budget = _budgetRepo.GetById(id);
+            var budget = await _budgetRepo.GetByIdAsync(id);
             if (budget == null) return null;
 
             budget.EnsureOwnership(userId);
 
-            var spent = _expenseRepo.GetAll(userId, budget.Category, page: 1, pageSize: 10000)
-                .Where(e => e.Date.Year == budget.Year && e.Date.Month == budget.Month)
-                .Sum(e => e.Amount.Value);
+            // Filtrar directamente en SQL en lugar de traer 10,000 registros
+            var startDate = new DateTime(budget.Year, budget.Month, 1);
+            var endDate = startDate.AddMonths(1).AddDays(-1);
+            var categoryTotals = await _expenseRepo.GetTotalByCategoryAsync(userId, startDate, endDate);
+            var spent = categoryTotals
+                .Where(kvp => kvp.Key.Equals(budget.Category, StringComparison.OrdinalIgnoreCase))
+                .Sum(kvp => kvp.Value);
 
             var remaining = budget.MonthlyLimit - spent;
             var percentageUsed = budget.MonthlyLimit > 0 ? (spent / budget.MonthlyLimit) * 100 : 0;

@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
 using Spendly.Application.UseCase.CreateExpense;
@@ -42,9 +42,10 @@ namespace Spendly.Tests.UseCases
         // ──────────────────────────────────────────
 
         [Fact]
-        public void Create_ValidDto_CallsRepositoryAdd()
+        public async Task Create_ValidDto_CallsRepositoryAdd()
         {
             var repo = new Mock<IExpenseRepository>();
+            repo.Setup(r => r.AddAsync(It.IsAny<Expense>())).Returns(Task.CompletedTask);
             var useCase = new CreateExpenseUseCase(repo.Object);
 
             var dto = new CreateExpenseDto
@@ -55,9 +56,9 @@ namespace Spendly.Tests.UseCases
                 Category = "Food"
             };
 
-            useCase.Execute(userId: 1, dto);
+            await useCase.ExecuteAsync(userId: 1, dto);
 
-            repo.Verify(r => r.Add(It.Is<Expense>(e =>
+            repo.Verify(r => r.AddAsync(It.Is<Expense>(e =>
                 e.UserId == 1 &&
                 e.Amount.Value == 100m &&
                 e.Description == "Groceries"
@@ -65,7 +66,7 @@ namespace Spendly.Tests.UseCases
         }
 
         [Fact]
-        public void Create_FutureDate_ThrowsDomainException()
+        public async Task Create_FutureDate_ThrowsDomainException()
         {
             var repo = new Mock<IExpenseRepository>();
             var useCase = new CreateExpenseUseCase(repo.Object);
@@ -78,12 +79,12 @@ namespace Spendly.Tests.UseCases
                 Category = "Other"
             };
 
-            Assert.Throws<InvalidDomainException>(() => useCase.Execute(1, dto));
-            repo.Verify(r => r.Add(It.IsAny<Expense>()), Times.Never);
+            await Assert.ThrowsAsync<InvalidDomainException>(() => useCase.ExecuteAsync(1, dto));
+            repo.Verify(r => r.AddAsync(It.IsAny<Expense>()), Times.Never);
         }
 
         [Fact]
-        public void Create_NegativeAmount_ThrowsArgumentException()
+        public async Task Create_NegativeAmount_ThrowsArgumentException()
         {
             var repo = new Mock<IExpenseRepository>();
             var useCase = new CreateExpenseUseCase(repo.Object);
@@ -96,7 +97,7 @@ namespace Spendly.Tests.UseCases
                 Category = "Food"
             };
 
-            Assert.Throws<ArgumentException>(() => useCase.Execute(1, dto));
+            await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(1, dto));
         }
 
         // ──────────────────────────────────────────
@@ -104,11 +105,12 @@ namespace Spendly.Tests.UseCases
         // ──────────────────────────────────────────
 
         [Fact]
-        public void Update_OwnExpense_CallsRepositoryUpdate()
+        public async Task Update_OwnExpense_CallsRepositoryUpdate()
         {
             var expense = MakeExpense(userId: 1, id: 10);
             var repo = new Mock<IExpenseRepository>();
-            repo.Setup(r => r.GetById(10)).Returns(expense);
+            repo.Setup(r => r.GetByIdAsync(10)).ReturnsAsync(expense);
+            repo.Setup(r => r.UpdateAsync(It.IsAny<Expense>())).Returns(Task.CompletedTask);
 
             var useCase = new UpdateExpenseUseCase(repo.Object);
 
@@ -120,17 +122,17 @@ namespace Spendly.Tests.UseCases
                 Category = "Transport"
             };
 
-            useCase.Execute(userId: 1, id: 10, dto);
+            await useCase.ExecuteAsync(userId: 1, id: 10, dto);
 
-            repo.Verify(r => r.Update(expense), Times.Once);
+            repo.Verify(r => r.UpdateAsync(expense), Times.Once);
         }
 
         [Fact]
-        public void Update_OtherUserExpense_ThrowsUnauthorized()
+        public async Task Update_OtherUserExpense_ThrowsUnauthorized()
         {
             var expense = MakeExpense(userId: 1, id: 10);  // pertenece a user 1
             var repo = new Mock<IExpenseRepository>();
-            repo.Setup(r => r.GetById(10)).Returns(expense);
+            repo.Setup(r => r.GetByIdAsync(10)).ReturnsAsync(expense);
 
             var useCase = new UpdateExpenseUseCase(repo.Object);
 
@@ -143,22 +145,22 @@ namespace Spendly.Tests.UseCases
             };
 
             // user 2 intenta modificar el gasto de user 1
-            Assert.Throws<UnauthorizedExpenseAccessException>(() =>
-                useCase.Execute(userId: 2, id: 10, dto));
+            await Assert.ThrowsAsync<UnauthorizedExpenseAccessException>(() =>
+                useCase.ExecuteAsync(userId: 2, id: 10, dto));
 
-            repo.Verify(r => r.Update(It.IsAny<Expense>()), Times.Never);
+            repo.Verify(r => r.UpdateAsync(It.IsAny<Expense>()), Times.Never);
         }
 
         [Fact]
-        public void Update_NotFound_ThrowsExpenseNotFoundException()
+        public async Task Update_NotFound_ThrowsExpenseNotFoundException()
         {
             var repo = new Mock<IExpenseRepository>();
-            repo.Setup(r => r.GetById(99)).Returns((Expense?)null);
+            repo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((Expense?)null);
 
             var useCase = new UpdateExpenseUseCase(repo.Object);
 
-            Assert.Throws<ExpenseNotFoundException>(() =>
-                useCase.Execute(1, 99, new UpdateExpenseDto
+            await Assert.ThrowsAsync<ExpenseNotFoundException>(() =>
+                useCase.ExecuteAsync(1, 99, new UpdateExpenseDto
                 {
                     Amount = 10m,
                     Description = "x",
@@ -172,32 +174,32 @@ namespace Spendly.Tests.UseCases
         // ──────────────────────────────────────────
 
         [Fact]
-        public void Delete_OwnExpense_ReturnsTrue()
+        public async Task Delete_OwnExpense_ReturnsTrue()
         {
             var expense = MakeExpense(userId: 1, id: 5);
             var repo = new Mock<IExpenseRepository>();
-            repo.Setup(r => r.GetById(5)).Returns(expense);
-            repo.Setup(r => r.Delete(5)).Returns(true);
+            repo.Setup(r => r.GetByIdAsync(5)).ReturnsAsync(expense);
+            repo.Setup(r => r.DeleteAsync(5)).ReturnsAsync(true);
 
             var useCase = new DeleteExpenseUseCase(repo.Object);
-            var result = useCase.Execute(userId: 1, id: 5);
+            var result = await useCase.ExecuteAsync(userId: 1, id: 5);
 
             Assert.True(result);
         }
 
         [Fact]
-        public void Delete_OtherUserExpense_ThrowsUnauthorized()
+        public async Task Delete_OtherUserExpense_ThrowsUnauthorized()
         {
             var expense = MakeExpense(userId: 1, id: 5);
             var repo = new Mock<IExpenseRepository>();
-            repo.Setup(r => r.GetById(5)).Returns(expense);
+            repo.Setup(r => r.GetByIdAsync(5)).ReturnsAsync(expense);
 
             var useCase = new DeleteExpenseUseCase(repo.Object);
 
-            Assert.Throws<UnauthorizedExpenseAccessException>(() =>
-                useCase.Execute(userId: 2, id: 5));
+            await Assert.ThrowsAsync<UnauthorizedExpenseAccessException>(() =>
+                useCase.ExecuteAsync(userId: 2, id: 5));
 
-            repo.Verify(r => r.Delete(It.IsAny<int>()), Times.Never);
+            repo.Verify(r => r.DeleteAsync(It.IsAny<int>()), Times.Never);
         }
 
         // ──────────────────────────────────────────
@@ -205,27 +207,27 @@ namespace Spendly.Tests.UseCases
         // ──────────────────────────────────────────
 
         [Fact]
-        public void GetById_OwnExpense_ReturnsDto()
+        public async Task GetById_OwnExpense_ReturnsDto()
         {
             var expense = MakeExpense(userId: 1, id: 3);
             var repo = new Mock<IExpenseRepository>();
-            repo.Setup(r => r.GetById(3)).Returns(expense);
+            repo.Setup(r => r.GetByIdAsync(3)).ReturnsAsync(expense);
 
             var useCase = new GetExpenseByIdUseCase(repo.Object);
-            var result = useCase.Execute(userId: 1, id: 3);
+            var result = await useCase.ExecuteAsync(userId: 1, id: 3);
 
             Assert.NotNull(result);
             Assert.Equal("Test expense", result!.Description);
         }
 
         [Fact]
-        public void GetById_NotFound_ReturnsNull()
+        public async Task GetById_NotFound_ReturnsNull()
         {
             var repo = new Mock<IExpenseRepository>();
-            repo.Setup(r => r.GetById(99)).Returns((Expense?)null);
+            repo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((Expense?)null);
 
             var useCase = new GetExpenseByIdUseCase(repo.Object);
-            var result = useCase.Execute(userId: 1, id: 99);
+            var result = await useCase.ExecuteAsync(userId: 1, id: 99);
 
             Assert.Null(result);
         }
@@ -235,18 +237,18 @@ namespace Spendly.Tests.UseCases
         // ──────────────────────────────────────────
 
         [Fact]
-        public void List_ReturnsPaginatedResult()
+        public async Task List_ReturnsPaginatedResult()
         {
             var expenses = Enumerable.Range(1, 5)
                 .Select(i => MakeExpense(userId: 1, id: i))
                 .ToList();
 
             var repo = new Mock<IExpenseRepository>();
-            repo.Setup(r => r.GetAll(1, null, 1, 10)).Returns(expenses);
-            repo.Setup(r => r.Count(1, null)).Returns(15);
+            repo.Setup(r => r.GetAllAsync(1, null, 1, 10)).ReturnsAsync(expenses);
+            repo.Setup(r => r.CountAsync(1, null)).ReturnsAsync(15);
 
             var useCase = new ListExpensesUseCase(repo.Object);
-            var result = useCase.Execute(userId: 1, category: null, page: 1, pageSize: 10);
+            var result = await useCase.ExecuteAsync(userId: 1, category: null, page: 1, pageSize: 10);
 
             Assert.Equal(15, result.TotalCount);
             Assert.Equal(2, result.TotalPages);

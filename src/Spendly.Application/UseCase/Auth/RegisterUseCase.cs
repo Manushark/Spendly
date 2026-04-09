@@ -16,7 +16,7 @@ namespace Spendly.Application.UseCases.Auth
             _jwt = jwt;
         }
 
-        public AuthResponseDto Execute(RegisterDto dto)
+        public async Task<AuthResponseDto> ExecuteAsync(RegisterDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Email))
                 throw new InvalidDomainException("Email is required.");
@@ -30,14 +30,14 @@ namespace Spendly.Application.UseCases.Auth
             if (dto.Password.Length < 6)
                 throw new InvalidDomainException("Password must be at least 6 characters.");
 
-            var existingUser = _userRepository.GetByEmail(dto.Email);
+            var existingUser = await _userRepository.GetByEmailAsync(dto.Email);
             if (existingUser != null)
                 throw new InvalidDomainException("Email is already registered.");
 
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
             var user = User.Create(dto.Email, passwordHash);
 
-            _userRepository.Add(user);
+            await _userRepository.AddAsync(user);
 
             var token = _jwt.GenerateToken(user);
 

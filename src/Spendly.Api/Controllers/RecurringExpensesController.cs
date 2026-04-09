@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Spendly.Api.Extensions;
 using Spendly.Application.DTOs.RecurringExpense;
@@ -39,9 +39,9 @@ namespace Spendly.Api.Controllers
         /// Returns all recurring expenses for the authenticated user
         /// </summary>
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var summary = _getSummary.Execute(User.GetUserId());
+            var summary = await _getSummary.ExecuteAsync(User.GetUserId());
             return Ok(summary);
         }
 
@@ -50,9 +50,9 @@ namespace Spendly.Api.Controllers
         /// Returns a single recurring expense
         /// </summary>
         [HttpGet("{id:int}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var recurring = _getById.Execute(User.GetUserId(), id);
+            var recurring = await _getById.ExecuteAsync(User.GetUserId(), id);
             return recurring == null ? NotFound() : Ok(recurring);
         }
 
@@ -61,9 +61,9 @@ namespace Spendly.Api.Controllers
         /// Creates a new recurring expense template
         /// </summary>
         [HttpPost]
-        public IActionResult Create([FromBody] CreateRecurringExpenseDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateRecurringExpenseDto dto)
         {
-            _create.Execute(User.GetUserId(), dto);
+            await _create.ExecuteAsync(User.GetUserId(), dto);
             return Ok(new { message = "Recurring expense created successfully" });
         }
 
@@ -72,9 +72,9 @@ namespace Spendly.Api.Controllers
         /// Updates an existing recurring expense
         /// </summary>
         [HttpPut("{id:int}")]
-        public IActionResult Update(int id, [FromBody] UpdateRecurringExpenseDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateRecurringExpenseDto dto)
         {
-            _update.Execute(User.GetUserId(), id, dto);
+            await _update.ExecuteAsync(User.GetUserId(), id, dto);
             return NoContent();
         }
 
@@ -83,9 +83,9 @@ namespace Spendly.Api.Controllers
         /// Activates or pauses a recurring expense
         /// </summary>
         [HttpPost("{id:int}/toggle")]
-        public IActionResult Toggle(int id, [FromBody] ToggleRequest request)
+        public async Task<IActionResult> Toggle(int id, [FromBody] ToggleRequest request)
         {
-            _toggle.Execute(User.GetUserId(), id, request.Activate);
+            await _toggle.ExecuteAsync(User.GetUserId(), id, request.Activate);
             var action = request.Activate ? "activated" : "paused";
             return Ok(new { message = $"Recurring expense {action} successfully" });
         }
@@ -95,9 +95,9 @@ namespace Spendly.Api.Controllers
         /// Deletes a recurring expense
         /// </summary>
         [HttpDelete("{id:int}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var deleted = _delete.Execute(User.GetUserId(), id);
+            var deleted = await _delete.ExecuteAsync(User.GetUserId(), id);
             return deleted ? NoContent() : NotFound();
         }
     }
