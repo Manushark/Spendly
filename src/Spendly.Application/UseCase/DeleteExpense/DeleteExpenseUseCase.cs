@@ -1,4 +1,4 @@
-﻿using Spendly.Application.Interfaces;
+using Spendly.Application.Interfaces;
 using Spendly.Domain.Exceptions;
 
 namespace Spendly.Application.UseCase.DeleteExpense
@@ -12,16 +12,16 @@ namespace Spendly.Application.UseCase.DeleteExpense
             _expenseRepository = expenseRepository;
         }
 
-        public bool Execute(int userId, int id)
+        public async Task<bool> ExecuteAsync(int userId, int id)
         {
-            var expense = _expenseRepository.GetById(id);
+            var expense = await _expenseRepository.GetByIdAsync(id);
 
             if (expense is null)
                 return false;
 
             expense.EnsureOwnership(userId);
 
-            return _expenseRepository.Delete(id);
+            return await _expenseRepository.DeleteAsync(id);
         }
     }
 }

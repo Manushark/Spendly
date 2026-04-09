@@ -1,4 +1,4 @@
-﻿using Spendly.Application.Interfaces;
+using Spendly.Application.Interfaces;
 using Spendly.Domain.Entities;
 
 namespace Spendly.Application.Services
@@ -23,9 +23,9 @@ namespace Spendly.Application.Services
         /// Genera todos los gastos pendientes de las recurrencias activas.
         /// Retorna la cantidad de gastos generados.
         /// </summary>
-        public int GeneratePendingExpenses()
+        public async Task<int> GeneratePendingExpensesAsync()
         {
-            var dueRecurrences = _recurringRepo.GetAllDueForGeneration();
+            var dueRecurrences = await _recurringRepo.GetAllDueForGenerationAsync();
             var generatedCount = 0;
 
             foreach (var recurrence in dueRecurrences)
@@ -35,9 +35,9 @@ namespace Spendly.Application.Services
 
                 try
                 {
-                    GenerateExpenseFromRecurrence(recurrence);
+                    await GenerateExpenseFromRecurrenceAsync(recurrence);
                     recurrence.MarkAsGenerated(DateTime.Today);
-                    _recurringRepo.Update(recurrence);
+                    await _recurringRepo.UpdateAsync(recurrence);
                     generatedCount++;
                 }
                 catch (Exception ex)
@@ -53,7 +53,7 @@ namespace Spendly.Application.Services
         /// <summary>
         /// Genera un gasto individual desde una recurrencia.
         /// </summary>
-        public void GenerateExpenseFromRecurrence(RecurringExpense recurrence)
+        public async Task GenerateExpenseFromRecurrenceAsync(RecurringExpense recurrence)
         {
             var expense = Expense.Create(
                 userId: recurrence.UserId,
@@ -63,15 +63,15 @@ namespace Spendly.Application.Services
                 date: DateTime.Today
             );
 
-            _expenseRepo.Add(expense);
+            await _expenseRepo.AddAsync(expense);
         }
 
         /// <summary>
         /// Calcula el total proyectado mensual de todas las recurrencias activas de un usuario.
         /// </summary>
-        public decimal CalculateMonthlyProjectedTotal(int userId)
+        public async Task<decimal> CalculateMonthlyProjectedTotalAsync(int userId)
         {
-            var activeRecurrences = _recurringRepo.GetActiveByUser(userId);
+            var activeRecurrences = await _recurringRepo.GetActiveByUserAsync(userId);
             decimal total = 0;
 
             foreach (var recurrence in activeRecurrences)

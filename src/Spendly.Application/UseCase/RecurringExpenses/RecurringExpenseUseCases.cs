@@ -1,4 +1,4 @@
-﻿using Spendly.Application.DTOs.RecurringExpense;
+using Spendly.Application.DTOs.RecurringExpense;
 using Spendly.Application.Interfaces;
 using Spendly.Application.Services;
 using Spendly.Domain.Entities;
@@ -15,7 +15,7 @@ namespace Spendly.Application.UseCases.RecurringExpenses
 
         public CreateRecurringExpenseUseCase(IRecurringExpenseRepository repo) => _repo = repo;
 
-        public void Execute(int userId, CreateRecurringExpenseDto dto)
+        public async Task ExecuteAsync(int userId, CreateRecurringExpenseDto dto)
         {
             var recurring = RecurringExpense.Create(
                 userId,
@@ -27,7 +27,7 @@ namespace Spendly.Application.UseCases.RecurringExpenses
                 dto.EndDate
             );
 
-            _repo.Add(recurring);
+            await _repo.AddAsync(recurring);
         }
     }
 
@@ -40,9 +40,9 @@ namespace Spendly.Application.UseCases.RecurringExpenses
 
         public UpdateRecurringExpenseUseCase(IRecurringExpenseRepository repo) => _repo = repo;
 
-        public void Execute(int userId, int id, UpdateRecurringExpenseDto dto)
+        public async Task ExecuteAsync(int userId, int id, UpdateRecurringExpenseDto dto)
         {
-            var recurring = _repo.GetById(id)
+            var recurring = await _repo.GetByIdAsync(id)
                 ?? throw new InvalidDomainException($"Recurring expense {id} not found.");
 
             recurring.EnsureOwnership(userId);
@@ -55,7 +55,7 @@ namespace Spendly.Application.UseCases.RecurringExpenses
                 dto.EndDate
             );
 
-            _repo.Update(recurring);
+            await _repo.UpdateAsync(recurring);
         }
     }
 
@@ -68,13 +68,13 @@ namespace Spendly.Application.UseCases.RecurringExpenses
 
         public DeleteRecurringExpenseUseCase(IRecurringExpenseRepository repo) => _repo = repo;
 
-        public bool Execute(int userId, int id)
+        public async Task<bool> ExecuteAsync(int userId, int id)
         {
-            var recurring = _repo.GetById(id);
+            var recurring = await _repo.GetByIdAsync(id);
             if (recurring == null) return false;
 
             recurring.EnsureOwnership(userId);
-            return _repo.Delete(id);
+            return await _repo.DeleteAsync(id);
         }
     }
 
@@ -87,9 +87,9 @@ namespace Spendly.Application.UseCases.RecurringExpenses
 
         public ToggleRecurringExpenseUseCase(IRecurringExpenseRepository repo) => _repo = repo;
 
-        public void Execute(int userId, int id, bool activate)
+        public async Task ExecuteAsync(int userId, int id, bool activate)
         {
-            var recurring = _repo.GetById(id)
+            var recurring = await _repo.GetByIdAsync(id)
                 ?? throw new InvalidDomainException($"Recurring expense {id} not found.");
 
             recurring.EnsureOwnership(userId);
@@ -99,7 +99,7 @@ namespace Spendly.Application.UseCases.RecurringExpenses
             else
                 recurring.Deactivate();
 
-            _repo.Update(recurring);
+            await _repo.UpdateAsync(recurring);
         }
     }
 
@@ -119,9 +119,9 @@ namespace Spendly.Application.UseCases.RecurringExpenses
             _genService = genService;
         }
 
-        public RecurringExpenseSummaryDto Execute(int userId)
+        public async Task<RecurringExpenseSummaryDto> ExecuteAsync(int userId)
         {
-            var recurrences = _repo.GetAllByUser(userId);
+            var recurrences = await _repo.GetAllByUserAsync(userId);
 
             var dtos = recurrences.Select(r => new RecurringExpenseResponseDto
             {
@@ -142,7 +142,7 @@ namespace Spendly.Application.UseCases.RecurringExpenses
             {
                 TotalRecurrences = dtos.Count,
                 ActiveRecurrences = dtos.Count(d => d.IsActive),
-                MonthlyProjectedTotal = _genService.CalculateMonthlyProjectedTotal(userId),
+                MonthlyProjectedTotal = await _genService.CalculateMonthlyProjectedTotalAsync(userId),
                 Recurrences = dtos
             };
         }
@@ -157,9 +157,9 @@ namespace Spendly.Application.UseCases.RecurringExpenses
 
         public GetRecurringExpenseByIdUseCase(IRecurringExpenseRepository repo) => _repo = repo;
 
-        public RecurringExpenseResponseDto? Execute(int userId, int id)
+        public async Task<RecurringExpenseResponseDto?> ExecuteAsync(int userId, int id)
         {
-            var recurring = _repo.GetById(id);
+            var recurring = await _repo.GetByIdAsync(id);
             if (recurring == null) return null;
 
             recurring.EnsureOwnership(userId);

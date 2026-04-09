@@ -1,4 +1,4 @@
-﻿using Spendly.Application.DTOs.Dashboard;
+using Spendly.Application.DTOs.Dashboard;
 using Spendly.Application.Interfaces;
 
 namespace Spendly.Application.UseCase.Dashboard
@@ -9,29 +9,18 @@ namespace Spendly.Application.UseCase.Dashboard
 
         public GetDashboardStatsUseCase(IExpenseRepository repo) => _repo = repo;
 
-        public DashboardStatsDto Execute(int userId)
+        public async Task<DashboardStatsDto> ExecuteAsync(int userId)
         {
-            // Usar hora local en vez de UTC para evitar problemas de zona horaria
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
             var currentMonthStart = new DateTime(now.Year, now.Month, 1);
             var currentMonthEnd = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month), 23, 59, 59);
 
             var previousMonthStart = currentMonthStart.AddMonths(-1);
             var previousMonthEnd = currentMonthStart.AddSeconds(-1);
 
-            // Obtener TODOS los gastos del usuario (últimos 12 meses para el gráfico)
-            var allExpenses = _repo.GetAll(userId, category: null, page: 1, pageSize: 10000)
-                .Where(e => e.Date >= now.AddMonths(-12))  // Solo últimos 12 meses
-                .ToList();
-
-            // Filtrar por mes actual (comparando solo año y mes, no la hora)
-            var currentMonthExpenses = allExpenses
-                .Where(e => e.Date.Year == now.Year && e.Date.Month == now.Month)
-                .ToList();
-
-            var previousMonthExpenses = allExpenses
-                .Where(e => e.Date.Year == previousMonthStart.Year && e.Date.Month == previousMonthStart.Month)
-                .ToList();
+            // Usar métodos de repositorio que filtran en SQL
+            var currentMonthExpenses = (await _repo.GetByDateRangeAsync(userId, currentMonthStart, currentMonthEnd)).ToList();
+            var previousMonthExpenses = (await _repo.GetByDateRangeAsync(userId, previousMonthStart, previousMonthEnd)).ToList();
 
             // Métricas principales
             var currentMonthTotal = currentMonthExpenses.Sum(e => e.Amount.Value);
@@ -66,7 +55,10 @@ namespace Spendly.Application.UseCase.Dashboard
                 .OrderByDescending(c => c.Total)
                 .ToList();
 
-            // Tendencia diaria (últimos 30 días desde HOY)
+            // Tendencia diaria (últimos 30 días desde HOY) — usar GetByDateRangeAsync en SQL
+            var thirtyDaysAgo = now.AddDays(-29).Date;
+            var last30DaysExpenses = (await _repo.GetByDateRangeAsync(userId, thirtyDaysAgo, now)).ToList();
+
             var last30Days = Enumerable.Range(0, 30)
                 .Select(i => now.AddDays(-29 + i).Date)
                 .ToList();
@@ -75,7 +67,7 @@ namespace Spendly.Application.UseCase.Dashboard
                 .Select(date => new DailyTrendDto
                 {
                     Date = date.ToString("MMM dd"),
-                    Amount = allExpenses
+                    Amount = last30DaysExpenses
                         .Where(e => e.Date.Date == date)
                         .Sum(e => e.Amount.Value)
                 })

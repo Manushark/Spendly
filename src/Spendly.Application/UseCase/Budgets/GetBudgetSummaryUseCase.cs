@@ -1,4 +1,4 @@
-﻿using Spendly.Application.DTOs.Budget;
+using Spendly.Application.DTOs.Budget;
 using Spendly.Application.Interfaces;
 
 namespace Spendly.Application.UseCases.Budgets
@@ -14,20 +14,20 @@ namespace Spendly.Application.UseCases.Budgets
             _expenseRepo = expenseRepo;
         }
 
-        public BudgetSummaryDto Execute(int userId, int year, int month)
+        public async Task<BudgetSummaryDto> ExecuteAsync(int userId, int year, int month)
         {
-            var budgets = _budgetRepo.GetByUserAndMonth(userId, year, month);
+            var budgets = await _budgetRepo.GetByUserAndMonthAsync(userId, year, month);
 
-            // Obtener todos los gastos del mes para calcular lo gastado por categoría
-            var expenses = _expenseRepo.GetAll(userId, category: null, page: 1, pageSize: 10000)
-                .Where(e => e.Date.Year == year && e.Date.Month == month)
-                .ToList();
+            // Filtrar gastos por fecha directamente en SQL en lugar de traer 10,000 registros
+            var startDate = new DateTime(year, month, 1);
+            var endDate = startDate.AddMonths(1).AddDays(-1);
+            var categoryTotals = await _expenseRepo.GetTotalByCategoryAsync(userId, startDate, endDate);
 
             var budgetDtos = budgets.Select(b =>
             {
-                var spent = expenses
-                    .Where(e => e.Category.Equals(b.Category, StringComparison.OrdinalIgnoreCase))
-                    .Sum(e => e.Amount.Value);
+                var spent = categoryTotals
+                    .Where(kvp => kvp.Key.Equals(b.Category, StringComparison.OrdinalIgnoreCase))
+                    .Sum(kvp => kvp.Value);
 
                 var remaining = b.MonthlyLimit - spent;
                 var percentageUsed = b.MonthlyLimit > 0 ? (spent / b.MonthlyLimit) * 100 : 0;
@@ -59,4 +59,3 @@ namespace Spendly.Application.UseCases.Budgets
         }
     }
 }
-

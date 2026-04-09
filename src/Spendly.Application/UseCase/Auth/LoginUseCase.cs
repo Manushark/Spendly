@@ -1,4 +1,4 @@
-﻿using Spendly.Application.Interfaces;
+using Spendly.Application.Interfaces;
 using Spendly.Application.DTOs.Auth;
 using Spendly.Domain.Exceptions;
 using System.Security.Authentication;
@@ -19,9 +19,9 @@ namespace Spendly.Application.UseCases.Auth
             _jwt = jwt;
         }
 
-        public AuthResponseDto Execute(LoginDto dto)
+        public async Task<AuthResponseDto> ExecuteAsync(LoginDto dto)
         {
-            var user = _userRepository.GetByEmail(dto.Email);
+            var user = await _userRepository.GetByEmailAsync(dto.Email);
 
             if (user is null)
                 throw new InvalidCredentialsException("Invalid email or password.");
