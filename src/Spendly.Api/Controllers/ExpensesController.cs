@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Spendly.Api.Extensions;
 using Spendly.Application.DTOs.Expense;
@@ -36,15 +36,15 @@ namespace Spendly.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreateExpenseDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateExpenseDto dto)
         {
             var userId = User.GetUserId();
-            _createExpenseUseCase.Execute(userId, dto);
-            return Ok();
+            var expenseId = await _createExpenseUseCase.ExecuteAsync(userId, dto);
+            return CreatedAtAction(nameof(GetById), new { id = expenseId }, new { id = expenseId, message = "Expense created successfully" });
         }
 
         [HttpGet]
-        public IActionResult GetAll(
+        public async Task<IActionResult> GetAll(
             [FromQuery] string? category,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
@@ -56,17 +56,15 @@ namespace Spendly.Api.Controllers
                 return BadRequest("pageSize cannot exceed 100.");
 
             var userId = User.GetUserId();
-            var result = _listExpensesUseCase.Execute(userId, category, page, pageSize);
+            var result = await _listExpensesUseCase.ExecuteAsync(userId, category, page, pageSize);
             return Ok(result);
         }
 
-
-
         [HttpGet("{id:int}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var userId = User.GetUserId();
-            var result = _getExpenseByIdUseCase.Execute(userId, id);
+            var result = await _getExpenseByIdUseCase.ExecuteAsync(userId, id);
 
             if (result == null) return NotFound();
 
@@ -74,10 +72,10 @@ namespace Spendly.Api.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var userId = User.GetUserId();
-            var deleted = _deleteExpenseUseCase.Execute(userId, id);
+            var deleted = await _deleteExpenseUseCase.ExecuteAsync(userId, id);
 
             if (!deleted) return NotFound();
 
@@ -85,16 +83,11 @@ namespace Spendly.Api.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public IActionResult Update(int id, [FromBody] UpdateExpenseDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateExpenseDto dto)
         {
             var userId = User.GetUserId();
-            _updateExpenseUseCase.Execute(userId, id, dto);
+            await _updateExpenseUseCase.ExecuteAsync(userId, id, dto);
             return NoContent();
         }
-
-
-
-
-
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Spendly.Application.Interfaces;
 using Spendly.Domain.Entities;
 using Spendly.Infrastructure.Persistence;
@@ -15,39 +15,39 @@ namespace Spendly.Infrastructure.Repositories
         }
 
         // Adds a new expense.
-        public void Add(Expense expense)
+        public async Task AddAsync(Expense expense)
         {
             _context.Add(expense);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         // Updates an existing expense in the database.
-        public void Update(Expense expense)
+        public async Task UpdateAsync(Expense expense)
         {
             _context.Expenses.Update(expense);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         // Deletes an expense by its ID. Returns true if deletion was successful, false if the expense was not found.
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var expense = _context.Set<Expense>().Find(id);
+            var expense = await _context.Set<Expense>().FindAsync(id);
             if (expense == null) return false;
 
             _context.Remove(expense);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
         }
 
         // Retrieves an expense by its ID.
-        public Expense? GetById(int id)
+        public async Task<Expense?> GetByIdAsync(int id)
         {
-            return _context.Set<Expense>().FirstOrDefault(e => e.Id == id);
+            return await _context.Set<Expense>().FirstOrDefaultAsync(e => e.Id == id);
         }
 
         // Retrieves a paginated list of expenses for a specific user, optionally filtered by category.
-        public IEnumerable<Expense> GetAll(int userId, string? category, int page, int pageSize)
+        public async Task<IEnumerable<Expense>> GetAllAsync(int userId, string? category, int page, int pageSize)
         {
             var query = _context.Expenses
                 .Where(e => e.UserId == userId)
@@ -56,15 +56,15 @@ namespace Spendly.Infrastructure.Repositories
             if (!string.IsNullOrWhiteSpace(category))
                 query = query.Where(e => e.Category.ToLower() == category.ToLower());
 
-            return query
+            return await query
                 .OrderByDescending(e => e.Date)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
         }
 
         // Counts the total number of expenses for a given user and optional category filter.
-        public int Count(int userId, string? category)
+        public async Task<int> CountAsync(int userId, string? category)
         {
             var query = _context.Expenses
                 .Where(e => e.UserId == userId)
@@ -73,63 +73,57 @@ namespace Spendly.Infrastructure.Repositories
             if (!string.IsNullOrWhiteSpace(category))
                 query = query.Where(e => e.Category.ToLower() == category.ToLower());
 
-            return query.Count();
+            return await query.CountAsync();
         }
 
         // ─── Métodos para Dashboard ───
 
-        public IEnumerable<Expense> GetByDateRange(int userId, DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<Expense>> GetByDateRangeAsync(int userId, DateTime startDate, DateTime endDate)
         {
-            return _context.Expenses
+            return await _context.Expenses
                 .Where(e => e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
                 .OrderByDescending(e => e.Date)
-                .ToList();
+                .ToListAsync();
         }
 
-        public Dictionary<string, decimal> GetTotalByCategory(int userId, DateTime startDate, DateTime endDate)
+        public async Task<Dictionary<string, decimal>> GetTotalByCategoryAsync(int userId, DateTime startDate, DateTime endDate)
         {
-            return _context.Expenses
+            return await _context.Expenses
                 .Where(e => e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
                 .GroupBy(e => e.Category)
-                .ToDictionary(
+                .ToDictionaryAsync(
                     g => g.Key,
                     g => g.Sum(e => e.Amount.Value)
                 );
         }
 
-        public IEnumerable<Expense> GetRecent(int userId, int count)
+        public async Task<IEnumerable<Expense>> GetRecentAsync(int userId, int count)
         {
-            return _context.Expenses
+            return await _context.Expenses
                 .Where(e => e.UserId == userId)
                 .OrderByDescending(e => e.Date)
                 .Take(count)
-                .ToList();
+                .ToListAsync();
         }
 
-        public decimal GetTotalAmount(int userId, DateTime startDate, DateTime endDate)
+        public async Task<decimal> GetTotalAmountAsync(int userId, DateTime startDate, DateTime endDate)
         {
-            return _context.Expenses
+            return await _context.Expenses
                 .Where(e => e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
-                .Sum(e => (decimal?)e.Amount.Value) ?? 0m;
+                .SumAsync(e => (decimal?)e.Amount.Value) ?? 0m;
         }
 
-        public Dictionary<DateTime, decimal> GetMonthlyTotals(int userId, int monthsBack)
+        public async Task<Dictionary<DateTime, decimal>> GetMonthlyTotalsAsync(int userId, int monthsBack)
         {
             var startDate = DateTime.UtcNow.AddMonths(-monthsBack).Date;
 
-            return _context.Expenses
+            return await _context.Expenses
                 .Where(e => e.UserId == userId && e.Date >= startDate)
                 .GroupBy(e => new DateTime(e.Date.Year, e.Date.Month, 1))
-                .ToDictionary(
+                .ToDictionaryAsync(
                     g => g.Key,
                     g => g.Sum(e => e.Amount.Value)
                 );
         }
     }
 }
-
-// Retrieves all expenses from the database.
-//public List<Expense> GetAll()
-//{
-//    return _context.Set<Expense>().ToList();
-//}

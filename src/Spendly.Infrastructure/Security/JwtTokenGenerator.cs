@@ -1,4 +1,4 @@
-﻿using Spendly.Application.Interfaces;
+using Spendly.Application.Interfaces;
 using Spendly.Domain.Entities;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,10 +10,20 @@ namespace Spendly.Infrastructure.Security
     public class JwtTokenGenerator : IJwtTokenGenerator
     {
         private readonly string _key;
+        private readonly string _issuer;
+        private readonly string _audience;
+        private readonly int _expirationMinutes;
 
-        public JwtTokenGenerator(string key)
+        public JwtTokenGenerator(
+            string key,
+            string issuer = "Spendly",
+            string audience = "SpendlyUsers",
+            int expirationMinutes = 120)
         {
             _key = key;
+            _issuer = issuer;
+            _audience = audience;
+            _expirationMinutes = expirationMinutes;
         }
 
         public string GenerateToken(User user)
@@ -28,8 +38,10 @@ namespace Spendly.Infrastructure.Security
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
+                issuer: _issuer,
+                audience: _audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(2),
+                expires: DateTime.UtcNow.AddMinutes(_expirationMinutes),
                 signingCredentials: creds
             );
 
