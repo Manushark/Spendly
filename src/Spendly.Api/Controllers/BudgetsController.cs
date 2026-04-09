@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Spendly.Api.Extensions;
 using Spendly.Application.DTOs.Budget;
@@ -36,9 +36,9 @@ namespace Spendly.Api.Controllers
         /// Creates a new budget for the authenticated user
         /// </summary>
         [HttpPost]
-        public IActionResult Create([FromBody] CreateBudgetDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateBudgetDto dto)
         {
-            _create.Execute(User.GetUserId(), dto);
+            await _create.ExecuteAsync(User.GetUserId(), dto);
             return Ok(new { message = "Budget created successfully" });
         }
 
@@ -47,13 +47,13 @@ namespace Spendly.Api.Controllers
         /// Returns all budgets for a specific month with spending data
         /// </summary>
         [HttpGet("summary")]
-        public IActionResult GetSummary([FromQuery] int? year, [FromQuery] int? month)
+        public async Task<IActionResult> GetSummary([FromQuery] int? year, [FromQuery] int? month)
         {
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
             var targetYear = year ?? now.Year;
             var targetMonth = month ?? now.Month;
 
-            var summary = _getSummary.Execute(User.GetUserId(), targetYear, targetMonth);
+            var summary = await _getSummary.ExecuteAsync(User.GetUserId(), targetYear, targetMonth);
             return Ok(summary);
         }
 
@@ -62,9 +62,9 @@ namespace Spendly.Api.Controllers
         /// Returns a single budget with spending data
         /// </summary>
         [HttpGet("{id:int}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var budget = _getById.Execute(User.GetUserId(), id);
+            var budget = await _getById.ExecuteAsync(User.GetUserId(), id);
             return budget == null ? NotFound() : Ok(budget);
         }
 
@@ -73,9 +73,9 @@ namespace Spendly.Api.Controllers
         /// Updates an existing budget
         /// </summary>
         [HttpPut("{id:int}")]
-        public IActionResult Update(int id, [FromBody] UpdateBudgetDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateBudgetDto dto)
         {
-            _update.Execute(User.GetUserId(), id, dto);
+            await _update.ExecuteAsync(User.GetUserId(), id, dto);
             return NoContent();
         }
 
@@ -84,9 +84,9 @@ namespace Spendly.Api.Controllers
         /// Deletes a budget
         /// </summary>
         [HttpDelete("{id:int}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var deleted = _delete.Execute(User.GetUserId(), id);
+            var deleted = await _delete.ExecuteAsync(User.GetUserId(), id);
             return deleted ? NoContent() : NotFound();
         }
     }
