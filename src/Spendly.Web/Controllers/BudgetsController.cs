@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Spendly.Web.Contracts.Budgets;
 using Spendly.Web.Services;
@@ -29,7 +29,7 @@ namespace Spendly.Web.Controllers
         // GET /Budgets
         public async Task<IActionResult> Index()
         {
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
             var summary = await _api.GetSummaryAsync(now.Year, now.Month);
 
             if (summary == null)
@@ -48,7 +48,7 @@ namespace Spendly.Web.Controllers
         // GET /Budgets/Create
         public IActionResult Create()
         {
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
 
             var model = new CreateBudgetDto
             {
