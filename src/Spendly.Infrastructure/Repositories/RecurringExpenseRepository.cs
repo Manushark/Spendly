@@ -1,4 +1,5 @@
-﻿using Spendly.Application.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Spendly.Application.Interfaces;
 using Spendly.Domain.Entities;
 using Spendly.Infrastructure.Persistence;
 
@@ -10,54 +11,50 @@ namespace Spendly.Infrastructure.Repositories
 
         public RecurringExpenseRepository(SpendlyDbContext context) => _context = context;
 
-        public void Add(RecurringExpense recurringExpense)
+        public async Task AddAsync(RecurringExpense recurringExpense)
         {
             _context.RecurringExpenses.Add(recurringExpense);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(RecurringExpense recurringExpense)
+        public async Task UpdateAsync(RecurringExpense recurringExpense)
         {
             _context.RecurringExpenses.Update(recurringExpense);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var recurring = _context.RecurringExpenses.Find(id);
+            var recurring = await _context.RecurringExpenses.FindAsync(id);
             if (recurring == null) return false;
 
             _context.RecurringExpenses.Remove(recurring);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return true;
         }
 
-        public RecurringExpense? GetById(int id)
-            => _context.RecurringExpenses.FirstOrDefault(r => r.Id == id);
+        public async Task<RecurringExpense?> GetByIdAsync(int id)
+            => await _context.RecurringExpenses.FirstOrDefaultAsync(r => r.Id == id);
 
-        public List<RecurringExpense> GetAllByUser(int userId)
-            => _context.RecurringExpenses
+        public async Task<List<RecurringExpense>> GetAllByUserAsync(int userId)
+            => await _context.RecurringExpenses
                 .Where(r => r.UserId == userId)
                 .OrderByDescending(r => r.CreatedAt)
-                .ToList();
+                .ToListAsync();
 
-        public List<RecurringExpense> GetActiveByUser(int userId)
-            => _context.RecurringExpenses
+        public async Task<List<RecurringExpense>> GetActiveByUserAsync(int userId)
+            => await _context.RecurringExpenses
                 .Where(r => r.UserId == userId && r.IsActive)
-                .ToList();
+                .ToListAsync();
 
-        public List<RecurringExpense> GetAllDueForGeneration()
+        public async Task<List<RecurringExpense>> GetAllDueForGenerationAsync()
         {
-            // Obtener todas las recurrencias activas que:
-            // 1. Están activas
-            // 2. La fecha de inicio ya pasó
-            // 3. No tienen fecha de fin O la fecha de fin no ha llegado
             var today = DateTime.Today;
 
-            return _context.RecurringExpenses
+            return await _context.RecurringExpenses
                 .Where(r => r.IsActive && r.StartDate <= today)
                 .Where(r => !r.EndDate.HasValue || r.EndDate.Value >= today)
-                .ToList();
+                .ToListAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Spendly.Application.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Spendly.Application.Interfaces;
 using Spendly.Domain.Entities;
 using Spendly.Infrastructure.Persistence;
 
@@ -10,48 +11,48 @@ namespace Spendly.Infrastructure.Repositories
 
         public BudgetRepository(SpendlyDbContext context) => _context = context;
 
-        public void Add(Budget budget)
+        public async Task AddAsync(Budget budget)
         {
             _context.Budgets.Add(budget);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(Budget budget)
+        public async Task UpdateAsync(Budget budget)
         {
             _context.Budgets.Update(budget);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var budget = _context.Budgets.Find(id);
+            var budget = await _context.Budgets.FindAsync(id);
             if (budget == null) return false;
 
             _context.Budgets.Remove(budget);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return true;
         }
 
-        public Budget? GetById(int id)
-            => _context.Budgets.FirstOrDefault(b => b.Id == id);
+        public async Task<Budget?> GetByIdAsync(int id)
+            => await _context.Budgets.FirstOrDefaultAsync(b => b.Id == id);
 
-        public List<Budget> GetByUserAndMonth(int userId, int year, int month)
-            => _context.Budgets
+        public async Task<List<Budget>> GetByUserAndMonthAsync(int userId, int year, int month)
+            => await _context.Budgets
                 .Where(b => b.UserId == userId && b.Year == year && b.Month == month)
                 .OrderBy(b => b.Category)
-                .ToList();
+                .ToListAsync();
 
-        public List<Budget> GetAllByUser(int userId)
-            => _context.Budgets
+        public async Task<List<Budget>> GetAllByUserAsync(int userId)
+            => await _context.Budgets
                 .Where(b => b.UserId == userId)
                 .OrderByDescending(b => b.Year)
                 .ThenByDescending(b => b.Month)
                 .ThenBy(b => b.Category)
-                .ToList();
+                .ToListAsync();
 
-        public Budget? GetByUserCategoryAndMonth(int userId, string category, int year, int month)
-            => _context.Budgets
-                .FirstOrDefault(b =>
+        public async Task<Budget?> GetByUserCategoryAndMonthAsync(int userId, string category, int year, int month)
+            => await _context.Budgets
+                .FirstOrDefaultAsync(b =>
                     b.UserId == userId &&
                     b.Category.ToLower() == category.ToLower() &&
                     b.Year == year &&
