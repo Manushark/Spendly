@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Spendly.Application.Services;
@@ -30,7 +30,7 @@ namespace Spendly.Infrastructure.Jobs
             {
                 try
                 {
-                    await GenerateRecurringExpenses();
+                    await GenerateRecurringExpensesAsync();
                 }
                 catch (Exception ex)
                 {
@@ -44,20 +44,20 @@ namespace Spendly.Infrastructure.Jobs
             _logger.LogInformation("Recurring Expense Background Service stopped.");
         }
 
-        private async Task GenerateRecurringExpenses()
+        private async Task GenerateRecurringExpensesAsync()
         {
             using var scope = _serviceProvider.CreateScope();
             var generationService = scope.ServiceProvider
                 .GetRequiredService<RecurringExpenseGenerationService>();
 
-            var generatedCount = await Task.Run(() => generationService.GeneratePendingExpenses());
+            var generatedCount = await generationService.GeneratePendingExpensesAsync();
 
             if (generatedCount > 0)
             {
                 _logger.LogInformation(
                     "Generated {Count} recurring expenses at {Time}",
                     generatedCount,
-                    DateTime.Now);
+                    DateTime.UtcNow);
             }
         }
     }
