@@ -1,15 +1,15 @@
-﻿using Spendly.Domain.Entities;
+using Spendly.Domain.Entities;
 
 namespace Spendly.Application.Interfaces
 {
     public interface IBudgetRepository
     {
-        void Add(Budget budget);
-        void Update(Budget budget);
-        bool Delete(int id);
-        Budget? GetById(int id);
-        List<Budget> GetByUserAndMonth(int userId, int year, int month);
-        List<Budget> GetAllByUser(int userId);
-        Budget? GetByUserCategoryAndMonth(int userId, string category, int year, int month);
+        Task AddAsync(Budget budget);
+        Task UpdateAsync(Budget budget);
+        Task<bool> DeleteAsync(int id);
+        Task<Budget?> GetByIdAsync(int id);
+        Task<List<Budget>> GetByUserAndMonthAsync(int userId, int year, int month);
+        Task<List<Budget>> GetAllByUserAsync(int userId);
+        Task<Budget?> GetByUserCategoryAndMonthAsync(int userId, string category, int year, int month);
     }
 }
