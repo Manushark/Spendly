@@ -46,8 +46,15 @@ namespace Spendly.Infrastructure.Repositories
             return await _context.Set<Expense>().FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        // Retrieves a paginated list of expenses for a specific user, optionally filtered by category.
-        public async Task<IEnumerable<Expense>> GetAllAsync(int userId, string? category, int page, int pageSize)
+        // Builds the SQL-translatable portion of the filter query.
+        // Amount filtering is excluded here because the Money value object
+        // uses a value converter that EF Core can't translate in comparisons.
+        private IQueryable<Expense> BuildFilteredQuery(
+            int userId,
+            string? category,
+            string? search,
+            DateTime? dateFrom,
+            DateTime? dateTo)
         {
             var query = _context.Expenses
                 .Where(e => e.UserId == userId)
@@ -56,24 +63,84 @@ namespace Spendly.Infrastructure.Repositories
             if (!string.IsNullOrWhiteSpace(category))
                 query = query.Where(e => e.Category.ToLower() == category.ToLower());
 
-            return await query
-                .OrderByDescending(e => e.Date)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            if (!string.IsNullOrWhiteSpace(search))
+                query = query.Where(e => e.Description.ToLower().Contains(search.ToLower()));
+
+            if (dateFrom.HasValue)
+                query = query.Where(e => e.Date >= dateFrom.Value);
+
+            if (dateTo.HasValue)
+                query = query.Where(e => e.Date <= dateTo.Value);
+
+            return query;
         }
 
-        // Counts the total number of expenses for a given user and optional category filter.
-        public async Task<int> CountAsync(int userId, string? category)
+        // Applies amount filters in-memory (can't be done in SQL due to Money value converter).
+        private static IEnumerable<Expense> ApplyAmountFilter(
+            IEnumerable<Expense> expenses,
+            decimal? minAmount,
+            decimal? maxAmount)
         {
-            var query = _context.Expenses
-                .Where(e => e.UserId == userId)
-                .AsQueryable();
+            if (minAmount.HasValue)
+                expenses = expenses.Where(e => e.Amount.Value >= minAmount.Value);
 
-            if (!string.IsNullOrWhiteSpace(category))
-                query = query.Where(e => e.Category.ToLower() == category.ToLower());
+            if (maxAmount.HasValue)
+                expenses = expenses.Where(e => e.Amount.Value <= maxAmount.Value);
 
-            return await query.CountAsync();
+            return expenses;
+        }
+
+        // Retrieves a paginated list of expenses with advanced filtering.
+        public async Task<IEnumerable<Expense>> GetAllAsync(
+            int userId,
+            string? category,
+            string? search,
+            DateTime? dateFrom,
+            DateTime? dateTo,
+            decimal? minAmount,
+            decimal? maxAmount,
+            int page,
+            int pageSize)
+        {
+            var query = BuildFilteredQuery(userId, category, search, dateFrom, dateTo);
+
+            // If no amount filter, let SQL handle ordering + pagination entirely
+            if (!minAmount.HasValue && !maxAmount.HasValue)
+            {
+                return await query
+                    .OrderByDescending(e => e.Date)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+            }
+
+            // With amount filters: fetch from DB, filter in-memory, then paginate
+            var allResults = await query.OrderByDescending(e => e.Date).ToListAsync();
+            return ApplyAmountFilter(allResults, minAmount, maxAmount)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+
+        // Counts the total number of expenses matching the filters.
+        public async Task<int> CountAsync(
+            int userId,
+            string? category,
+            string? search,
+            DateTime? dateFrom,
+            DateTime? dateTo,
+            decimal? minAmount,
+            decimal? maxAmount)
+        {
+            var query = BuildFilteredQuery(userId, category, search, dateFrom, dateTo);
+
+            // If no amount filter, count directly in SQL
+            if (!minAmount.HasValue && !maxAmount.HasValue)
+                return await query.CountAsync();
+
+            // With amount filters: fetch then count in-memory
+            var allResults = await query.ToListAsync();
+            return ApplyAmountFilter(allResults, minAmount, maxAmount).Count();
         }
 
         // ─── Métodos para Dashboard ───
