@@ -29,6 +29,11 @@ namespace Spendly.Web.Services
 
         public async Task<PagedExpenseResult> GetAllAsync(
             string? category = null,
+            string? search = null,
+            DateTime? dateFrom = null,
+            DateTime? dateTo = null,
+            decimal? minAmount = null,
+            decimal? maxAmount = null,
             int page = 1,
             int pageSize = 10)
         {
@@ -37,6 +42,16 @@ namespace Spendly.Web.Services
             var url = $"api/expenses?page={page}&pageSize={pageSize}";
             if (!string.IsNullOrWhiteSpace(category))
                 url += $"&category={Uri.EscapeDataString(category)}";
+            if (!string.IsNullOrWhiteSpace(search))
+                url += $"&search={Uri.EscapeDataString(search)}";
+            if (dateFrom.HasValue)
+                url += $"&dateFrom={dateFrom.Value:yyyy-MM-dd}";
+            if (dateTo.HasValue)
+                url += $"&dateTo={dateTo.Value:yyyy-MM-dd}";
+            if (minAmount.HasValue)
+                url += $"&minAmount={minAmount.Value}";
+            if (maxAmount.HasValue)
+                url += $"&maxAmount={maxAmount.Value}";
 
             var response = await _http.GetAsync(url);
 
