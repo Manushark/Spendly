@@ -244,11 +244,11 @@ namespace Spendly.Tests.UseCases
                 .ToList();
 
             var repo = new Mock<IExpenseRepository>();
-            repo.Setup(r => r.GetAllAsync(1, null, 1, 10)).ReturnsAsync(expenses);
-            repo.Setup(r => r.CountAsync(1, null)).ReturnsAsync(15);
+            repo.Setup(r => r.GetAllAsync(1, null, null, null, null, null, null, 1, 10)).ReturnsAsync(expenses);
+            repo.Setup(r => r.CountAsync(1, null, null, null, null, null, null)).ReturnsAsync(15);
 
             var useCase = new ListExpensesUseCase(repo.Object);
-            var result = await useCase.ExecuteAsync(userId: 1, category: null, page: 1, pageSize: 10);
+            var result = await useCase.ExecuteAsync(userId: 1, category: null, search: null, dateFrom: null, dateTo: null, minAmount: null, maxAmount: null, page: 1, pageSize: 10);
 
             Assert.Equal(15, result.TotalCount);
             Assert.Equal(2, result.TotalPages);

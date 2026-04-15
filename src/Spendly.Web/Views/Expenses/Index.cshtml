@@ -1,9 +1,18 @@
 @model Spendly.Web.Contracts.Expenses.PagedExpenseResult
+@using Spendly.Web.Services
 
 @{
     ViewData["Title"] = "My Expenses";
     var currentCategory = ViewBag.Category as string;
+    var currentSearch = ViewBag.Search as string;
+    var dateFrom = ViewBag.DateFrom as DateTime?;
+    var dateTo = ViewBag.DateTo as DateTime?;
+    var minAmount = ViewBag.MinAmount as decimal?;
+    var maxAmount = ViewBag.MaxAmount as decimal?;
     var currentPage = (int)(ViewBag.CurrentPage ?? 1);
+    var categories = ViewBag.Categories as List<CategoryViewModel> ?? new List<CategoryViewModel>();
+    var hasActiveFilters = !string.IsNullOrEmpty(currentCategory) || !string.IsNullOrEmpty(currentSearch)
+        || dateFrom.HasValue || dateTo.HasValue || minAmount.HasValue || maxAmount.HasValue;
 }
 
 <div class="container-fluid py-4">
@@ -13,7 +22,7 @@
             <small class="text-muted">Manage your transactions</small>
         </div>
     </div>
-    @* Error / success alerts *@
+
     @if (TempData["Error"] is string errorMsg)
     {
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -30,41 +39,123 @@
     }
 
     <div class="row g-4">
-        @* ── Main Content: Filters & Expense List (Left Column) ── *@
+        @* Main Content: Filters & Expense List *@
         <div class="col-lg-8">
-            
-            @* Filter bar *@
+
+            @* Advanced Filter Bar *@
             <div class="card mb-4 border-0 bg-light shadow-sm" style="border-radius: 12px;">
                 <div class="card-body py-3 px-4">
-                    <form asp-action="Index" method="get" class="row g-2 align-items-center">
-                        <div class="col-auto">
-                            <label class="col-form-label fw-semibold text-muted">Filter by Category:</label>
-                        </div>
-                        <div class="col-md-5 col-12">
-                            <input type="text" name="category" value="@currentCategory"
-                                   class="form-control"
-                                   placeholder="e.g. Food, Transport…" />
-                        </div>
-                        <div class="col-auto">
-                            <button type="submit" class="btn btn-primary px-3">
-                                <i class="bi bi-search"></i>
-                            </button>
-                            @if (!string.IsNullOrEmpty(currentCategory))
-                            {
-                                <a asp-action="Index" class="btn btn-outline-secondary ms-1 px-3">
-                                    <i class="bi bi-x-lg"></i>
-                                </a>
-                            }
-                        </div>
-                        @if (!string.IsNullOrEmpty(currentCategory))
-                        {
-                            <div class="col-auto ms-auto">
-                                <span class="badge bg-primary px-3 py-2">Searching: @currentCategory</span>
+                    <form asp-action="Index" method="get">
+                        @* Search & Category Row *@
+                        <div class="row g-2 align-items-end mb-2">
+                            <div class="col-md-5">
+                                <label class="form-label text-muted small fw-semibold mb-1">Search</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                                    <input type="text" name="search" value="@currentSearch"
+                                           class="form-control border-start-0 ps-0"
+                                           placeholder="Search description..." />
+                                </div>
                             </div>
-                        }
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small fw-semibold mb-1">Category</label>
+                                <select name="category" class="form-select" style="border-radius:10px; padding:10px 15px;">
+                                    <option value="">All Categories</option>
+                                    @foreach (var cat in categories)
+                                    {
+                                        <option value="@cat.Name" selected="@(currentCategory == cat.Name)">
+                                            @cat.Name
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex gap-1">
+                                <button type="submit" class="btn btn-primary flex-grow-1">
+                                    <i class="bi bi-funnel"></i> Filter
+                                </button>
+                                @if (hasActiveFilters)
+                                {
+                                    <a asp-action="Index" class="btn btn-outline-secondary">
+                                        <i class="bi bi-x-lg"></i>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+
+                        @* Collapsible Advanced Filters *@
+                        <div class="collapse @(dateFrom.HasValue || dateTo.HasValue || minAmount.HasValue || maxAmount.HasValue ? "show" : "")"
+                             id="advancedFilters">
+                            <hr class="my-2 opacity-25" />
+                            <div class="row g-2">
+                                <div class="col-md-3">
+                                    <label class="form-label text-muted small fw-semibold mb-1">From Date</label>
+                                    <input type="date" name="dateFrom" class="form-control"
+                                           value="@(dateFrom?.ToString("yyyy-MM-dd"))" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label text-muted small fw-semibold mb-1">To Date</label>
+                                    <input type="date" name="dateTo" class="form-control"
+                                           value="@(dateTo?.ToString("yyyy-MM-dd"))" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label text-muted small fw-semibold mb-1">Min Amount</label>
+                                    <input type="number" name="minAmount" step="0.01" min="0"
+                                           class="form-control" placeholder="$0"
+                                           value="@minAmount" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label text-muted small fw-semibold mb-1">Max Amount</label>
+                                    <input type="number" name="maxAmount" step="0.01" min="0"
+                                           class="form-control" placeholder="$999"
+                                           value="@maxAmount" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-2">
+                            <button class="btn btn-link btn-sm text-muted text-decoration-none p-0"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                                <i class="bi bi-sliders2 me-1"></i>
+                                Advanced Filters
+                                <i class="bi bi-chevron-down ms-1" style="font-size:0.7rem;"></i>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
+
+            @* Active Filters Badges *@
+            @if (hasActiveFilters)
+            {
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    @if (!string.IsNullOrEmpty(currentSearch))
+                    {
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+                            <i class="bi bi-search me-1"></i> "@currentSearch"
+                        </span>
+                    }
+                    @if (!string.IsNullOrEmpty(currentCategory))
+                    {
+                        <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill">
+                            <i class="bi bi-tag me-1"></i> @currentCategory
+                        </span>
+                    }
+                    @if (dateFrom.HasValue || dateTo.HasValue)
+                    {
+                        <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">
+                            <i class="bi bi-calendar me-1"></i>
+                            @(dateFrom?.ToString("MMM dd") ?? "...") - @(dateTo?.ToString("MMM dd") ?? "...")
+                        </span>
+                    }
+                    @if (minAmount.HasValue || maxAmount.HasValue)
+                    {
+                        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                            <i class="bi bi-currency-dollar me-1"></i>
+                            $@(minAmount?.ToString("N0") ?? "0") - $@(maxAmount?.ToString("N0") ?? "...")
+                        </span>
+                    }
+                </div>
+            }
 
             @* Expense list *@
             @if (Model.Items.Any())
@@ -74,7 +165,7 @@
                         <h5 class="mb-0 fw-semibold"><i class="bi bi-list-ul text-primary me-2"></i>Recent Transactions</h5>
                         <small class="text-muted bg-light px-3 py-1 rounded-pill">
                             Showing
-                            @((currentPage - 1) * Model.PageSize + 1)–@(Math.Min(currentPage * Model.PageSize, Model.TotalCount))
+                            @((currentPage - 1) * Model.PageSize + 1)&ndash;@(Math.Min(currentPage * Model.PageSize, Model.TotalCount))
                             of @Model.TotalCount
                         </small>
                     </div>
@@ -94,10 +185,24 @@
                                 <tbody>
                                     @foreach (var e in Model.Items)
                                     {
+                                        var matchedCat = categories.FirstOrDefault(c => c.Name == e.Category);
                                         <tr>
                                             <td class="ps-4 fw-medium text-dark">@e.Description</td>
                                             <td class="text-danger fw-bold">-$@e.Amount.ToString("N2")</td>
-                                            <td><span class="badge bg-secondary bg-opacity-10 text-dark px-2 py-1"><i class="bi bi-tag-fill me-1 opacity-50"></i>@e.Category</span></td>
+                                            <td>
+                                                @if (matchedCat != null)
+                                                {
+                                                    <span class="badge px-2 py-1" style="background: @(matchedCat.Color)20; color: @matchedCat.Color; border: 1px solid @(matchedCat.Color)40;">
+                                                        <i class="bi @matchedCat.Icon me-1"></i>@e.Category
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary bg-opacity-10 text-dark px-2 py-1">
+                                                        <i class="bi bi-tag-fill me-1 opacity-50"></i>@e.Category
+                                                    </span>
+                                                }
+                                            </td>
                                             <td class="text-muted"><small>@e.Date.ToString("MMM dd, yyyy")</small></td>
                                             <td class="text-center pe-4">
                                                 <a asp-action="Edit" asp-route-id="@e.Id"
@@ -128,12 +233,16 @@
                         <div class="card-footer bg-white border-top-0 pt-4 pb-4">
                             <nav aria-label="Expenses pagination">
                                 <ul class="pagination pagination-sm mb-0 justify-content-center">
-
                                     <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
                                         <a class="page-link border-0 text-dark fw-bold"
                                            asp-action="Index"
                                            asp-route-page="@(currentPage - 1)"
                                            asp-route-category="@currentCategory"
+                                           asp-route-search="@currentSearch"
+                                           asp-route-dateFrom="@(dateFrom?.ToString("yyyy-MM-dd"))"
+                                           asp-route-dateTo="@(dateTo?.ToString("yyyy-MM-dd"))"
+                                           asp-route-minAmount="@minAmount"
+                                           asp-route-maxAmount="@maxAmount"
                                            tabindex="@(!Model.HasPreviousPage ? -1 : 0)">
                                             <i class="bi bi-chevron-left"></i>
                                         </a>
@@ -146,10 +255,16 @@
                                     @for (int p = start; p <= end; p++)
                                     {
                                         <li class="page-item @(p == currentPage ? "active" : "")">
-                                            <a class="page-link border-0 mx-1 rounded-circle @(p == currentPage ? "shadow-sm" : "bg-transparent text-dark")" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;"
+                                            <a class="page-link border-0 mx-1 rounded-circle @(p == currentPage ? "shadow-sm" : "bg-transparent text-dark")"
+                                               style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;"
                                                asp-action="Index"
                                                asp-route-page="@p"
-                                               asp-route-category="@currentCategory">@p</a>
+                                               asp-route-category="@currentCategory"
+                                               asp-route-search="@currentSearch"
+                                               asp-route-dateFrom="@(dateFrom?.ToString("yyyy-MM-dd"))"
+                                               asp-route-dateTo="@(dateTo?.ToString("yyyy-MM-dd"))"
+                                               asp-route-minAmount="@minAmount"
+                                               asp-route-maxAmount="@maxAmount">@p</a>
                                         </li>
                                     }
 
@@ -158,11 +273,15 @@
                                            asp-action="Index"
                                            asp-route-page="@(currentPage + 1)"
                                            asp-route-category="@currentCategory"
+                                           asp-route-search="@currentSearch"
+                                           asp-route-dateFrom="@(dateFrom?.ToString("yyyy-MM-dd"))"
+                                           asp-route-dateTo="@(dateTo?.ToString("yyyy-MM-dd"))"
+                                           asp-route-minAmount="@minAmount"
+                                           asp-route-maxAmount="@maxAmount"
                                            tabindex="@(!Model.HasNextPage ? -1 : 0)">
                                             <i class="bi bi-chevron-right"></i>
                                         </a>
                                     </li>
-
                                 </ul>
                             </nav>
                         </div>
@@ -175,9 +294,9 @@
                     <div class="text-primary fs-1 me-4 opacity-50"><i class="bi bi-inbox"></i></div>
                     <div>
                         <h5 class="mb-1 fw-bold">No expenses found</h5>
-                        @if (!string.IsNullOrEmpty(currentCategory))
+                        @if (hasActiveFilters)
                         {
-                            <p class="mb-0 text-muted">No transactions matched the category <strong>@currentCategory</strong>.</p>
+                            <p class="mb-0 text-muted">No transactions matched your filters. Try adjusting them.</p>
                         }
                         else
                         {
@@ -188,7 +307,7 @@
             }
         </div>
 
-        @* ── Right Sidebar: Add Expense Form (Right Column) ── *@
+        @* Right Sidebar: Add Expense Form *@
         <div class="col-lg-4">
             <div class="card shadow-sm border-0 position-sticky" style="top: 20px; border-radius: 16px;">
                 <div class="card-header bg-white border-0 pt-4 pb-0 text-center">
@@ -201,7 +320,7 @@
                 <div class="card-body p-4 pt-2">
                     <form asp-action="Create" method="post">
                         @Html.AntiForgeryToken()
-                        
+
                         <div class="mb-3">
                             <label class="form-label text-muted small fw-semibold text-uppercase">Amount ($)</label>
                             <div class="input-group">
@@ -219,8 +338,21 @@
 
                         <div class="mb-3">
                             <label class="form-label text-muted small fw-semibold text-uppercase">Category</label>
-                            <input name="Category" class="form-control"
-                                   placeholder="e.g. Food" required maxlength="100" />
+                            @if (categories.Any())
+                            {
+                                <select name="Category" class="form-select" required style="border-radius:10px; padding:12px 15px;">
+                                    <option value="" disabled selected>Select a category</option>
+                                    @foreach (var cat in categories)
+                                    {
+                                        <option value="@cat.Name">@cat.Name</option>
+                                    }
+                                </select>
+                            }
+                            else
+                            {
+                                <input name="Category" class="form-control"
+                                       placeholder="e.g. Food" required maxlength="100" />
+                            }
                         </div>
 
                         <div class="mb-4">

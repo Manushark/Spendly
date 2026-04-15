@@ -1,7 +1,7 @@
 using Spendly.Application.DTOs.Auth;
 using Spendly.Application.Interfaces;
-using Spendly.Domain.Entities;
 using Spendly.Domain.Exceptions;
+using UserEntity = Spendly.Domain.Entities.User;
 
 namespace Spendly.Application.UseCases.Auth
 {
@@ -9,11 +9,16 @@ namespace Spendly.Application.UseCases.Auth
     {
         private readonly IUserRepository _userRepository;
         private readonly IJwtTokenGenerator _jwt;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public RegisterUseCase(IUserRepository userRepository, IJwtTokenGenerator jwt)
+        public RegisterUseCase(
+            IUserRepository userRepository,
+            IJwtTokenGenerator jwt,
+            ICategoryRepository categoryRepository)
         {
             _userRepository = userRepository;
             _jwt = jwt;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<AuthResponseDto> ExecuteAsync(RegisterDto dto)
@@ -35,9 +40,12 @@ namespace Spendly.Application.UseCases.Auth
                 throw new InvalidDomainException("Email is already registered.");
 
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-            var user = User.Create(dto.Email, passwordHash);
+            var user = UserEntity.Create(dto.Email, passwordHash);
 
             await _userRepository.AddAsync(user);
+
+            // Seed default categories for the new user
+            await _categoryRepository.SeedDefaultsAsync(user.Id);
 
             var token = _jwt.GenerateToken(user);
 
@@ -48,3 +56,4 @@ namespace Spendly.Application.UseCases.Auth
         }
     }
 }
+

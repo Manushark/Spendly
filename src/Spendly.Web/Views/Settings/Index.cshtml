@@ -1,0 +1,330 @@
+@using Spendly.Web.Services
+@{
+    ViewData["Title"] = "Settings";
+    var profile = ViewBag.Profile as UserProfileResponse;
+    var categories = ViewBag.Categories as List<CategoryViewModel> ?? new List<CategoryViewModel>();
+}
+
+<div class="container-fluid py-4">
+    <div class="mb-4">
+        <h2 class="mb-1"><i class="bi bi-gear text-primary"></i> Settings</h2>
+        <small class="text-muted">Manage your profile, preferences, and categories</small>
+    </div>
+
+    @if (TempData["Error"] is string errorMsg)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Success"] is string successMsg)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@successMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        @* ── Profile Section ── *@
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0" style="border-radius: 16px;">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-person-circle text-primary me-2"></i>Profile</h5>
+                    <small class="text-muted">Update your personal information</small>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-controller="Settings" asp-action="UpdateProfile" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-semibold text-uppercase">Email</label>
+                            <input type="email" class="form-control bg-light" value="@profile?.Email" disabled />
+                            <small class="text-muted">Email cannot be changed</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-semibold text-uppercase">Full Name</label>
+                            <input name="FullName" type="text" class="form-control"
+                                   value="@profile?.FullName" placeholder="e.g. John Doe" maxlength="100" />
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-semibold text-uppercase">Currency</label>
+                                <select name="PreferredCurrency" class="form-select" style="border-radius:10px; padding:12px 15px;">
+                                    @{
+                                        var currencies = new[] { "USD", "EUR", "GBP", "DOP", "MXN", "COP", "ARS", "BRL", "CLP", "PEN", "CAD", "JPY" };
+                                    }
+                                    @foreach (var c in currencies)
+                                    {
+                                        <option value="@c" selected="@(profile?.PreferredCurrency == c)">@c</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-semibold text-uppercase">Time Zone</label>
+                                <select name="TimeZone" class="form-select" style="border-radius:10px; padding:12px 15px;">
+                                    @{
+                                        var timezones = new[] {
+                                            "UTC", "America/New_York", "America/Chicago", "America/Denver",
+                                            "America/Los_Angeles", "America/Santo_Domingo", "America/Mexico_City",
+                                            "America/Bogota", "America/Sao_Paulo", "America/Argentina/Buenos_Aires",
+                                            "Europe/London", "Europe/Paris", "Europe/Madrid", "Asia/Tokyo"
+                                        };
+                                    }
+                                    @foreach (var tz in timezones)
+                                    {
+                                        <option value="@tz" selected="@(profile?.TimeZone == tz)">@tz</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <small class="text-muted">
+                                <i class="bi bi-clock me-1"></i>Member since @(profile?.CreatedAt.ToString("MMM yyyy") ?? "—")
+                            </small>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-check-lg me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        @* ── Change Password Section ── *@
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0" style="border-radius: 16px;">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-shield-lock text-warning me-2"></i>Security</h5>
+                    <small class="text-muted">Change your account password</small>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-controller="Settings" asp-action="ChangePassword" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-semibold text-uppercase">Current Password</label>
+                            <input name="CurrentPassword" type="password" class="form-control"
+                                   placeholder="Enter current password" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-semibold text-uppercase">New Password</label>
+                            <input name="NewPassword" type="password" class="form-control"
+                                   placeholder="Min. 6 characters" required minlength="6" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-semibold text-uppercase">Confirm New Password</label>
+                            <input name="ConfirmNewPassword" type="password" class="form-control"
+                                   placeholder="Confirm new password" required minlength="6" />
+                        </div>
+
+                        <button type="submit" class="btn btn-warning w-100 py-3 rounded-3 fw-bold">
+                            <i class="bi bi-key me-1"></i> Change Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        @* ── Categories Section ── *@
+        <div class="col-12">
+            <div class="card shadow-sm border-0" style="border-radius: 16px;">
+                <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold mb-0"><i class="bi bi-palette text-success me-2"></i>Categories</h5>
+                        <small class="text-muted">Customize your expense categories with icons and colors</small>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                        <i class="bi bi-plus-lg me-1"></i> Add Category
+                    </button>
+                </div>
+                <div class="card-body p-4">
+                    @if (categories.Any())
+                    {
+                        <div class="row g-3">
+                            @foreach (var cat in categories)
+                            {
+                                <div class="col-md-4 col-lg-3">
+                                    <div class="d-flex align-items-center p-3 rounded-3 border position-relative"
+                                         style="background: @(cat.Color)10; border-color: @(cat.Color)30 !important; transition: all 0.2s;">
+                                        <div class="d-flex align-items-center justify-content-center rounded-circle me-3"
+                                             style="width: 42px; height: 42px; background: @cat.Color; color: white; font-size: 1.1rem; flex-shrink: 0;">
+                                            <i class="bi @cat.Icon"></i>
+                                        </div>
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <div class="fw-semibold text-truncate">@cat.Name</div>
+                                            @if (cat.IsDefault)
+                                            {
+                                                <small class="text-muted" style="font-size: 0.7rem;">Default</small>
+                                            }
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-light border-0" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                                <li>
+                                                    <button type="button" class="dropdown-item"
+                                                            onclick="openEditModal(@cat.Id)">
+                                                        <i class="bi bi-pencil me-2"></i>Edit
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <form asp-action="DeleteCategory" asp-route-id="@cat.Id" method="post">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="dropdown-item text-danger"
+                                                                onclick="return confirm('Delete this category?');">
+                                                            <i class="bi bi-trash me-2"></i>Delete
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="bi bi-palette display-4 text-muted opacity-50"></i>
+                            <p class="text-muted mt-2">No categories yet. Create your first one!</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ── Edit Category Modals (rendered outside main layout to avoid flicker) ── *@
+@foreach (var cat in categories)
+{
+    <div class="modal fade" id="editCategoryModal-@cat.Id" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Edit Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="UpdateCategory" asp-route-id="@cat.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Name</label>
+                            <input name="Name" class="form-control" value="@cat.Name" required maxlength="50" />
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Icon (Bootstrap)</label>
+                                <select name="Icon" class="form-select" style="border-radius:10px; padding:12px 15px;">
+                                    @{
+                                        var iconOptions = new[] {
+                                            ("bi-cup-hot", "☕ Cup"), ("bi-car-front", "🚗 Car"), ("bi-controller", "🎮 Controller"),
+                                            ("bi-bag", "🛍️ Bag"), ("bi-heart-pulse", "❤️ Health"), ("bi-book", "📚 Book"),
+                                            ("bi-lightning", "⚡ Lightning"), ("bi-house", "🏠 House"), ("bi-phone", "📱 Phone"),
+                                            ("bi-music-note", "🎵 Music"), ("bi-airplane", "✈️ Travel"), ("bi-gift", "🎁 Gift"),
+                                            ("bi-tools", "🔧 Tools"), ("bi-basket", "🧺 Groceries"), ("bi-droplet", "💧 Water"),
+                                            ("bi-wifi", "📶 Internet"), ("bi-scissors", "✂️ Personal Care"), ("bi-briefcase", "💼 Work"),
+                                            ("bi-trophy", "🏆 Sports"), ("bi-three-dots", "⋯ Other")
+                                        };
+                                    }
+                                    @foreach (var (val, label) in iconOptions)
+                                    {
+                                        <option value="@val" selected="@(cat.Icon == val)">@label</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Color</label>
+                                <input name="Color" type="color" class="form-control form-control-color w-100"
+                                       value="@cat.Color" required style="height:46px;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+@* Add Category Modal *@
+<div class="modal fade" id="addCategoryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle text-primary me-2"></i>New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="CreateCategory" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Name</label>
+                        <input name="Name" class="form-control" required maxlength="50"
+                               placeholder="e.g. Subscriptions" />
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Icon (Bootstrap)</label>
+                            <select name="Icon" class="form-select" style="border-radius:10px; padding:12px 15px;">
+                                <option value="bi-cup-hot">☕ Cup (bi-cup-hot)</option>
+                                <option value="bi-car-front">🚗 Car (bi-car-front)</option>
+                                <option value="bi-controller">🎮 Controller (bi-controller)</option>
+                                <option value="bi-bag">🛍️ Bag (bi-bag)</option>
+                                <option value="bi-heart-pulse">❤️ Health (bi-heart-pulse)</option>
+                                <option value="bi-book">📚 Book (bi-book)</option>
+                                <option value="bi-lightning">⚡ Lightning (bi-lightning)</option>
+                                <option value="bi-house">🏠 House (bi-house)</option>
+                                <option value="bi-phone">📱 Phone (bi-phone)</option>
+                                <option value="bi-music-note">🎵 Music (bi-music-note)</option>
+                                <option value="bi-airplane">✈️ Travel (bi-airplane)</option>
+                                <option value="bi-gift">🎁 Gift (bi-gift)</option>
+                                <option value="bi-tools">🔧 Tools (bi-tools)</option>
+                                <option value="bi-basket">🧺 Groceries (bi-basket)</option>
+                                <option value="bi-droplet">💧 Water (bi-droplet)</option>
+                                <option value="bi-wifi">📶 Internet (bi-wifi)</option>
+                                <option value="bi-scissors">✂️ Personal Care (bi-scissors)</option>
+                                <option value="bi-briefcase">💼 Work (bi-briefcase)</option>
+                                <option value="bi-trophy">🏆 Sports (bi-trophy)</option>
+                                <option value="bi-three-dots">⋯ Other (bi-three-dots)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Color</label>
+                            <input name="Color" type="color" class="form-control form-control-color w-100"
+                                   value="#6c5ce7" required style="height:46px;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-lg me-1"></i> Create Category
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openEditModal(categoryId) {
+        // Small delay to let the dropdown close before opening the modal
+        setTimeout(function () {
+            var modal = new bootstrap.Modal(document.getElementById('editCategoryModal-' + categoryId));
+            modal.show();
+        }, 150);
+    }
+</script>

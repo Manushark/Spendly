@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +15,7 @@ namespace Spendly.Infrastructure.Persistence
         public DbSet<User> Users { get; set; }
         public DbSet<Budget> Budgets { get; set; } = null!;
         public DbSet<RecurringExpense> RecurringExpenses { get; set; } = null!;
+        public DbSet<Category> Categories { get; set; } = null!;
 
         public SpendlyDbContext(DbContextOptions<SpendlyDbContext> options)
             : base(options)
@@ -26,6 +27,7 @@ namespace Spendly.Infrastructure.Persistence
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new BudgetConfiguration());
             modelBuilder.ApplyConfiguration(new RecurringExpenseConfiguration());
+            modelBuilder.ApplyConfiguration(new CategoryConfiguration());
         }
 
     }

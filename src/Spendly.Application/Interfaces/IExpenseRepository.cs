@@ -14,11 +14,16 @@ namespace Spendly.Application.Interfaces
         Task<IEnumerable<Expense>> GetAllAsync(
             int userId,
             string? category,
+            string? search,
+            DateTime? dateFrom,
+            DateTime? dateTo,
+            decimal? minAmount,
+            decimal? maxAmount,
             int page,
             int pageSize
             );
 
-        Task<int> CountAsync(int userId, string? category);
+        Task<int> CountAsync(int userId, string? category, string? search, DateTime? dateFrom, DateTime? dateTo, decimal? minAmount, decimal? maxAmount);
 
 
         // ─── Métodos para Dashboard ───

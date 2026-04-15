@@ -24,10 +24,19 @@ namespace Spendly.Application.UseCase.ListExpenses
             _expenseRepository = expenseRepository;
         }
 
-        public async Task<PagedResult<ExpenseResponseDto>> ExecuteAsync(int userId, string? category, int page, int pageSize)
+        public async Task<PagedResult<ExpenseResponseDto>> ExecuteAsync(
+            int userId,
+            string? category,
+            string? search,
+            DateTime? dateFrom,
+            DateTime? dateTo,
+            decimal? minAmount,
+            decimal? maxAmount,
+            int page,
+            int pageSize)
         {
-            var expenses = await _expenseRepository.GetAllAsync(userId, category, page, pageSize);
-            var total = await _expenseRepository.CountAsync(userId, category);
+            var expenses = await _expenseRepository.GetAllAsync(userId, category, search, dateFrom, dateTo, minAmount, maxAmount, page, pageSize);
+            var total = await _expenseRepository.CountAsync(userId, category, search, dateFrom, dateTo, minAmount, maxAmount);
 
             return new PagedResult<ExpenseResponseDto>
             {
@@ -38,4 +47,4 @@ namespace Spendly.Application.UseCase.ListExpenses
             };
         }
     }
-}
+}
