@@ -8,10 +8,12 @@ namespace Spendly.Web.Controllers
     public class ExpensesController : Controller
     {
         private readonly ExpenseApiClient _api;
+        private readonly CategoryApiClient _categoryApi;
 
-        public ExpensesController(ExpenseApiClient api)
+        public ExpensesController(ExpenseApiClient api, CategoryApiClient categoryApi)
         {
             _api = api;
+            _categoryApi = categoryApi;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -27,18 +29,25 @@ namespace Spendly.Web.Controllers
 
         public async Task<IActionResult> Index(
             [FromQuery] string? category = null,
+            [FromQuery] string? search = null,
+            [FromQuery] DateTime? dateFrom = null,
+            [FromQuery] DateTime? dateTo = null,
+            [FromQuery] decimal? minAmount = null,
+            [FromQuery] decimal? maxAmount = null,
             [FromQuery] int page = 1)
         {
-            var result = await _api.GetAllAsync(category, page, pageSize: 10);
-
-            // Si la sesión expiró en el servidor, redirigir al login
-            if (result.TotalCount == 0 && HttpContext.Session.GetString("token") != null)
-            {
-                // Podría ser token expirado; se muestra vacío sin crash
-            }
+            var result = await _api.GetAllAsync(category, search, dateFrom, dateTo, minAmount, maxAmount, page, pageSize: 10);
+            var categories = await _categoryApi.GetAllAsync();
 
             ViewBag.Category = category;
+            ViewBag.Search = search;
+            ViewBag.DateFrom = dateFrom;
+            ViewBag.DateTo = dateTo;
+            ViewBag.MinAmount = minAmount;
+            ViewBag.MaxAmount = maxAmount;
             ViewBag.CurrentPage = page;
+            ViewBag.Categories = categories;
+
             return View(result);
         }
 
@@ -50,6 +59,8 @@ namespace Spendly.Web.Controllers
                 TempData["Error"] = "Expense not found or you don't have access to it.";
                 return RedirectToAction(nameof(Index));
             }
+            var categories = await _categoryApi.GetAllAsync();
+            ViewBag.Categories = categories;
             return View(expense);
         }
 

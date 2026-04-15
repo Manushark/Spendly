@@ -48,6 +48,18 @@ builder.Services.AddHttpClient<ExpenseApiClient>(client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+// User profile API client
+builder.Services.AddHttpClient<UserApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
+// Category API client
+builder.Services.AddHttpClient<CategoryApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
