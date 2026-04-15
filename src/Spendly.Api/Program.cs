@@ -18,6 +18,8 @@ using Spendly.Application.UseCases.Budgets;
 using Spendly.Application.Services;
 using Spendly.Application.UseCases.RecurringExpenses;
 using Spendly.Infrastructure.Jobs;
+using Spendly.Application.UseCases.User;
+using Spendly.Application.UseCases.Categories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -104,6 +106,7 @@ builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
 builder.Services.AddScoped<IRecurringExpenseRepository, RecurringExpenseRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 // ────────────────────────────────────────────────────────────
 // Use Cases — Expenses
@@ -133,6 +136,21 @@ builder.Services.AddScoped<GetDashboardStatsUseCase>();
 // ────────────────────────────────────────────────────────────
 builder.Services.AddScoped<LoginUseCase>();
 builder.Services.AddScoped<RegisterUseCase>();
+
+// ────────────────────────────────────────────────────────────
+// Use Cases — User Profile
+// ────────────────────────────────────────────────────────────
+builder.Services.AddScoped<GetUserProfileUseCase>();
+builder.Services.AddScoped<UpdateUserProfileUseCase>();
+builder.Services.AddScoped<ChangePasswordUseCase>();
+
+// ────────────────────────────────────────────────────────────
+// Use Cases — Categories
+// ────────────────────────────────────────────────────────────
+builder.Services.AddScoped<GetCategoriesUseCase>();
+builder.Services.AddScoped<CreateCategoryUseCase>();
+builder.Services.AddScoped<UpdateCategoryUseCase>();
+builder.Services.AddScoped<DeleteCategoryUseCase>();
 
 // ────────────────────────────────────────────────────────────
 // Use Cases — Recurring Expenses

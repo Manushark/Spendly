@@ -46,6 +46,11 @@ namespace Spendly.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll(
             [FromQuery] string? category,
+            [FromQuery] string? search,
+            [FromQuery] DateTime? dateFrom,
+            [FromQuery] DateTime? dateTo,
+            [FromQuery] decimal? minAmount,
+            [FromQuery] decimal? maxAmount,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
@@ -56,7 +61,7 @@ namespace Spendly.Api.Controllers
                 return BadRequest("pageSize cannot exceed 100.");
 
             var userId = User.GetUserId();
-            var result = await _listExpensesUseCase.ExecuteAsync(userId, category, page, pageSize);
+            var result = await _listExpensesUseCase.ExecuteAsync(userId, category, search, dateFrom, dateTo, minAmount, maxAmount, page, pageSize);
             return Ok(result);
         }
 
