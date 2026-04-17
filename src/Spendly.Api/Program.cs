@@ -20,6 +20,9 @@ using Spendly.Application.UseCases.RecurringExpenses;
 using Spendly.Infrastructure.Jobs;
 using Spendly.Application.UseCases.User;
 using Spendly.Application.UseCases.Categories;
+using Spendly.Application.UseCases.Incomes;
+using Spendly.Application.UseCases.Notifications;
+using Spendly.Application.UseCases.Exports;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -116,6 +119,8 @@ builder.Services.AddScoped<ListExpensesUseCase>();
 builder.Services.AddScoped<GetExpenseByIdUseCase>();
 builder.Services.AddScoped<DeleteExpenseUseCase>();
 builder.Services.AddScoped<UpdateExpenseUseCase>();
+builder.Services.AddScoped<ExportExpensesCsvUseCase>();
+builder.Services.AddScoped<ExportMonthlyReportUseCase>();
 
 // ────────────────────────────────────────────────────────────
 // Use Cases — Budgets
@@ -151,6 +156,26 @@ builder.Services.AddScoped<GetCategoriesUseCase>();
 builder.Services.AddScoped<CreateCategoryUseCase>();
 builder.Services.AddScoped<UpdateCategoryUseCase>();
 builder.Services.AddScoped<DeleteCategoryUseCase>();
+
+// ────────────────────────────────────────────────────────────
+// Use Cases — Incomes
+// ────────────────────────────────────────────────────────────
+builder.Services.AddScoped<IIncomeRepository, IncomeRepository>();
+builder.Services.AddScoped<CreateIncomeUseCase>();
+builder.Services.AddScoped<UpdateIncomeUseCase>();
+builder.Services.AddScoped<DeleteIncomeUseCase>();
+builder.Services.AddScoped<ListIncomesUseCase>();
+builder.Services.AddScoped<GetIncomeByIdUseCase>();
+
+// ────────────────────────────────────────────────────────────
+// Use Cases — Notifications & Budget Alerts
+// ────────────────────────────────────────────────────────────
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<GetNotificationsUseCase>();
+builder.Services.AddScoped<MarkNotificationReadUseCase>();
+builder.Services.AddScoped<MarkAllNotificationsReadUseCase>();
+builder.Services.AddScoped<GetUnreadCountUseCase>();
+builder.Services.AddScoped<BudgetAlertService>();
 
 // ────────────────────────────────────────────────────────────
 // Use Cases — Recurring Expenses

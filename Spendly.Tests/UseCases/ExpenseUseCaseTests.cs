@@ -1,6 +1,7 @@
 using Moq;
 using Spendly.Application.DTOs.Expense;
 using Spendly.Application.Interfaces;
+using Spendly.Application.Services;
 using Spendly.Application.UseCase.CreateExpense;
 using Spendly.Application.UseCase.DeleteExpense;
 using Spendly.Application.UseCase.GetExpenseById;
@@ -37,6 +38,16 @@ namespace Spendly.Tests.UseCases
             return expense;
         }
 
+        private static BudgetAlertService CreateMockAlertService()
+        {
+            var budgetRepo = new Mock<IBudgetRepository>();
+            var expenseRepo = new Mock<IExpenseRepository>();
+            var notificationRepo = new Mock<INotificationRepository>();
+            budgetRepo.Setup(r => r.GetByUserAndMonthAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
+                      .ReturnsAsync(new List<Budget>());
+            return new BudgetAlertService(budgetRepo.Object, expenseRepo.Object, notificationRepo.Object);
+        }
+
         // ──────────────────────────────────────────
         // CreateExpenseUseCase
         // ──────────────────────────────────────────
@@ -46,7 +57,7 @@ namespace Spendly.Tests.UseCases
         {
             var repo = new Mock<IExpenseRepository>();
             repo.Setup(r => r.AddAsync(It.IsAny<Expense>())).Returns(Task.CompletedTask);
-            var useCase = new CreateExpenseUseCase(repo.Object);
+            var useCase = new CreateExpenseUseCase(repo.Object, CreateMockAlertService());
 
             var dto = new CreateExpenseDto
             {
@@ -69,7 +80,7 @@ namespace Spendly.Tests.UseCases
         public async Task Create_FutureDate_ThrowsDomainException()
         {
             var repo = new Mock<IExpenseRepository>();
-            var useCase = new CreateExpenseUseCase(repo.Object);
+            var useCase = new CreateExpenseUseCase(repo.Object, CreateMockAlertService());
 
             var dto = new CreateExpenseDto
             {
@@ -87,7 +98,7 @@ namespace Spendly.Tests.UseCases
         public async Task Create_NegativeAmount_ThrowsArgumentException()
         {
             var repo = new Mock<IExpenseRepository>();
-            var useCase = new CreateExpenseUseCase(repo.Object);
+            var useCase = new CreateExpenseUseCase(repo.Object, CreateMockAlertService());
 
             var dto = new CreateExpenseDto
             {
