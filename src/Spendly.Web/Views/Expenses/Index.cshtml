@@ -21,6 +21,19 @@
             <h2 class="mb-1"><i class="bi bi-receipt text-primary"></i> My Expenses</h2>
             <small class="text-muted">Manage your transactions</small>
         </div>
+        <div class="d-flex gap-2">
+            <a asp-action="ExportCsv"
+               asp-route-category="@currentCategory"
+               asp-route-dateFrom="@(dateFrom?.ToString("yyyy-MM-dd"))"
+               asp-route-dateTo="@(dateTo?.ToString("yyyy-MM-dd"))"
+               class="btn btn-outline-success btn-sm rounded-pill px-3">
+                <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export CSV
+            </a>
+            <a asp-action="ExportReport" target="_blank"
+               class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                <i class="bi bi-file-earmark-pdf me-1"></i> Monthly Report
+            </a>
+        </div>
     </div>
 
     @if (TempData["Error"] is string errorMsg)

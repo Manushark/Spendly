@@ -7,6 +7,7 @@ using Spendly.Application.UseCase.DeleteExpense;
 using Spendly.Application.UseCase.GetExpenseById;
 using Spendly.Application.UseCase.ListExpenses;
 using Spendly.Application.UseCases.Expenses;
+using Spendly.Application.UseCases.Exports;
 
 namespace Spendly.Api.Controllers
 {
@@ -20,19 +21,25 @@ namespace Spendly.Api.Controllers
         private readonly GetExpenseByIdUseCase _getExpenseByIdUseCase;
         private readonly DeleteExpenseUseCase _deleteExpenseUseCase;
         private readonly UpdateExpenseUseCase _updateExpenseUseCase;
+        private readonly ExportExpensesCsvUseCase _exportCsv;
+        private readonly ExportMonthlyReportUseCase _exportReport;
 
         public ExpensesController(
             CreateExpenseUseCase createExpenseUseCase,
             ListExpensesUseCase listExpensesUseCase,
             GetExpenseByIdUseCase getExpenseByIdUseCase,
             DeleteExpenseUseCase deleteExpenseUseCase,
-            UpdateExpenseUseCase updateExpenseUseCase)
+            UpdateExpenseUseCase updateExpenseUseCase,
+            ExportExpensesCsvUseCase exportCsv,
+            ExportMonthlyReportUseCase exportReport)
         {
             _createExpenseUseCase = createExpenseUseCase;
             _listExpensesUseCase = listExpensesUseCase;
             _getExpenseByIdUseCase = getExpenseByIdUseCase;
             _deleteExpenseUseCase = deleteExpenseUseCase;
             _updateExpenseUseCase = updateExpenseUseCase;
+            _exportCsv = exportCsv;
+            _exportReport = exportReport;
         }
 
         [HttpPost]
@@ -93,6 +100,34 @@ namespace Spendly.Api.Controllers
             var userId = User.GetUserId();
             await _updateExpenseUseCase.ExecuteAsync(userId, id, dto);
             return NoContent();
+        }
+
+        /// <summary>
+        /// GET /api/expenses/export/csv
+        /// </summary>
+        [HttpGet("export/csv")]
+        public async Task<IActionResult> ExportCsv(
+            [FromQuery] string? category = null,
+            [FromQuery] DateTime? dateFrom = null,
+            [FromQuery] DateTime? dateTo = null)
+        {
+            var userId = User.GetUserId();
+            var csvBytes = await _exportCsv.ExecuteAsync(userId, category, dateFrom, dateTo);
+            return File(csvBytes, "text/csv", $"spendly-expenses-{DateTime.UtcNow:yyyyMMdd}.csv");
+        }
+
+        /// <summary>
+        /// GET /api/expenses/export/report?month=4&year=2026
+        /// </summary>
+        [HttpGet("export/report")]
+        public async Task<IActionResult> ExportReport(
+            [FromQuery] int? month = null,
+            [FromQuery] int? year = null)
+        {
+            var userId = User.GetUserId();
+            var now = DateTime.UtcNow;
+            var reportHtml = await _exportReport.ExecuteAsync(userId, year ?? now.Year, month ?? now.Month);
+            return Content(reportHtml, "text/html");
         }
     }
 }

@@ -111,5 +111,30 @@ namespace Spendly.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        public async Task<IActionResult> ExportCsv(
+            [FromQuery] string? category = null,
+            [FromQuery] DateTime? dateFrom = null,
+            [FromQuery] DateTime? dateTo = null)
+        {
+            var csvBytes = await _api.ExportCsvAsync(category, dateFrom, dateTo);
+            if (csvBytes == null)
+            {
+                TempData["Error"] = "Failed to export data.";
+                return RedirectToAction(nameof(Index));
+            }
+            return File(csvBytes, "text/csv", $"spendly-expenses-{DateTime.Today:yyyyMMdd}.csv");
+        }
+
+        public async Task<IActionResult> ExportReport([FromQuery] int? month = null, [FromQuery] int? year = null)
+        {
+            var html = await _api.ExportReportAsync(month, year);
+            if (html == null)
+            {
+                TempData["Error"] = "Failed to generate report.";
+                return RedirectToAction(nameof(Index));
+            }
+            return Content(html, "text/html");
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Spendly.Web.Contracts.Dashboard
+namespace Spendly.Web.Contracts.Dashboard
 {
     public class DashboardStatsDto
     {
@@ -8,6 +8,11 @@
         public decimal HighestExpense { get; set; }
         public string TopCategory { get; set; } = string.Empty;
         public int TotalExpensesCount { get; set; }
+
+        // Income & Balance
+        public decimal CurrentMonthIncome { get; set; }
+        public decimal MonthlyBalance { get; set; }
+        public decimal SavingsRate { get; set; }
 
         public List<CategoryStatsDto> CategoryBreakdown { get; set; } = [];
         public List<DailyTrendDto> DailyTrend { get; set; } = [];

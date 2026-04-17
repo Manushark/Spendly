@@ -8,6 +8,11 @@ namespace Spendly.Application.DTOs.Dashboard
         public decimal HighestExpense { get; set; }
         public string TopCategory { get; set; } = string.Empty;
         public int TotalExpensesCount { get; set; }
+
+        // Income & Balance
+        public decimal CurrentMonthIncome { get; set; }
+        public decimal MonthlyBalance { get; set; }
+        public decimal SavingsRate { get; set; }
         
         public IEnumerable<CategoryStatsDto> CategoryBreakdown { get; set; } = [];
         public IEnumerable<DailyTrendDto> DailyTrend { get; set; } = [];

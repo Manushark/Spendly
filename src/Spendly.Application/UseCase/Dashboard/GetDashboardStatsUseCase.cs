@@ -6,8 +6,13 @@ namespace Spendly.Application.UseCase.Dashboard
     public class GetDashboardStatsUseCase
     {
         private readonly IExpenseRepository _repo;
+        private readonly IIncomeRepository _incomeRepo;
 
-        public GetDashboardStatsUseCase(IExpenseRepository repo) => _repo = repo;
+        public GetDashboardStatsUseCase(IExpenseRepository repo, IIncomeRepository incomeRepo)
+        {
+            _repo = repo;
+            _incomeRepo = incomeRepo;
+        }
 
         public async Task<DashboardStatsDto> ExecuteAsync(int userId)
         {
@@ -22,9 +27,18 @@ namespace Spendly.Application.UseCase.Dashboard
             var currentMonthExpenses = (await _repo.GetByDateRangeAsync(userId, currentMonthStart, currentMonthEnd)).ToList();
             var previousMonthExpenses = (await _repo.GetByDateRangeAsync(userId, previousMonthStart, previousMonthEnd)).ToList();
 
+            // Income del mes actual
+            var currentMonthIncome = await _incomeRepo.GetTotalAmountAsync(userId, currentMonthStart, currentMonthEnd);
+
             // Métricas principales
             var currentMonthTotal = currentMonthExpenses.Sum(e => e.Amount.Value);
             var previousMonthTotal = previousMonthExpenses.Sum(e => e.Amount.Value);
+
+            // Balance y tasa de ahorro
+            var monthlyBalance = currentMonthIncome - currentMonthTotal;
+            var savingsRate = currentMonthIncome > 0
+                ? (monthlyBalance / currentMonthIncome) * 100
+                : 0m;
 
             var dailyAverage = currentMonthExpenses.Any()
                 ? currentMonthTotal / now.Day
@@ -95,6 +109,9 @@ namespace Spendly.Application.UseCase.Dashboard
                 HighestExpense = highestExpense,
                 TopCategory = topCategory,
                 TotalExpensesCount = currentMonthExpenses.Count,
+                CurrentMonthIncome = currentMonthIncome,
+                MonthlyBalance = monthlyBalance,
+                SavingsRate = savingsRate,
                 CategoryBreakdown = categoryBreakdown,
                 DailyTrend = dailyTrend,
                 TopExpenses = topExpenses

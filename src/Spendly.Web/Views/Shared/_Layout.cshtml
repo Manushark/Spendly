@@ -54,6 +54,11 @@
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
+                        <a class="sidebar-link @(controller == "Incomes" ? "active" : "")" asp-controller="Incomes" asp-action="Index">
+                            <i class="bi bi-cash-stack"></i> Income
+                        </a>
+                    </div>
+                    <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Settings" ? "active" : "")" asp-controller="Settings" asp-action="Index">
                             <i class="bi bi-gear"></i> Settings
                         </a>
@@ -82,11 +87,37 @@
             </aside>
 
             <main class="main-content fade-in" id="main-content">
-                <nav class="top-navbar">
+                <nav class="top-navbar d-flex justify-content-between align-items-center">
                     <button class="sidebar-toggler" id="sidebar-toggle-btn">
                         <i class="bi bi-list"></i>
                     </button>
-                    <!-- Here we can put breadcrumbs, title, or search in the future -->
+
+                    <!-- Notification Bell -->
+                    <div class="dropdown me-3">
+                        <button class="btn btn-link text-dark position-relative p-0 border-0" type="button"
+                                id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false"
+                                style="font-size: 1.3rem;">
+                            <i class="bi bi-bell"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
+                                  id="notificationBadge" style="font-size: 0.6rem;">
+                                0
+                            </span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0" style="width: 360px; border-radius: 12px;" aria-labelledby="notificationBell">
+                            <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                                <h6 class="mb-0 fw-bold"><i class="bi bi-bell-fill me-1 text-primary"></i> Notifications</h6>
+                                <button class="btn btn-link btn-sm text-muted text-decoration-none p-0" id="markAllReadBtn">
+                                    Mark all read
+                                </button>
+                            </div>
+                            <div id="notificationList" style="max-height: 320px; overflow-y: auto;">
+                                <div class="text-center py-4 text-muted">
+                                    <i class="bi bi-bell-slash fs-3 d-block mb-2 opacity-50"></i>
+                                    <small>No notifications</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </nav>
 
                 <div class="content-wrapper">
@@ -137,6 +168,109 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @if (isAuth)
+    {
+        <script>
+            // Notification system
+            document.addEventListener('DOMContentLoaded', function() {
+                loadNotificationCount();
+                // Refresh count every 60 seconds
+                setInterval(loadNotificationCount, 60000);
+
+                // Load notifications when dropdown opens
+                const bellBtn = document.getElementById('notificationBell');
+                if (bellBtn) {
+                    bellBtn.addEventListener('click', loadNotifications);
+                }
+
+                // Mark all as read
+                const markAllBtn = document.getElementById('markAllReadBtn');
+                if (markAllBtn) {
+                    markAllBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        fetch('/Notifications/MarkAllAsRead', { method: 'POST' })
+                            .then(() => {
+                                loadNotificationCount();
+                                loadNotifications();
+                            });
+                    });
+                }
+            });
+
+            function loadNotificationCount() {
+                fetch('/Notifications/UnreadCount')
+                    .then(r => r.json())
+                    .then(data => {
+                        const badge = document.getElementById('notificationBadge');
+                        if (badge) {
+                            if (data.count > 0) {
+                                badge.textContent = data.count > 99 ? '99+' : data.count;
+                                badge.classList.remove('d-none');
+                            } else {
+                                badge.classList.add('d-none');
+                            }
+                        }
+                    })
+                    .catch(() => {});
+            }
+
+            function loadNotifications() {
+                fetch('/Notifications/Recent')
+                    .then(r => r.json())
+                    .then(notifications => {
+                        const list = document.getElementById('notificationList');
+                        if (!list) return;
+
+                        if (!notifications || notifications.length === 0) {
+                            list.innerHTML = `
+                                <div class="text-center py-4 text-muted">
+                                    <i class="bi bi-bell-slash fs-3 d-block mb-2 opacity-50"></i>
+                                    <small>No notifications</small>
+                                </div>`;
+                            return;
+                        }
+
+                        list.innerHTML = notifications.map(n => `
+                            <div class="px-3 py-2 border-bottom ${n.isRead ? '' : 'bg-light'}" style="cursor:pointer;"
+                                 onclick="markRead(${n.id}, this)">
+                                <div class="d-flex align-items-start gap-2">
+                                    <i class="bi ${n.type === 'BudgetExceeded' ? 'bi-exclamation-triangle-fill text-danger' : 'bi-exclamation-circle-fill text-warning'} mt-1"></i>
+                                    <div class="flex-grow-1">
+                                        <small class="d-block text-dark" style="line-height:1.3;">${n.message}</small>
+                                        <small class="text-muted" style="font-size:0.7rem;">${timeAgo(n.createdAt)}</small>
+                                    </div>
+                                    ${n.isRead ? '' : '<span class="badge bg-primary rounded-circle p-1" style="width:8px;height:8px;"></span>'}
+                                </div>
+                            </div>
+                        `).join('');
+                    })
+                    .catch(() => {});
+            }
+
+            function markRead(id, el) {
+                fetch(`/Notifications/MarkAsRead/${id}`, { method: 'POST' })
+                    .then(() => {
+                        if (el) el.classList.remove('bg-light');
+                        loadNotificationCount();
+                    });
+            }
+
+            function timeAgo(dateStr) {
+                const now = new Date();
+                const date = new Date(dateStr);
+                const seconds = Math.floor((now - date) / 1000);
+                if (seconds < 60) return 'just now';
+                const minutes = Math.floor(seconds / 60);
+                if (minutes < 60) return minutes + 'm ago';
+                const hours = Math.floor(minutes / 60);
+                if (hours < 24) return hours + 'h ago';
+                const days = Math.floor(hours / 24);
+                return days + 'd ago';
+            }
+        </script>
+    }
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

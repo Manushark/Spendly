@@ -109,6 +109,34 @@ namespace Spendly.Web.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<byte[]?> ExportCsvAsync(string? category = null, DateTime? dateFrom = null, DateTime? dateTo = null)
+        {
+            SetAuthHeader();
+            var url = "api/expenses/export/csv?";
+            if (!string.IsNullOrWhiteSpace(category))
+                url += $"category={Uri.EscapeDataString(category)}&";
+            if (dateFrom.HasValue)
+                url += $"dateFrom={dateFrom.Value:yyyy-MM-dd}&";
+            if (dateTo.HasValue)
+                url += $"dateTo={dateTo.Value:yyyy-MM-dd}&";
+
+            var response = await _http.GetAsync(url.TrimEnd('&', '?'));
+            if (!response.IsSuccessStatusCode) return null;
+            return await response.Content.ReadAsByteArrayAsync();
+        }
+
+        public async Task<string?> ExportReportAsync(int? month = null, int? year = null)
+        {
+            SetAuthHeader();
+            var now = DateTime.UtcNow;
+            var m = month ?? now.Month;
+            var y = year ?? now.Year;
+
+            var response = await _http.GetAsync($"api/expenses/export/report?month={m}&year={y}");
+            if (!response.IsSuccessStatusCode) return null;
+            return await response.Content.ReadAsStringAsync();
+        }
+
         private static async Task<string> TryReadError(HttpResponseMessage response)
         {
             try

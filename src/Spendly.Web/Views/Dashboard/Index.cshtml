@@ -187,6 +187,72 @@
                 </div>
             </div>
 
+        @* Income, Balance & Savings Rate Cards *@
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card stat-card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <p class="text-muted mb-1 fw-semibold small text-uppercase">Monthly Income</p>
+                                <h3 class="mb-0 fw-bold text-success">$@Model.CurrentMonthIncome.ToString("N2")</h3>
+                            </div>
+                            <div class="stat-icon bg-success bg-opacity-10">
+                                <i class="bi bi-cash-stack text-success"></i>
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>Total earnings this month
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card stat-card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <p class="text-muted mb-1 fw-semibold small text-uppercase">Balance</p>
+                                <h3 class="mb-0 fw-bold @(Model.MonthlyBalance >= 0 ? "text-success" : "text-danger")">
+                                    @(Model.MonthlyBalance >= 0 ? "+" : "")$@Model.MonthlyBalance.ToString("N2")
+                                </h3>
+                            </div>
+                            <div class="stat-icon @(Model.MonthlyBalance >= 0 ? "bg-success" : "bg-danger") bg-opacity-10">
+                                <i class="bi bi-wallet-fill @(Model.MonthlyBalance >= 0 ? "text-success" : "text-danger")"></i>
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            <i class="bi bi-calculator me-1"></i>Income − Expenses
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card stat-card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <p class="text-muted mb-1 fw-semibold small text-uppercase">Savings Rate</p>
+                                <h3 class="mb-0 fw-bold @(Model.SavingsRate >= 0 ? "text-primary" : "text-danger")">
+                                    @Model.SavingsRate.ToString("N1")%
+                                </h3>
+                            </div>
+                            <div class="stat-icon bg-primary bg-opacity-10">
+                                <i class="bi bi-piggy-bank text-primary"></i>
+                            </div>
+                        </div>
+                        <div class="progress mt-1" style="height: 6px; border-radius: 6px;">
+                            <div class="progress-bar @(Model.SavingsRate >= 20 ? "bg-success" : Model.SavingsRate >= 0 ? "bg-warning" : "bg-danger")"
+                                 role="progressbar"
+                                 style="width: @(Math.Max(0, Math.Min(100, Model.SavingsRate)))%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         @* Row 2: Trend & Top 5 *@
         <div class="row g-4 mb-4">
             <div class="col-lg-8">

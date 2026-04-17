@@ -60,6 +60,18 @@ builder.Services.AddHttpClient<CategoryApiClient>(client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+// Income API client
+builder.Services.AddHttpClient<IncomeApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
+// Notification API client
+builder.Services.AddHttpClient<NotificationApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
