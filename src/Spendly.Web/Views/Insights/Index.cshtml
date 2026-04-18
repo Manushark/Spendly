@@ -1,0 +1,328 @@
+@model Spendly.Web.Contracts.Insights.MonthlyInsightsDto
+
+@{
+    ViewData["Title"] = "Insights";
+    var now = DateTime.UtcNow;
+    var prevMonth = Model.Month == 1 ? 12 : Model.Month - 1;
+    var prevYear = Model.Month == 1 ? Model.Year - 1 : Model.Year;
+    var nextMonth = Model.Month == 12 ? 1 : Model.Month + 1;
+    var nextYear = Model.Month == 12 ? Model.Year + 1 : Model.Year;
+    var isCurrentMonth = Model.Year == now.Year && Model.Month == now.Month;
+}
+
+<div class="container-fluid">
+    <!-- Header with Month Navigation -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-lightbulb text-warning"></i> Insights</h2>
+            <small class="text-muted">Analyzing your spending habits</small>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a asp-action="Index" asp-route-month="@prevMonth" asp-route-year="@prevYear"
+               class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+            <span class="fw-bold px-3 py-1 bg-dark text-white rounded-pill">@Model.MonthName</span>
+            @if (!isCurrentMonth)
+            {
+                <a asp-action="Index" asp-route-month="@nextMonth" asp-route-year="@nextYear"
+                   class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            }
+        </div>
+    </div>
+
+    <!-- Summary Cards Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm h-100 border-0">
+                <div class="card-body">
+                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Total Expenses</p>
+                    <h3 class="mb-1 fw-bold text-danger">$@Model.TotalExpenses.ToString("N2")</h3>
+                    <small class="@(Model.ExpenseChangePercent <= 0 ? "text-success" : "text-danger")">
+                        <i class="bi bi-@(Model.ExpenseChangePercent <= 0 ? "arrow-down" : "arrow-up")-circle-fill me-1"></i>
+                        @Math.Abs(Model.ExpenseChangePercent).ToString("N1")% vs last month
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm h-100 border-0">
+                <div class="card-body">
+                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Total Income</p>
+                    <h3 class="mb-1 fw-bold text-success">$@Model.TotalIncome.ToString("N2")</h3>
+                    <small class="@(Model.IncomeChangePercent >= 0 ? "text-success" : "text-danger")">
+                        <i class="bi bi-@(Model.IncomeChangePercent >= 0 ? "arrow-up" : "arrow-down")-circle-fill me-1"></i>
+                        @Math.Abs(Model.IncomeChangePercent).ToString("N1")% vs last month
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm h-100 border-0">
+                <div class="card-body">
+                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Balance</p>
+                    <h3 class="mb-1 fw-bold @(Model.Balance >= 0 ? "text-success" : "text-danger")">
+                        @(Model.Balance >= 0 ? "+" : "")$@Model.Balance.ToString("N2")
+                    </h3>
+                    <small class="text-muted">
+                        <i class="bi bi-piggy-bank me-1"></i>Savings Rate: @Model.SavingsRate.ToString("N1")%
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm h-100 border-0">
+                <div class="card-body">
+                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Projected Month-End</p>
+                    <h3 class="mb-1 fw-bold text-primary">$@Model.ProjectedMonthEnd.ToString("N2")</h3>
+                    <small class="text-muted">
+                        <i class="bi bi-calendar3 me-1"></i>@Model.DaysElapsed/@Model.DaysInMonth days · $@Model.DailyAverage.ToString("N2")/day
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <!-- Daily Spending Chart -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-graph-up me-2 text-primary"></i>Daily Spending</h6>
+                    <div style="position:relative; height:280px;">
+                        <canvas id="dailySpendingChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Category Donut -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2 text-primary"></i>By Category</h6>
+                    <div style="position:relative; height:280px;">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Breakdown Table + Weekday Analysis -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-list-ul me-2 text-primary"></i>Category Breakdown</h6>
+                    @if (Model.CategoryBreakdown.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Category</th>
+                                        <th class="text-end">Amount</th>
+                                        <th class="text-end">%</th>
+                                        <th class="text-center">Txns</th>
+                                        <th class="text-end">vs Last Month</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cat in Model.CategoryBreakdown)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold">@cat.Category</td>
+                                            <td class="text-end">$@cat.Amount.ToString("N2")</td>
+                                            <td class="text-end">
+                                                <div class="d-flex align-items-center justify-content-end gap-2">
+                                                    <div class="progress flex-grow-1" style="height: 6px; max-width: 60px;">
+                                                        <div class="progress-bar bg-primary" style="width: @cat.Percentage%"></div>
+                                                    </div>
+                                                    <span>@cat.Percentage.ToString("N1")%</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">@cat.TransactionCount</td>
+                                            <td class="text-end">
+                                                @if (cat.PreviousMonthAmount > 0)
+                                                {
+                                                    <span class="badge rounded-pill @(cat.ChangePercent <= 0 ? "bg-success" : "bg-danger") bg-opacity-10 @(cat.ChangePercent <= 0 ? "text-success" : "text-danger")">
+                                                        <i class="bi bi-@(cat.ChangePercent <= 0 ? "arrow-down" : "arrow-up")"></i>
+                                                        @Math.Abs(cat.ChangePercent).ToString("N0")%
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary">New</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                            <p>No expenses recorded this month</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-calendar-week me-2 text-primary"></i>Spending by Day of Week</h6>
+                    <div style="position:relative; height:250px;">
+                        <canvas id="weekdayChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+    <script>
+        // Color palette
+        const colors = [
+            '#6366f1', '#f43f5e', '#10b981', '#f59e0b', '#3b82f6',
+            '#8b5cf6', '#ec4899', '#14b8a6', '#ef4444', '#06b6d4',
+            '#84cc16', '#e879f9'
+        ];
+
+        @{
+            var jsonOptions = new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+            };
+        }
+
+        // Data from server (camelCase)
+        const dailyData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DailySpending, jsonOptions));
+        const catData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategoryBreakdown, jsonOptions));
+        const weekData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.WeekdayAnalysis, jsonOptions));
+        const dailyAvg = @Model.DailyAverage;
+
+        // Daily Spending Chart
+        if (dailyData && dailyData.length > 0) {
+            const dailyCtx = document.getElementById('dailySpendingChart').getContext('2d');
+            new Chart(dailyCtx, {
+                type: 'bar',
+                data: {
+                    labels: dailyData.map(d => new Date(d.date).getDate()),
+                    datasets: [{
+                        label: 'Spent',
+                        data: dailyData.map(d => d.amount),
+                        backgroundColor: dailyData.map(d => d.amount > dailyAvg ? 'rgba(244,63,94,0.7)' : 'rgba(99,102,241,0.7)'),
+                        borderRadius: 4,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: ctx => `Day ${ctx[0].label}`,
+                                label: ctx => `$${ctx.raw.toFixed(2)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: v => '$' + v },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Category Donut Chart
+        if (catData && catData.length > 0) {
+            const catCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(catCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: catData.map(c => c.category),
+                    datasets: [{
+                        data: catData.map(c => c.amount),
+                        backgroundColor: colors.slice(0, catData.length),
+                        borderWidth: 2,
+                        borderColor: '#fff',
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { boxWidth: 12, padding: 12, font: { size: 11 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ` ${ctx.label}: $${ctx.raw.toFixed(2)} (${catData[ctx.dataIndex].percentage.toFixed(1)}%)`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Weekday Bar Chart
+        if (weekData && weekData.length > 0) {
+            const weekCtx = document.getElementById('weekdayChart').getContext('2d');
+            new Chart(weekCtx, {
+                type: 'bar',
+                data: {
+                    labels: weekData.map(w => w.dayName.substring(0, 3)),
+                    datasets: [{
+                        label: 'Average',
+                        data: weekData.map(w => w.average),
+                        backgroundColor: 'rgba(99,102,241,0.7)',
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => `Avg: $${ctx.raw.toFixed(2)} · Total: $${weekData[ctx.dataIndex].totalSpent.toFixed(2)} · ${weekData[ctx.dataIndex].transactionCount} txns`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: v => '$' + v },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    </script>
+}
+
