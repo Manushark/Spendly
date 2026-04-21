@@ -26,6 +26,7 @@ using Spendly.Application.UseCases.Exports;
 using Spendly.Application.UseCases.Insights;
 using Spendly.Application.UseCases.SavingsGoals;
 using Spendly.Application.UseCases.Tags;
+using Spendly.Application.UseCases.Import;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -217,6 +218,11 @@ builder.Services.AddScoped<UpdateTagUseCase>();
 builder.Services.AddScoped<DeleteTagUseCase>();
 builder.Services.AddScoped<ListTagsUseCase>();
 builder.Services.AddScoped<SetExpenseTagsUseCase>();
+
+// ────────────────────────────────────────────────────────────
+// Use Cases — Import
+// ────────────────────────────────────────────────────────────
+builder.Services.AddScoped<ImportCsvUseCase>();
 
 // ════════════════════════════════════════════════════════════
 // Pipeline
