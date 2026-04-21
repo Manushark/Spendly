@@ -18,6 +18,9 @@ namespace Spendly.Infrastructure.Persistence
         public DbSet<Category> Categories { get; set; } = null!;
         public DbSet<Income> Incomes { get; set; } = null!;
         public DbSet<Notification> Notifications { get; set; } = null!;
+        public DbSet<SavingsGoal> SavingsGoals { get; set; } = null!;
+        public DbSet<Tag> Tags { get; set; } = null!;
+        public DbSet<ExpenseTag> ExpenseTags { get; set; } = null!;
 
         public SpendlyDbContext(DbContextOptions<SpendlyDbContext> options)
             : base(options)
@@ -32,6 +35,9 @@ namespace Spendly.Infrastructure.Persistence
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new IncomeConfiguration());
             modelBuilder.ApplyConfiguration(new NotificationConfiguration());
+            modelBuilder.ApplyConfiguration(new SavingsGoalConfiguration());
+            modelBuilder.ApplyConfiguration(new TagConfiguration());
+            modelBuilder.ApplyConfiguration(new ExpenseTagConfiguration());
         }
 
     }

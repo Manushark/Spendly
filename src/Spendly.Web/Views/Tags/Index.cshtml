@@ -1,0 +1,79 @@
+@model List<Spendly.Web.Services.TagDto>
+
+@{
+    ViewData["Title"] = "Tags";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-tags text-primary"></i> Tags</h2>
+            <small class="text-muted">Organize expenses with custom tags</small>
+        </div>
+    </div>
+
+    @if (TempData["Error"] is string errorMsg)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-1"></i> @errorMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Create Tag Form -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <h6 class="fw-bold mb-3"><i class="bi bi-plus-circle me-1 text-primary"></i>Create New Tag</h6>
+            <form asp-action="Create" method="post" class="d-flex gap-3 align-items-end">
+                @Html.AntiForgeryToken()
+                <div class="flex-grow-1">
+                    <label class="form-label fw-semibold small">Tag Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="e.g. travel, work, urgent" required maxlength="30">
+                </div>
+                <div>
+                    <label class="form-label fw-semibold small">Color</label>
+                    <input type="color" name="color" class="form-control form-control-color" value="#6366f1" style="width:50px;">
+                </div>
+                <button type="submit" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-plus-lg me-1"></i>Create
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tags List -->
+    @if (Model.Any())
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3">Your Tags (@Model.Count)</h6>
+                <div class="d-flex flex-wrap gap-3">
+                    @foreach (var tag in Model)
+                    {
+                        <div class="d-flex align-items-center gap-2 border rounded-pill px-3 py-2"
+                             style="border-color: @(tag.Color)40 !important; background: @(tag.Color)08;">
+                            <span class="rounded-circle" style="width:12px; height:12px; background:@tag.Color; display:inline-block;"></span>
+                            <span class="fw-semibold">@tag.Name</span>
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill">@tag.ExpenseCount</span>
+                            <form asp-action="Delete" asp-route-id="@tag.Id" method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete this tag?')">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-link btn-sm text-danger p-0 ms-1" type="submit">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-tags fs-1 text-muted d-block mb-3 opacity-50"></i>
+            <h5 class="text-muted">No tags yet</h5>
+            <p class="text-muted">Create tags to organize your expenses</p>
+        </div>
+    }
+</div>

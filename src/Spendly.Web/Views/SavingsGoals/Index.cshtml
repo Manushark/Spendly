@@ -1,0 +1,244 @@
+@model List<Spendly.Web.Contracts.SavingsGoals.SavingsGoalResponseDto>
+
+@{
+    ViewData["Title"] = "Savings Goals";
+    var active = Model.Where(g => !g.IsCompleted).ToList();
+    var completed = Model.Where(g => g.IsCompleted).ToList();
+    var totalSaved = Model.Sum(g => g.CurrentAmount);
+    var totalTarget = Model.Sum(g => g.TargetAmount);
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-trophy text-warning"></i> Savings Goals</h2>
+            <small class="text-muted">Track your financial goals</small>
+        </div>
+        <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createGoalModal">
+            <i class="bi bi-plus-lg me-1"></i> New Goal
+        </button>
+    </div>
+
+    @if (TempData["Error"] is string errorMsg)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-1"></i> @errorMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Overall Progress -->
+    @if (Model.Any())
+    {
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-semibold">Overall Progress</span>
+                    <span class="text-muted">$@totalSaved.ToString("N2") / $@totalTarget.ToString("N2")</span>
+                </div>
+                <div class="progress" style="height: 10px; border-radius: 10px;">
+                    @{
+                        var overallPct = totalTarget > 0 ? Math.Min(100, (totalSaved / totalTarget) * 100) : 0;
+                    }
+                    <div class="progress-bar bg-success" style="width: @overallPct%"></div>
+                </div>
+                <small class="text-muted mt-1 d-block">@active.Count active · @completed.Count completed</small>
+            </div>
+        </div>
+    }
+
+    <!-- Active Goals -->
+    @if (active.Any())
+    {
+        <h5 class="fw-bold mb-3"><i class="bi bi-bullseye text-primary me-1"></i> Active Goals</h5>
+        <div class="row g-3 mb-4">
+            @foreach (var goal in active)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm border-0 h-100" style="border-left: 4px solid @goal.Color !important;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width:36px; height:36px; background:@(goal.Color)20;">
+                                        <i class="bi @goal.Icon" style="color:@goal.Color; font-size:1.1rem;"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">@goal.Name</h6>
+                                        @if (goal.Deadline.HasValue)
+                                        {
+                                            var daysLeft = (goal.Deadline.Value - DateTime.UtcNow).Days;
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock me-1"></i>@daysLeft days left
+                                            </small>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-link btn-sm text-muted p-0" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                        <li>
+                                            <a class="dropdown-item" asp-action="Edit" asp-route-id="@goal.Id">
+                                                <i class="bi bi-pencil me-2"></i>Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <form asp-action="Delete" asp-route-id="@goal.Id" method="post"
+                                                  onsubmit="return confirm('Delete this goal?')">
+                                                @Html.AntiForgeryToken()
+                                                <button class="dropdown-item text-danger" type="submit">
+                                                    <i class="bi bi-trash me-2"></i>Delete
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="fw-semibold" style="color:@goal.Color;">$@goal.CurrentAmount.ToString("N2")</span>
+                                    <span class="text-muted">$@goal.TargetAmount.ToString("N2")</span>
+                                </div>
+                                <div class="progress" style="height: 8px; border-radius: 8px;">
+                                    <div class="progress-bar" style="width: @goal.ProgressPercentage%; background:@goal.Color;"></div>
+                                </div>
+                                <small class="text-muted">@goal.ProgressPercentage.ToString("N1")% complete</small>
+                            </div>
+
+                            <!-- Add Funds Form -->
+                            <form asp-action="AddFunds" asp-route-id="@goal.Id" method="post" class="d-flex gap-2 mt-2">
+                                @Html.AntiForgeryToken()
+                                <input type="number" name="amount" step="0.01" min="0.01" placeholder="Amount"
+                                       class="form-control form-control-sm" required style="max-width: 120px;">
+                                <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                                    <i class="bi bi-plus-circle me-1"></i>Add
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Completed Goals -->
+    @if (completed.Any())
+    {
+        <h5 class="fw-bold mb-3"><i class="bi bi-check-circle text-success me-1"></i> Completed</h5>
+        <div class="row g-3 mb-4">
+            @foreach (var goal in completed)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm border-0 h-100 opacity-75">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-success bg-opacity-10"
+                                         style="width:36px; height:36px;">
+                                        <i class="bi bi-check-lg text-success fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-decoration-line-through">@goal.Name</h6>
+                                        <small class="text-success fw-semibold">$@goal.TargetAmount.ToString("N2") achieved!</small>
+                                    </div>
+                                </div>
+                                <form asp-action="Delete" asp-route-id="@goal.Id" method="post"
+                                      onsubmit="return confirm('Delete this goal?')">
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn btn-link btn-sm text-muted p-0" type="submit">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Empty State -->
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-trophy fs-1 text-muted d-block mb-3 opacity-50"></i>
+            <h5 class="text-muted">No savings goals yet</h5>
+            <p class="text-muted">Start planning your financial future!</p>
+            <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createGoalModal">
+                <i class="bi bi-plus-lg me-1"></i> Create Your First Goal
+            </button>
+        </div>
+    }
+</div>
+
+<!-- Create Goal Modal -->
+<div class="modal fade" id="createGoalModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-trophy me-2 text-warning"></i>New Savings Goal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Goal Name</label>
+                        <input type="text" name="Name" class="form-control" placeholder="e.g. Trip to Europe" required maxlength="100">
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Target Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="TargetAmount" class="form-control" step="0.01" min="1" required>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Already Saved</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="CurrentAmount" class="form-control" step="0.01" min="0" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Deadline (optional)</label>
+                        <input type="date" name="Deadline" class="form-control">
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Icon</label>
+                            <select name="Icon" class="form-select">
+                                <option value="bi-bullseye">🎯 Target</option>
+                                <option value="bi-airplane">✈️ Travel</option>
+                                <option value="bi-house">🏠 Home</option>
+                                <option value="bi-car-front">🚗 Car</option>
+                                <option value="bi-mortarboard">🎓 Education</option>
+                                <option value="bi-heart">❤️ Health</option>
+                                <option value="bi-gift">🎁 Gift</option>
+                                <option value="bi-laptop">💻 Tech</option>
+                                <option value="bi-piggy-bank">🐷 Savings</option>
+                                <option value="bi-shield-check">🛡️ Emergency</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Color</label>
+                            <input type="color" name="Color" class="form-control form-control-color w-100" value="#6366f1">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">
+                        <i class="bi bi-check-lg me-1"></i>Create Goal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

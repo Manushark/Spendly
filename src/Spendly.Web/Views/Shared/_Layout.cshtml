@@ -44,6 +44,16 @@
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
+                        <a class="sidebar-link @(controller == "Categories" ? "active" : "")" asp-controller="Categories" asp-action="Index">
+                            <i class="bi bi-grid"></i> Categories
+                        </a>
+                    </div>
+                    <div class="sidebar-nav-item">
+                        <a class="sidebar-link @(controller == "Tags" ? "active" : "")" asp-controller="Tags" asp-action="Index">
+                            <i class="bi bi-tags"></i> Tags
+                        </a>
+                    </div>
+                    <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Budgets" ? "active" : "")" asp-area="" asp-controller="Budgets" asp-action="Index">
                             <i class="bi bi-pie-chart"></i> Budgets
                         </a>
@@ -59,13 +69,18 @@
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
-                        <a class="sidebar-link @(controller == "Settings" ? "active" : "")" asp-controller="Settings" asp-action="Index">
-                            <i class="bi bi-gear"></i> Settings
+                        <a class="sidebar-link @(controller == "SavingsGoals" ? "active" : "")" asp-controller="SavingsGoals" asp-action="Index">
+                            <i class="bi bi-trophy"></i> Goals
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Insights" ? "active" : "")" asp-controller="Insights" asp-action="Index">
-                            <i class="bi bi-lightbulb"></i> Insights <span class="badge bg-danger ms-auto" style="font-size: 0.6rem;">PRO</span>
+                            <i class="bi bi-lightbulb"></i> Insights
+                        </a>
+                    </div>
+                    <div class="sidebar-nav-item">
+                        <a class="sidebar-link @(controller == "Settings" ? "active" : "")" asp-controller="Settings" asp-action="Index">
+                            <i class="bi bi-gear"></i> Settings
                         </a>
                     </div>
                 </div>
