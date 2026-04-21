@@ -35,6 +35,11 @@ namespace Spendly.Infrastructure.Persistence.Configurations
                    .IsRequired()
                    .HasDefaultValue(false);
 
+            builder.Property(i => i.Currency)
+                   .IsRequired()
+                   .HasMaxLength(10)
+                   .HasDefaultValue("USD");
+
             builder.Property(i => i.CreatedAt)
                    .IsRequired();
 

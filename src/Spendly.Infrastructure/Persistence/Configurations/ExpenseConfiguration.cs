@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Spendly.Domain.Entities;
 using Spendly.Domain.ValueObjects;
@@ -31,6 +31,11 @@ namespace Spendly.Infrastructure.Persistence.Configurations
                         value => Money.FromDecimal(value))
                    .HasColumnType("decimal(18,2)")
                    .IsRequired();
+
+            builder.Property(e => e.Currency)
+                   .IsRequired()
+                   .HasMaxLength(10)
+                   .HasDefaultValue("USD");
 
             // Índice para filtrar gastos por usuario eficientemente
             builder.HasIndex(e => e.UserId);
