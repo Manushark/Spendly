@@ -1,0 +1,197 @@
+using System.Globalization;
+using Spendly.Application.DTOs.Import;
+using Spendly.Application.Interfaces;
+using Spendly.Domain.Entities;
+using Spendly.Domain.ValueObjects;
+
+namespace Spendly.Application.UseCases.Import
+{
+    public class ImportCsvUseCase
+    {
+        private readonly IExpenseRepository _expenseRepo;
+
+        public ImportCsvUseCase(IExpenseRepository expenseRepo)
+        {
+            _expenseRepo = expenseRepo;
+        }
+
+        /// <summary>
+        /// Preview CSV data before importing — validates rows without persisting.
+        /// </summary>
+        public CsvImportPreviewDto Preview(string csvContent, string defaultCurrency = "USD")
+        {
+            var result = new CsvImportPreviewDto();
+            var lines = csvContent.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+
+            if (lines.Length < 2)
+            {
+                result.Errors.Add("CSV must have at least a header row and one data row.");
+                return result;
+            }
+
+            // Parse header
+            var header = lines[0].Split(',').Select(h => h.Trim().ToLowerInvariant().Trim('"')).ToArray();
+            result.DetectedColumns = header.ToList();
+
+            var amountIdx = FindColumnIndex(header, "amount", "monto", "valor", "total");
+            var descIdx = FindColumnIndex(header, "description", "desc", "descripcion", "concepto", "note", "memo");
+            var catIdx = FindColumnIndex(header, "category", "categoria", "type", "tipo");
+            var dateIdx = FindColumnIndex(header, "date", "fecha", "transaction date", "fecha de transaccion");
+            var currIdx = FindColumnIndex(header, "currency", "moneda", "divisa");
+
+            if (amountIdx < 0)
+            {
+                result.Errors.Add("Could not find 'Amount' column. Expected: amount, monto, valor, total");
+                return result;
+            }
+            if (dateIdx < 0)
+            {
+                result.Errors.Add("Could not find 'Date' column. Expected: date, fecha, transaction date");
+                return result;
+            }
+
+            // Parse rows
+            for (int i = 1; i < lines.Length; i++)
+            {
+                var cols = ParseCsvLine(lines[i]);
+                var row = new CsvExpenseRow { RowNumber = i + 1 };
+
+                // Amount
+                if (amountIdx < cols.Length && decimal.TryParse(cols[amountIdx].Trim('"', ' ', '$', '€'),
+                    NumberStyles.Any, CultureInfo.InvariantCulture, out var amt) && amt > 0)
+                {
+                    row.Amount = Math.Abs(amt);
+                }
+                else
+                {
+                    row.IsValid = false;
+                    row.ValidationError = "Invalid amount";
+                }
+
+                // Description
+                row.Description = descIdx >= 0 && descIdx < cols.Length
+                    ? cols[descIdx].Trim('"', ' ')
+                    : "Imported expense";
+
+                if (string.IsNullOrWhiteSpace(row.Description))
+                    row.Description = "Imported expense";
+
+                // Category
+                row.Category = catIdx >= 0 && catIdx < cols.Length && !string.IsNullOrWhiteSpace(cols[catIdx].Trim('"', ' '))
+                    ? cols[catIdx].Trim('"', ' ')
+                    : "Other";
+
+                // Date
+                if (dateIdx < cols.Length)
+                {
+                    var dateStr = cols[dateIdx].Trim('"', ' ');
+                    if (DateTime.TryParse(dateStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
+                    {
+                        row.Date = dt;
+                    }
+                    else if (DateTime.TryParseExact(dateStr, new[] { "dd/MM/yyyy", "MM/dd/yyyy", "yyyy-MM-dd", "d/M/yyyy" },
+                        CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                    {
+                        row.Date = dt;
+                    }
+                    else
+                    {
+                        row.IsValid = false;
+                        row.ValidationError = $"Invalid date: {dateStr}";
+                    }
+                }
+                else
+                {
+                    row.IsValid = false;
+                    row.ValidationError = "Missing date";
+                }
+
+                // Currency
+                row.Currency = currIdx >= 0 && currIdx < cols.Length && !string.IsNullOrWhiteSpace(cols[currIdx].Trim('"', ' '))
+                    ? cols[currIdx].Trim('"', ' ').ToUpperInvariant()
+                    : defaultCurrency;
+
+                result.Rows.Add(row);
+            }
+
+            result.TotalRows = result.Rows.Count;
+            result.ValidRows = result.Rows.Count(r => r.IsValid);
+            result.InvalidRows = result.Rows.Count(r => !r.IsValid);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Import validated CSV rows into the database.
+        /// </summary>
+        public async Task<CsvImportResultDto> ImportAsync(int userId, List<CsvExpenseRow> rows)
+        {
+            var result = new CsvImportResultDto();
+            var validRows = rows.Where(r => r.IsValid && r.Amount > 0).ToList();
+
+            foreach (var row in validRows)
+            {
+                try
+                {
+                    var expense = Expense.Create(
+                        userId,
+                        Money.Create(row.Amount, row.Currency),
+                        row.Description,
+                        row.Date > DateTime.UtcNow ? DateTime.UtcNow : row.Date,
+                        row.Category
+                    );
+                    await _expenseRepo.AddAsync(expense);
+                    result.ImportedCount++;
+                }
+                catch (Exception ex)
+                {
+                    result.SkippedCount++;
+                    result.Errors.Add($"Row {row.RowNumber}: {ex.Message}");
+                }
+            }
+
+            result.SkippedCount += rows.Count(r => !r.IsValid);
+
+            return result;
+        }
+
+        private static int FindColumnIndex(string[] header, params string[] names)
+        {
+            for (int i = 0; i < header.Length; i++)
+            {
+                if (names.Any(n => header[i].Contains(n, StringComparison.OrdinalIgnoreCase)))
+                    return i;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// Simple CSV line parser that handles quoted fields with commas.
+        /// </summary>
+        private static string[] ParseCsvLine(string line)
+        {
+            var result = new List<string>();
+            bool inQuotes = false;
+            var current = new System.Text.StringBuilder();
+
+            foreach (char c in line)
+            {
+                if (c == '"')
+                {
+                    inQuotes = !inQuotes;
+                }
+                else if (c == ',' && !inQuotes)
+                {
+                    result.Add(current.ToString());
+                    current.Clear();
+                }
+                else
+                {
+                    current.Append(c);
+                }
+            }
+            result.Add(current.ToString());
+            return result.ToArray();
+        }
+    }
+}
