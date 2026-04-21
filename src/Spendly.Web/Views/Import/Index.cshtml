@@ -1,0 +1,111 @@
+@{
+    ViewData["Title"] = "Import Data";
+}
+
+<div class="container-fluid" style="max-width: 700px;">
+    <div class="mb-4">
+        <h2 class="mb-1"><i class="bi bi-cloud-upload text-primary"></i> Import Data</h2>
+        <small class="text-muted">Import expenses from a CSV file</small>
+    </div>
+
+    @if (TempData["Error"] is string errorMsg)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-1"></i> @errorMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] is string successMsg)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-1"></i> @successMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Upload Card -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-4">
+            <h6 class="fw-bold mb-3"><i class="bi bi-file-earmark-spreadsheet me-2 text-primary"></i>Upload CSV</h6>
+            <form asp-action="Preview" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Select CSV File</label>
+                    <input type="file" name="file" class="form-control" accept=".csv" required id="csvFileInput">
+                    <small class="text-muted mt-1 d-block">Maximum 5MB. The file should have headers like: Date, Amount, Description, Category</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Default Currency</label>
+                    <select name="currency" class="form-select" style="max-width:200px;">
+                        <option value="USD">🇺🇸 USD</option>
+                        <option value="EUR">🇪🇺 EUR</option>
+                        <option value="GBP">🇬🇧 GBP</option>
+                        <option value="MXN">🇲🇽 MXN</option>
+                        <option value="COP">🇨🇴 COP</option>
+                        <option value="ARS">🇦🇷 ARS</option>
+                        <option value="BRL">🇧🇷 BRL</option>
+                        <option value="CLP">🇨🇱 CLP</option>
+                        <option value="PEN">🇵🇪 PEN</option>
+                        <option value="DOP">🇩🇴 DOP</option>
+                        <option value="CAD">🇨🇦 CAD</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary rounded-pill px-4" id="uploadBtn">
+                    <i class="bi bi-eye me-1"></i>Preview Import
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Format Guide -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2 text-primary"></i>CSV Format Guide</h6>
+            <p class="text-muted small mb-2">Your CSV should have column headers. We auto-detect these columns:</p>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered mb-3">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Column</th>
+                            <th>Accepted Names</th>
+                            <th>Required</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>Amount</code></td>
+                            <td>amount, monto, valor, total</td>
+                            <td><span class="badge bg-danger">Yes</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Date</code></td>
+                            <td>date, fecha, transaction date</td>
+                            <td><span class="badge bg-danger">Yes</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Description</code></td>
+                            <td>description, desc, concepto, note, memo</td>
+                            <td><span class="badge bg-secondary">No</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Category</code></td>
+                            <td>category, categoria, type, tipo</td>
+                            <td><span class="badge bg-secondary">No</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Currency</code></td>
+                            <td>currency, moneda, divisa</td>
+                            <td><span class="badge bg-secondary">No</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-muted small mb-1"><strong>Example:</strong></p>
+            <pre class="bg-light p-2 rounded small">Date,Amount,Description,Category
+2026-04-01,45.00,Grocery shopping,Food
+2026-04-02,120.00,Electric bill,Utilities
+2026-04-03,15.50,Coffee and snacks,Food</pre>
+        </div>
+    </div>
+</div>
