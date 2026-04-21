@@ -90,6 +90,12 @@ builder.Services.AddHttpClient<TagApiClient>(client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+// Import API client
+builder.Services.AddHttpClient<ImportApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

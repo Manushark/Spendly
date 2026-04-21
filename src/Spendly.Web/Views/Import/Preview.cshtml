@@ -1,0 +1,135 @@
+@model Spendly.Web.Services.CsvImportPreviewDto
+
+@{
+    ViewData["Title"] = "Import Preview";
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-center mb-4">
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill me-3">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+            <h2 class="mb-1"><i class="bi bi-eye text-primary"></i> Import Preview</h2>
+            <small class="text-muted">Review data before importing</small>
+        </div>
+    </div>
+
+    @if (Model.Errors.Any())
+    {
+        <div class="alert alert-danger">
+            <h6 class="fw-bold"><i class="bi bi-exclamation-triangle me-1"></i>Parsing Errors</h6>
+            <ul class="mb-0">
+                @foreach (var err in Model.Errors)
+                {
+                    <li>@err</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- Summary -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 text-center">
+                <div class="card-body">
+                    <p class="text-muted small mb-1">Total Rows</p>
+                    <h3 class="fw-bold">@Model.TotalRows</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 text-center">
+                <div class="card-body">
+                    <p class="text-muted small mb-1">Valid</p>
+                    <h3 class="fw-bold text-success">@Model.ValidRows</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 text-center">
+                <div class="card-body">
+                    <p class="text-muted small mb-1">Invalid (will skip)</p>
+                    <h3 class="fw-bold text-danger">@Model.InvalidRows</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detected Columns -->
+    <div class="mb-3">
+        <small class="text-muted">Detected columns: </small>
+        @foreach (var col in Model.DetectedColumns)
+        {
+            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill me-1">@col</span>
+        }
+    </div>
+
+    <!-- Data Preview Table -->
+    @if (Model.Rows.Any())
+    {
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th class="text-end">Amount</th>
+                                <th>Currency</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in Model.Rows.Take(100))
+                            {
+                                <tr class="@(!row.IsValid ? "table-warning" : "")">
+                                    <td class="text-muted">@row.RowNumber</td>
+                                    <td>@row.Date.ToString("yyyy-MM-dd")</td>
+                                    <td>@(row.Description.Length > 40 ? row.Description[..40] + "..." : row.Description)</td>
+                                    <td><span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill">@row.Category</span></td>
+                                    <td class="text-end fw-semibold">$@row.Amount.ToString("N2")</td>
+                                    <td>@row.Currency</td>
+                                    <td class="text-center">
+                                        @if (row.IsValid)
+                                        {
+                                            <i class="bi bi-check-circle text-success"></i>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-danger small" title="@row.ValidationError">
+                                                <i class="bi bi-exclamation-circle"></i> @row.ValidationError
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                @if (Model.Rows.Count > 100)
+                {
+                    <small class="text-muted mt-2 d-block">Showing first 100 of @Model.TotalRows rows.</small>
+                }
+            </div>
+        </div>
+
+        <!-- Confirm / Cancel -->
+        @if (Model.ValidRows > 0)
+        {
+            <div class="d-flex gap-3">
+                <form asp-action="Confirm" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-success rounded-pill px-4"
+                            onclick="return confirm('Import @Model.ValidRows expenses?')">
+                        <i class="bi bi-check-lg me-1"></i>Import @Model.ValidRows Expenses
+                    </button>
+                </form>
+                <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+            </div>
+        }
+    }
+</div>

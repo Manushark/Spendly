@@ -1,4 +1,4 @@
-﻿using Spendly.Domain.Exceptions;
+using Spendly.Domain.Exceptions;
 using Spendly.Domain.ValueObjects;
 
 namespace Spendly.Domain.Entities
@@ -6,8 +6,9 @@ namespace Spendly.Domain.Entities
     public class Expense
     {
         public int Id { get; private set; }
-        public int UserId { get; private set; }          // ← NUEVO: dueño del gasto
+        public int UserId { get; private set; }          // ← dueño del gasto
         public Money Amount { get; private set; }
+        public string Currency { get; private set; } = "USD";
         public string Description { get; private set; }
         public DateTime Date { get; private set; }
         public string Category { get; private set; }
@@ -19,6 +20,7 @@ namespace Spendly.Domain.Entities
             UserId = userId;
             Validate(amount, description, date, category);
             Amount = amount;
+            Currency = amount.Currency;
             Description = description;
             Date = date;
             Category = category;
@@ -28,6 +30,7 @@ namespace Spendly.Domain.Entities
         {
             Validate(amount, description, date, category);
             Amount = amount;
+            Currency = amount.Currency;
             Description = description;
             Date = date;
             Category = category;

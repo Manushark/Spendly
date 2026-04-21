@@ -15,6 +15,7 @@ namespace Spendly.Application.UseCases.Incomes
             var income = Income.Create(
                 userId,
                 dto.Amount,
+                dto.Currency,
                 dto.Source,
                 dto.Description,
                 dto.Date,

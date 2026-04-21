@@ -15,7 +15,7 @@ namespace Spendly.Application.UseCases.Incomes
                 ?? throw new KeyNotFoundException($"Income {incomeId} not found.");
 
             income.EnsureOwnership(userId);
-            income.Update(dto.Amount, dto.Source, dto.Description, dto.Date, dto.IsRecurring);
+            income.Update(dto.Amount, dto.Currency, dto.Source, dto.Description, dto.Date, dto.IsRecurring);
             await _repo.UpdateAsync(income);
         }
     }
