@@ -1,0 +1,50 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline - Spendly</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            color: #e2e8f0;
+        }
+        .offline-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+        .offline-icon {
+            font-size: 4rem;
+            color: #6366f1;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-card">
+        <div class="offline-icon">
+            <i class="bi bi-wifi-off"></i>
+        </div>
+        <h2 class="fw-bold mb-2">You're Offline</h2>
+        <p class="text-muted mb-4">It looks like you've lost your internet connection. Please check and try again.</p>
+        <button class="btn btn-primary rounded-pill px-4" onclick="window.location.reload()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Try Again
+        </button>
+    </div>
+</body>
+</html>
