@@ -12,6 +12,7 @@ namespace Spendly.Domain.Entities
         public int Id { get; private set; }
         public int UserId { get; private set; }
         public Money Amount { get; private set; } = null!;
+        public string Currency { get; private set; } = "USD";
         public string Source { get; private set; } = null!;
         public string? Description { get; private set; }
         public DateTime Date { get; private set; }
@@ -20,11 +21,12 @@ namespace Spendly.Domain.Entities
 
         protected Income() { }
 
-        private Income(int userId, decimal amount, string source, string? description, DateTime date, bool isRecurring)
+        private Income(int userId, decimal amount, string currency, string source, string? description, DateTime date, bool isRecurring)
         {
             Validate(amount, source, date);
             UserId = userId;
-            Amount = Money.FromDecimal(amount);
+            Amount = Money.Create(amount, currency);
+            Currency = currency.ToUpperInvariant();
             Source = source;
             Description = description;
             Date = date;
@@ -32,10 +34,11 @@ namespace Spendly.Domain.Entities
             CreatedAt = DateTime.UtcNow;
         }
 
-        public void Update(decimal amount, string source, string? description, DateTime date, bool isRecurring)
+        public void Update(decimal amount, string currency, string source, string? description, DateTime date, bool isRecurring)
         {
             Validate(amount, source, date);
-            Amount = Money.FromDecimal(amount);
+            Amount = Money.Create(amount, currency);
+            Currency = currency.ToUpperInvariant();
             Source = source;
             Description = description;
             Date = date;
@@ -63,7 +66,7 @@ namespace Spendly.Domain.Entities
                 throw new InvalidDomainException("Date cannot be in the future.");
         }
 
-        public static Income Create(int userId, decimal amount, string source, string? description, DateTime date, bool isRecurring = false)
-            => new(userId, amount, source, description, date, isRecurring);
+        public static Income Create(int userId, decimal amount, string currency, string source, string? description, DateTime date, bool isRecurring = false)
+            => new(userId, amount, currency, source, description, date, isRecurring);
     }
 }
