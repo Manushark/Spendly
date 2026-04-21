@@ -23,6 +23,9 @@ using Spendly.Application.UseCases.Categories;
 using Spendly.Application.UseCases.Incomes;
 using Spendly.Application.UseCases.Notifications;
 using Spendly.Application.UseCases.Exports;
+using Spendly.Application.UseCases.Insights;
+using Spendly.Application.UseCases.SavingsGoals;
+using Spendly.Application.UseCases.Tags;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -188,6 +191,32 @@ builder.Services.AddScoped<ToggleRecurringExpenseUseCase>();
 builder.Services.AddScoped<GetRecurringExpenseSummaryUseCase>();
 builder.Services.AddScoped<GetRecurringExpenseByIdUseCase>();
 builder.Services.AddHostedService<RecurringExpenseBackgroundService>();
+
+// ────────────────────────────────────────────────────────────
+// Use Cases — Insights
+// ────────────────────────────────────────────────────────────
+builder.Services.AddScoped<GetMonthlyInsightsUseCase>();
+
+// ────────────────────────────────────────────────────────────
+// Use Cases — Savings Goals
+// ────────────────────────────────────────────────────────────
+builder.Services.AddScoped<ISavingsGoalRepository, SavingsGoalRepository>();
+builder.Services.AddScoped<CreateSavingsGoalUseCase>();
+builder.Services.AddScoped<UpdateSavingsGoalUseCase>();
+builder.Services.AddScoped<DeleteSavingsGoalUseCase>();
+builder.Services.AddScoped<AddFundsUseCase>();
+builder.Services.AddScoped<ListSavingsGoalsUseCase>();
+builder.Services.AddScoped<GetSavingsGoalByIdUseCase>();
+
+// ────────────────────────────────────────────────────────────
+// Use Cases — Tags
+// ────────────────────────────────────────────────────────────
+builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<CreateTagUseCase>();
+builder.Services.AddScoped<UpdateTagUseCase>();
+builder.Services.AddScoped<DeleteTagUseCase>();
+builder.Services.AddScoped<ListTagsUseCase>();
+builder.Services.AddScoped<SetExpenseTagsUseCase>();
 
 // ════════════════════════════════════════════════════════════
 // Pipeline

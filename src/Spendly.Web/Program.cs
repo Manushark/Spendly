@@ -72,6 +72,24 @@ builder.Services.AddHttpClient<NotificationApiClient>(client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+// Insights API client
+builder.Services.AddHttpClient<InsightsApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
+// Savings Goal API client
+builder.Services.AddHttpClient<SavingsGoalApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
+// Tag API client
+builder.Services.AddHttpClient<TagApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
