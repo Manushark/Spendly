@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -23,5 +23,8 @@ namespace Spendly.Application.DTOs.Expense
         [Required]
         [MaxLength(100)]
         public string Category { get; set; } = null!;
+
+        [MaxLength(10)]
+        public string Currency { get; set; } = "USD";
     }
 }

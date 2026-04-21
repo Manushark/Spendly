@@ -25,7 +25,7 @@ namespace Spendly.Application.UseCases.Expenses
             expense.EnsureOwnership(userId);
 
             expense.Update(
-                Money.FromDecimal(dto.Amount),
+                Money.Create(dto.Amount, dto.Currency),
                 dto.Description,
                 dto.Date,
                 dto.Category

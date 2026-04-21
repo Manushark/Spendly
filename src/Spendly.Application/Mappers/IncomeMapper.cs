@@ -11,6 +11,7 @@ namespace Spendly.Application.Mappers
             {
                 Id = income.Id,
                 Amount = income.Amount.Value,
+                Currency = income.Currency,
                 Source = income.Source,
                 Description = income.Description,
                 Date = income.Date,
