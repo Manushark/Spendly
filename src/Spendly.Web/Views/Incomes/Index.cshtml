@@ -1,15 +1,15 @@
 @model Spendly.Web.Contracts.Incomes.PagedIncomeResult
 
 @{
-    ViewData["Title"] = "My Income";
+    ViewData["Title"] = L["Inc_Title"].Value;
     var currentPage = (int)(ViewBag.CurrentPage ?? 1);
 }
 
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1"><i class="bi bi-cash-stack text-success"></i> My Income</h2>
-            <small class="text-muted">Track your earnings and revenue</small>
+            <h2 class="mb-1"><i class="bi bi-cash-stack text-success"></i> @L["Inc_Title"]</h2>
+            <small class="text-muted">@L["Inc_ManageSubtitle"]</small>
         </div>
     </div>
 
@@ -48,12 +48,12 @@
                             <table class="table table-hover mb-0 align-middle">
                                 <thead class="bg-light text-secondary">
                                     <tr>
-                                        <th class="border-0 ps-4 py-3">Source</th>
-                                        <th class="border-0 py-3">Amount</th>
-                                        <th class="border-0 py-3">Description</th>
-                                        <th class="border-0 py-3">Date</th>
-                                        <th class="border-0 py-3 text-center">Recurring</th>
-                                        <th class="border-0 py-3 text-center pe-4" style="width:110px">Actions</th>
+                                        <th class="border-0 ps-4 py-3">@L["Common_Source"]</th>
+                                        <th class="border-0 py-3">@L["Common_Amount"]</th>
+                                        <th class="border-0 py-3">@L["Common_Description"]</th>
+                                        <th class="border-0 py-3">@L["Common_Date"]</th>
+                                        <th class="border-0 py-3 text-center">@L["Inc_IsRecurring"]</th>
+                                        <th class="border-0 py-3 text-center pe-4" style="width:110px">@L["Common_Actions"]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -90,7 +90,7 @@
                                                     @Html.AntiForgeryToken()
                                                     <button type="submit" class="btn btn-sm btn-light text-danger"
                                                             title="Delete"
-                                                            onclick="return confirm('Delete this income?');">
+                                                            onclick="return confirm('@L["Inc_DeleteConfirm"].Value');">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>
@@ -143,7 +143,7 @@
                 <div class="alert bg-white shadow-sm border-0 d-flex align-items-center p-4" style="border-radius: 12px;">
                     <div class="text-success fs-1 me-4 opacity-50"><i class="bi bi-cash-stack"></i></div>
                     <div>
-                        <h5 class="mb-1 fw-bold">No income recorded yet</h5>
+                        <h5 class="mb-1 fw-bold">@L["Inc_NoIncome"]</h5>
                         <p class="mb-0 text-muted">Add your first income using the panel on the right.</p>
                     </div>
                 </div>
@@ -157,7 +157,7 @@
                     <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
                         <i class="bi bi-plus-lg"></i>
                     </div>
-                    <h5 class="mb-0 fw-bold">Add Income</h5>
+                    <h5 class="mb-0 fw-bold">@L["Inc_NewIncome"]</h5>
                     <p class="text-muted small">Record a new earning</p>
                 </div>
                 <div class="card-body p-4 pt-2">
@@ -165,7 +165,7 @@
                         @Html.AntiForgeryToken()
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Amount ($)</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Amount"]</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-currency-dollar"></i></span>
                                 <input name="Amount" type="number" step="0.01" min="0.01"
@@ -174,19 +174,19 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Source</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Source"]</label>
                             <input name="Source" class="form-control"
                                    placeholder="e.g. Salary, Freelance, Dividends..." required maxlength="100" />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Description (optional)</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Description"] (@L["Common_Optional"])</label>
                             <input name="Description" class="form-control"
                                    placeholder="e.g. March salary payment" maxlength="200" />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Date</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Date"]</label>
                             <input name="Date" type="date" class="form-control" required
                                    max="@DateTime.Today.ToString("yyyy-MM-dd")" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
                         </div>
@@ -201,7 +201,7 @@
                         </div>
 
                         <button type="submit" class="btn btn-success w-100 py-3 rounded-3 fw-bold shadow-sm">
-                            <i class="bi bi-plus-circle me-1"></i> Add Income
+                            <i class="bi bi-plus-circle me-1"></i> @L["Inc_NewIncome"]
                         </button>
                     </form>
                 </div>

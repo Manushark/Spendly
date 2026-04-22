@@ -1,7 +1,7 @@
 @model List<Spendly.Web.Contracts.SavingsGoals.SavingsGoalResponseDto>
 
 @{
-    ViewData["Title"] = "Savings Goals";
+    ViewData["Title"] = L["Goals_Title"].Value;
     var active = Model.Where(g => !g.IsCompleted).ToList();
     var completed = Model.Where(g => g.IsCompleted).ToList();
     var totalSaved = Model.Sum(g => g.CurrentAmount);
@@ -12,11 +12,11 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1"><i class="bi bi-trophy text-warning"></i> Savings Goals</h2>
-            <small class="text-muted">Track your financial goals</small>
+            <h2 class="mb-1"><i class="bi bi-trophy text-warning"></i> @L["Goals_Title"]</h2>
+            <small class="text-muted">@L["Goals_ManageSubtitle"]</small>
         </div>
         <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createGoalModal">
-            <i class="bi bi-plus-lg me-1"></i> New Goal
+            <i class="bi bi-plus-lg me-1"></i> @L["Goals_NewGoal"]
         </button>
     </div>
 
@@ -41,7 +41,7 @@
                     @{
                         var overallPct = totalTarget > 0 ? Math.Min(100, (totalSaved / totalTarget) * 100) : 0;
                     }
-                    <div class="progress-bar bg-success" style="width: @overallPct%"></div>
+                    <div class="progress-bar bg-success" style="width: @overallPct.ToString(System.Globalization.CultureInfo.InvariantCulture)%"></div>
                 </div>
                 <small class="text-muted mt-1 d-block">@active.Count active · @completed.Count completed</small>
             </div>
@@ -51,7 +51,7 @@
     <!-- Active Goals -->
     @if (active.Any())
     {
-        <h5 class="fw-bold mb-3"><i class="bi bi-bullseye text-primary me-1"></i> Active Goals</h5>
+        <h5 class="fw-bold mb-3"><i class="bi bi-bullseye text-primary me-1"></i> @L["Goals_ActiveGoals"]</h5>
         <div class="row g-3 mb-4">
             @foreach (var goal in active)
             {
@@ -104,7 +104,7 @@
                                     <span class="text-muted">$@goal.TargetAmount.ToString("N2")</span>
                                 </div>
                                 <div class="progress" style="height: 8px; border-radius: 8px;">
-                                    <div class="progress-bar" style="width: @goal.ProgressPercentage%; background:@goal.Color;"></div>
+                                    <div class="progress-bar" style="width: @goal.ProgressPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%; background:@goal.Color;"></div>
                                 </div>
                                 <small class="text-muted">@goal.ProgressPercentage.ToString("N1")% complete</small>
                             </div>
@@ -128,7 +128,7 @@
     <!-- Completed Goals -->
     @if (completed.Any())
     {
-        <h5 class="fw-bold mb-3"><i class="bi bi-check-circle text-success me-1"></i> Completed</h5>
+        <h5 class="fw-bold mb-3"><i class="bi bi-check-circle text-success me-1"></i> @L["Goals_Completed"]</h5>
         <div class="row g-3 mb-4">
             @foreach (var goal in completed)
             {
@@ -166,7 +166,7 @@
     {
         <div class="text-center py-5">
             <i class="bi bi-trophy fs-1 text-muted d-block mb-3 opacity-50"></i>
-            <h5 class="text-muted">No savings goals yet</h5>
+            <h5 class="text-muted">@L["Goals_NoGoals"]</h5>
             <p class="text-muted">Start planning your financial future!</p>
             <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createGoalModal">
                 <i class="bi bi-plus-lg me-1"></i> Create Your First Goal
@@ -182,7 +182,7 @@
             <form asp-action="Create" method="post">
                 @Html.AntiForgeryToken()
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-trophy me-2 text-warning"></i>New Savings Goal</h5>
+                    <h5 class="modal-title fw-bold"><i class="bi bi-trophy me-2 text-warning"></i>@L["Goals_NewGoal"]</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -233,9 +233,9 @@
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">@L["Common_Cancel"]</button>
                     <button type="submit" class="btn btn-primary rounded-pill px-4">
-                        <i class="bi bi-check-lg me-1"></i>Create Goal
+                        <i class="bi bi-check-lg me-1"></i>@L["Common_Create"]
                     </button>
                 </div>
             </form>
