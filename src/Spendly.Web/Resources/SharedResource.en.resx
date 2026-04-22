@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+
+  <!-- ═══════ Sidebar / Navigation ═══════ -->
+  <data name="Nav_Dashboard"><value>Dashboard</value></data>
+  <data name="Nav_Expenses"><value>Expenses</value></data>
+  <data name="Nav_Categories"><value>Categories</value></data>
+  <data name="Nav_Tags"><value>Tags</value></data>
+  <data name="Nav_Budgets"><value>Budgets</value></data>
+  <data name="Nav_Recurring"><value>Recurring</value></data>
+  <data name="Nav_Income"><value>Income</value></data>
+  <data name="Nav_Goals"><value>Goals</value></data>
+  <data name="Nav_Insights"><value>Insights</value></data>
+  <data name="Nav_Import"><value>Import</value></data>
+  <data name="Nav_Settings"><value>Settings</value></data>
+  <data name="Nav_LoggedInAs"><value>Logged in as</value></data>
+  <data name="Nav_Logout"><value>Logout</value></data>
+  <data name="Nav_Login"><value>Login</value></data>
+  <data name="Nav_GetStarted"><value>Get Started</value></data>
+  <data name="Nav_Notifications"><value>Notifications</value></data>
+  <data name="Nav_MarkAllRead"><value>Mark all read</value></data>
+  <data name="Nav_NoNotifications"><value>No notifications</value></data>
+
+  <!-- ═══════ Common / Shared ═══════ -->
+  <data name="Common_Save"><value>Save</value></data>
+  <data name="Common_Cancel"><value>Cancel</value></data>
+  <data name="Common_Create"><value>Create</value></data>
+  <data name="Common_Edit"><value>Edit</value></data>
+  <data name="Common_Delete"><value>Delete</value></data>
+  <data name="Common_Back"><value>Back</value></data>
+  <data name="Common_Search"><value>Search</value></data>
+  <data name="Common_Filter"><value>Filter</value></data>
+  <data name="Common_Amount"><value>Amount</value></data>
+  <data name="Common_Description"><value>Description</value></data>
+  <data name="Common_Category"><value>Category</value></data>
+  <data name="Common_Date"><value>Date</value></data>
+  <data name="Common_Currency"><value>Currency</value></data>
+  <data name="Common_Actions"><value>Actions</value></data>
+  <data name="Common_Name"><value>Name</value></data>
+  <data name="Common_Status"><value>Status</value></data>
+  <data name="Common_Total"><value>Total</value></data>
+  <data name="Common_NoData"><value>No data available</value></data>
+  <data name="Common_Confirm"><value>Confirm</value></data>
+  <data name="Common_All"><value>All</value></data>
+  <data name="Common_Active"><value>Active</value></data>
+  <data name="Common_Completed"><value>Completed</value></data>
+  <data name="Common_Custom"><value>Custom</value></data>
+  <data name="Common_Default"><value>Default</value></data>
+  <data name="Common_Icon"><value>Icon</value></data>
+  <data name="Common_Color"><value>Color</value></data>
+  <data name="Common_Source"><value>Source</value></data>
+  <data name="Common_Required"><value>Required</value></data>
+  <data name="Common_Optional"><value>Optional</value></data>
+  <data name="Common_Previous"><value>Previous</value></data>
+  <data name="Common_Next"><value>Next</value></data>
+  <data name="Common_PerPage"><value>per page</value></data>
+
+  <!-- ═══════ Dashboard ═══════ -->
+  <data name="Dash_Title"><value>Dashboard</value></data>
+  <data name="Dash_Welcome"><value>Welcome back</value></data>
+  <data name="Dash_Overview"><value>Here's your financial overview</value></data>
+  <data name="Dash_TotalExpenses"><value>Total Expenses</value></data>
+  <data name="Dash_TotalIncome"><value>Total Income</value></data>
+  <data name="Dash_Balance"><value>Balance</value></data>
+  <data name="Dash_ThisMonth"><value>This Month</value></data>
+  <data name="Dash_RecentExpenses"><value>Recent Expenses</value></data>
+  <data name="Dash_BudgetOverview"><value>Budget Overview</value></data>
+  <data name="Dash_NoExpenses"><value>No expenses yet. Start tracking!</value></data>
+  <data name="Dash_NoBudgets"><value>No budgets set up yet.</value></data>
+  <data name="Dash_ViewAll"><value>View All</value></data>
+  <data name="Dash_Spent"><value>spent</value></data>
+  <data name="Dash_Of"><value>of</value></data>
+  <data name="Dash_Remaining"><value>remaining</value></data>
+  <data name="Dash_Exceeded"><value>Exceeded</value></data>
+  <data name="Dash_GenerateReport"><value>Generate Report</value></data>
+  <data name="Dash_AddExpense"><value>Add Expense</value></data>
+  <data name="Dash_NoExpensesMonth"><value>No expenses yet this month</value></data>
+  <data name="Dash_StartTracking"><value>Start tracking your spending by adding your first expense</value></data>
+  <data name="Dash_AddFirstExpense"><value>Add Your First Expense</value></data>
+  <data name="Dash_TotalThisMonth"><value>Total This Month</value></data>
+  <data name="Dash_DailyAverage"><value>Daily Average</value></data>
+  <data name="Dash_BasedOnDays"><value>Based on</value></data>
+  <data name="Dash_Days"><value>days</value></data>
+  <data name="Dash_HighestExpense"><value>Highest Expense</value></data>
+  <data name="Dash_SingleTransaction"><value>Single transaction</value></data>
+  <data name="Dash_TopCategory"><value>Top Category</value></data>
+  <data name="Dash_Transactions"><value>transactions</value></data>
+  <data name="Dash_MonthlyIncome"><value>Monthly Income</value></data>
+  <data name="Dash_TotalEarnings"><value>Total earnings this month</value></data>
+  <data name="Dash_IncomeMinusExpenses"><value>Income − Expenses</value></data>
+  <data name="Dash_SavingsRate"><value>Savings Rate</value></data>
+  <data name="Dash_SpendingTrend"><value>Spending Trend</value></data>
+  <data name="Dash_Last30Days"><value>Last 30 days</value></data>
+  <data name="Dash_Top5Expenses"><value>Top 5 Expenses</value></data>
+  <data name="Dash_CategoryBreakdown"><value>Category Breakdown</value></data>
+  <data name="Dash_Count"><value>Count</value></data>
+  <data name="Dash_OfTotal"><value>% of Total</value></data>
+  <data name="Dash_VsLastMonth"><value>vs last month</value></data>
+  <data name="Dash_DailySpending"><value>Daily Spending</value></data>
+  <data name="Dash_SpentLabel"><value>Spent</value></data>
+
+  <!-- ═══════ Expenses ═══════ -->
+  <data name="Exp_Title"><value>Expenses</value></data>
+  <data name="Exp_NewExpense"><value>New Expense</value></data>
+  <data name="Exp_EditExpense"><value>Edit Expense</value></data>
+  <data name="Exp_TrackSubtitle"><value>Track and manage your spending</value></data>
+  <data name="Exp_NoExpenses"><value>No expenses found</value></data>
+  <data name="Exp_StartTracking"><value>Start adding expenses to track your spending</value></data>
+  <data name="Exp_DeleteConfirm"><value>Delete this expense?</value></data>
+  <data name="Exp_FilterByCategory"><value>Filter by category</value></data>
+  <data name="Exp_AllCategories"><value>All Categories</value></data>
+  <data name="Exp_MinAmount"><value>Min Amount</value></data>
+  <data name="Exp_MaxAmount"><value>Max Amount</value></data>
+  <data name="Exp_ApplyFilters"><value>Apply Filters</value></data>
+  <data name="Exp_ClearFilters"><value>Clear</value></data>
+  <data name="Exp_Showing"><value>Showing</value></data>
+
+  <!-- ═══════ Budgets ═══════ -->
+  <data name="Bud_Title"><value>Budgets</value></data>
+  <data name="Bud_NewBudget"><value>New Budget</value></data>
+  <data name="Bud_EditBudget"><value>Edit Budget</value></data>
+  <data name="Bud_ManageSubtitle"><value>Set spending limits by category</value></data>
+  <data name="Bud_MonthlyLimit"><value>Monthly Limit</value></data>
+  <data name="Bud_NoBudgets"><value>No budgets yet</value></data>
+  <data name="Bud_CreateFirst"><value>Create budgets to control your spending</value></data>
+  <data name="Bud_DeleteConfirm"><value>Delete this budget?</value></data>
+  <data name="Bud_SpentOf"><value>spent of</value></data>
+
+  <!-- ═══════ Recurring Expenses ═══════ -->
+  <data name="Rec_Title"><value>Recurring Expenses</value></data>
+  <data name="Rec_NewRecurring"><value>New Recurring Expense</value></data>
+  <data name="Rec_EditRecurring"><value>Edit Recurring Expense</value></data>
+  <data name="Rec_ManageSubtitle"><value>Manage your fixed monthly payments</value></data>
+  <data name="Rec_Frequency"><value>Frequency</value></data>
+  <data name="Rec_StartDate"><value>Start Date</value></data>
+  <data name="Rec_EndDate"><value>End Date</value></data>
+  <data name="Rec_NextDue"><value>Next Due</value></data>
+  <data name="Rec_NoRecurring"><value>No recurring expenses</value></data>
+  <data name="Rec_AddFirst"><value>Add your fixed bills and subscriptions</value></data>
+  <data name="Rec_DeleteConfirm"><value>Delete this recurring expense?</value></data>
+  <data name="Rec_Daily"><value>Daily</value></data>
+  <data name="Rec_Weekly"><value>Weekly</value></data>
+  <data name="Rec_Monthly"><value>Monthly</value></data>
+  <data name="Rec_Yearly"><value>Yearly</value></data>
+  <data name="Rec_IsActive"><value>Active</value></data>
+
+  <!-- ═══════ Income ═══════ -->
+  <data name="Inc_Title"><value>Income</value></data>
+  <data name="Inc_NewIncome"><value>New Income</value></data>
+  <data name="Inc_EditIncome"><value>Edit Income</value></data>
+  <data name="Inc_ManageSubtitle"><value>Track your income sources</value></data>
+  <data name="Inc_NoIncome"><value>No income recorded yet</value></data>
+  <data name="Inc_AddFirst"><value>Start tracking your income sources</value></data>
+  <data name="Inc_DeleteConfirm"><value>Delete this income?</value></data>
+  <data name="Inc_IsRecurring"><value>Recurring income</value></data>
+  <data name="Inc_OneTime"><value>One-time</value></data>
+
+  <!-- ═══════ Savings Goals ═══════ -->
+  <data name="Goal_Title"><value>Savings Goals</value></data>
+  <data name="Goal_NewGoal"><value>New Goal</value></data>
+  <data name="Goal_EditGoal"><value>Edit Goal</value></data>
+  <data name="Goal_ManageSubtitle"><value>Track your savings progress</value></data>
+  <data name="Goal_TargetAmount"><value>Target Amount</value></data>
+  <data name="Goal_CurrentAmount"><value>Current Amount</value></data>
+  <data name="Goal_AddFunds"><value>Add Funds</value></data>
+  <data name="Goal_Deadline"><value>Deadline</value></data>
+  <data name="Goal_NoGoals"><value>No savings goals yet</value></data>
+  <data name="Goal_CreateFirst"><value>Create goals to start saving</value></data>
+  <data name="Goal_DeleteConfirm"><value>Delete this goal?</value></data>
+  <data name="Goal_ActiveGoals"><value>Active Goals</value></data>
+  <data name="Goal_CompletedGoals"><value>Completed Goals</value></data>
+  <data name="Goal_Saved"><value>saved</value></data>
+  <data name="Goal_Reached"><value>Goal reached!</value></data>
+
+  <!-- ═══════ Tags ═══════ -->
+  <data name="Tag_Title"><value>Tags</value></data>
+  <data name="Tag_Subtitle"><value>Label your expenses with custom tags</value></data>
+  <data name="Tag_NewTag"><value>New Tag</value></data>
+  <data name="Tag_NoTags"><value>No tags yet</value></data>
+  <data name="Tag_CreateFirst"><value>Create tags to label your expenses</value></data>
+  <data name="Tag_DeleteConfirm"><value>Delete this tag?</value></data>
+  <data name="Tag_Expenses"><value>expenses</value></data>
+  <data name="Tag_TagName"><value>Tag name</value></data>
+
+  <!-- ═══════ Categories ═══════ -->
+  <data name="Cat_Title"><value>Categories</value></data>
+  <data name="Cat_Subtitle"><value>Organize your expenses with custom categories</value></data>
+  <data name="Cat_NewCategory"><value>New Category</value></data>
+  <data name="Cat_EditCategory"><value>Edit Category</value></data>
+  <data name="Cat_NoCategories"><value>No categories yet</value></data>
+  <data name="Cat_CreateFirst"><value>Create categories to organize your expenses</value></data>
+  <data name="Cat_DeleteConfirm"><value>Delete this category?</value></data>
+  <data name="Cat_CategoryName"><value>Category Name</value></data>
+
+  <!-- ═══════ Insights ═══════ -->
+  <data name="Ins_Title"><value>Insights</value></data>
+  <data name="Ins_Subtitle"><value>Understand your spending patterns</value></data>
+  <data name="Ins_DailySpending"><value>Daily Spending</value></data>
+  <data name="Ins_ByCategory"><value>By Category</value></data>
+  <data name="Ins_SpendingByDay"><value>Spending by Day of Week</value></data>
+  <data name="Ins_CategoryBreakdown"><value>Category Breakdown</value></data>
+  <data name="Ins_TotalSpent"><value>Total Spent</value></data>
+  <data name="Ins_DailyAverage"><value>Daily Average</value></data>
+  <data name="Ins_VsLastMonth"><value>vs last month</value></data>
+  <data name="Ins_ProjectedTotal"><value>Projected Month Total</value></data>
+  <data name="Ins_SavingsRate"><value>Savings Rate</value></data>
+  <data name="Ins_Transactions"><value>transactions</value></data>
+  <data name="Ins_Percentage"><value>Percentage</value></data>
+
+  <!-- ═══════ Import ═══════ -->
+  <data name="Imp_Title"><value>Import Data</value></data>
+  <data name="Imp_Subtitle"><value>Import expenses from a CSV file</value></data>
+  <data name="Imp_UploadCSV"><value>Upload CSV</value></data>
+  <data name="Imp_SelectFile"><value>Select CSV File</value></data>
+  <data name="Imp_DefaultCurrency"><value>Default Currency</value></data>
+  <data name="Imp_PreviewImport"><value>Preview Import</value></data>
+  <data name="Imp_FormatGuide"><value>CSV Format Guide</value></data>
+  <data name="Imp_AcceptedNames"><value>Accepted Names</value></data>
+  <data name="Imp_Column"><value>Column</value></data>
+  <data name="Imp_Example"><value>Example</value></data>
+  <data name="Imp_MaxSize"><value>Maximum 5MB. The file should have headers like: Date, Amount, Description, Category</value></data>
+  <data name="Imp_Preview"><value>Import Preview</value></data>
+  <data name="Imp_ReviewData"><value>Review data before importing</value></data>
+  <data name="Imp_TotalRows"><value>Total Rows</value></data>
+  <data name="Imp_Valid"><value>Valid</value></data>
+  <data name="Imp_Invalid"><value>Invalid (will skip)</value></data>
+  <data name="Imp_DetectedColumns"><value>Detected columns</value></data>
+  <data name="Imp_ImportExpenses"><value>Import Expenses</value></data>
+  <data name="Imp_ParsingErrors"><value>Parsing Errors</value></data>
+
+  <!-- ═══════ Settings ═══════ -->
+  <data name="Set_Title"><value>Settings</value></data>
+  <data name="Set_Profile"><value>Profile</value></data>
+  <data name="Set_FullName"><value>Full Name</value></data>
+  <data name="Set_Email"><value>Email</value></data>
+  <data name="Set_PreferredCurrency"><value>Preferred Currency</value></data>
+  <data name="Set_TimeZone"><value>Time Zone</value></data>
+  <data name="Set_SaveProfile"><value>Save Profile</value></data>
+  <data name="Set_ChangePassword"><value>Change Password</value></data>
+  <data name="Set_CurrentPassword"><value>Current Password</value></data>
+  <data name="Set_NewPassword"><value>New Password</value></data>
+  <data name="Set_ConfirmPassword"><value>Confirm New Password</value></data>
+  <data name="Set_UpdatePassword"><value>Update Password</value></data>
+  <data name="Set_Language"><value>Language</value></data>
+
+  <!-- ═══════ Auth ═══════ -->
+  <data name="Auth_Login"><value>Login</value></data>
+  <data name="Auth_Register"><value>Register</value></data>
+  <data name="Auth_Email"><value>Email</value></data>
+  <data name="Auth_Password"><value>Password</value></data>
+  <data name="Auth_ConfirmPassword"><value>Confirm Password</value></data>
+  <data name="Auth_SignIn"><value>Sign In</value></data>
+  <data name="Auth_SignUp"><value>Sign Up</value></data>
+  <data name="Auth_NoAccount"><value>Don't have an account?</value></data>
+  <data name="Auth_HaveAccount"><value>Already have an account?</value></data>
+  <data name="Auth_WelcomeBack"><value>Welcome back to Spendly</value></data>
+  <data name="Auth_JoinSpendly"><value>Join Spendly today</value></data>
+  <data name="Auth_GoogleSignIn"><value>Sign in with Google</value></data>
+  <data name="Auth_Or"><value>or</value></data>
+
+  <!-- ═══════ Home / Landing ═══════ -->
+  <data name="Home_Hero"><value>Take Control of Your Finances</value></data>
+  <data name="Home_HeroSub"><value>Track expenses, set budgets, and achieve your savings goals with Spendly.</value></data>
+  <data name="Home_StartFree"><value>Start Free</value></data>
+
+  <!-- ═══════ Offline ═══════ -->
+  <data name="Offline_Title"><value>You're Offline</value></data>
+  <data name="Offline_Message"><value>It looks like you've lost your internet connection. Please check and try again.</value></data>
+  <data name="Offline_TryAgain"><value>Try Again</value></data>
+
+  <!-- ═══════ Home Marketing ═══════ -->
+  <data name="Home_HeroTitle"><value>Master Your Financial Future</value></data>
+  <data name="Home_HeroDesc"><value>Spendly is the premium financial companion that helps you track expenses, manage budgets, and gain absolute clarity over your money.</value></data>
+  <data name="Home_CreateAccount"><value>Create Free Account</value></data>
+  <data name="Home_OpenDashboard"><value>Open Dashboard</value></data>
+  <data name="Home_Trusted"><value>Trusted by thousands of users worldwide</value></data>
+  <data name="Home_SmarterWealth"><value>Smarter Wealth Management</value></data>
+  <data name="Home_SmarterDesc"><value>Experience a completely reimagined interface that turns complex financial tracking into a beautiful, seamless habit.</value></data>
+  <data name="Home_VisualAnalytics"><value>Visual Analytics</value></data>
+  <data name="Home_VisualDesc"><value>Stop guessing. Get instant visual feedback on your spending trends with interactive, real-time charts.</value></data>
+  <data name="Home_PrecisionBudgets"><value>Precision Budgets</value></data>
+  <data name="Home_PrecisionDesc"><value>Set smart limits for categories and receive intelligent warnings before you overspend.</value></data>
+  <data name="Home_Automation"><value>Automation</value></data>
+  <data name="Home_AutomationDesc"><value>Setup your recurring expenses just once, and let Spendly predict and track your upcoming commitments.</value></data>
+  <data name="Home_CTA"><value>Ready to reclaim your finances?</value></data>
+  <data name="Home_CTADesc"><value>Join Spendly today and track your money with elegance.</value></data>
+  <data name="Home_StartJourney"><value>Start Your Journey</value></data>
+  <data name="Home_Footer"><value>Built with quality and privacy in mind.</value></data>
+
+  <!-- ═══════ Missing Keys ═══════ -->
+  <data name="Cat_ManageSubtitle"><value>Organize your expenses with custom categories</value></data>
+  <data name="Goals_ActiveGoals"><value>Active Goals</value></data>
+  <data name="Goals_Completed"><value>Completed</value></data>
+  <data name="Goals_ManageSubtitle"><value>Track your financial goals</value></data>
+  <data name="Goals_NewGoal"><value>New Goal</value></data>
+  <data name="Goals_NoGoals"><value>No savings goals yet</value></data>
+  <data name="Goals_Title"><value>Savings Goals</value></data>
+  <data name="Imp_ManageSubtitle"><value>Import expenses from a CSV file</value></data>
+  <data name="Ins_ManageSubtitle"><value>Analyzing your spending habits</value></data>
+  <data name="Ins_TotalExpenses"><value>Total Expenses</value></data>
+  <data name="Ins_TotalIncome"><value>Total Income</value></data>
+  <data name="Set_ManageSubtitle"><value>Manage your profile, preferences, and categories</value></data>
+  <data name="Set_Security"><value>Security</value></data>
+  <data name="Tags_CreateTag"><value>Create New Tag</value></data>
+  <data name="Tags_ManageSubtitle"><value>Organize expenses with custom tags</value></data>
+  <data name="Tags_NoTags"><value>No tags yet</value></data>
+  <data name="Tags_Title"><value>Tags</value></data>
+
+  <!-- ═══════ Budget Summary ═══════ -->
+  <data name="Bud_TotalBudget"><value>Total Budget</value></data>
+  <data name="Bud_BudgetsSet"><value>budgets set</value></data>
+  <data name="Bud_TotalSpent"><value>Total Spent</value></data>
+  <data name="Bud_OfTotalBudget"><value>of total budget</value></data>
+  <data name="Bud_Remaining"><value>Remaining</value></data>
+  <data name="Bud_AvailableToSpend"><value>Available to spend</value></data>
+  <data name="Bud_OverBudget"><value>Over Budget</value></data>
+  <data name="Bud_CategoriesExceeded"><value>Categories exceeded</value></data>
+
+  <!-- ═══════ Recurring Summary ═══════ -->
+  <data name="Rec_TotalRecurrences"><value>Total Recurrences</value></data>
+  <data name="Rec_MonthlyProjected"><value>Monthly Projected</value></data>
+  <data name="Rec_EstimatedPerMonth"><value>Estimated per month</value></data>
+  <data name="Rec_Paused"><value>Paused</value></data>
+  <data name="Rec_TempInactive"><value>Temporarily inactive</value></data>
+
+  <!-- ═══════ Insights Extra ═══════ -->
+  <data name="Ins_SavingsRate"><value>Savings Rate</value></data>
+  <data name="Ins_ProjectedMonthEnd"><value>Projected Month-End</value></data>
+  <data name="Ins_Days"><value>days</value></data>
+  <data name="Ins_Day"><value>day</value></data>
+</root>
+
