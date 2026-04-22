@@ -1,7 +1,7 @@
 @model Spendly.Web.Contracts.Dashboard.DashboardStatsDto
 
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = L["Dash_Title"].Value;
     var hasData = Model.TotalExpensesCount > 0;
 }
 
@@ -63,7 +63,7 @@
         <div>
             <h2 class="mb-1">
                 <i class="bi bi-speedometer2 text-primary"></i> 
-                Dashboard
+                @L["Dash_Title"]
             </h2>
             <small class="text-muted">
                 <i class="bi bi-calendar3"></i> @DateTime.Now.ToString("MMMM yyyy")
@@ -72,7 +72,7 @@
         @if (hasData)
         {
                 <a asp-controller="Expenses" asp-action="Index" class="btn btn-outline-primary">
-                    <i class="bi bi-plus-circle"></i> Add Expense
+                    <i class="bi bi-plus-circle"></i> @L["Dash_AddExpense"]
                 </a>
         }
     </div>
@@ -87,10 +87,10 @@
                             <div class="empty-state-icon">
                                 <i class="bi bi-inbox"></i>
                             </div>
-                            <h3 class="mb-3">No expenses yet this month</h3>
-                            <p class="text-muted mb-4">Start tracking your spending by adding your first expense</p>
+                            <h3 class="mb-3">@L["Dash_NoExpensesMonth"]</h3>
+                            <p class="text-muted mb-4">@L["Dash_StartTracking"]</p>
                             <a asp-controller="Expenses" asp-action="Index" class="btn btn-primary btn-lg">
-                                <i class="bi bi-plus-circle me-2"></i>Add Your First Expense
+                                <i class="bi bi-plus-circle me-2"></i>@L["Dash_AddFirstExpense"]
                             </a>
                         </div>
                     </div>
@@ -106,7 +106,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
-                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Total This Month</p>
+                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_TotalThisMonth"]</p>
                                     <h3 class="mb-0 fw-bold">$@Model.CurrentMonthTotal.ToString("N2")</h3>
                                 </div>
                                 <div class="stat-icon bg-primary bg-opacity-10">
@@ -120,7 +120,7 @@
                                             <i class="bi bi-@(Model.IsIncreaseFromLastMonth ? "arrow-up" : "arrow-down") me-1"></i>
                                     @Math.Abs(Model.MonthComparisonPercentage).ToString("N1")%
                                         </span>
-                                        <small class="text-muted">vs last month</small>
+                                        <small class="text-muted">@L["Dash_VsLastMonth"]</small>
                                     </div>
                         }
                         </div>
@@ -132,7 +132,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
-                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Daily Average</p>
+                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_DailyAverage"]</p>
                                     <h3 class="mb-0 fw-bold">$@Model.DailyAverage.ToString("N2")</h3>
                                 </div>
                                 <div class="stat-icon bg-success bg-opacity-10">
@@ -140,7 +140,7 @@
                                 </div>
                             </div>
                             <small class="text-muted">
-                                <i class="bi bi-info-circle me-1"></i>Based on @DateTime.Now.Day days
+                                <i class="bi bi-info-circle me-1"></i>@L["Dash_BasedOnDays"] @DateTime.Now.Day @L["Dash_Days"]
                             </small>
                         </div>
                     </div>
@@ -151,7 +151,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
-                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Highest Expense</p>
+                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_HighestExpense"]</p>
                                     <h3 class="mb-0 fw-bold">$@Model.HighestExpense.ToString("N2")</h3>
                                 </div>
                                 <div class="stat-icon bg-warning bg-opacity-10">
@@ -159,7 +159,7 @@
                                 </div>
                             </div>
                             <small class="text-muted">
-                                <i class="bi bi-lightning-charge me-1"></i>Single transaction
+                                <i class="bi bi-lightning-charge me-1"></i>@L["Dash_SingleTransaction"]
                             </small>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
-                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Top Category</p>
+                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_TopCategory"]</p>
                                     <h3 class="mb-0 fw-bold text-truncate" title="@Model.TopCategory" style="max-width: 120px;">
                                     @Model.TopCategory
                                     </h3>
@@ -180,7 +180,7 @@
                                 </div>
                             </div>
                             <small class="text-muted">
-                                <i class="bi bi-receipt me-1"></i>@Model.TotalExpensesCount transactions
+                                <i class="bi bi-receipt me-1"></i>@Model.TotalExpensesCount @L["Dash_Transactions"]
                             </small>
                         </div>
                     </div>
@@ -194,7 +194,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
-                                <p class="text-muted mb-1 fw-semibold small text-uppercase">Monthly Income</p>
+                                <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_MonthlyIncome"]</p>
                                 <h3 class="mb-0 fw-bold text-success">$@Model.CurrentMonthIncome.ToString("N2")</h3>
                             </div>
                             <div class="stat-icon bg-success bg-opacity-10">
@@ -202,7 +202,7 @@
                             </div>
                         </div>
                         <small class="text-muted">
-                            <i class="bi bi-info-circle me-1"></i>Total earnings this month
+                            <i class="bi bi-info-circle me-1"></i>@L["Dash_TotalEarnings"]
                         </small>
                     </div>
                 </div>
@@ -213,7 +213,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
-                                <p class="text-muted mb-1 fw-semibold small text-uppercase">Balance</p>
+                                <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_Balance"]</p>
                                 <h3 class="mb-0 fw-bold @(Model.MonthlyBalance >= 0 ? "text-success" : "text-danger")">
                                     @(Model.MonthlyBalance >= 0 ? "+" : "")$@Model.MonthlyBalance.ToString("N2")
                                 </h3>
@@ -223,7 +223,7 @@
                             </div>
                         </div>
                         <small class="text-muted">
-                            <i class="bi bi-calculator me-1"></i>Income − Expenses
+                            <i class="bi bi-calculator me-1"></i>@L["Dash_IncomeMinusExpenses"]
                         </small>
                     </div>
                 </div>
@@ -234,7 +234,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
-                                <p class="text-muted mb-1 fw-semibold small text-uppercase">Savings Rate</p>
+                                <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_SavingsRate"]</p>
                                 <h3 class="mb-0 fw-bold @(Model.SavingsRate >= 0 ? "text-primary" : "text-danger")">
                                     @Model.SavingsRate.ToString("N1")%
                                 </h3>
@@ -246,7 +246,7 @@
                         <div class="progress mt-1" style="height: 6px; border-radius: 6px;">
                             <div class="progress-bar @(Model.SavingsRate >= 20 ? "bg-success" : Model.SavingsRate >= 0 ? "bg-warning" : "bg-danger")"
                                  role="progressbar"
-                                 style="width: @(Math.Max(0, Math.Min(100, Model.SavingsRate)))%"></div>
+                                 style="width: @(Math.Max(0, Math.Min(100, Model.SavingsRate)).ToString(System.Globalization.CultureInfo.InvariantCulture))%"></div>
                         </div>
                     </div>
                 </div>
@@ -259,8 +259,8 @@
                 <div class="card chart-card shadow-sm h-100">
                     <div class="card-header bg-white border-0 pt-4 pb-3">
                         <h5 class="mb-0 fw-semibold">
-                            <i class="bi bi-graph-up text-primary me-2"></i>Spending Trend
-                            <span class="badge bg-light text-muted ms-2">Last 30 days</span>
+                            <i class="bi bi-graph-up text-primary me-2"></i>@L["Dash_SpendingTrend"]
+                            <span class="badge bg-light text-muted ms-2">@L["Dash_Last30Days"]</span>
                         </h5>
                     </div>
                     <div class="card-body pt-2">
@@ -275,7 +275,7 @@
                 <div class="card chart-card shadow-sm h-100">
                     <div class="card-header bg-white border-0 pt-4 pb-3 d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 fw-semibold">
-                            <i class="bi bi-star-fill text-warning me-2"></i>Top 5 Expenses
+                            <i class="bi bi-star-fill text-warning me-2"></i>@L["Dash_Top5Expenses"]
                         </h5>
                     </div>
                     <div class="card-body p-0">
@@ -316,7 +316,7 @@
                 <div class="card chart-card shadow-sm h-100">
                     <div class="card-header bg-white border-0 pt-4 pb-3">
                         <h5 class="mb-0 fw-semibold">
-                            <i class="bi bi-list-ul text-primary me-2"></i>Category Breakdown
+                            <i class="bi bi-list-ul text-primary me-2"></i>@L["Dash_CategoryBreakdown"]
                         </h5>
                     </div>
                     <div class="card-body p-0">
@@ -324,10 +324,10 @@
                             <table class="table table-hover mb-0 align-middle">
                                 <thead class="bg-light">
                                     <tr>
-                                        <th class="border-0 py-3 ps-4">Category</th>
-                                        <th class="border-0 py-3 text-end">Amount</th>
-                                        <th class="border-0 py-3 text-center">Count</th>
-                                        <th class="border-0 py-3 pe-4" style="width: 200px">% of Total</th>
+                                        <th class="border-0 py-3 ps-4">@L["Common_Category"]</th>
+                                        <th class="border-0 py-3 text-end">@L["Common_Amount"]</th>
+                                        <th class="border-0 py-3 text-center">@L["Dash_Count"]</th>
+                                        <th class="border-0 py-3 pe-4" style="width: 200px">@L["Dash_OfTotal"]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -348,7 +348,7 @@
                                                 <div class="progress flex-grow-1" style="height: 10px; border-radius: 10px;">
                                                     <div class="progress-bar bg-primary" 
                                                          role="progressbar"
-                                                         style="width: @cat.Percentage%"
+                                                         style="width: @cat.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%"
                                                          aria-valuenow="@cat.Percentage"
                                                          aria-valuemin="0"
                                                          aria-valuemax="100"></div>
@@ -371,7 +371,7 @@
                 <div class="card chart-card shadow-sm h-100">
                     <div class="card-header bg-white border-0 pt-4 pb-3">
                         <h5 class="mb-0 fw-semibold">
-                            <i class="bi bi-pie-chart text-primary me-2"></i>Percentage
+                            <i class="bi bi-pie-chart text-primary me-2"></i>@L["Ins_Percentage"]
                         </h5>
                     </div>
                     <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 250px;">
@@ -415,7 +415,7 @@
                     data: {
                         labels: trendData.map(d => d.Date),      // ← PascalCase
                         datasets: [{
-                            label: 'Daily Spending',
+                            label: '@L["Dash_DailySpending"].Value',
                             data: trendData.map(d => d.Amount),  // ← PascalCase
                             borderColor: 'rgb(13, 110, 253)',
                             backgroundColor: gradient,
@@ -448,7 +448,7 @@
                                 titleFont: { size: 14, weight: 'bold' },
                                 bodyFont: { size: 13 },
                                 callbacks: {
-                                    label: (ctx) => 'Spent: $' + ctx.parsed.y.toFixed(2)
+                                    label: (ctx) => '@L["Dash_SpentLabel"].Value: $' + ctx.parsed.y.toFixed(2)
                                 }
                             }
                         },
