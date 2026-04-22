@@ -1,7 +1,7 @@
 @model Spendly.Web.Contracts.Expenses.ExpenseDto
 
 @{
-    ViewData["Title"] = "Edit Expense";
+    ViewData["Title"] = L["Exp_EditExpense"].Value;
 }
 
 <div class="container mt-4">
@@ -9,7 +9,7 @@
         <div class="col-md-8 col-lg-6">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <i class="bi bi-pencil-square"></i> Edit Expense
+                    <i class="bi bi-pencil-square"></i> @L["Exp_EditExpense"]
                 </div>
                 <div class="card-body">
                     <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
@@ -41,8 +41,8 @@
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Save changes</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">@L["Common_Cancel"]</a>
+                            <button type="submit" class="btn btn-primary">@L["Common_Save"]</button>
                         </div>
                     </form>
                 </div>
