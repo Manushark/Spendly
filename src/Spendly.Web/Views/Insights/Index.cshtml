@@ -1,7 +1,7 @@
 @model Spendly.Web.Contracts.Insights.MonthlyInsightsDto
 
 @{
-    ViewData["Title"] = "Insights";
+    ViewData["Title"] = L["Ins_Title"].Value;
     var now = DateTime.UtcNow;
     var prevMonth = Model.Month == 1 ? 12 : Model.Month - 1;
     var prevYear = Model.Month == 1 ? Model.Year - 1 : Model.Year;
@@ -14,8 +14,8 @@
     <!-- Header with Month Navigation -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1"><i class="bi bi-lightbulb text-warning"></i> Insights</h2>
-            <small class="text-muted">Analyzing your spending habits</small>
+            <h2 class="mb-1"><i class="bi bi-lightbulb text-warning"></i> @L["Ins_Title"]</h2>
+            <small class="text-muted">@L["Ins_ManageSubtitle"]</small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a asp-action="Index" asp-route-month="@prevMonth" asp-route-year="@prevYear"
@@ -38,7 +38,7 @@
         <div class="col-md-3">
             <div class="card stat-card shadow-sm h-100 border-0">
                 <div class="card-body">
-                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Total Expenses</p>
+                    <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Ins_TotalExpenses"]</p>
                     <h3 class="mb-1 fw-bold text-danger">$@Model.TotalExpenses.ToString("N2")</h3>
                     <small class="@(Model.ExpenseChangePercent <= 0 ? "text-success" : "text-danger")">
                         <i class="bi bi-@(Model.ExpenseChangePercent <= 0 ? "arrow-down" : "arrow-up")-circle-fill me-1"></i>
@@ -50,7 +50,7 @@
         <div class="col-md-3">
             <div class="card stat-card shadow-sm h-100 border-0">
                 <div class="card-body">
-                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Total Income</p>
+                    <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Ins_TotalIncome"]</p>
                     <h3 class="mb-1 fw-bold text-success">$@Model.TotalIncome.ToString("N2")</h3>
                     <small class="@(Model.IncomeChangePercent >= 0 ? "text-success" : "text-danger")">
                         <i class="bi bi-@(Model.IncomeChangePercent >= 0 ? "arrow-up" : "arrow-down")-circle-fill me-1"></i>
@@ -62,12 +62,12 @@
         <div class="col-md-3">
             <div class="card stat-card shadow-sm h-100 border-0">
                 <div class="card-body">
-                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Balance</p>
+                    <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_Balance"]</p>
                     <h3 class="mb-1 fw-bold @(Model.Balance >= 0 ? "text-success" : "text-danger")">
                         @(Model.Balance >= 0 ? "+" : "")$@Model.Balance.ToString("N2")
                     </h3>
                     <small class="text-muted">
-                        <i class="bi bi-piggy-bank me-1"></i>Savings Rate: @Model.SavingsRate.ToString("N1")%
+                        <i class="bi bi-piggy-bank me-1"></i>@L["Ins_SavingsRate"]: @Model.SavingsRate.ToString("N1")%
                     </small>
                 </div>
             </div>
@@ -75,10 +75,10 @@
         <div class="col-md-3">
             <div class="card stat-card shadow-sm h-100 border-0">
                 <div class="card-body">
-                    <p class="text-muted mb-1 fw-semibold small text-uppercase">Projected Month-End</p>
+                    <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Ins_ProjectedMonthEnd"]</p>
                     <h3 class="mb-1 fw-bold text-primary">$@Model.ProjectedMonthEnd.ToString("N2")</h3>
                     <small class="text-muted">
-                        <i class="bi bi-calendar3 me-1"></i>@Model.DaysElapsed/@Model.DaysInMonth days · $@Model.DailyAverage.ToString("N2")/day
+                        <i class="bi bi-calendar3 me-1"></i>@Model.DaysElapsed/@Model.DaysInMonth @L["Ins_Days"] · $@Model.DailyAverage.ToString("N2")/@L["Ins_Day"]
                     </small>
                 </div>
             </div>
@@ -91,7 +91,7 @@
         <div class="col-lg-8">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-body">
-                    <h6 class="fw-bold mb-3"><i class="bi bi-graph-up me-2 text-primary"></i>Daily Spending</h6>
+                    <h6 class="fw-bold mb-3"><i class="bi bi-graph-up me-2 text-primary"></i>@L["Dash_DailySpending"]</h6>
                     <div style="position:relative; height:280px;">
                         <canvas id="dailySpendingChart"></canvas>
                     </div>
@@ -102,7 +102,7 @@
         <div class="col-lg-4">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-body">
-                    <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2 text-primary"></i>By Category</h6>
+                    <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2 text-primary"></i>@L["Ins_ByCategory"]</h6>
                     <div style="position:relative; height:280px;">
                         <canvas id="categoryChart"></canvas>
                     </div>
@@ -116,18 +116,18 @@
         <div class="col-lg-7">
             <div class="card shadow-sm border-0">
                 <div class="card-body">
-                    <h6 class="fw-bold mb-3"><i class="bi bi-list-ul me-2 text-primary"></i>Category Breakdown</h6>
+                    <h6 class="fw-bold mb-3"><i class="bi bi-list-ul me-2 text-primary"></i>@L["Dash_CategoryBreakdown"]</h6>
                     @if (Model.CategoryBreakdown.Any())
                     {
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Category</th>
-                                        <th class="text-end">Amount</th>
+                                        <th>@L["Common_Category"]</th>
+                                        <th class="text-end">@L["Common_Amount"]</th>
                                         <th class="text-end">%</th>
                                         <th class="text-center">Txns</th>
-                                        <th class="text-end">vs Last Month</th>
+                                        <th class="text-end">@L["Dash_VsLastMonth"]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -139,7 +139,7 @@
                                             <td class="text-end">
                                                 <div class="d-flex align-items-center justify-content-end gap-2">
                                                     <div class="progress flex-grow-1" style="height: 6px; max-width: 60px;">
-                                                        <div class="progress-bar bg-primary" style="width: @cat.Percentage%"></div>
+                                                        <div class="progress-bar bg-primary" style="width: @cat.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%"></div>
                                                     </div>
                                                     <span>@cat.Percentage.ToString("N1")%</span>
                                                 </div>
@@ -208,7 +208,7 @@
         const dailyData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DailySpending, jsonOptions));
         const catData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategoryBreakdown, jsonOptions));
         const weekData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.WeekdayAnalysis, jsonOptions));
-        const dailyAvg = @Model.DailyAverage;
+        const dailyAvg = @Model.DailyAverage.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
         // Daily Spending Chart
         if (dailyData && dailyData.length > 0) {
