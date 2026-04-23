@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Spendly.Application.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -42,6 +43,29 @@ var isDevelopment = builder.Environment.IsDevelopment();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// ────────────────────────────────────────────────────────────
+// CORS Configuration
+// ────────────────────────────────────────────────────────────
+var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? new[] { "https://localhost:7100", "http://localhost:5010" };
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("SpendlyPolicy", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+// ────────────────────────────────────────────────────────────
+// Health Checks
+// ────────────────────────────────────────────────────────────
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<SpendlyDbContext>("database");
 
 // ────────────────────────────────────────────────────────────
 // Database Configuration
@@ -229,6 +253,16 @@ builder.Services.AddScoped<ImportCsvUseCase>();
 // ════════════════════════════════════════════════════════════
 var app = builder.Build();
 
+// ────────────────────────────────────────────────────────────
+// Auto-apply pending migrations in Production
+// ────────────────────────────────────────────────────────────
+if (!isDevelopment)
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<SpendlyDbContext>();
+    db.Database.Migrate();
+}
+
 if (isDevelopment)
 {
     app.UseSwagger();
@@ -237,8 +271,31 @@ if (isDevelopment)
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
+app.UseCors("SpendlyPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// ────────────────────────────────────────────────────────────
+// Health Check Endpoint
+// ────────────────────────────────────────────────────────────
+app.MapHealthChecks("/api/health", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var result = System.Text.Json.JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(e => new
+            {
+                name = e.Key,
+                status = e.Value.Status.ToString(),
+                description = e.Value.Description
+            })
+        });
+        await context.Response.WriteAsync(result);
+    }
+});
 
 app.Run();
