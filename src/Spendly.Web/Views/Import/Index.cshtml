@@ -1,11 +1,11 @@
 @{
-    ViewData["Title"] = "Import Data";
+    ViewData["Title"] = L["Imp_Title"].Value;
 }
 
 <div class="container-fluid" style="max-width: 700px;">
     <div class="mb-4">
-        <h2 class="mb-1"><i class="bi bi-cloud-upload text-primary"></i> Import Data</h2>
-        <small class="text-muted">Import expenses from a CSV file</small>
+        <h2 class="mb-1"><i class="bi bi-cloud-upload text-primary"></i> @L["Imp_Title"]</h2>
+        <small class="text-muted">@L["Imp_ManageSubtitle"]</small>
     </div>
 
     @if (TempData["Error"] is string errorMsg)

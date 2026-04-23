@@ -1,7 +1,7 @@
 @model Spendly.Web.Contracts.Auth.LoginViewModel
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = L["Auth_Login"].Value;
 }
 
 <style>
@@ -74,8 +74,8 @@
             <div class="auth-icon">
                 <i class="bi bi-wallet2"></i>
             </div>
-            <h3 class="fw-bold text-dark">Welcome Back</h3>
-            <p class="text-muted">Enter your credentials to access your account.</p>
+            <h3 class="fw-bold text-dark">@L["Auth_WelcomeBack"]</h3>
+            <p class="text-muted">@L["Auth_WelcomeBack"]</p>
         </div>
 
         @if (ViewBag.Error != null)
@@ -87,21 +87,21 @@
 
         <form asp-action="Login" method="post">
             <div class="mb-4">
-                <label class="form-label text-muted fw-semibold" style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">Email Address</label>
+                <label class="form-label text-muted fw-semibold" style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">@L["Auth_Email"]</label>
                 <input type="email" name="Email" class="form-control form-control-custom" placeholder="name@company.com" required />
             </div>
             <div class="mb-4">
-                <label class="form-label text-muted fw-semibold" style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">Password</label>
+                <label class="form-label text-muted fw-semibold" style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">@L["Auth_Password"]</label>
                 <input type="password" name="Password" class="form-control form-control-custom" placeholder="••••••••" required />
             </div>
             <button type="submit" class="btn btn-auth w-100">
-                Sign In to Spendly
+                @L["Auth_SignIn"]
             </button>
         </form>
 
         <div class="text-center mt-4 pt-4 border-top">
             <p class="text-muted mb-0" style="font-size: 0.95rem;">
-                Don't have an account? <a asp-action="Register" class="text-primary fw-semibold text-decoration-none">Create free account</a>
+                @L["Auth_NoAccount"] <a asp-action="Register" class="text-primary fw-semibold text-decoration-none">@L["Auth_SignUp"]</a>
             </p>
         </div>
     </div>

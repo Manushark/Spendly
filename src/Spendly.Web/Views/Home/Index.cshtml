@@ -177,24 +177,24 @@
     <div class="container">
         <div class="row align-items-center g-5">
             <div class="col-lg-6 hero-content text-center text-lg-start">
-                <h1 class="hero-title">Master Your <br/>Financial Future</h1>
+                <h1 class="hero-title">@L["Home_HeroTitle"]</h1>
                 <p class="hero-subtitle">
-                    Spendly is the premium financial companion that helps you track expenses, manage budgets, and gain absolute clarity over your money.
+                    @L["Home_HeroDesc"]
                 </p>
                 <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
                     @if (string.IsNullOrEmpty(token))
                     {
                         <a asp-controller="Auth" asp-action="Register" class="btn btn-glow">
-                            Create Free Account <i class="bi bi-arrow-right ms-2"></i>
+                            @L["Home_CreateAccount"] <i class="bi bi-arrow-right ms-2"></i>
                         </a>
                         <a asp-controller="Auth" asp-action="Login" class="btn btn-glass">
-                            Sign In
+                            @L["Auth_SignIn"]
                         </a>
                     }
                     else
                     {
                         <a asp-controller="Expenses" asp-action="Index" class="btn btn-glow">
-                            Open Dashboard <i class="bi bi-arrow-right ms-2"></i>
+                            @L["Home_OpenDashboard"] <i class="bi bi-arrow-right ms-2"></i>
                         </a>
                     }
                 </div>
@@ -207,7 +207,7 @@
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
                     </div>
-                    <span class="small">Trusted by thousands of users worldwide</span>
+                    <span class="small">@L["Home_Trusted"]</span>
                 </div>
             </div>
 
@@ -226,9 +226,9 @@
 <section class="features-section">
     <div class="container text-center">
         <div class="mb-5 pb-3">
-            <h2 class="fw-bold" style="font-size: 2.5rem; color: #fff;">Smarter Wealth Management</h2>
+            <h2 class="fw-bold" style="font-size: 2.5rem; color: #fff;">@L["Home_SmarterWealth"]</h2>
             <p class="text-muted" style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
-                Experience a completely reimagined interface that turns complex financial tracking into a beautiful, seamless habit.
+                @L["Home_SmarterDesc"]
             </p>
         </div>
 
@@ -238,9 +238,9 @@
                     <div class="feature-icon">
                         <i class="bi bi-bar-chart-fill"></i>
                     </div>
-                    <h4 class="mb-3 fw-bold text-white">Visual Analytics</h4>
+                    <h4 class="mb-3 fw-bold text-white">@L["Home_VisualAnalytics"]</h4>
                     <p class="text-muted mb-0">
-                        Stop guessing. Get instant visual feedback on your spending trends with interactive, real-time charts.
+                        @L["Home_VisualDesc"]
                     </p>
                 </div>
             </div>
@@ -250,9 +250,9 @@
                     <div class="feature-icon">
                         <i class="bi bi-bullseye"></i>
                     </div>
-                    <h4 class="mb-3 fw-bold text-white">Precision Budgets</h4>
+                    <h4 class="mb-3 fw-bold text-white">@L["Home_PrecisionBudgets"]</h4>
                     <p class="text-muted mb-0">
-                        Set smart limits for categories and receive intelligent warnings before you overspend.
+                        @L["Home_PrecisionDesc"]
                     </p>
                 </div>
             </div>
@@ -262,9 +262,9 @@
                     <div class="feature-icon">
                         <i class="bi bi-arrow-repeat"></i>
                     </div>
-                    <h4 class="mb-3 fw-bold text-white">Automation</h4>
+                    <h4 class="mb-3 fw-bold text-white">@L["Home_Automation"]</h4>
                     <p class="text-muted mb-0">
-                        Setup your recurring expenses just once, and let Spendly predict and track your upcoming commitments.
+                        @L["Home_AutomationDesc"]
                     </p>
                 </div>
             </div>
@@ -276,14 +276,14 @@
 <section class="py-5" style="background: linear-gradient(0deg, #080612 0%, #0d0a1a 100%);">
     <div class="container">
         <div class="glass-card text-center" style="padding: 60px 20px; background: rgba(108, 92, 231, 0.05); border-color: rgba(108, 92, 231, 0.2);">
-            <h2 class="fw-bold text-white mb-3">Ready to reclaim your finances?</h2>
+            <h2 class="fw-bold text-white mb-3">@L["Home_CTA"]</h2>
             <p class="text-muted mb-4 fs-5" style="color: #b3a5d8 !important;">
-                Join Spendly today and track your money with elegance.
+                @L["Home_CTADesc"]
             </p>
             @if (string.IsNullOrEmpty(token))
             {
                 <a asp-controller="Auth" asp-action="Register" class="btn btn-glow btn-lg px-5">
-                    Start Your Journey
+                    @L["Home_StartJourney"]
                 </a>
             }
         </div>
@@ -298,7 +298,7 @@
             <h5 class="mb-0 fw-bold text-white tracking-widest">Spendly</h5>
         </div>
         <small class="text-muted">
-            © @DateTime.Now.Year Spendly Inc. Built with quality and privacy in mind.
+            © @DateTime.Now.Year Spendly Inc. @L["Home_Footer"]
         </small>
     </div>
 </footer>

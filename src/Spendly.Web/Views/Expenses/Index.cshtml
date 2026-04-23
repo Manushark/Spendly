@@ -2,7 +2,7 @@
 @using Spendly.Web.Services
 
 @{
-    ViewData["Title"] = "My Expenses";
+    ViewData["Title"] = L["Exp_Title"].Value;
     var currentCategory = ViewBag.Category as string;
     var currentSearch = ViewBag.Search as string;
     var dateFrom = ViewBag.DateFrom as DateTime?;
@@ -18,8 +18,8 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1"><i class="bi bi-receipt text-primary"></i> My Expenses</h2>
-            <small class="text-muted">Manage your transactions</small>
+            <h2 class="mb-1"><i class="bi bi-receipt text-primary"></i> @L["Exp_Title"]</h2>
+            <small class="text-muted">@L["Exp_TrackSubtitle"]</small>
         </div>
         <div class="d-flex gap-2">
             <a asp-action="ExportCsv"
@@ -62,7 +62,7 @@
                         @* Search & Category Row *@
                         <div class="row g-2 align-items-end mb-2">
                             <div class="col-md-5">
-                                <label class="form-label text-muted small fw-semibold mb-1">Search</label>
+                                <label class="form-label text-muted small fw-semibold mb-1">@L["Common_Search"]</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
                                     <input type="text" name="search" value="@currentSearch"
@@ -71,9 +71,9 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label text-muted small fw-semibold mb-1">Category</label>
+                                <label class="form-label text-muted small fw-semibold mb-1">@L["Common_Category"]</label>
                                 <select name="category" class="form-select" style="border-radius:10px; padding:10px 15px;">
-                                    <option value="">All Categories</option>
+                                    <option value="">@L["Exp_AllCategories"]</option>
                                     @foreach (var cat in categories)
                                     {
                                         <option value="@cat.Name" selected="@(currentCategory == cat.Name)">
@@ -84,7 +84,7 @@
                             </div>
                             <div class="col-md-3 d-flex gap-1">
                                 <button type="submit" class="btn btn-primary flex-grow-1">
-                                    <i class="bi bi-funnel"></i> Filter
+                                    <i class="bi bi-funnel"></i> @L["Common_Filter"]
                                 </button>
                                 @if (hasActiveFilters)
                                 {
@@ -101,23 +101,23 @@
                             <hr class="my-2 opacity-25" />
                             <div class="row g-2">
                                 <div class="col-md-3">
-                                    <label class="form-label text-muted small fw-semibold mb-1">From Date</label>
+                                    <label class="form-label text-muted small fw-semibold mb-1">@L["Common_Date"]</label>
                                     <input type="date" name="dateFrom" class="form-control"
                                            value="@(dateFrom?.ToString("yyyy-MM-dd"))" />
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label text-muted small fw-semibold mb-1">To Date</label>
+                                    <label class="form-label text-muted small fw-semibold mb-1">@L["Common_Date"]</label>
                                     <input type="date" name="dateTo" class="form-control"
                                            value="@(dateTo?.ToString("yyyy-MM-dd"))" />
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label text-muted small fw-semibold mb-1">Min Amount</label>
+                                    <label class="form-label text-muted small fw-semibold mb-1">@L["Exp_MinAmount"]</label>
                                     <input type="number" name="minAmount" step="0.01" min="0"
                                            class="form-control" placeholder="$0"
                                            value="@minAmount" />
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label text-muted small fw-semibold mb-1">Max Amount</label>
+                                    <label class="form-label text-muted small fw-semibold mb-1">@L["Exp_MaxAmount"]</label>
                                     <input type="number" name="maxAmount" step="0.01" min="0"
                                            class="form-control" placeholder="$999"
                                            value="@maxAmount" />
@@ -175,9 +175,9 @@
             {
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-white border-0 pt-4 pb-3 d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-semibold"><i class="bi bi-list-ul text-primary me-2"></i>Recent Transactions</h5>
+                        <h5 class="mb-0 fw-semibold"><i class="bi bi-list-ul text-primary me-2"></i>@L["Exp_Showing"]</h5>
                         <small class="text-muted bg-light px-3 py-1 rounded-pill">
-                            Showing
+                            @L["Exp_Showing"]
                             @((currentPage - 1) * Model.PageSize + 1)&ndash;@(Math.Min(currentPage * Model.PageSize, Model.TotalCount))
                             of @Model.TotalCount
                         </small>
@@ -188,11 +188,11 @@
                             <table class="table table-hover mb-0 align-middle">
                                 <thead class="bg-light text-secondary">
                                     <tr>
-                                        <th class="border-0 ps-4 py-3">Description</th>
-                                        <th class="border-0 py-3">Amount</th>
-                                        <th class="border-0 py-3">Category</th>
-                                        <th class="border-0 py-3">Date</th>
-                                        <th class="border-0 py-3 text-center pe-4" style="width:110px">Actions</th>
+                                        <th class="border-0 ps-4 py-3">@L["Common_Description"]</th>
+                                        <th class="border-0 py-3">@L["Common_Amount"]</th>
+                                        <th class="border-0 py-3">@L["Common_Category"]</th>
+                                        <th class="border-0 py-3">@L["Common_Date"]</th>
+                                        <th class="border-0 py-3 text-center pe-4" style="width:110px">@L["Common_Actions"]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -228,7 +228,7 @@
                                                     @Html.AntiForgeryToken()
                                                     <button type="submit" class="btn btn-sm btn-light text-danger"
                                                             title="Delete"
-                                                            onclick="return confirm('Delete this expense?');">
+                                                            onclick="return confirm('@L["Exp_DeleteConfirm"].Value');">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>
@@ -306,7 +306,7 @@
                 <div class="alert bg-white shadow-sm border-0 d-flex align-items-center p-4" style="border-radius: 12px;">
                     <div class="text-primary fs-1 me-4 opacity-50"><i class="bi bi-inbox"></i></div>
                     <div>
-                        <h5 class="mb-1 fw-bold">No expenses found</h5>
+                        <h5 class="mb-1 fw-bold">@L["Exp_NoExpenses"]</h5>
                         @if (hasActiveFilters)
                         {
                             <p class="mb-0 text-muted">No transactions matched your filters. Try adjusting them.</p>
@@ -327,15 +327,15 @@
                     <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
                         <i class="bi bi-plus-lg"></i>
                     </div>
-                    <h5 class="mb-0 fw-bold">Quick Add</h5>
-                    <p class="text-muted small">Record a new expense</p>
+                    <h5 class="mb-0 fw-bold">@L["Exp_NewExpense"]</h5>
+                    <p class="text-muted small">@L["Exp_TrackSubtitle"]</p>
                 </div>
                 <div class="card-body p-4 pt-2">
                     <form asp-action="Create" method="post">
                         @Html.AntiForgeryToken()
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Amount ($)</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Amount"]</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-currency-dollar"></i></span>
                                 <input name="Amount" type="number" step="0.01" min="0.01"
@@ -344,13 +344,13 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Description</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Description"]</label>
                             <input name="Description" class="form-control"
                                    placeholder="e.g. Coffee, Taxi..." required maxlength="200" />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Category</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Category"]</label>
                             @if (categories.Any())
                             {
                                 <select name="Category" class="form-select" required style="border-radius:10px; padding:12px 15px;">
@@ -369,13 +369,13 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Date</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Date"]</label>
                             <input name="Date" type="date" class="form-control" required
                                    max="@DateTime.Today.ToString("yyyy-MM-dd")" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 py-3 rounded-3 fw-bold shadow-sm">
-                            Add Transaction
+                            @L["Exp_NewExpense"]
                         </button>
                     </form>
                 </div>

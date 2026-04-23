@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -26,6 +26,8 @@
     @{
         var isAuth = Context.Session.GetString("token") != null;
         var controller = ViewContext.RouteData.Values["Controller"]?.ToString();
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        var currentUrl = Context.Request.Path + Context.Request.QueryString;
     }
 
     @if (isAuth)
@@ -41,73 +43,90 @@
                 <div class="sidebar-menu">
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Dashboard" ? "active" : "")" asp-area="" asp-controller="Dashboard" asp-action="Index">
-                            <i class="bi bi-grid-1x2"></i> Dashboard
+                            <i class="bi bi-grid-1x2"></i> @L["Nav_Dashboard"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Expenses" ? "active" : "")" asp-area="" asp-controller="Expenses" asp-action="Index">
-                            <i class="bi bi-receipt"></i> Expenses
+                            <i class="bi bi-receipt"></i> @L["Nav_Expenses"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Categories" ? "active" : "")" asp-controller="Categories" asp-action="Index">
-                            <i class="bi bi-grid"></i> Categories
+                            <i class="bi bi-grid"></i> @L["Nav_Categories"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Tags" ? "active" : "")" asp-controller="Tags" asp-action="Index">
-                            <i class="bi bi-tags"></i> Tags
+                            <i class="bi bi-tags"></i> @L["Nav_Tags"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Budgets" ? "active" : "")" asp-area="" asp-controller="Budgets" asp-action="Index">
-                            <i class="bi bi-pie-chart"></i> Budgets
+                            <i class="bi bi-pie-chart"></i> @L["Nav_Budgets"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "RecurringExpenses" ? "active" : "")" asp-controller="RecurringExpenses" asp-action="Index">
-                            <i class="bi bi-arrow-repeat"></i> Recurring
+                            <i class="bi bi-arrow-repeat"></i> @L["Nav_Recurring"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Incomes" ? "active" : "")" asp-controller="Incomes" asp-action="Index">
-                            <i class="bi bi-cash-stack"></i> Income
+                            <i class="bi bi-cash-stack"></i> @L["Nav_Income"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "SavingsGoals" ? "active" : "")" asp-controller="SavingsGoals" asp-action="Index">
-                            <i class="bi bi-trophy"></i> Goals
+                            <i class="bi bi-trophy"></i> @L["Nav_Goals"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Insights" ? "active" : "")" asp-controller="Insights" asp-action="Index">
-                            <i class="bi bi-lightbulb"></i> Insights
+                            <i class="bi bi-lightbulb"></i> @L["Nav_Insights"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Import" ? "active" : "")" asp-controller="Import" asp-action="Index">
-                            <i class="bi bi-cloud-upload"></i> Import
+                            <i class="bi bi-cloud-upload"></i> @L["Nav_Import"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Settings" ? "active" : "")" asp-controller="Settings" asp-action="Index">
-                            <i class="bi bi-gear"></i> Settings
+                            <i class="bi bi-gear"></i> @L["Nav_Settings"]
                         </a>
                     </div>
                 </div>
 
                 <div class="sidebar-footer">
+                    <!-- Language Switcher -->
+                    <div class="px-3 mb-2">
+                        <form asp-controller="Language" asp-action="Change" method="post" class="d-flex gap-1">
+                            <input type="hidden" name="returnUrl" value="@currentUrl" />
+                            <button type="submit" name="culture" value="en"
+                                    class="btn btn-sm flex-fill rounded-pill @(currentCulture == "en" ? "btn-primary" : "btn-outline-secondary text-white-50 border-secondary")"
+                                    style="font-size: 0.75rem; padding: 2px 0;">
+                                🇺🇸 EN
+                            </button>
+                            <button type="submit" name="culture" value="es"
+                                    class="btn btn-sm flex-fill rounded-pill @(currentCulture == "es" ? "btn-primary" : "btn-outline-secondary text-white-50 border-secondary")"
+                                    style="font-size: 0.75rem; padding: 2px 0;">
+                                🇪🇸 ES
+                            </button>
+                        </form>
+                    </div>
+
                     <div class="user-profile">
                         <div class="user-profile-icon">
                             <i class="bi bi-person"></i>
                         </div>
                         <div class="user-profile-name">
-                            <small class="text-white-50 d-block" style="font-size:0.7rem;">Logged in as</small>
+                            <small class="text-white-50 d-block" style="font-size:0.7rem;">@L["Nav_LoggedInAs"]</small>
                             @(Context.Session.GetString("userEmail")?.Split('@')[0] ?? "User")
                         </div>
                     </div>
                     <a class="btn-logout text-center text-decoration-none d-block" asp-controller="Auth" asp-action="Logout">
-                        <i class="bi bi-box-arrow-right me-1"></i> Logout
+                        <i class="bi bi-box-arrow-right me-1"></i> @L["Nav_Logout"]
                     </a>
                 </div>
             </aside>
@@ -131,15 +150,15 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0" style="width: 360px; border-radius: 12px;" aria-labelledby="notificationBell">
                             <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
-                                <h6 class="mb-0 fw-bold"><i class="bi bi-bell-fill me-1 text-primary"></i> Notifications</h6>
+                                <h6 class="mb-0 fw-bold"><i class="bi bi-bell-fill me-1 text-primary"></i> @L["Nav_Notifications"]</h6>
                                 <button class="btn btn-link btn-sm text-muted text-decoration-none p-0" id="markAllReadBtn">
-                                    Mark all read
+                                    @L["Nav_MarkAllRead"]
                                 </button>
                             </div>
                             <div id="notificationList" style="max-height: 320px; overflow-y: auto;">
                                 <div class="text-center py-4 text-muted">
                                     <i class="bi bi-bell-slash fs-3 d-block mb-2 opacity-50"></i>
-                                    <small>No notifications</small>
+                                    <small>@L["Nav_NoNotifications"]</small>
                                 </div>
                             </div>
                         </div>
@@ -170,11 +189,21 @@
                     </button>
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
                         <ul class="navbar-nav gap-3 align-items-center">
+                            <!-- Public Language Toggle -->
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a>
+                                <form asp-controller="Language" asp-action="Change" method="post" class="d-flex gap-1">
+                                    <input type="hidden" name="returnUrl" value="@currentUrl" />
+                                    <button type="submit" name="culture" value="@(currentCulture == "en" ? "es" : "en")"
+                                            class="btn btn-link nav-link p-0 border-0 text-decoration-none" title="@(currentCulture == "en" ? "Español" : "English")">
+                                        <i class="bi bi-globe2 me-1"></i>@(currentCulture == "en" ? "ES" : "EN")
+                                    </button>
+                                </form>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-primary rounded-pill px-4" asp-controller="Auth" asp-action="Register">Get Started</a>
+                                <a class="nav-link" asp-controller="Auth" asp-action="Login">@L["Nav_Login"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary rounded-pill px-4" asp-controller="Auth" asp-action="Register">@L["Nav_GetStarted"]</a>
                             </li>
                         </ul>
                     </div>
@@ -242,6 +271,7 @@
             }
 
             function loadNotifications() {
+                const noNotifText = '@L["Nav_NoNotifications"].Value.Replace("'", "\\'")';
                 fetch('/Notifications/Recent')
                     .then(r => r.json())
                     .then(notifications => {
@@ -252,7 +282,7 @@
                             list.innerHTML = `
                                 <div class="text-center py-4 text-muted">
                                     <i class="bi bi-bell-slash fs-3 d-block mb-2 opacity-50"></i>
-                                    <small>No notifications</small>
+                                    <small>${noNotifText}</small>
                                 </div>`;
                             return;
                         }

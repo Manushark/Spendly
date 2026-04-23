@@ -1,7 +1,7 @@
 @model Spendly.Web.Contracts.Budgets.BudgetSummaryDto
 
 @{
-    ViewData["Title"] = "Budgets";
+    ViewData["Title"] = L["Bud_Title"].Value;
     var monthName = ViewBag.MonthName as string ?? DateTime.Now.ToString("MMMM yyyy");
 }
 
@@ -39,14 +39,14 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1">
-                <i class="bi bi-piggy-bank text-primary"></i> Budgets
+                <i class="bi bi-piggy-bank text-primary"></i> @L["Bud_Title"]
             </h2>
             <small class="text-muted">
                 <i class="bi bi-calendar3"></i> @monthName
             </small>
         </div>
         <a asp-action="Create" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Add Budget
+            <i class="bi bi-plus-circle"></i> @L["Bud_NewBudget"]
         </a>
     </div>
 
@@ -74,8 +74,8 @@
                     <div class="mb-4" style="font-size: 80px; opacity: 0.3;">
                         <i class="bi bi-piggy-bank"></i>
                     </div>
-                    <h3 class="mb-3">No budgets set for this month</h3>
-                    <p class="text-muted mb-4">Start controlling your spending by setting budgets for your categories</p>
+                    <h3 class="mb-3">@L["Bud_NoBudgets"]</h3>
+                    <p class="text-muted mb-4">@L["Bud_CreateFirst"]</p>
                     <a asp-action="Create" class="btn btn-primary btn-lg">
                         <i class="bi bi-plus-circle me-2"></i>Create Your First Budget
                     </a>
@@ -91,14 +91,14 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <p class="text-muted mb-1 small fw-semibold text-uppercase">Total Budget</p>
+                                    <p class="text-muted mb-1 small fw-semibold text-uppercase">@L["Bud_TotalBudget"]</p>
                                     <h4 class="mb-0 fw-bold">$@Model.TotalLimit.ToString("N2")</h4>
                                 </div>
                                 <div class="stat-icon bg-primary bg-opacity-10">
                                     <i class="bi bi-cash-stack text-primary"></i>
                                 </div>
                             </div>
-                            <small class="text-muted">@Model.TotalBudgets budgets set</small>
+                            <small class="text-muted">@Model.TotalBudgets @L["Bud_BudgetsSet"]</small>
                         </div>
                     </div>
                 </div>
@@ -108,7 +108,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <p class="text-muted mb-1 small fw-semibold text-uppercase">Total Spent</p>
+                                    <p class="text-muted mb-1 small fw-semibold text-uppercase">@L["Bud_TotalSpent"]</p>
                                     <h4 class="mb-0 fw-bold">$@Model.TotalSpent.ToString("N2")</h4>
                                 </div>
                                 <div class="stat-icon bg-warning bg-opacity-10">
@@ -118,7 +118,7 @@
                         @{
                             var totalPercentage = Model.TotalLimit > 0 ? (Model.TotalSpent / Model.TotalLimit) * 100 : 0;
                         }
-                            <small class="text-muted">@totalPercentage.ToString("N0")% of total budget</small>
+                            <small class="text-muted">@totalPercentage.ToString("N0")% @L["Bud_OfTotalBudget"]</small>
                         </div>
                     </div>
                 </div>
@@ -128,14 +128,14 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <p class="text-muted mb-1 small fw-semibold text-uppercase">Remaining</p>
+                                    <p class="text-muted mb-1 small fw-semibold text-uppercase">@L["Bud_Remaining"]</p>
                                     <h4 class="mb-0 fw-bold">$@Model.TotalRemaining.ToString("N2")</h4>
                                 </div>
                                 <div class="stat-icon bg-success bg-opacity-10">
                                     <i class="bi bi-wallet2 text-success"></i>
                                 </div>
                             </div>
-                            <small class="text-muted">Available to spend</small>
+                            <small class="text-muted">@L["Bud_AvailableToSpend"]</small>
                         </div>
                     </div>
                 </div>
@@ -145,14 +145,14 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <p class="text-muted mb-1 small fw-semibold text-uppercase">Over Budget</p>
+                                    <p class="text-muted mb-1 small fw-semibold text-uppercase">@L["Bud_OverBudget"]</p>
                                     <h4 class="mb-0 fw-bold">@Model.BudgetsExceeded</h4>
                                 </div>
                                 <div class="stat-icon bg-danger bg-opacity-10">
                                     <i class="bi bi-exclamation-triangle text-danger"></i>
                                 </div>
                             </div>
-                            <small class="text-muted">Categories exceeded</small>
+                            <small class="text-muted">@L["Bud_CategoriesExceeded"]</small>
                         </div>
                     </div>
                 </div>
@@ -190,7 +190,7 @@
                                         @Html.AntiForgeryToken()
                                                 <button type="submit" class="btn btn-sm btn-outline-danger"
                                                         title="Delete"
-                                                        onclick="return confirm('Delete this budget?');">
+                                                        onclick="return confirm('@L["Bud_DeleteConfirm"].Value');">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
@@ -209,7 +209,7 @@
                                         <div class="progress" style="height: 12px; border-radius: 10px;">
                                             <div class="progress-bar @progressClass" 
                                                  role="progressbar"
-                                                 style="width: @Math.Min(budget.PercentageUsed, 100)%"
+                                                 style="width: @Math.Min(budget.PercentageUsed, 100).ToString(System.Globalization.CultureInfo.InvariantCulture)%"
                                                  aria-valuenow="@budget.PercentageUsed"
                                                  aria-valuemin="0"
                                                  aria-valuemax="100"></div>
@@ -224,7 +224,7 @@
                                 {
                                                 <span class="text-muted small">
                                                     <i class="bi bi-check-circle me-1"></i>
-                                                    $@budget.Remaining.ToString("N2") remaining
+                                                    $@budget.Remaining.ToString("N2") @L["Dash_Remaining"]
                                                 </span>
                                 }
                                 else
