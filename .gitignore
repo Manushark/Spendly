@@ -4,6 +4,7 @@ obj/
 
 # User secrets & local overrides
 **/appsettings.*.Local.json
+**/appsettings.Development.json
 **/secrets.json
 
 # Environment files
