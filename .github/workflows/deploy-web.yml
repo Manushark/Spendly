@@ -1,0 +1,38 @@
+name: Deploy Web to Azure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/Spendly.Web/**'
+      - '.github/workflows/deploy-web.yml'
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore src/Spendly.Web/Spendly.Web.csproj
+
+      - name: Build
+        run: dotnet build src/Spendly.Web/Spendly.Web.csproj --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish src/Spendly.Web/Spendly.Web.csproj --configuration Release --no-build --output ./publish/web
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'spendly-web'
+          publish-profile: ${{ secrets.AZURE_WEB_PUBLISH_PROFILE }}
+          package: ./publish/web
