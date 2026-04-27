@@ -12,24 +12,46 @@ namespace Spendly.Web.Services
             _http = http;
         }
 
-        public async Task<AuthResponse?> LoginAsync(LoginViewModel model)
+        public async Task<(AuthResponse? Result, string? ErrorMessage)> LoginAsync(LoginViewModel model)
         {
-            var response = await _http.PostAsJsonAsync("api/auth/login", model);
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/auth/login", model);
 
-            if (!response.IsSuccessStatusCode)
-                return null;
+                if (response.IsSuccessStatusCode)
+                    return (await response.Content.ReadFromJsonAsync<AuthResponse>(), null);
 
-            return await response.Content.ReadFromJsonAsync<AuthResponse>();
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    return (null, "Invalid email or password.");
+
+                // Server error (500, 503, etc.) — likely DB timeout or app recycling
+                return (null, "The server is temporarily unavailable. Please try again in a few seconds.");
+            }
+            catch (Exception)
+            {
+                return (null, "Could not connect to the server. Please try again in a moment.");
+            }
         }
 
-        public async Task<AuthResponse?> RegisterAsync(RegisterViewModel model)
+        public async Task<(AuthResponse? Result, string? ErrorMessage)> RegisterAsync(RegisterViewModel model)
         {
-            var response = await _http.PostAsJsonAsync("api/auth/register", model);
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/auth/register", model);
 
-            if (!response.IsSuccessStatusCode)
-                return null;
+                if (response.IsSuccessStatusCode)
+                    return (await response.Content.ReadFromJsonAsync<AuthResponse>(), null);
 
-            return await response.Content.ReadFromJsonAsync<AuthResponse>();
+                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                    return (null, "Registration failed. Email may already be in use.");
+
+                return (null, "The server is temporarily unavailable. Please try again in a few seconds.");
+            }
+            catch (Exception)
+            {
+                return (null, "Could not connect to the server. Please try again in a moment.");
+            }
         }
     }
 }
+

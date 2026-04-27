@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Spendly.Web.Contracts.Auth;
 using Spendly.Web.Services;
+using Spendly.Web.Helpers;
 
 namespace Spendly.Web.Controllers
 {
@@ -18,15 +19,15 @@ namespace Spendly.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            var result = await _authApi.LoginAsync(model);
+            var (result, errorMessage) = await _authApi.LoginAsync(model);
 
             if (result == null)
             {
-                ViewBag.Error = "Invalid email or password.";
+                ViewBag.Error = errorMessage ?? "Invalid email or password.";
                 return View(model);
             }
 
-            HttpContext.Session.SetString("token", result.Token);
+            TokenHelper.SetToken(HttpContext, result.Token);
             HttpContext.Session.SetString("userEmail", model.Email);
 
             return RedirectToAction("Index", "Expenses");
@@ -43,15 +44,15 @@ namespace Spendly.Web.Controllers
                 return View(model);
             }
 
-            var result = await _authApi.RegisterAsync(model);
+            var (result, errorMessage) = await _authApi.RegisterAsync(model);
 
             if (result == null)
             {
-                ViewBag.Error = "Registration failed. Email may already be in use.";
+                ViewBag.Error = errorMessage ?? "Registration failed. Email may already be in use.";
                 return View(model);
             }
 
-            HttpContext.Session.SetString("token", result.Token);
+            TokenHelper.SetToken(HttpContext, result.Token);
             HttpContext.Session.SetString("userEmail", model.Email);
 
             return RedirectToAction("Index", "Expenses");
@@ -59,8 +60,9 @@ namespace Spendly.Web.Controllers
 
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();
+            TokenHelper.ClearToken(HttpContext);
             return RedirectToAction("Login");
         }
     }
 }
+
