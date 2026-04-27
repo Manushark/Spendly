@@ -1,6 +1,7 @@
 using Spendly.Web.Services;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,15 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromHours(2);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Strict;
 });
+
+// Data Protection: persist encryption keys so cookies survive app recycles
+var keysPath = Path.Combine(builder.Environment.ContentRootPath, "keys");
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(keysPath))
+    .SetApplicationName("Spendly");
 
 // HttpContext accessor for services
 builder.Services.AddHttpContextAccessor();
