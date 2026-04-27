@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Headers;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Spendly.Web.Contracts.RecurringExpenses;
 
@@ -17,7 +17,7 @@ namespace Spendly.Web.Services
 
         private void SetAuthHeader()
         {
-            var token = _httpContextAccessor.HttpContext?.Session.GetString("token");
+            var token = Helpers.TokenHelper.GetToken(_httpContextAccessor.HttpContext);
             _http.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(token)
                 ? null
                 : new AuthenticationHeaderValue("Bearer", token);
