@@ -88,6 +88,8 @@ builder.Services.AddDbContext<SpendlyDbContext>(options =>
             maxRetryCount: 5,
             maxRetryDelay: TimeSpan.FromSeconds(30),
             errorNumbersToAdd: null);
+        // Give Azure SQL enough time to wake from auto-pause
+        sqlOptions.CommandTimeout(60);
     }));
 
 // ────────────────────────────────────────────────────────────
@@ -261,13 +263,29 @@ builder.Services.AddScoped<ImportCsvUseCase>();
 var app = builder.Build();
 
 // ────────────────────────────────────────────────────────────
-// Auto-apply pending migrations in Production
+// Auto-apply pending migrations in Production (non-blocking)
 // ────────────────────────────────────────────────────────────
 if (!isDevelopment)
 {
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<SpendlyDbContext>();
-    db.Database.Migrate();
+    _ = Task.Run(async () =>
+    {
+        try
+        {
+            using var scope = app.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<SpendlyDbContext>();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<SpendlyDbContext>>();
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            logger.LogInformation("Starting database migration...");
+            await db.Database.MigrateAsync();
+            sw.Stop();
+            logger.LogInformation("Database migration completed in {Elapsed}ms", sw.ElapsedMilliseconds);
+        }
+        catch (Exception ex)
+        {
+            var logger = app.Services.GetRequiredService<ILogger<SpendlyDbContext>>();
+            logger.LogError(ex, "Failed to apply database migrations on startup.");
+        }
+    });
 }
 
 if (isDevelopment)
