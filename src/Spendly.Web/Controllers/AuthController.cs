@@ -8,13 +8,19 @@ namespace Spendly.Web.Controllers
     public class AuthController : Controller
     {
         private readonly AuthApiClient _authApi;
+        private readonly string _apiBaseUrl;
 
-        public AuthController(AuthApiClient authApi)
+        public AuthController(AuthApiClient authApi, IConfiguration configuration)
         {
             _authApi = authApi;
+            _apiBaseUrl = configuration["ApiBaseUrl"] ?? "";
         }
 
-        public IActionResult Login() => View(new LoginViewModel());
+        public IActionResult Login()
+        {
+            ViewBag.ApiBaseUrl = _apiBaseUrl;
+            return View(new LoginViewModel());
+        }
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -33,7 +39,11 @@ namespace Spendly.Web.Controllers
             return RedirectToAction("Index", "Expenses");
         }
 
-        public IActionResult Register() => View(new RegisterViewModel());
+        public IActionResult Register()
+        {
+            ViewBag.ApiBaseUrl = _apiBaseUrl;
+            return View(new RegisterViewModel());
+        }
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
