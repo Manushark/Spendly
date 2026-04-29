@@ -106,3 +106,17 @@
         </div>
     </div>
 </div>
+
+@{
+    var apiUrl = ViewBag.ApiBaseUrl as string ?? "";
+}
+
+<script>
+    // Pre-warm: wake up the API + Database while the user types their credentials
+    (function () {
+        var api = "@Html.Raw(apiUrl)";
+        if (api) {
+            fetch(api + "api/health", { mode: "no-cors" }).catch(function () { });
+        }
+    })();
+</script>

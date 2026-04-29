@@ -110,3 +110,16 @@
         </div>
     </div>
 </div>
+
+@{
+    var apiUrl = ViewBag.ApiBaseUrl as string ?? "";
+}
+
+<script>
+    (function () {
+        var api = "@Html.Raw(apiUrl)";
+        if (api) {
+            fetch(api + "api/health", { mode: "no-cors" }).catch(function () { });
+        }
+    })();
+</script>
