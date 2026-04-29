@@ -17,4 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
             overlay.classList.add("d-none");
         });
     }
+
+    // Auto-scroll sidebar to show the active section
+    const activeLink = document.querySelector(".sidebar-link.active");
+    if (activeLink) {
+        activeLink.scrollIntoView({ block: "center", behavior: "instant" });
+    }
 });
