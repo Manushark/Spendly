@@ -8,10 +8,12 @@ namespace Spendly.Web.Controllers
     public class BudgetsController : Controller
     {
         private readonly BudgetApiClient _api;
+        private readonly CategoryApiClient _categoryApi;
 
-        public BudgetsController(BudgetApiClient api)
+        public BudgetsController(BudgetApiClient api, CategoryApiClient categoryApi)
         {
             _api = api;
+            _categoryApi = categoryApi;
         }
 
         // Redirigir al login si no hay token
@@ -46,7 +48,7 @@ namespace Spendly.Web.Controllers
         }
 
         // GET /Budgets/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var now = DateTime.UtcNow;
 
@@ -57,6 +59,7 @@ namespace Spendly.Web.Controllers
                 MonthlyLimit = 0
             };
 
+            ViewBag.Categories = await _categoryApi.GetAllAsync();
             return View(model);
         }
 
@@ -67,6 +70,7 @@ namespace Spendly.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.Categories = await _categoryApi.GetAllAsync();
                 return View(dto);
             }
 
@@ -75,6 +79,7 @@ namespace Spendly.Web.Controllers
             if (!ok)
             {
                 TempData["Error"] = error ?? "Could not create budget.";
+                ViewBag.Categories = await _categoryApi.GetAllAsync();
                 return View(dto);
             }
 
@@ -102,6 +107,7 @@ namespace Spendly.Web.Controllers
             };
 
             ViewBag.BudgetId = id;
+            ViewBag.Categories = await _categoryApi.GetAllAsync();
             return View(model);
         }
 
@@ -113,6 +119,7 @@ namespace Spendly.Web.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.BudgetId = id;
+                ViewBag.Categories = await _categoryApi.GetAllAsync();
                 return View(dto);
             }
 
@@ -122,6 +129,7 @@ namespace Spendly.Web.Controllers
             {
                 TempData["Error"] = error ?? "Could not update budget.";
                 ViewBag.BudgetId = id;
+                ViewBag.Categories = await _categoryApi.GetAllAsync();
                 return View(dto);
             }
 
