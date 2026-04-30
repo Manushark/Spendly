@@ -342,7 +342,7 @@
   <data name="Rec_TempInactive"><value>Temporarily inactive</value></data>
 
   <!-- ═══════ Insights Extra ═══════ -->
-  <data name="Ins_SavingsRate"><value>Savings Rate</value></data>
+
   <data name="Ins_ProjectedMonthEnd"><value>Projected Month-End</value></data>
   <data name="Ins_Days"><value>days</value></data>
   <data name="Ins_Day"><value>day</value></data>
@@ -381,5 +381,96 @@
   <data name="Bud_DangerZone"><value>Danger Zone</value></data>
   <data name="Bud_DeleteWarning"><value>Once you delete a budget, there is no going back. This action cannot be undone.</value></data>
   <data name="Bud_DeleteBudget"><value>Delete Budget</value></data>
-</root>
+  <!-- ═══════ Placeholders & UI Fixes ═══════ -->
+  <data name="Ph_Tags"><value>e.g. travel, work, urgent</value></data>
+  <data name="Ph_FullName"><value>e.g. John Doe</value></data>
+  <data name="Ph_CurrentPassword"><value>Enter current password</value></data>
+  <data name="Ph_Min6Chars"><value>Min. 6 characters</value></data>
+  <data name="Ph_ConfirmPassword"><value>Confirm new password</value></data>
+  <data name="Ph_RepeatPassword"><value>Repeat password</value></data>
+  <data name="Ph_CategoryName"><value>e.g. Subscriptions</value></data>
+  <data name="Ph_Amount"><value>Amount</value></data>
+  <data name="Ph_GoalName"><value>e.g. Trip to Europe</value></data>
+  <data name="Ph_RecurringName"><value>e.g. Netflix Subscription, Gym Membership</value></data>
+  <data name="Ph_Zero"><value>0.00</value></data>
+  <data name="Ph_ZeroDoll"><value>$0</value></data>
+  <data name="Ph_NineDoll"><value>$999</value></data>
+  <data name="Ph_IncomeSource"><value>e.g. Salary, Freelance, Dividends...</value></data>
+  <data name="Ph_IncomeDesc"><value>e.g. March salary payment</value></data>
+  <data name="Ph_SearchDesc"><value>Search description...</value></data>
+  <data name="Ph_ExpenseDesc"><value>e.g. Coffee, Taxi...</value></data>
+  <data name="Ph_CategoryFood"><value>e.g. Food</value></data>
+  <data name="Ph_Email"><value>name@company.com</value></data>
+  <data name="Ph_PasswordHidden"><value>••••••••</value></data>
+  <data name="Set_ConfirmNewPassword"><value>Confirm New Password</value></data>
+  <data name="Set_NewPasswordLabel"><value>New Password</value></data>
+  <!-- ═══════ Phase 3 ═══════ -->
+  <data name="Goals_OverallProgress"><value>Overall Progress</value></data>
+  <data name="Goals_ActiveLower"><value>active</value></data>
+  <data name="Goals_CompletedLower"><value>completed</value></data>
+  <data name="Goals_DaysLeft"><value>days left</value></data>
+  <data name="Goals_Complete"><value>complete</value></data>
+  <data name="Goals_Achieved"><value>achieved!</value></data>
+  <data name="Goals_StartPlanning"><value>Start planning your financial future!</value></data>
+  <data name="Goal_AlreadySaved"><value>Already Saved</value></data>
+  <data name="Goal_IconTarget"><value>🎯 Target</value></data>
+  <data name="Goal_IconTravel"><value>✈️ Travel</value></data>
+  <data name="Goal_IconHome"><value>🏠 Home</value></data>
+  <data name="Goal_IconCar"><value>🚗 Car</value></data>
+  <data name="Goal_IconEducation"><value>🎓 Education</value></data>
+  <data name="Goal_IconHealth"><value>❤️ Health</value></data>
+  <data name="Goal_IconGift"><value>🎁 Gift</value></data>
+  <data name="Goal_IconTech"><value>💻 Tech</value></data>
+  <data name="Goal_IconSavings"><value>🐷 Savings</value></data>
+  <data name="Goal_IconEmergency"><value>🛡️ Emergency</value></data>
 
+  <data name="Ins_NoExpenses"><value>No expenses recorded this month</value></data>
+
+  <data name="Ins_Spent"><value>Spent</value></data>
+  <data name="Ins_Average"><value>Average</value></data>
+  <data name="Ins_Total"><value>Total</value></data>
+  <data name="Ins_Txns"><value>txns</value></data>
+
+  <data name="Rec_EmptyDescription"><value>Automate your regular expenses like subscriptions, bills, and memberships</value></data>
+  <data name="Rec_CreateFirst"><value>Create Your First Recurring Expense</value></data>
+  <data name="Rec_Starts"><value>Starts:</value></data>
+  <data name="Rec_Ends"><value>Ends:</value></data>
+  <data name="Rec_Indefinite"><value>Indefinite</value></data>
+  <data name="Rec_LastGenerated"><value>Last generated:</value></data>
+  <data name="Rec_Next"><value>Next:</value></data>
+  <data name="Rec_DescHint"><value>What is this recurring expense?</value></data>
+
+  <data name="Rec_StartDateHint"><value>When should this start generating?</value></data>
+
+  <data name="Rec_EndDateHint"><value>Leave blank for indefinite</value></data>
+  <data name="Rec_HowItWorks"><value>How it works</value></data>
+  <data name="Rec_How1"><value>Recurring expenses are generated automatically based on the frequency you choose</value></data>
+  <data name="Rec_How2"><value>You can pause or delete them anytime without affecting past expenses</value></data>
+  <data name="Rec_How3"><value>The system checks every hour for expenses that need to be generated</value></data>
+  <data name="Rec_ExamplesTitle"><value>Common Examples</value></data>
+  <data name="Rec_Ex1"><value>&lt;strong&gt;Netflix:&lt;/strong&gt; $15.99, Monthly, Entertainment</value></data>
+  <data name="Rec_Ex2"><value>&lt;strong&gt;Gym:&lt;/strong&gt; $50, Monthly, Health</value></data>
+  <data name="Rec_Ex3"><value>&lt;strong&gt;Internet:&lt;/strong&gt; $60, Monthly, Utilities</value></data>
+  <data name="Rec_Ex4"><value>&lt;strong&gt;Car Insurance:&lt;/strong&gt; $120, Monthly, Insurance</value></data>
+
+  <data name="Rec_StatusText1"><value>This recurring expense is currently</value></data>
+  <data name="Rec_StatusText2"><value>No expenses will be generated while paused.</value></data>
+  <data name="Rec_PauseBtn"><value>Pause Recurring Expense</value></data>
+  <data name="Rec_PauseHint"><value>Stop generating expenses (keeps template)</value></data>
+  <data name="Rec_ActivateBtn"><value>Activate Recurring Expense</value></data>
+  <data name="Rec_ActivateHint"><value>Resume generating expenses</value></data>
+  <data name="Rec_DeletePrompt"><value>Delete this recurring expense permanently? Past expenses will NOT be deleted.</value></data>
+  <data name="Rec_DeletePerm"><value>Delete Permanently</value></data>
+  <data name="Rec_DeleteHint"><value>Cannot be undone</value></data>
+
+  <data name="Freq_Daily"><value>Daily</value></data>
+  <data name="Freq_Weekly"><value>Weekly</value></data>
+  <data name="Freq_Monthly"><value>Monthly</value></data>
+  <data name="Freq_Yearly"><value>Yearly</value></data>
+
+  <data name="Common_Paused"><value>Paused</value></data>
+  <data name="Common_Pause"><value>Pause</value></data>
+  <data name="Common_Activate"><value>Activate</value></data>
+
+  <data name="Common_DangerZone"><value>Danger Zone</value></data>
+</root>
