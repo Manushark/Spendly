@@ -1,7 +1,9 @@
 @model Spendly.Web.Contracts.Budgets.CreateBudgetDto
+@using Spendly.Web.Services
 
 @{
     ViewData["Title"] = L["Bud_NewBudget"].Value;
+    var categories = ViewBag.Categories as List<CategoryViewModel> ?? new List<CategoryViewModel>();
 }
 
 <div class="container mt-4">
@@ -27,32 +29,34 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">
-                                <i class="bi bi-tag me-1"></i>Category
+                                <i class="bi bi-tag me-1"></i>@L["Common_Category"]
                             </label>
-                            <input asp-for="Category" 
-                                   class="form-control form-control-lg" 
-                                   placeholder="e.g. Food, Transport, Entertainment"
-                                   required 
-                                   maxlength="100"
-                                   list="categoryList" />
-                            <datalist id="categoryList">
-                                <option value="Food"></option>
-                                <option value="Transport"></option>
-                                <option value="Entertainment"></option>
-                                <option value="Shopping"></option>
-                                <option value="Utilities"></option>
-                                <option value="Healthcare"></option>
-                                <option value="Education"></option>
-                                <option value="Other"></option>
-                            </datalist>
+                            @if (categories.Any())
+                            {
+                                <select asp-for="Category" class="form-select form-select-lg" required>
+                                    <option value="" disabled selected>@L["Exp_SelectCategory"]</option>
+                                    @foreach (var cat in categories)
+                                    {
+                                        <option value="@cat.Name">@cat.Name</option>
+                                    }
+                                </select>
+                            }
+                            else
+                            {
+                                <input asp-for="Category" 
+                                       class="form-control form-control-lg" 
+                                       placeholder="e.g. Food, Transport"
+                                       required 
+                                       maxlength="100" />
+                            }
                             <small class="text-muted">
-                                Choose an existing category or create a new one
+                                @L["Bud_ChooseCategory"]
                             </small>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">
-                                <i class="bi bi-cash-stack me-1"></i>Monthly Limit
+                                <i class="bi bi-cash-stack me-1"></i>@L["Bud_MonthlyLimit"]
                             </label>
                             <div class="input-group input-group-lg">
                                 <span class="input-group-text">$</span>
@@ -65,14 +69,14 @@
                                        required />
                             </div>
                             <small class="text-muted">
-                                Maximum amount you want to spend in this category per month
+                                @L["Bud_MonthlyLimitHint"]
                             </small>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">
-                                    <i class="bi bi-calendar-event me-1"></i>Year
+                                    <i class="bi bi-calendar-event me-1"></i>@L["Common_Year"]
                                 </label>
                                 <input asp-for="Year" 
                                        type="number" 
@@ -84,29 +88,28 @@
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">
-                                    <i class="bi bi-calendar3 me-1"></i>Month
+                                    <i class="bi bi-calendar3 me-1"></i>@L["Common_Month"]
                                 </label>
                                 <select asp-for="Month" class="form-select form-select-lg" required>
-                                    <option value="1">January</option>
-                                    <option value="2">February</option>
-                                    <option value="3">March</option>
-                                    <option value="4">April</option>
-                                    <option value="5">May</option>
-                                    <option value="6">June</option>
-                                    <option value="7">July</option>
-                                    <option value="8">August</option>
-                                    <option value="9">September</option>
-                                    <option value="10">October</option>
-                                    <option value="11">November</option>
-                                    <option value="12">December</option>
+                                    <option value="1">@L["Month_Jan"]</option>
+                                    <option value="2">@L["Month_Feb"]</option>
+                                    <option value="3">@L["Month_Mar"]</option>
+                                    <option value="4">@L["Month_Apr"]</option>
+                                    <option value="5">@L["Month_May"]</option>
+                                    <option value="6">@L["Month_Jun"]</option>
+                                    <option value="7">@L["Month_Jul"]</option>
+                                    <option value="8">@L["Month_Aug"]</option>
+                                    <option value="9">@L["Month_Sep"]</option>
+                                    <option value="10">@L["Month_Oct"]</option>
+                                    <option value="11">@L["Month_Nov"]</option>
+                                    <option value="12">@L["Month_Dec"]</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="alert alert-info border-0 bg-info bg-opacity-10">
                             <i class="bi bi-info-circle me-2"></i>
-                            <strong>Tip:</strong> You can only have one budget per category per month. 
-                            If you already have a budget for this category and month, you'll need to edit it instead.
+                            <strong>@L["Bud_TipLabel"]:</strong> @L["Bud_OneBudgetPerCategory"]
                         </div>
 
                         <div class="d-flex gap-2 justify-content-end mt-4">
@@ -125,13 +128,13 @@
             <div class="card border-0 bg-light mt-3">
                 <div class="card-body">
                     <h6 class="fw-semibold mb-3">
-                        <i class="bi bi-lightbulb text-warning me-2"></i>Budget Tips
+                        <i class="bi bi-lightbulb text-warning me-2"></i>@L["Bud_BudgetTips"]
                     </h6>
                     <ul class="mb-0 small">
-                        <li class="mb-2">Start with your most important spending categories</li>
-                        <li class="mb-2">Review your past expenses to set realistic limits</li>
-                        <li class="mb-2">Adjust budgets monthly as your needs change</li>
-                        <li>Leave some buffer for unexpected expenses</li>
+                        <li class="mb-2">@L["Bud_Tip1"]</li>
+                        <li class="mb-2">@L["Bud_Tip2"]</li>
+                        <li class="mb-2">@L["Bud_Tip3"]</li>
+                        <li>@L["Bud_Tip4"]</li>
                     </ul>
                 </div>
             </div>
