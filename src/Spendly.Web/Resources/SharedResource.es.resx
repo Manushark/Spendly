@@ -346,4 +346,40 @@
   <data name="Ins_ProjectedMonthEnd"><value>Proyección Fin de Mes</value></data>
   <data name="Ins_Days"><value>días</value></data>
   <data name="Ins_Day"><value>día</value></data>
+
+  <!-- ═══════ Nombres de Mes ═══════ -->
+  <data name="Month_Jan"><value>Enero</value></data>
+  <data name="Month_Feb"><value>Febrero</value></data>
+  <data name="Month_Mar"><value>Marzo</value></data>
+  <data name="Month_Apr"><value>Abril</value></data>
+  <data name="Month_May"><value>Mayo</value></data>
+  <data name="Month_Jun"><value>Junio</value></data>
+  <data name="Month_Jul"><value>Julio</value></data>
+  <data name="Month_Aug"><value>Agosto</value></data>
+  <data name="Month_Sep"><value>Septiembre</value></data>
+  <data name="Month_Oct"><value>Octubre</value></data>
+  <data name="Month_Nov"><value>Noviembre</value></data>
+  <data name="Month_Dec"><value>Diciembre</value></data>
+
+  <!-- ═══════ Formularios de Presupuesto ═══════ -->
+  <data name="Common_Year"><value>Año</value></data>
+  <data name="Common_Month"><value>Mes</value></data>
+  <data name="Exp_SelectCategory"><value>Selecciona una categoría</value></data>
+  <data name="Bud_ChooseCategory"><value>Selecciona de tus categorías existentes</value></data>
+  <data name="Bud_MonthlyLimitHint"><value>Monto máximo que deseas gastar en esta categoría por mes</value></data>
+  <data name="Bud_TipLabel"><value>Consejo</value></data>
+  <data name="Bud_OneBudgetPerCategory"><value>Solo puedes tener un presupuesto por categoría por mes. Si ya tienes uno para esta categoría y mes, necesitarás editarlo.</value></data>
+  <data name="Bud_BudgetTips"><value>Consejos de Presupuesto</value></data>
+  <data name="Bud_Tip1"><value>Comienza con tus categorías de gasto más importantes</value></data>
+  <data name="Bud_Tip2"><value>Revisa tus gastos anteriores para establecer límites realistas</value></data>
+  <data name="Bud_Tip3"><value>Ajusta presupuestos mensualmente según cambien tus necesidades</value></data>
+  <data name="Bud_Tip4"><value>Deja un margen para gastos inesperados</value></data>
+  <data name="Bud_ChangeCategoryNote"><value>Puedes cambiar la categoría de este presupuesto</value></data>
+  <data name="Bud_UpdateLimitHint"><value>Actualiza tu límite de gasto para esta categoría</value></data>
+  <data name="Bud_NoteLabel"><value>Nota</value></data>
+  <data name="Bud_MoveWarning"><value>Cambiar el mes o año moverá este presupuesto a un período diferente.</value></data>
+  <data name="Bud_DangerZone"><value>Zona de Peligro</value></data>
+  <data name="Bud_DeleteWarning"><value>Una vez que elimines un presupuesto, no hay vuelta atrás. Esta acción no se puede deshacer.</value></data>
+  <data name="Bud_DeleteBudget"><value>Eliminar Presupuesto</value></data>
 </root>
+

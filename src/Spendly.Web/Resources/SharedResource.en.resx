@@ -346,5 +346,40 @@
   <data name="Ins_ProjectedMonthEnd"><value>Projected Month-End</value></data>
   <data name="Ins_Days"><value>days</value></data>
   <data name="Ins_Day"><value>day</value></data>
+
+  <!-- ═══════ Month Names ═══════ -->
+  <data name="Month_Jan"><value>January</value></data>
+  <data name="Month_Feb"><value>February</value></data>
+  <data name="Month_Mar"><value>March</value></data>
+  <data name="Month_Apr"><value>April</value></data>
+  <data name="Month_May"><value>May</value></data>
+  <data name="Month_Jun"><value>June</value></data>
+  <data name="Month_Jul"><value>July</value></data>
+  <data name="Month_Aug"><value>August</value></data>
+  <data name="Month_Sep"><value>September</value></data>
+  <data name="Month_Oct"><value>October</value></data>
+  <data name="Month_Nov"><value>November</value></data>
+  <data name="Month_Dec"><value>December</value></data>
+
+  <!-- ═══════ Budget Forms ═══════ -->
+  <data name="Common_Year"><value>Year</value></data>
+  <data name="Common_Month"><value>Month</value></data>
+  <data name="Exp_SelectCategory"><value>Select a category</value></data>
+  <data name="Bud_ChooseCategory"><value>Select from your existing categories</value></data>
+  <data name="Bud_MonthlyLimitHint"><value>Maximum amount you want to spend in this category per month</value></data>
+  <data name="Bud_TipLabel"><value>Tip</value></data>
+  <data name="Bud_OneBudgetPerCategory"><value>You can only have one budget per category per month. If you already have a budget for this category and month, you'll need to edit it instead.</value></data>
+  <data name="Bud_BudgetTips"><value>Budget Tips</value></data>
+  <data name="Bud_Tip1"><value>Start with your most important spending categories</value></data>
+  <data name="Bud_Tip2"><value>Review your past expenses to set realistic limits</value></data>
+  <data name="Bud_Tip3"><value>Adjust budgets monthly as your needs change</value></data>
+  <data name="Bud_Tip4"><value>Leave some buffer for unexpected expenses</value></data>
+  <data name="Bud_ChangeCategoryNote"><value>You can change the category for this budget</value></data>
+  <data name="Bud_UpdateLimitHint"><value>Update your spending limit for this category</value></data>
+  <data name="Bud_NoteLabel"><value>Note</value></data>
+  <data name="Bud_MoveWarning"><value>Changing the month or year will move this budget to a different period.</value></data>
+  <data name="Bud_DangerZone"><value>Danger Zone</value></data>
+  <data name="Bud_DeleteWarning"><value>Once you delete a budget, there is no going back. This action cannot be undone.</value></data>
+  <data name="Bud_DeleteBudget"><value>Delete Budget</value></data>
 </root>
 
