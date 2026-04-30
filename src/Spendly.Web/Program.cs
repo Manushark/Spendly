@@ -110,6 +110,12 @@ builder.Services.AddHttpClient<ImportApiClient>(client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+// Keep the API warm in production (prevents Azure F1 cold start)
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.AddHostedService<ApiWarmupService>();
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
