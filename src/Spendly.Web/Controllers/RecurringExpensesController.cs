@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Spendly.Web.Contracts.RecurringExpenses;
 using Spendly.Web.Services;
@@ -8,10 +8,12 @@ namespace Spendly.Web.Controllers
     public class RecurringExpensesController : Controller
     {
         private readonly RecurringExpenseApiClient _api;
+        private readonly CategoryApiClient _categoryApi;
 
-        public RecurringExpensesController(RecurringExpenseApiClient api)
+        public RecurringExpensesController(RecurringExpenseApiClient api, CategoryApiClient categoryApi)
         {
             _api = api;
+            _categoryApi = categoryApi;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -40,7 +42,7 @@ namespace Spendly.Web.Controllers
         }
 
         // GET /RecurringExpenses/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var model = new CreateRecurringExpenseDto
             {
@@ -48,6 +50,7 @@ namespace Spendly.Web.Controllers
                 Frequency = 3  // Monthly by default
             };
 
+            ViewBag.Categories = await _categoryApi.GetAllAsync();
             return View(model);
         }
 
@@ -58,6 +61,7 @@ namespace Spendly.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.Categories = await _categoryApi.GetAllAsync();
                 return View(dto);
             }
 
@@ -106,6 +110,7 @@ namespace Spendly.Web.Controllers
 
             ViewBag.RecurringId = id;
             ViewBag.IsActive = recurring.IsActive;
+            ViewBag.Categories = await _categoryApi.GetAllAsync();
             return View(model);
         }
 
@@ -117,6 +122,7 @@ namespace Spendly.Web.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.RecurringId = id;
+                ViewBag.Categories = await _categoryApi.GetAllAsync();
                 return View(dto);
             }
 
