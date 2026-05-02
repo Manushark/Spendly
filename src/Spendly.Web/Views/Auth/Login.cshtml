@@ -88,11 +88,11 @@
         <form asp-action="Login" method="post">
             <div class="mb-4">
                 <label class="form-label text-muted fw-semibold" style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">@L["Auth_Email"]</label>
-                <input type="email" name="Email" class="form-control form-control-custom" placeholder="name@company.com" required />
+                <input type="email" name="Email" class="form-control form-control-custom" placeholder="@L["Ph_Email"]" required />
             </div>
             <div class="mb-4">
                 <label class="form-label text-muted fw-semibold" style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">@L["Auth_Password"]</label>
-                <input type="password" name="Password" class="form-control form-control-custom" placeholder="••••••••" required />
+                <input type="password" name="Password" class="form-control form-control-custom" placeholder="@L["Ph_PasswordHidden"]" required />
             </div>
             <button type="submit" class="btn btn-auth w-100">
                 @L["Auth_SignIn"]
