@@ -232,17 +232,6 @@
   <data name="Imp_SelectFile"><value>Seleccionar Archivo CSV</value></data>
   <data name="Imp_DefaultCurrency"><value>Moneda Predeterminada</value></data>
   <data name="Imp_PreviewImport"><value>Previsualizar</value></data>
-  <data name="Imp_FormatGuide"><value>Guía de Formato CSV</value></data>
-  <data name="Imp_AcceptedNames"><value>Nombres Aceptados</value></data>
-  <data name="Imp_Column"><value>Columna</value></data>
-  <data name="Imp_Example"><value>Ejemplo</value></data>
-  <data name="Imp_MaxSize"><value>Máximo 5MB. El archivo debe tener encabezados como: Fecha, Monto, Descripción, Categoría</value></data>
-  <data name="Imp_Preview"><value>Previsualización</value></data>
-  <data name="Imp_ReviewData"><value>Revisa los datos antes de importar</value></data>
-  <data name="Imp_TotalRows"><value>Filas Totales</value></data>
-  <data name="Imp_Valid"><value>Válidas</value></data>
-  <data name="Imp_Invalid"><value>Inválidas (se omitirán)</value></data>
-  <data name="Imp_DetectedColumns"><value>Columnas detectadas</value></data>
   <data name="Imp_ImportExpenses"><value>Importar Gastos</value></data>
   <data name="Imp_ParsingErrors"><value>Errores de Lectura</value></data>
 
@@ -346,4 +335,160 @@
   <data name="Ins_ProjectedMonthEnd"><value>Proyección Fin de Mes</value></data>
   <data name="Ins_Days"><value>días</value></data>
   <data name="Ins_Day"><value>día</value></data>
+
+  <!-- ═══════ Nombres de Mes ═══════ -->
+  <data name="Month_Jan"><value>Enero</value></data>
+  <data name="Month_Feb"><value>Febrero</value></data>
+  <data name="Month_Mar"><value>Marzo</value></data>
+  <data name="Month_Apr"><value>Abril</value></data>
+  <data name="Month_May"><value>Mayo</value></data>
+  <data name="Month_Jun"><value>Junio</value></data>
+  <data name="Month_Jul"><value>Julio</value></data>
+  <data name="Month_Aug"><value>Agosto</value></data>
+  <data name="Month_Sep"><value>Septiembre</value></data>
+  <data name="Month_Oct"><value>Octubre</value></data>
+  <data name="Month_Nov"><value>Noviembre</value></data>
+  <data name="Month_Dec"><value>Diciembre</value></data>
+
+  <!-- ═══════ Formularios de Presupuesto ═══════ -->
+  <data name="Common_Year"><value>Año</value></data>
+  <data name="Common_Month"><value>Mes</value></data>
+  <data name="Exp_SelectCategory"><value>Selecciona una categoría</value></data>
+  <data name="Bud_ChooseCategory"><value>Selecciona de tus categorías existentes</value></data>
+  <data name="Bud_MonthlyLimitHint"><value>Monto máximo que deseas gastar en esta categoría por mes</value></data>
+  <data name="Bud_TipLabel"><value>Consejo</value></data>
+  <data name="Bud_OneBudgetPerCategory"><value>Solo puedes tener un presupuesto por categoría por mes. Si ya tienes uno para esta categoría y mes, necesitarás editarlo.</value></data>
+  <data name="Bud_BudgetTips"><value>Consejos de Presupuesto</value></data>
+  <data name="Bud_Tip1"><value>Comienza con tus categorías de gasto más importantes</value></data>
+  <data name="Bud_Tip2"><value>Revisa tus gastos anteriores para establecer límites realistas</value></data>
+  <data name="Bud_Tip3"><value>Ajusta presupuestos mensualmente según cambien tus necesidades</value></data>
+  <data name="Bud_Tip4"><value>Deja un margen para gastos inesperados</value></data>
+  <data name="Bud_ChangeCategoryNote"><value>Puedes cambiar la categoría de este presupuesto</value></data>
+  <data name="Bud_UpdateLimitHint"><value>Actualiza tu límite de gasto para esta categoría</value></data>
+  <data name="Bud_NoteLabel"><value>Nota</value></data>
+  <data name="Bud_MoveWarning"><value>Cambiar el mes o año moverá este presupuesto a un período diferente.</value></data>
+  <data name="Bud_DangerZone"><value>Zona de Peligro</value></data>
+  <data name="Bud_DeleteWarning"><value>Una vez que elimines un presupuesto, no hay vuelta atrás. Esta acción no se puede deshacer.</value></data>
+  <data name="Bud_DeleteBudget"><value>Eliminar Presupuesto</value></data>
+  <!-- ═══════ Placeholders & UI Fixes ═══════ -->
+  <data name="Ph_Tags"><value>ej. viaje, trabajo, urgente</value></data>
+  <data name="Ph_FullName"><value>ej. Juan Pérez</value></data>
+  <data name="Ph_CurrentPassword"><value>Ingresa tu contraseña actual</value></data>
+  <data name="Ph_Min6Chars"><value>Mín. 6 caracteres</value></data>
+  <data name="Ph_ConfirmPassword"><value>Confirmar nueva contraseña</value></data>
+  <data name="Ph_RepeatPassword"><value>Repetir contraseña</value></data>
+  <data name="Ph_CategoryName"><value>ej. Suscripciones</value></data>
+  <data name="Ph_Amount"><value>Monto</value></data>
+  <data name="Ph_GoalName"><value>ej. Viaje a Europa</value></data>
+  <data name="Ph_RecurringName"><value>ej. Suscripción a Netflix, Membresía de Gimnasio</value></data>
+  <data name="Ph_Zero"><value>0.00</value></data>
+  <data name="Ph_ZeroDoll"><value>$0</value></data>
+  <data name="Ph_NineDoll"><value>$999</value></data>
+  <data name="Ph_IncomeSource"><value>ej. Salario, Freelance, Dividendos...</value></data>
+  <data name="Ph_IncomeDesc"><value>ej. Pago de salario de marzo</value></data>
+  <data name="Ph_SearchDesc"><value>Buscar descripción...</value></data>
+  <data name="Ph_ExpenseDesc"><value>ej. Café, Taxi...</value></data>
+  <data name="Ph_CategoryFood"><value>ej. Comida</value></data>
+  <data name="Ph_Email"><value>nombre@empresa.com</value></data>
+  <data name="Ph_PasswordHidden"><value>••••••••</value></data>
+  <data name="Set_ConfirmNewPassword"><value>Confirmar Nueva Contraseña</value></data>
+  <data name="Set_NewPasswordLabel"><value>Nueva Contraseña</value></data>
+  <!-- ═══════ Phase 3 ═══════ -->
+  <data name="Goals_OverallProgress"><value>Progreso General</value></data>
+  <data name="Goals_ActiveLower"><value>activas</value></data>
+  <data name="Goals_CompletedLower"><value>completadas</value></data>
+  <data name="Goals_DaysLeft"><value>días restantes</value></data>
+  <data name="Goals_Complete"><value>completado</value></data>
+  <data name="Goals_Achieved"><value>logrado!</value></data>
+  <data name="Goals_StartPlanning"><value>¡Empieza a planificar tu futuro financiero!</value></data>
+  <data name="Goal_AlreadySaved"><value>Ya Ahorrado</value></data>
+  <data name="Goal_IconTarget"><value>🎯 Objetivo</value></data>
+  <data name="Goal_IconTravel"><value>✈️ Viaje</value></data>
+  <data name="Goal_IconHome"><value>🏠 Hogar</value></data>
+  <data name="Goal_IconCar"><value>🚗 Auto</value></data>
+  <data name="Goal_IconEducation"><value>🎓 Educación</value></data>
+  <data name="Goal_IconHealth"><value>❤️ Salud</value></data>
+  <data name="Goal_IconGift"><value>🎁 Regalo</value></data>
+  <data name="Goal_IconTech"><value>💻 Tecnología</value></data>
+  <data name="Goal_IconSavings"><value>🐷 Ahorros</value></data>
+  <data name="Goal_IconEmergency"><value>🛡️ Emergencia</value></data>
+
+  <data name="Ins_NoExpenses"><value>No se registraron gastos este mes</value></data>
+
+  <data name="Ins_Spent"><value>Gastado</value></data>
+  <data name="Ins_Average"><value>Promedio</value></data>
+  <data name="Ins_Total"><value>Total</value></data>
+  <data name="Ins_Txns"><value>txns</value></data>
+
+  <data name="Rec_EmptyDescription"><value>Automatiza tus gastos regulares como suscripciones, facturas y membresías</value></data>
+  <data name="Rec_CreateFirst"><value>Crea tu Primer Gasto Recurrente</value></data>
+  <data name="Rec_Starts"><value>Inicia:</value></data>
+  <data name="Rec_Ends"><value>Finaliza:</value></data>
+  <data name="Rec_Indefinite"><value>Indefinido</value></data>
+  <data name="Rec_LastGenerated"><value>Última vez generado:</value></data>
+  <data name="Rec_Next"><value>Siguiente:</value></data>
+  <data name="Rec_DescHint"><value>¿De qué trata este gasto recurrente?</value></data>
+
+  <data name="Rec_StartDateHint"><value>¿Cuándo debería empezar a generarse?</value></data>
+
+  <data name="Rec_EndDateHint"><value>Déjalo en blanco para tiempo indefinido</value></data>
+  <data name="Rec_HowItWorks"><value>Cómo funciona</value></data>
+  <data name="Rec_How1"><value>Los gastos recurrentes se generan automáticamente según la frecuencia que elijas</value></data>
+  <data name="Rec_How2"><value>Puedes pausarlos o eliminarlos en cualquier momento sin afectar los gastos anteriores</value></data>
+  <data name="Rec_How3"><value>El sistema revisa cada hora si hay gastos que necesiten generarse</value></data>
+  <data name="Rec_ExamplesTitle"><value>Ejemplos Comunes</value></data>
+  <data name="Rec_Ex1"><value>&lt;strong&gt;Netflix:&lt;/strong&gt; $15.99, Mensual, Entretenimiento</value></data>
+  <data name="Rec_Ex2"><value>&lt;strong&gt;Gimnasio:&lt;/strong&gt; $50, Mensual, Salud</value></data>
+  <data name="Rec_Ex3"><value>&lt;strong&gt;Internet:&lt;/strong&gt; $60, Mensual, Utilidades</value></data>
+  <data name="Rec_Ex4"><value>&lt;strong&gt;Seguro Auto:&lt;/strong&gt; $120, Mensual, Seguro</value></data>
+
+  <data name="Rec_StatusText1"><value>Este gasto recurrente está actualmente</value></data>
+  <data name="Rec_StatusText2"><value>No se generarán gastos mientras esté pausado.</value></data>
+  <data name="Rec_PauseBtn"><value>Pausar Gasto Recurrente</value></data>
+  <data name="Rec_PauseHint"><value>Dejar de generar gastos (mantiene la plantilla)</value></data>
+  <data name="Rec_ActivateBtn"><value>Activar Gasto Recurrente</value></data>
+  <data name="Rec_ActivateHint"><value>Reanudar generación de gastos</value></data>
+  <data name="Rec_DeletePrompt"><value>¿Eliminar este gasto recurrente permanentemente? Los gastos pasados NO se eliminarán.</value></data>
+  <data name="Rec_DeletePerm"><value>Eliminar Permanentemente</value></data>
+  <data name="Rec_DeleteHint"><value>No se puede deshacer</value></data>
+
+  <data name="Freq_Daily"><value>Diario</value></data>
+  <data name="Freq_Weekly"><value>Semanal</value></data>
+  <data name="Freq_Monthly"><value>Mensual</value></data>
+  <data name="Freq_Yearly"><value>Anual</value></data>
+
+  <data name="Common_Paused"><value>Pausado</value></data>
+  <data name="Common_Pause"><value>Pausar</value></data>
+  <data name="Common_Activate"><value>Activar</value></data>
+
+  <data name="Common_DangerZone"><value>Zona de Peligro</value></data>
+
+  <!-- ═══════ Phase 4 ═══════ -->
+  <data name="Common_Spent"><value>Gastado</value></data>
+  <data name="Bud_Limit"><value>Límite</value></data>
+  <data name="Bud_Used"><value>usado</value></data>
+  <data name="Bud_OverBudgetAmount"><value>sobre el presupuesto</value></data>
+
+  <data name="Inc_UpdateDesc"><value>Actualiza los detalles del ingreso</value></data>
+  <data name="Inc_IsRecurringDesc"><value>Este es un ingreso recurrente</value></data>
+
+
+
+  <data name="Imp_FileLimit"><value>Máximo 5MB. El archivo debe tener encabezados como: Date, Amount, Description, Category</value></data>
+
+
+  <data name="Imp_FormatDesc"><value>Tu CSV debe tener encabezados de columna. Detectamos automáticamente las siguientes:</value></data>
+  <data name="Imp_ColHeader1"><value>Columna</value></data>
+  <data name="Imp_ColHeader2"><value>Nombres Aceptados</value></data>
+  <data name="Imp_ColHeader3"><value>Requerido</value></data>
+  <data name="Common_Yes"><value>Sí</value></data>
+  <data name="Common_No"><value>No</value></data>
+  <data name="Common_Example"><value>Ejemplo</value></data>
+
+  <data name="Set_ProfileDesc"><value>Actualiza tu información personal</value></data>
+  <data name="Set_EmailReadonly"><value>El correo no se puede cambiar</value></data>
+
+  <data name="Set_MemberSince"><value>Miembro desde</value></data>
+  <data name="Set_SecurityDesc"><value>Cambia la contraseña de tu cuenta</value></data>
+  <data name="Cat_TitleDesc"><value>Personaliza tus categorías de gastos con iconos y colores</value></data>
 </root>
