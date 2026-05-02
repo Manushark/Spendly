@@ -16,7 +16,7 @@ namespace Spendly.Web.Services
 
         private void SetAuth()
         {
-            var token = _ctx.HttpContext?.Session.GetString("token");
+            var token = Helpers.TokenHelper.GetToken(_ctx.HttpContext);
             _http.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(token)
                 ? null
                 : new AuthenticationHeaderValue("Bearer", token);

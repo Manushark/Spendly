@@ -331,6 +331,7 @@
   <data name="Rec_TempInactive"><value>Temporarily inactive</value></data>
 
   <!-- ═══════ Insights Extra ═══════ -->
+
   <data name="Ins_ProjectedMonthEnd"><value>Projected Month-End</value></data>
   <data name="Ins_Days"><value>days</value></data>
   <data name="Ins_Day"><value>day</value></data>
@@ -369,7 +370,6 @@
   <data name="Bud_DangerZone"><value>Danger Zone</value></data>
   <data name="Bud_DeleteWarning"><value>Once you delete a budget, there is no going back. This action cannot be undone.</value></data>
   <data name="Bud_DeleteBudget"><value>Delete Budget</value></data>
-
   <!-- ═══════ Placeholders & UI Fixes ═══════ -->
   <data name="Ph_Tags"><value>e.g. travel, work, urgent</value></data>
   <data name="Ph_FullName"><value>e.g. John Doe</value></data>
@@ -393,7 +393,6 @@
   <data name="Ph_PasswordHidden"><value>••••••••</value></data>
   <data name="Set_ConfirmNewPassword"><value>Confirm New Password</value></data>
   <data name="Set_NewPasswordLabel"><value>New Password</value></data>
-
   <!-- ═══════ Phase 3 ═══════ -->
   <data name="Goals_OverallProgress"><value>Overall Progress</value></data>
   <data name="Goals_ActiveLower"><value>active</value></data>
@@ -429,7 +428,10 @@
   <data name="Rec_LastGenerated"><value>Last generated:</value></data>
   <data name="Rec_Next"><value>Next:</value></data>
   <data name="Rec_DescHint"><value>What is this recurring expense?</value></data>
+
   <data name="Rec_StartDateHint"><value>When should this start generating?</value></data>
+
+  <data name="Rec_EndDateHint"><value>Leave blank for indefinite</value></data>
   <data name="Rec_HowItWorks"><value>How it works</value></data>
   <data name="Rec_How1"><value>Recurring expenses are generated automatically based on the frequency you choose</value></data>
   <data name="Rec_How2"><value>You can pause or delete them anytime without affecting past expenses</value></data>
@@ -460,33 +462,4 @@
   <data name="Common_Activate"><value>Activate</value></data>
 
   <data name="Common_DangerZone"><value>Danger Zone</value></data>
-
-  <!-- ═══════ Phase 4 ═══════ -->
-  <data name="Common_Spent"><value>Spent</value></data>
-  <data name="Bud_Limit"><value>Limit</value></data>
-  <data name="Bud_Used"><value>used</value></data>
-  <data name="Bud_OverBudgetAmount"><value>over budget</value></data>
-
-  <data name="Inc_UpdateDesc"><value>Update income details</value></data>
-  <data name="Inc_IsRecurringDesc"><value>This is recurring income</value></data>
-
-
-
-  <data name="Imp_FileLimit"><value>Maximum 5MB. The file should have headers like: Date, Amount, Description, Category</value></data>
-
-
-  <data name="Imp_FormatDesc"><value>Your CSV should have column headers. We auto-detect these columns:</value></data>
-  <data name="Imp_ColHeader1"><value>Column</value></data>
-  <data name="Imp_ColHeader2"><value>Accepted Names</value></data>
-  <data name="Imp_ColHeader3"><value>Required</value></data>
-  <data name="Common_Yes"><value>Yes</value></data>
-  <data name="Common_No"><value>No</value></data>
-  <data name="Common_Example"><value>Example</value></data>
-
-  <data name="Set_ProfileDesc"><value>Update your personal information</value></data>
-  <data name="Set_EmailReadonly"><value>Email cannot be changed</value></data>
-
-  <data name="Set_MemberSince"><value>Member since</value></data>
-  <data name="Set_SecurityDesc"><value>Change your account password</value></data>
-  <data name="Cat_TitleDesc"><value>Customize your expense categories with icons and colors</value></data>
 </root>

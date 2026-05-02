@@ -331,7 +331,7 @@
   <data name="Rec_TempInactive"><value>Temporalmente inactivos</value></data>
 
   <!-- ═══════ Análisis Extra ═══════ -->
-  <data name="Ins_SavingsRate"><value>Tasa de Ahorro</value></data>
+
   <data name="Ins_ProjectedMonthEnd"><value>Proyección Fin de Mes</value></data>
   <data name="Ins_Days"><value>días</value></data>
   <data name="Ins_Day"><value>día</value></data>
@@ -462,33 +462,4 @@
   <data name="Common_Activate"><value>Activar</value></data>
 
   <data name="Common_DangerZone"><value>Zona de Peligro</value></data>
-
-  <!-- ═══════ Phase 4 ═══════ -->
-  <data name="Common_Spent"><value>Gastado</value></data>
-  <data name="Bud_Limit"><value>Límite</value></data>
-  <data name="Bud_Used"><value>usado</value></data>
-  <data name="Bud_OverBudgetAmount"><value>sobre el presupuesto</value></data>
-
-  <data name="Inc_UpdateDesc"><value>Actualiza los detalles del ingreso</value></data>
-  <data name="Inc_IsRecurringDesc"><value>Este es un ingreso recurrente</value></data>
-
-
-
-  <data name="Imp_FileLimit"><value>Máximo 5MB. El archivo debe tener encabezados como: Date, Amount, Description, Category</value></data>
-
-
-  <data name="Imp_FormatDesc"><value>Tu CSV debe tener encabezados de columna. Detectamos automáticamente las siguientes:</value></data>
-  <data name="Imp_ColHeader1"><value>Columna</value></data>
-  <data name="Imp_ColHeader2"><value>Nombres Aceptados</value></data>
-  <data name="Imp_ColHeader3"><value>Requerido</value></data>
-  <data name="Common_Yes"><value>Sí</value></data>
-  <data name="Common_No"><value>No</value></data>
-  <data name="Common_Example"><value>Ejemplo</value></data>
-
-  <data name="Set_ProfileDesc"><value>Actualiza tu información personal</value></data>
-  <data name="Set_EmailReadonly"><value>El correo no se puede cambiar</value></data>
-
-  <data name="Set_MemberSince"><value>Miembro desde</value></data>
-  <data name="Set_SecurityDesc"><value>Cambia la contraseña de tu cuenta</value></data>
-  <data name="Cat_TitleDesc"><value>Personaliza tus categorías de gastos con iconos y colores</value></data>
 </root>

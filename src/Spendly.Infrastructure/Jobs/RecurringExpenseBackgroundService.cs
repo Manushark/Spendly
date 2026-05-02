@@ -26,6 +26,12 @@ namespace Spendly.Infrastructure.Jobs
         {
             _logger.LogInformation("Recurring Expense Background Service started.");
 
+            // Yield immediately so we don't block app startup / incoming requests
+            await Task.Yield();
+
+            // Wait for the app to fully start before first run
+            await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try

@@ -34,7 +34,7 @@
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-semibold">Overall Progress</span>
+                    <span class="fw-semibold">@L["Goals_OverallProgress"]</span>
                     <span class="text-muted">$@totalSaved.ToString("N2") / $@totalTarget.ToString("N2")</span>
                 </div>
                 <div class="progress" style="height: 10px; border-radius: 10px;">
@@ -43,7 +43,7 @@
                     }
                     <div class="progress-bar bg-success" style="width: @overallPct.ToString(System.Globalization.CultureInfo.InvariantCulture)%"></div>
                 </div>
-                <small class="text-muted mt-1 d-block">@active.Count active · @completed.Count completed</small>
+                <small class="text-muted mt-1 d-block">@active.Count @L["Goals_ActiveLower"] · @completed.Count @L["Goals_CompletedLower"]</small>
             </div>
         </div>
     }
@@ -70,7 +70,7 @@
                                         {
                                             var daysLeft = (goal.Deadline.Value - DateTime.UtcNow).Days;
                                             <small class="text-muted">
-                                                <i class="bi bi-clock me-1"></i>@daysLeft days left
+                                                <i class="bi bi-clock me-1"></i>@daysLeft @L["Goals_DaysLeft"]
                                             </small>
                                         }
                                     </div>
@@ -82,15 +82,15 @@
                                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                                         <li>
                                             <a class="dropdown-item" asp-action="Edit" asp-route-id="@goal.Id">
-                                                <i class="bi bi-pencil me-2"></i>Edit
+                                                <i class="bi bi-pencil me-2"></i>@L["Common_Edit"]
                                             </a>
                                         </li>
                                         <li>
                                             <form asp-action="Delete" asp-route-id="@goal.Id" method="post"
-                                                  onsubmit="return confirm('Delete this goal?')">
+                                                  onsubmit="return confirm('@L["Goal_DeleteConfirm"].Value');">
                                                 @Html.AntiForgeryToken()
                                                 <button class="dropdown-item text-danger" type="submit">
-                                                    <i class="bi bi-trash me-2"></i>Delete
+                                                    <i class="bi bi-trash me-2"></i>@L["Common_Delete"]
                                                 </button>
                                             </form>
                                         </li>
@@ -106,16 +106,16 @@
                                 <div class="progress" style="height: 8px; border-radius: 8px;">
                                     <div class="progress-bar" style="width: @goal.ProgressPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%; background:@goal.Color;"></div>
                                 </div>
-                                <small class="text-muted">@goal.ProgressPercentage.ToString("N1")% complete</small>
+                                <small class="text-muted">@goal.ProgressPercentage.ToString("N1")% @L["Goals_Complete"]</small>
                             </div>
 
                             <!-- Add Funds Form -->
                             <form asp-action="AddFunds" asp-route-id="@goal.Id" method="post" class="d-flex gap-2 mt-2">
                                 @Html.AntiForgeryToken()
-                                <input type="number" name="amount" step="0.01" min="0.01" placeholder="Amount"
+                                <input type="number" name="amount" step="0.01" min="0.01" placeholder="@L["Ph_Amount"]"
                                        class="form-control form-control-sm" required style="max-width: 120px;">
                                 <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3">
-                                    <i class="bi bi-plus-circle me-1"></i>Add
+                                    <i class="bi bi-plus-circle me-1"></i>@L["Goal_AddFunds"]
                                 </button>
                             </form>
                         </div>
@@ -143,11 +143,11 @@
                                     </div>
                                     <div>
                                         <h6 class="mb-0 fw-bold text-decoration-line-through">@goal.Name</h6>
-                                        <small class="text-success fw-semibold">$@goal.TargetAmount.ToString("N2") achieved!</small>
+                                        <small class="text-success fw-semibold">$@goal.TargetAmount.ToString("N2") @L["Goals_Achieved"]</small>
                                     </div>
                                 </div>
                                 <form asp-action="Delete" asp-route-id="@goal.Id" method="post"
-                                      onsubmit="return confirm('Delete this goal?')">
+                                      onsubmit="return confirm('@L["Goal_DeleteConfirm"].Value');">
                                     @Html.AntiForgeryToken()
                                     <button class="btn btn-link btn-sm text-muted p-0" type="submit">
                                         <i class="bi bi-trash"></i>
@@ -167,9 +167,9 @@
         <div class="text-center py-5">
             <i class="bi bi-trophy fs-1 text-muted d-block mb-3 opacity-50"></i>
             <h5 class="text-muted">@L["Goals_NoGoals"]</h5>
-            <p class="text-muted">Start planning your financial future!</p>
+            <p class="text-muted">@L["Goals_StartPlanning"]</p>
             <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createGoalModal">
-                <i class="bi bi-plus-lg me-1"></i> Create Your First Goal
+                <i class="bi bi-plus-lg me-1"></i> @L["Goals_NewGoal"]
             </button>
         </div>
     }
@@ -187,19 +187,19 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Goal Name</label>
-                        <input type="text" name="Name" class="form-control" placeholder="e.g. Trip to Europe" required maxlength="100">
+                        <label class="form-label fw-semibold">@L["Common_Name"]</label>
+                        <input type="text" name="Name" class="form-control" placeholder="@L["Ph_GoalName"]" required maxlength="100">
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-6">
-                            <label class="form-label fw-semibold">Target Amount</label>
+                            <label class="form-label fw-semibold">@L["Goal_TargetAmount"]</label>
                             <div class="input-group">
                                 <span class="input-group-text">$</span>
                                 <input type="number" name="TargetAmount" class="form-control" step="0.01" min="1" required>
                             </div>
                         </div>
                         <div class="col-6">
-                            <label class="form-label fw-semibold">Already Saved</label>
+                            <label class="form-label fw-semibold">@L["Goal_AlreadySaved"]</label>
                             <div class="input-group">
                                 <span class="input-group-text">$</span>
                                 <input type="number" name="CurrentAmount" class="form-control" step="0.01" min="0" value="0">
@@ -207,27 +207,27 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Deadline (optional)</label>
+                        <label class="form-label fw-semibold">@L["Goal_Deadline"] (@L["Common_Optional"])</label>
                         <input type="date" name="Deadline" class="form-control">
                     </div>
                     <div class="row g-3">
                         <div class="col-6">
-                            <label class="form-label fw-semibold">Icon</label>
+                            <label class="form-label fw-semibold">@L["Common_Icon"]</label>
                             <select name="Icon" class="form-select">
-                                <option value="bi-bullseye">🎯 Target</option>
-                                <option value="bi-airplane">✈️ Travel</option>
-                                <option value="bi-house">🏠 Home</option>
-                                <option value="bi-car-front">🚗 Car</option>
-                                <option value="bi-mortarboard">🎓 Education</option>
-                                <option value="bi-heart">❤️ Health</option>
-                                <option value="bi-gift">🎁 Gift</option>
-                                <option value="bi-laptop">💻 Tech</option>
-                                <option value="bi-piggy-bank">🐷 Savings</option>
-                                <option value="bi-shield-check">🛡️ Emergency</option>
+                                <option value="bi-bullseye">@L["Goal_IconTarget"]</option>
+                                <option value="bi-airplane">@L["Goal_IconTravel"]</option>
+                                <option value="bi-house">@L["Goal_IconHome"]</option>
+                                <option value="bi-car-front">@L["Goal_IconCar"]</option>
+                                <option value="bi-mortarboard">@L["Goal_IconEducation"]</option>
+                                <option value="bi-heart">@L["Goal_IconHealth"]</option>
+                                <option value="bi-gift">@L["Goal_IconGift"]</option>
+                                <option value="bi-laptop">@L["Goal_IconTech"]</option>
+                                <option value="bi-piggy-bank">@L["Goal_IconSavings"]</option>
+                                <option value="bi-shield-check">@L["Goal_IconEmergency"]</option>
                             </select>
                         </div>
                         <div class="col-6">
-                            <label class="form-label fw-semibold">Color</label>
+                            <label class="form-label fw-semibold">@L["Common_Color"]</label>
                             <input type="color" name="Color" class="form-control form-control-color w-100" value="#6366f1">
                         </div>
                     </div>

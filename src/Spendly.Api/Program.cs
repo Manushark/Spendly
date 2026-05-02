@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Spendly.Application.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -44,6 +45,29 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // ────────────────────────────────────────────────────────────
+// CORS Configuration
+// ────────────────────────────────────────────────────────────
+var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? new[] { "https://localhost:7100", "http://localhost:5010" };
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("SpendlyPolicy", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+// ────────────────────────────────────────────────────────────
+// Health Checks
+// ────────────────────────────────────────────────────────────
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<SpendlyDbContext>("database");
+
+// ────────────────────────────────────────────────────────────
 // Database Configuration
 // ────────────────────────────────────────────────────────────
 var connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -57,7 +81,16 @@ if (string.IsNullOrWhiteSpace(connectionString))
 }
 
 builder.Services.AddDbContext<SpendlyDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString, sqlOptions =>
+    {
+        // Retry on transient failures (Azure SQL wake-up from auto-pause, network blips)
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null);
+        // Give Azure SQL enough time to wake from auto-pause
+        sqlOptions.CommandTimeout(60);
+    }));
 
 // ────────────────────────────────────────────────────────────
 // JWT Configuration
@@ -229,6 +262,32 @@ builder.Services.AddScoped<ImportCsvUseCase>();
 // ════════════════════════════════════════════════════════════
 var app = builder.Build();
 
+// ────────────────────────────────────────────────────────────
+// Auto-apply pending migrations in Production (non-blocking)
+// ────────────────────────────────────────────────────────────
+if (!isDevelopment)
+{
+    _ = Task.Run(async () =>
+    {
+        try
+        {
+            using var scope = app.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<SpendlyDbContext>();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<SpendlyDbContext>>();
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            logger.LogInformation("Starting database migration...");
+            await db.Database.MigrateAsync();
+            sw.Stop();
+            logger.LogInformation("Database migration completed in {Elapsed}ms", sw.ElapsedMilliseconds);
+        }
+        catch (Exception ex)
+        {
+            var logger = app.Services.GetRequiredService<ILogger<SpendlyDbContext>>();
+            logger.LogError(ex, "Failed to apply database migrations on startup.");
+        }
+    });
+}
+
 if (isDevelopment)
 {
     app.UseSwagger();
@@ -237,8 +296,31 @@ if (isDevelopment)
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
+app.UseCors("SpendlyPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// ────────────────────────────────────────────────────────────
+// Health Check Endpoint
+// ────────────────────────────────────────────────────────────
+app.MapHealthChecks("/api/health", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var result = System.Text.Json.JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(e => new
+            {
+                name = e.Key,
+                status = e.Value.Status.ToString(),
+                description = e.Value.Description
+            })
+        });
+        await context.Response.WriteAsync(result);
+    }
+});
 
 app.Run();

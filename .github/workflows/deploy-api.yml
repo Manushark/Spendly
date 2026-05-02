@@ -1,0 +1,41 @@
+name: Deploy API to Azure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/Spendly.Api/**'
+      - 'src/Spendly.Application/**'
+      - 'src/Spendly.Domain/**'
+      - 'src/Spendly.Infrastructure/**'
+      - '.github/workflows/deploy-api.yml'
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore src/Spendly.Api/Spendly.Api.csproj
+
+      - name: Build
+        run: dotnet build src/Spendly.Api/Spendly.Api.csproj --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish src/Spendly.Api/Spendly.Api.csproj --configuration Release --no-build --output ./publish/api
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'spendly-api'
+          publish-profile: ${{ secrets.AZURE_API_PUBLISH_PROFILE }}
+          package: ./publish/api

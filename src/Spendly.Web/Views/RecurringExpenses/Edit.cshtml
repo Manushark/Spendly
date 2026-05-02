@@ -1,5 +1,4 @@
 @model Spendly.Web.Contracts.RecurringExpenses.UpdateRecurringExpenseDto
-@using Spendly.Web.Services
 
 @{
     ViewData["Title"] = "Edit Recurring Expense";
@@ -118,7 +117,7 @@
                         <div class="alert @(isActive ? "alert-success" : "alert-warning") border-0">
                             <strong>@L["Common_Status"]:</strong> 
                             @L["Rec_StatusText1"] 
-                            <strong>@(isActive ? L["Common_Activate"].Value.ToUpper() : L["Common_Paused"].Value.ToUpper())</strong>.
+                            <strong>@(isActive ? L["Common_Active"] : L["Common_Paused"])</strong>.
                             @if (!isActive)
                             {
                                 <span>@L["Rec_StatusText2"]</span>

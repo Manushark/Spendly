@@ -1,5 +1,4 @@
 @model Spendly.Web.Contracts.RecurringExpenses.CreateRecurringExpenseDto
-@using Spendly.Web.Services
 
 @{
     ViewData["Title"] = "Create Recurring Expense";
@@ -12,7 +11,7 @@
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">
-                        <i class="bi bi-plus-circle me-2"></i>@L["Rec_CreateFirst"]
+                        <i class="bi bi-plus-circle me-2"></i>@L["Rec_NewRecurring"]
                     </h4>
                 </div>
                 <div class="card-body p-4">
@@ -34,7 +33,7 @@
                                 </label>
                                 <input asp-for="Description" 
                                        class="form-control form-control-lg" 
-                                       placeholder="e.g. Netflix Subscription, Gym Membership"
+                                       placeholder="@L["Ph_RecurringName"]"
                                        required 
                                        maxlength="200" />
                                 <small class="text-muted">@L["Rec_DescHint"]</small>
@@ -51,7 +50,7 @@
                                            step="0.01" 
                                            min="0.01"
                                            class="form-control" 
-                                           placeholder="0.00"
+                                           placeholder="@L["Ph_Zero"]"
                                            required />
                                 </div>
                             </div>
@@ -62,24 +61,22 @@
                                 <label class="form-label fw-semibold">
                                     <i class="bi bi-tag me-1"></i>@L["Common_Category"]
                                 </label>
-                                @if (categories.Any())
-                                {
-                                    <select asp-for="Category" class="form-select form-select-lg" required>
-                                        <option value="" disabled selected>@L["Exp_SelectCategory"]</option>
-                                        @foreach (var cat in categories)
-                                        {
-                                            <option value="@cat.Name">@cat.Name</option>
-                                        }
-                                    </select>
-                                }
-                                else
-                                {
-                                    <input asp-for="Category" 
-                                           class="form-control form-control-lg" 
-                                           placeholder="@L["Ph_CategoryFood"]"
-                                           required 
-                                           maxlength="100" />
-                                }
+                                <input asp-for="Category" 
+                                       class="form-control form-control-lg" 
+                                       placeholder="@L["Ph_CategoryName"]"
+                                       required 
+                                       maxlength="100"
+                                       list="categoryList" />
+                                <datalist id="categoryList">
+                                    <option value="Entertainment"/>
+                                    <option value="Utilities"/>
+                                    <option value="Transportation"/>
+                                    <option value="Food"/>
+                                    <option value="Health"/>
+                                    <option value="Insurance"/>
+                                    <option value="Subscriptions"/>
+                                    <option value="Other"/>
+                                </datalist>
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -134,7 +131,7 @@
                                 <i class="bi bi-x-circle me-1"></i>@L["Common_Cancel"]
                             </a>
                             <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-check-circle me-1"></i>@L["Rec_CreateFirst"]
+                                <i class="bi bi-check-circle me-1"></i>@L["Rec_NewRecurring"]
                             </button>
                         </div>
                     </form>

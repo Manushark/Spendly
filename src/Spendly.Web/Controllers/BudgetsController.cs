@@ -79,6 +79,7 @@ namespace Spendly.Web.Controllers
             if (!ok)
             {
                 TempData["Error"] = error ?? "Could not create budget.";
+                ViewBag.Categories = await _categoryApi.GetAllAsync();
                 return View(dto);
             }
 
@@ -128,6 +129,7 @@ namespace Spendly.Web.Controllers
             {
                 TempData["Error"] = error ?? "Could not update budget.";
                 ViewBag.BudgetId = id;
+                ViewBag.Categories = await _categoryApi.GetAllAsync();
                 return View(dto);
             }
 
