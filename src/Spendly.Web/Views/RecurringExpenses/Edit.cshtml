@@ -1,9 +1,11 @@
-﻿@model Spendly.Web.Contracts.RecurringExpenses.UpdateRecurringExpenseDto
+@model Spendly.Web.Contracts.RecurringExpenses.UpdateRecurringExpenseDto
+@using Spendly.Web.Services
 
 @{
     ViewData["Title"] = "Edit Recurring Expense";
     var recurringId = ViewBag.RecurringId as int? ?? 0;
     var isActive = ViewBag.IsActive as bool? ?? true;
+    var categories = ViewBag.Categories as List<CategoryViewModel> ?? new List<CategoryViewModel>();
 }
 
 <div class="container mt-4">
@@ -12,7 +14,7 @@
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">
-                        <i class="bi bi-pencil-square me-2"></i>Edit Recurring Expense
+                        <i class="bi bi-pencil-square me-2"></i>@L["Rec_EditRecurring"]
                     </h4>
                 </div>
                 <div class="card-body p-4">
@@ -30,7 +32,7 @@
                         <div class="row">
                             <div class="col-md-8 mb-3">
                                 <label class="form-label fw-semibold">
-                                    <i class="bi bi-text-left me-1"></i>Description
+                                    <i class="bi bi-text-left me-1"></i>@L["Common_Description"]
                                 </label>
                                 <input asp-for="Description" 
                                        class="form-control form-control-lg" 
@@ -40,7 +42,7 @@
 
                             <div class="col-md-4 mb-3">
                                 <label class="form-label fw-semibold">
-                                    <i class="bi bi-cash-stack me-1"></i>Amount
+                                    <i class="bi bi-cash-stack me-1"></i>@L["Common_Amount"]
                                 </label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text">$</span>
@@ -57,33 +59,37 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">
-                                    <i class="bi bi-tag me-1"></i>Category
+                                    <i class="bi bi-tag me-1"></i>@L["Common_Category"]
                                 </label>
-                                <input asp-for="Category" 
-                                       class="form-control form-control-lg" 
-                                       required 
-                                       maxlength="100"
-                                       list="categoryList" />
-                                <datalist id="categoryList">
-                                    <option value="Entertainment"/>
-                                    <option value="Utilities"/>
-                                    <option value="Transportation"/>
-                                    <option value="Food"/>
-                                    <option value="Health"/>
-                                    <option value="Insurance"/>
-                                    <option value="Subscriptions"/>
-                                </datalist>
+                                @if (categories.Any())
+                                {
+                                    <select asp-for="Category" class="form-select form-select-lg" required>
+                                        <option value="" disabled>@L["Exp_SelectCategory"]</option>
+                                        @foreach (var cat in categories)
+                                        {
+                                            <option value="@cat.Name" selected="@(Model.Category == cat.Name)">@cat.Name</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <input asp-for="Category" 
+                                           class="form-control form-control-lg" 
+                                           placeholder="@L["Ph_CategoryFood"]"
+                                           required 
+                                           maxlength="100" />
+                                }
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">
-                                    <i class="bi bi-arrow-repeat me-1"></i>Frequency
+                                    <i class="bi bi-arrow-repeat me-1"></i>@L["Common_Frequency"]
                                 </label>
                                 <select asp-for="Frequency" class="form-select form-select-lg" required>
-                                    <option value="1">Daily</option>
-                                    <option value="2">Weekly</option>
-                                    <option value="3">Monthly</option>
-                                    <option value="4">Yearly</option>
+                                    <option value="1">@L["Freq_Daily"]</option>
+                                    <option value="2">@L["Freq_Weekly"]</option>
+                                    <option value="3">@L["Freq_Monthly"]</option>
+                                    <option value="4">@L["Freq_Yearly"]</option>
                                 </select>
                             </div>
                         </div>
@@ -91,7 +97,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">
-                                    <i class="bi bi-play-circle me-1"></i>Start Date
+                                    <i class="bi bi-play-circle me-1"></i>@L["Rec_StartDate"]
                                 </label>
                                 <input asp-for="StartDate" 
                                        type="date"
@@ -101,7 +107,7 @@
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">
-                                    <i class="bi bi-stop-circle me-1"></i>End Date (Optional)
+                                    <i class="bi bi-stop-circle me-1"></i>@L["Rec_EndDate"]
                                 </label>
                                 <input asp-for="EndDate" 
                                        type="date"
@@ -110,21 +116,21 @@
                         </div>
 
                         <div class="alert @(isActive ? "alert-success" : "alert-warning") border-0">
-                            <strong>Status:</strong> 
-                            This recurring expense is currently 
-                            <strong>@(isActive ? "ACTIVE" : "PAUSED")</strong>.
+                            <strong>@L["Common_Status"]:</strong> 
+                            @L["Rec_StatusText1"] 
+                            <strong>@(isActive ? L["Common_Activate"].Value.ToUpper() : L["Common_Paused"].Value.ToUpper())</strong>.
                             @if (!isActive)
                             {
-                                <span>No expenses will be generated while paused.</span>
+                                <span>@L["Rec_StatusText2"]</span>
                             }
                         </div>
 
                         <div class="d-flex gap-2 justify-content-end mt-4">
                             <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
-                                <i class="bi bi-x-circle me-1"></i>Cancel
+                                <i class="bi bi-x-circle me-1"></i>@L["Common_Cancel"]
                             </a>
                             <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-check-circle me-1"></i>Save Changes
+                                <i class="bi bi-check-circle me-1"></i>@L["Common_Save"]
                             </button>
                         </div>
                     </form>
@@ -135,7 +141,7 @@
             <div class="card border-danger mt-3">
                 <div class="card-body">
                     <h6 class="text-danger fw-semibold mb-3">
-                        <i class="bi bi-exclamation-triangle me-2"></i>Danger Zone
+                        <i class="bi bi-exclamation-triangle me-2"></i>@L["Common_DangerZone"]
                     </h6>
                     
                     <div class="d-flex gap-2">
@@ -145,19 +151,19 @@
                             @if (isActive)
                             {
                                 <button type="submit" class="btn btn-outline-warning w-100">
-                                    <i class="bi bi-pause me-1"></i>Pause Recurring Expense
+                                    <i class="bi bi-pause me-1"></i>@L["Rec_PauseBtn"]
                                 </button>
                                 <small class="text-muted d-block mt-1">
-                                    Stop generating expenses (keeps template)
+                                    @L["Rec_PauseHint"]
                                 </small>
                             }
                             else
                             {
                                 <button type="submit" class="btn btn-outline-success w-100">
-                                    <i class="bi bi-play me-1"></i>Activate Recurring Expense
+                                    <i class="bi bi-play me-1"></i>@L["Rec_ActivateBtn"]
                                 </button>
                                 <small class="text-muted d-block mt-1">
-                                    Resume generating expenses
+                                    @L["Rec_ActivateHint"]
                                 </small>
                             }
                         </form>
@@ -166,11 +172,11 @@
                             @Html.AntiForgeryToken()
                             <button type="submit" 
                                     class="btn btn-outline-danger w-100"
-                                    onclick="return confirm('Delete this recurring expense permanently? Past expenses will NOT be deleted.');">
-                                <i class="bi bi-trash me-1"></i>Delete Permanently
+                                    onclick="return confirm('@L["Rec_DeletePrompt"].Value');">
+                                <i class="bi bi-trash me-1"></i>@L["Rec_DeletePerm"]
                             </button>
                             <small class="text-muted d-block mt-1">
-                                Cannot be undone
+                                @L["Rec_DeleteHint"]
                             </small>
                         </form>
                     </div>

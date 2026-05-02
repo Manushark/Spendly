@@ -7,20 +7,19 @@
 <div class="container-fluid py-4">
     <div class="row justify-content-center">
         <div class="col-lg-6">
-            <div class="card shadow-sm border-0" style="border-radius: 16px;">
-                <div class="card-header bg-white border-0 pt-4 pb-0 text-center">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
-                        <i class="bi bi-pencil"></i>
-                    </div>
-                    <h5 class="mb-0 fw-bold">Edit Income</h5>
-                    <p class="text-muted small">Update income details</p>
+            <div class="d-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-3 mx-auto"
+     style="width: 50px; height: 50px; font-size: 1.5rem;">
+    <i class="bi bi-pencil"></i>
+</div>
+                    <h5 class="mb-0 fw-bold text-center">@L["Inc_EditIncome"]</h5>
+                    <p class="text-muted small text-center">@L["Inc_UpdateDesc"]</p>
                 </div>
                 <div class="card-body p-4">
                     <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
                         @Html.AntiForgeryToken()
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Amount ($)</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Amount"]</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-currency-dollar"></i></span>
                                 <input name="Amount" type="number" step="0.01" min="0.01"
@@ -30,19 +29,19 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Source</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Source"]</label>
                             <input name="Source" class="form-control"
                                    value="@Model.Source" required maxlength="100" />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Description (optional)</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Description"] (@L["Common_Optional"])</label>
                             <input name="Description" class="form-control"
                                    value="@Model.Description" maxlength="200" />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Date</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Date"]</label>
                             <input name="Date" type="date" class="form-control" required
                                    value="@Model.Date.ToString("yyyy-MM-dd")" />
                         </div>
@@ -52,17 +51,17 @@
                                 <input class="form-check-input" type="checkbox" name="IsRecurring" value="true"
                                        id="isRecurringSwitch" @(Model.IsRecurring ? "checked" : "")>
                                 <label class="form-check-label text-muted small" for="isRecurringSwitch">
-                                    <i class="bi bi-arrow-repeat me-1"></i>This is recurring income
+                                    <i class="bi bi-arrow-repeat me-1"></i>@L["Inc_IsRecurringDesc"]
                                 </label>
                             </div>
                         </div>
 
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-success flex-grow-1 py-3 rounded-3 fw-bold shadow-sm">
-                                <i class="bi bi-check-circle me-1"></i> Save Changes
+                                <i class="bi bi-check-circle me-1"></i> @L["Common_Save"]
                             </button>
                             <a asp-action="Index" class="btn btn-outline-secondary py-3 px-4 rounded-3">
-                                Cancel
+                                @L["Common_Cancel"]
                             </a>
                         </div>
                     </form>

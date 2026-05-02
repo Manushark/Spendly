@@ -77,7 +77,7 @@
                     <h3 class="mb-3">@L["Bud_NoBudgets"]</h3>
                     <p class="text-muted mb-4">@L["Bud_CreateFirst"]</p>
                     <a asp-action="Create" class="btn btn-primary btn-lg">
-                        <i class="bi bi-plus-circle me-2"></i>Create Your First Budget
+                        <i class="bi bi-plus-circle me-2"></i>@L["Bud_NewBudget"]
                     </a>
                 </div>
             </div>
@@ -182,14 +182,14 @@
                                         </div>
                                         <div class="d-flex gap-1">
                                             <a asp-action="Edit" asp-route-id="@budget.Id" 
-                                               class="btn btn-sm btn-outline-primary" title="Edit">
+                                               class="btn btn-sm btn-outline-primary" title="@L["Common_Edit"]">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                             <form asp-action="Delete" asp-route-id="@budget.Id" 
                                                   method="post" class="d-inline">
                                         @Html.AntiForgeryToken()
                                                 <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                        title="Delete"
+                                                        title="@L["Common_Delete"]"
                                                         onclick="return confirm('@L["Bud_DeleteConfirm"].Value');">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
@@ -200,10 +200,10 @@
                                     <div class="mb-3">
                                         <div class="d-flex justify-content-between mb-2">
                                             <span class="small fw-semibold">
-                                                Spent: <span class="text-danger">$@budget.Spent.ToString("N2")</span>
+                                                @L["Common_Spent"]: <span class="text-danger">$@budget.Spent.ToString("N2")</span>
                                             </span>
                                             <span class="small fw-semibold">
-                                                Limit: <span class="text-success">$@budget.MonthlyLimit.ToString("N2")</span>
+                                                @L["Bud_Limit"]: <span class="text-success">$@budget.MonthlyLimit.ToString("N2")</span>
                                             </span>
                                         </div>
                                         <div class="progress" style="height: 12px; border-radius: 10px;">
@@ -218,7 +218,7 @@
 
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="badge @badgeClass px-3 py-2">
-                                    @budget.PercentageUsed.ToString("N0")% used
+                                            @budget.PercentageUsed.ToString("N0")% @L["Bud_Used"]
                                         </span>
                                 @if (budget.Remaining >= 0)
                                 {
@@ -231,7 +231,7 @@
                                 {
                                                 <span class="text-danger small fw-semibold">
                                                     <i class="bi bi-exclamation-triangle me-1"></i>
-                                                    $@Math.Abs(budget.Remaining).ToString("N2") over budget
+                                                    $@Math.Abs(budget.Remaining).ToString("N2") @L["Bud_OverBudgetAmount"]
                                                 </span>
                                 }
                                     </div>
