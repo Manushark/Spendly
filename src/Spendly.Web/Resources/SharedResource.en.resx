@@ -16,7 +16,7 @@
       </xsd:complexType>
     </xsd:element>
   </xsd:schema>
-  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader> 
   <resheader name="version"><value>2.0</value></resheader>
 
   <!-- ═══════ Sidebar / Navigation ═══════ -->
@@ -226,17 +226,6 @@
   <data name="Ins_Percentage"><value>Percentage</value></data>
 
   <!-- ═══════ Import ═══════ -->
-  <data name="Imp_Title"><value>Import Data</value></data>
-  <data name="Imp_Subtitle"><value>Import expenses from a CSV file</value></data>
-  <data name="Imp_UploadCSV"><value>Upload CSV</value></data>
-  <data name="Imp_SelectFile"><value>Select CSV File</value></data>
-  <data name="Imp_DefaultCurrency"><value>Default Currency</value></data>
-  <data name="Imp_PreviewImport"><value>Preview Import</value></data>
-  <data name="Imp_FormatGuide"><value>CSV Format Guide</value></data>
-  <data name="Imp_AcceptedNames"><value>Accepted Names</value></data>
-  <data name="Imp_Column"><value>Column</value></data>
-  <data name="Imp_Example"><value>Example</value></data>
-  <data name="Imp_MaxSize"><value>Maximum 5MB. The file should have headers like: Date, Amount, Description, Category</value></data>
   <data name="Imp_Preview"><value>Import Preview</value></data>
   <data name="Imp_ReviewData"><value>Review data before importing</value></data>
   <data name="Imp_TotalRows"><value>Total Rows</value></data>

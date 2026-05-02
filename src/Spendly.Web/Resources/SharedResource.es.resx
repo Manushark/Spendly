@@ -232,17 +232,6 @@
   <data name="Imp_SelectFile"><value>Seleccionar Archivo CSV</value></data>
   <data name="Imp_DefaultCurrency"><value>Moneda Predeterminada</value></data>
   <data name="Imp_PreviewImport"><value>Previsualizar</value></data>
-  <data name="Imp_FormatGuide"><value>Guía de Formato CSV</value></data>
-  <data name="Imp_AcceptedNames"><value>Nombres Aceptados</value></data>
-  <data name="Imp_Column"><value>Columna</value></data>
-  <data name="Imp_Example"><value>Ejemplo</value></data>
-  <data name="Imp_MaxSize"><value>Máximo 5MB. El archivo debe tener encabezados como: Fecha, Monto, Descripción, Categoría</value></data>
-  <data name="Imp_Preview"><value>Previsualización</value></data>
-  <data name="Imp_ReviewData"><value>Revisa los datos antes de importar</value></data>
-  <data name="Imp_TotalRows"><value>Filas Totales</value></data>
-  <data name="Imp_Valid"><value>Válidas</value></data>
-  <data name="Imp_Invalid"><value>Inválidas (se omitirán)</value></data>
-  <data name="Imp_DetectedColumns"><value>Columnas detectadas</value></data>
   <data name="Imp_ImportExpenses"><value>Importar Gastos</value></data>
   <data name="Imp_ParsingErrors"><value>Errores de Lectura</value></data>
 

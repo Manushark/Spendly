@@ -40,11 +40,11 @@
                                     <h6 class="mb-0 fw-bold">@cat.Name</h6>
                                     @if (cat.IsDefault)
                                     {
-                                        <small class="text-muted"><i class="bi bi-lock me-1"></i>Default</small>
+                                        <small class="text-muted"><i class="bi bi-lock me-1"></i>@L["Common_Default"]</small>
                                     }
                                     else
                                     {
-                                        <small class="text-muted">Custom</small>
+                                        <small class="text-muted">@L["Common_Custom"]</small>
                                     }
                                 </div>
                             </div>
@@ -58,15 +58,15 @@
                                         <li>
                                             <button class="dropdown-item"
                                                     data-bs-toggle="modal" data-bs-target="#editCategoryModal-@cat.Id">
-                                                <i class="bi bi-pencil me-2"></i>Edit
+                                                <i class="bi bi-pencil me-2"></i>@L["Common_Edit"]
                                             </button>
                                         </li>
                                         <li>
                                             <form asp-action="Delete" asp-route-id="@cat.Id" method="post"
-                                                  onsubmit="return confirm('Delete this category?')">
+                                                  onsubmit="return confirm('@L["Cat_DeleteConfirm"].Value');">
                                                 @Html.AntiForgeryToken()
                                                 <button class="dropdown-item text-danger" type="submit">
-                                                    <i class="bi bi-trash me-2"></i>Delete
+                                                    <i class="bi bi-trash me-2"></i>@L["Common_Delete"]
                                                 </button>
                                             </form>
                                         </li>
@@ -91,12 +91,12 @@
                                     </div>
                                     <div class="modal-body">
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">Name</label>
+                                            <label class="form-label fw-semibold">@L["Common_Name"]</label>
                                             <input type="text" name="Name" class="form-control" value="@cat.Name" required>
                                         </div>
                                         <div class="row g-3">
                                             <div class="col-8">
-                                                <label class="form-label fw-semibold">Icon (Bootstrap Icons)</label>
+                                                <label class="form-label fw-semibold">@L["Common_Icon"]</label>
                                                 <select name="Icon" class="form-select">
                                                     <option value="bi-cart" selected="@(cat.Icon == "bi-cart")">🛒 Cart</option>
                                                     <option value="bi-house" selected="@(cat.Icon == "bi-house")">🏠 Home</option>
@@ -111,7 +111,7 @@
                                                 </select>
                                             </div>
                                             <div class="col-4">
-                                                <label class="form-label fw-semibold">Color</label>
+                                                <label class="form-label fw-semibold">@L["Common_Color"]</label>
                                                 <input type="color" name="Color" class="form-control form-control-color w-100" value="@cat.Color">
                                             </div>
                                         </div>
@@ -133,7 +133,7 @@
         <div class="text-center py-5">
             <i class="bi bi-grid fs-1 text-muted d-block mb-3 opacity-50"></i>
             <h5 class="text-muted">@L["Cat_NoCategories"]</h5>
-            <p class="text-muted">Create categories to organize your expenses</p>
+            <p class="text-muted">@L["Cat_CreateFirst"]</p>
         </div>
     }
 </div>
@@ -150,12 +150,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Category Name</label>
-                        <input type="text" name="Name" class="form-control" placeholder="e.g. Subscriptions" required>
+                        <label class="form-label fw-semibold">@L["Cat_CategoryName"]</label>
+                        <input type="text" name="Name" class="form-control" placeholder="@L["Ph_CategoryName"]" required>
                     </div>
                     <div class="row g-3">
                         <div class="col-8">
-                            <label class="form-label fw-semibold">Icon</label>
+                            <label class="form-label fw-semibold">@L["Common_Icon"]</label>
                             <select name="Icon" class="form-select">
                                 <option value="bi-cart">🛒 Cart / Shopping</option>
                                 <option value="bi-house">🏠 Home / Rent</option>
@@ -170,13 +170,13 @@
                             </select>
                         </div>
                         <div class="col-4">
-                            <label class="form-label fw-semibold">Color</label>
+                            <label class="form-label fw-semibold">@L["Common_Color"]</label>
                             <input type="color" name="Color" class="form-control form-control-color w-100" value="#6366f1">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">@L["Common_Cancel"]</button>
                     <button type="submit" class="btn btn-primary rounded-pill px-4">
                         <i class="bi bi-check-lg me-1"></i>@L["Common_Create"]
                     </button>

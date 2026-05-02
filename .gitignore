@@ -12,3 +12,6 @@ obj/
 .env
 .env.*
 !.env.example
+
+# Data Protection Keys
+**/keys/*.xml

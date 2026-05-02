@@ -32,27 +32,27 @@
             <div class="card shadow-sm border-0" style="border-radius: 16px;">
                 <div class="card-header bg-white border-0 pt-4 pb-0">
                     <h5 class="fw-bold mb-0"><i class="bi bi-person-circle text-primary me-2"></i>@L["Set_Profile"]</h5>
-                    <small class="text-muted">Update your personal information</small>
+                    <small class="text-muted">@L["Set_ProfileDesc"]</small>
                 </div>
                 <div class="card-body p-4">
                     <form asp-controller="Settings" asp-action="UpdateProfile" method="post">
                         @Html.AntiForgeryToken()
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Email</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Set_Email"]</label>
                             <input type="email" class="form-control bg-light" value="@profile?.Email" disabled />
-                            <small class="text-muted">Email cannot be changed</small>
+                            <small class="text-muted">@L["Set_EmailReadonly"]</small>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Full Name</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Set_FullName"]</label>
                             <input name="FullName" type="text" class="form-control"
-                                   value="@profile?.FullName" placeholder="e.g. John Doe" maxlength="100" />
+                                   value="@profile?.FullName" placeholder="@L["Ph_FullName"]" maxlength="100" />
                         </div>
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="form-label text-muted small fw-semibold text-uppercase">Currency</label>
+                                <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Currency"]</label>
                                 <select name="PreferredCurrency" class="form-select" style="border-radius:10px; padding:12px 15px;">
                                     @{
                                         var currencies = new[] { "USD", "EUR", "GBP", "DOP", "MXN", "COP", "ARS", "BRL", "CLP", "PEN", "CAD", "JPY" };
@@ -64,7 +64,7 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-muted small fw-semibold text-uppercase">Time Zone</label>
+                                <label class="form-label text-muted small fw-semibold text-uppercase">@L["Set_TimeZone"]</label>
                                 <select name="TimeZone" class="form-select" style="border-radius:10px; padding:12px 15px;">
                                     @{
                                         var timezones = new[] {
@@ -84,7 +84,7 @@
 
                         <div class="d-flex justify-content-between align-items-center mt-4">
                             <small class="text-muted">
-                                <i class="bi bi-clock me-1"></i>Member since @(profile?.CreatedAt.ToString("MMM yyyy") ?? "—")
+                                <i class="bi bi-clock me-1"></i>@L["Set_MemberSince"] @(profile?.CreatedAt.ToString("MMM yyyy") ?? "—")
                             </small>
                             <button type="submit" class="btn btn-primary px-4">
                                 <i class="bi bi-check-lg me-1"></i> @L["Common_Save"]
@@ -100,28 +100,28 @@
             <div class="card shadow-sm border-0" style="border-radius: 16px;">
                 <div class="card-header bg-white border-0 pt-4 pb-0">
                     <h5 class="fw-bold mb-0"><i class="bi bi-shield-lock text-warning me-2"></i>@L["Set_Security"]</h5>
-                    <small class="text-muted">Change your account password</small>
+                    <small class="text-muted">@L["Set_SecurityDesc"]</small>
                 </div>
                 <div class="card-body p-4">
                     <form asp-controller="Settings" asp-action="ChangePassword" method="post">
                         @Html.AntiForgeryToken()
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Current Password</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Set_CurrentPassword"]</label>
                             <input name="CurrentPassword" type="password" class="form-control"
-                                   placeholder="Enter current password" required />
+                                   placeholder="@L["Ph_CurrentPassword"]" required />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">New Password</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Set_NewPasswordLabel"]</label>
                             <input name="NewPassword" type="password" class="form-control"
-                                   placeholder="Min. 6 characters" required minlength="6" />
+                                   placeholder="@L["Ph_Min6Chars"]" required minlength="6" />
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">Confirm New Password</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Set_ConfirmNewPassword"]</label>
                             <input name="ConfirmNewPassword" type="password" class="form-control"
-                                   placeholder="Confirm new password" required minlength="6" />
+                                   placeholder="@L["Ph_ConfirmPassword"]" required minlength="6" />
                         </div>
 
                         <button type="submit" class="btn btn-warning w-100 py-3 rounded-3 fw-bold">
@@ -138,7 +138,7 @@
                 <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
                     <div>
                         <h5 class="fw-bold mb-0"><i class="bi bi-palette text-success me-2"></i>@L["Cat_Title"]</h5>
-                        <small class="text-muted">Customize your expense categories with icons and colors</small>
+                        <small class="text-muted">@L["Cat_TitleDesc"]</small>
                     </div>
                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
                         <i class="bi bi-plus-lg me-1"></i> @L["Cat_NewCategory"]
@@ -179,8 +179,8 @@
                                                     <form asp-action="DeleteCategory" asp-route-id="@cat.Id" method="post">
                                                         @Html.AntiForgeryToken()
                                                         <button type="submit" class="dropdown-item text-danger"
-                                                                onclick="return confirm('Delete this category?');">
-                                                            <i class="bi bi-trash me-2"></i>Delete
+                                                                onclick="return confirm('@L["Cat_DeleteConfirm"].Value');">
+                                                            <i class="bi bi-trash me-2"></i>@L["Common_Delete"]
                                                         </button>
                                                     </form>
                                                 </li>
@@ -271,9 +271,9 @@
                 @Html.AntiForgeryToken()
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold">Name</label>
+                        <label class="form-label small fw-semibold">@L["Cat_CategoryName"]</label>
                         <input name="Name" class="form-control" required maxlength="50"
-                               placeholder="e.g. Subscriptions" />
+                               placeholder="@L["Ph_CategoryName"]" />
                     </div>
                     <div class="row g-3">
                         <div class="col-md-6">

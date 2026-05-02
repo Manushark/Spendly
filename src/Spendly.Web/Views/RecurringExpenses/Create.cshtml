@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Create Recurring Expense";
+    var categories = ViewBag.Categories as List<CategoryViewModel> ?? new List<CategoryViewModel>();
 }
 
 <div class="container mt-4">
