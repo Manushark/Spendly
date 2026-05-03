@@ -161,7 +161,7 @@
                                             <div class="fw-semibold text-truncate">@cat.Name</div>
                                             @if (cat.IsDefault)
                                             {
-                                                <small class="text-muted" style="font-size: 0.7rem;">Default</small>
+                                                <small class="text-muted" style="font-size: 0.7rem;">@L["Cat_Default"]</small>
                                             }
                                         </div>
                                         <div class="dropdown">
@@ -172,7 +172,7 @@
                                                 <li>
                                                     <button type="button" class="dropdown-item"
                                                             onclick="openEditModal(@cat.Id)">
-                                                        <i class="bi bi-pencil me-2"></i>Edit
+                                                        <i class="bi bi-pencil me-2"></i>@L["Common_Edit"]
                                                     </button>
                                                 </li>
                                                 <li>
@@ -195,7 +195,7 @@
                     {
                         <div class="text-center py-4">
                             <i class="bi bi-palette display-4 text-muted opacity-50"></i>
-                            <p class="text-muted mt-2">No categories yet. Create your first one!</p>
+                            <p class="text-muted mt-2">@L["Cat_NoCategoriesMessage"]</p>
                         </div>
                     }
                 </div>
@@ -218,7 +218,7 @@
                     @Html.AntiForgeryToken()
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold">Name</label>
+                            <label class="form-label small fw-semibold">@L["Common_Name"]</label>
                             <input name="Name" class="form-control" value="@cat.Name" required maxlength="50" />
                         </div>
                         <div class="row g-3">
@@ -243,7 +243,7 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-semibold">Color</label>
+                                <label class="form-label small fw-semibold">@L["Common_Color"]</label>
                                 <input name="Color" type="color" class="form-control form-control-color w-100"
                                        value="@cat.Color" required style="height:46px;" />
                             </div>
@@ -277,7 +277,7 @@
                     </div>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold">Icon (Bootstrap)</label>
+                            <label class="form-label small fw-semibold">Icon</label>
                             <select name="Icon" class="form-select" style="border-radius:10px; padding:12px 15px;">
                                 <option value="bi-cup-hot">☕ Cup (bi-cup-hot)</option>
                                 <option value="bi-car-front">🚗 Car (bi-car-front)</option>
@@ -302,7 +302,7 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold">Color</label>
+                            <label class="form-label small fw-semibold">@L["Common_Color"]</label>
                             <input name="Color" type="color" class="form-control form-control-color w-100"
                                    value="#6c5ce7" required style="height:46px;" />
                         </div>

@@ -1,10 +1,10 @@
-﻿@model ErrorViewModel
+@model ErrorViewModel
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = L["Error_Title"].Value;
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<h1 class="text-danger">@L["Error_Title"]</h1>
+<h2 class="text-danger">@L["Error_Desc"]</h2>
 
 @if (Model.ShowRequestId)
 {
