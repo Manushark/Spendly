@@ -67,17 +67,17 @@
                                             <td class="text-muted">
                                                 <small>@(income.Description ?? "—")</small>
                                             </td>
-                                            <td class="text-muted"><small>@income.Date.ToString("MMM dd, yyyy")</small></td>
+                                            <td class="text-muted"><small>@income.Date.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.CurrentUICulture)</small></td>
                                             <td class="text-center">
                                                 @if (income.IsRecurring)
                                                 {
                                                     <span class="badge bg-info bg-opacity-10 text-info px-2 py-1">
-                                                        <i class="bi bi-arrow-repeat me-1"></i>Yes
+                                                        <i class="bi bi-arrow-repeat me-1"></i>@L["Common_Yes"]
                                                     </span>
                                                 }
                                                 else
                                                 {
-                                                    <span class="badge bg-secondary bg-opacity-10 text-muted px-2 py-1">No</span>
+                                                    <span class="badge bg-secondary bg-opacity-10 text-muted px-2 py-1">@L["Common_No"]</span>
                                                 }
                                             </td>
                                             <td class="text-center pe-4">
@@ -158,7 +158,7 @@
                         <i class="bi bi-plus-lg"></i>
                     </div>
                     <h5 class="mb-0 fw-bold">@L["Inc_NewIncome"]</h5>
-                    <p class="text-muted small">Record a new earning</p>
+                    <p class="text-muted small">@L["Inc_RecordDesc"]</p>
                 </div>
                 <div class="card-body p-4 pt-2">
                     <form asp-action="Create" method="post">
@@ -195,7 +195,7 @@
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="IsRecurring" value="true" id="isRecurringSwitch">
                                 <label class="form-check-label text-muted small" for="isRecurringSwitch">
-                                    <i class="bi bi-arrow-repeat me-1"></i>This is recurring income
+                                    <i class="bi bi-arrow-repeat me-1"></i>@L["Inc_IsRecurringDesc"]
                                 </label>
                             </div>
                         </div>

@@ -42,7 +42,7 @@
                     <h3 class="mb-1 fw-bold text-danger">$@Model.TotalExpenses.ToString("N2")</h3>
                     <small class="@(Model.ExpenseChangePercent <= 0 ? "text-success" : "text-danger")">
                         <i class="bi bi-@(Model.ExpenseChangePercent <= 0 ? "arrow-down" : "arrow-up")-circle-fill me-1"></i>
-                        @Math.Abs(Model.ExpenseChangePercent).ToString("N1")% vs last month
+                        @Math.Abs(Model.ExpenseChangePercent).ToString("N1")% @L["Dash_VsLastMonth"]
                     </small>
                 </div>
             </div>
@@ -54,7 +54,7 @@
                     <h3 class="mb-1 fw-bold text-success">$@Model.TotalIncome.ToString("N2")</h3>
                     <small class="@(Model.IncomeChangePercent >= 0 ? "text-success" : "text-danger")">
                         <i class="bi bi-@(Model.IncomeChangePercent >= 0 ? "arrow-up" : "arrow-down")-circle-fill me-1"></i>
-                        @Math.Abs(Model.IncomeChangePercent).ToString("N1")% vs last month
+                        @Math.Abs(Model.IncomeChangePercent).ToString("N1")% @L["Dash_VsLastMonth"]
                     </small>
                 </div>
             </div>

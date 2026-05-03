@@ -27,11 +27,11 @@
                asp-route-dateFrom="@(dateFrom?.ToString("yyyy-MM-dd"))"
                asp-route-dateTo="@(dateTo?.ToString("yyyy-MM-dd"))"
                class="btn btn-outline-success btn-sm rounded-pill px-3">
-                <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export CSV
+                <i class="bi bi-file-earmark-spreadsheet me-1"></i> @L["Exp_ExportCSV"]
             </a>
             <a asp-action="ExportReport" target="_blank"
                class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                <i class="bi bi-file-earmark-pdf me-1"></i> Monthly Report
+                <i class="bi bi-file-earmark-pdf me-1"></i> @L["Exp_MonthlyReport"]
             </a>
         </div>
     </div>
@@ -129,7 +129,7 @@
                             <button class="btn btn-link btn-sm text-muted text-decoration-none p-0"
                                     type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
                                 <i class="bi bi-sliders2 me-1"></i>
-                                Advanced Filters
+                                @L["Exp_AdvancedFilters"]
                                 <i class="bi bi-chevron-down ms-1" style="font-size:0.7rem;"></i>
                             </button>
                         </div>
@@ -309,7 +309,7 @@
                         <h5 class="mb-1 fw-bold">@L["Exp_NoExpenses"]</h5>
                         @if (hasActiveFilters)
                         {
-                            <p class="mb-0 text-muted">No transactions matched your filters. Try adjusting them.</p>
+                            <p class="mb-0 text-muted">@L["Exp_NoMatches"]</p>
                         }
                         else
                         {

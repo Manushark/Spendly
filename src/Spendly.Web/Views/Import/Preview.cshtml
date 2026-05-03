@@ -10,8 +10,8 @@
             <i class="bi bi-arrow-left"></i>
         </a>
         <div>
-            <h2 class="mb-1"><i class="bi bi-eye text-primary"></i> Import Preview</h2>
-            <small class="text-muted">Review data before importing</small>
+            <h2 class="mb-1"><i class="bi bi-eye text-primary"></i> @L["Imp_PreviewTitle"]</h2>
+            <small class="text-muted">@L["Imp_ReviewData"]</small>
         </div>
     </div>
 
@@ -33,7 +33,7 @@
         <div class="col-md-4">
             <div class="card shadow-sm border-0 text-center">
                 <div class="card-body">
-                    <p class="text-muted small mb-1">Total Rows</p>
+                    <p class="text-muted small mb-1">@L["Imp_TotalRows"]</p>
                     <h3 class="fw-bold">@Model.TotalRows</h3>
                 </div>
             </div>
@@ -41,7 +41,7 @@
         <div class="col-md-4">
             <div class="card shadow-sm border-0 text-center">
                 <div class="card-body">
-                    <p class="text-muted small mb-1">Valid</p>
+                    <p class="text-muted small mb-1">@L["Imp_Valid"]</p>
                     <h3 class="fw-bold text-success">@Model.ValidRows</h3>
                 </div>
             </div>
@@ -75,12 +75,12 @@
                         <thead class="table-light">
                             <tr>
                                 <th>#</th>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th>Category</th>
-                                <th class="text-end">Amount</th>
-                                <th>Currency</th>
-                                <th class="text-center">Status</th>
+                                <th>@L["Common_Date"]</th>
+                                <th>@L["Common_Description"]</th>
+                                <th>@L["Common_Category"]</th>
+                                <th class="text-end">@L["Common_Amount"]</th>
+                                <th>@L["Common_Currency"]</th>
+                                <th class="text-center">@L["Common_Status"]</th>
                             </tr>
                         </thead>
                         <tbody>
