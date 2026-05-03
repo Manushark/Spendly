@@ -61,22 +61,24 @@
                                 <label class="form-label fw-semibold">
                                     <i class="bi bi-tag me-1"></i>@L["Common_Category"]
                                 </label>
-                                <input asp-for="Category" 
-                                       class="form-control form-control-lg" 
-                                       placeholder="@L["Ph_CategoryName"]"
-                                       required 
-                                       maxlength="100"
-                                       list="categoryList" />
-                                <datalist id="categoryList">
-                                    <option value="Entertainment"/>
-                                    <option value="Utilities"/>
-                                    <option value="Transportation"/>
-                                    <option value="Food"/>
-                                    <option value="Health"/>
-                                    <option value="Insurance"/>
-                                    <option value="Subscriptions"/>
-                                    <option value="Other"/>
-                                </datalist>
+                                @if (categories.Any())
+                                {
+                                    <select asp-for="Category" class="form-select form-select-lg" required>
+                                        <option value="" disabled selected>@L["Exp_SelectCategory"]</option>
+                                        @foreach (var cat in categories)
+                                        {
+                                            <option value="@cat.Name">@cat.Name</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <input asp-for="Category" 
+                                           class="form-control form-control-lg" 
+                                           placeholder="@L["Ph_CategoryName"]"
+                                           required 
+                                           maxlength="100" />
+                                }
                             </div>
 
                             <div class="col-md-6 mb-3">
