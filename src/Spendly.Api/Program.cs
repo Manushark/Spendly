@@ -302,6 +302,11 @@ app.UseAuthorization();
 app.MapControllers();
 
 // ────────────────────────────────────────────────────────────
+// Lightweight ping (NO database) — used by warmup service
+// ────────────────────────────────────────────────────────────
+app.MapGet("/api/ping", () => Results.Ok(new { status = "alive", timestamp = DateTime.UtcNow }));
+
+// ────────────────────────────────────────────────────────────
 // Health Check Endpoint
 // ────────────────────────────────────────────────────────────
 app.MapHealthChecks("/api/health", new HealthCheckOptions
