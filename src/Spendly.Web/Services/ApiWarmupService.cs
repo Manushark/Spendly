@@ -2,7 +2,7 @@ namespace Spendly.Web.Services
 {
     /// <summary>
     /// Background service that periodically pings the API to keep it warm.
-    /// This prevents Azure F1 Free Tier from putting the API to sleep.
+    /// Uses /api/ping (NO database) to avoid burning Azure SQL free tier quota.
     /// Only runs when the Web App is alive (kept alive by UptimeRobot).
     /// </summary>
     public class ApiWarmupService : BackgroundService
@@ -44,10 +44,10 @@ namespace Spendly.Web.Services
                 try
                 {
                     var client = _httpClientFactory.CreateClient();
-                    client.Timeout = TimeSpan.FromSeconds(90); // Azure SQL can take up to 60s to wake
+                    client.Timeout = TimeSpan.FromSeconds(30);
 
                     var sw = System.Diagnostics.Stopwatch.StartNew();
-                    var response = await client.GetAsync($"{_apiBaseUrl}api/health", stoppingToken);
+                    var response = await client.GetAsync($"{_apiBaseUrl}api/ping", stoppingToken);
                     sw.Stop();
 
                     _logger.LogInformation(
