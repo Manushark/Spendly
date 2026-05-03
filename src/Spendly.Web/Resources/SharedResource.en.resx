@@ -226,6 +226,12 @@
   <data name="Ins_Percentage"><value>Percentage</value></data>
 
   <!-- ═══════ Import ═══════ -->
+  <data name="Imp_Title"><value>Import Data</value></data>
+  <data name="Imp_Subtitle"><value>Import expenses from a CSV file</value></data>
+  <data name="Imp_UploadCSV"><value>Upload CSV</value></data>
+  <data name="Imp_SelectFile"><value>Select CSV File</value></data>
+  <data name="Imp_DefaultCurrency"><value>Default Currency</value></data>
+  <data name="Imp_PreviewImport"><value>Preview</value></data>
   <data name="Imp_Preview"><value>Import Preview</value></data>
   <data name="Imp_ReviewData"><value>Review data before importing</value></data>
   <data name="Imp_TotalRows"><value>Total Rows</value></data>
@@ -312,6 +318,19 @@
   <data name="Tags_ManageSubtitle"><value>Organize expenses with custom tags</value></data>
   <data name="Tags_NoTags"><value>No tags yet</value></data>
   <data name="Tags_Title"><value>Tags</value></data>
+  <data name="Cat_TitleDesc"><value>Organize your expenses with custom categories</value></data>
+  <data name="Set_ProfileDesc"><value>Manage your personal information and preferences</value></data>
+  <data name="Inc_UpdateDesc"><value>Update the details of this income</value></data>
+  <data name="Inc_IsRecurringDesc"><value>This is a recurring income</value></data>
+  <data name="Inc_RecordDesc"><value>Record a new earning</value></data>
+  <data name="Imp_FileLimit"><value>Max file size: 5MB</value></data>
+  <data name="Imp_FormatGuide"><value>Format Guide</value></data>
+  <data name="Imp_FormatDesc"><value>Ensure your CSV file has the following columns:</value></data>
+  <data name="Imp_ColHeader1"><value>Column</value></data>
+  <data name="Imp_ColHeader2"><value>Accepted Names</value></data>
+  <data name="Imp_ColHeader3"><value>Required</value></data>
+  <data name="Common_Yes"><value>Yes</value></data>
+  <data name="Common_No"><value>No</value></data>
 
   <!-- ═══════ Budget Summary ═══════ -->
   <data name="Bud_TotalBudget"><value>Total Budget</value></data>
@@ -462,4 +481,35 @@
   <data name="Common_Activate"><value>Activate</value></data>
 
   <data name="Common_DangerZone"><value>Danger Zone</value></data>
+  
+  <!-- UI Missing Translations -->
+  <data name="Common_Spent"><value>Spent</value></data>
+  <data name="Bud_Limit"><value>Limit</value></data>
+  <data name="Bud_Used"><value>Used</value></data>
+  <data name="Bud_OverBudgetAmount"><value>Over budget amount</value></data>
+  <data name="Common_Example"><value>Example</value></data>
+  <data name="Common_Frequency"><value>Frequency</value></data>
+  <data name="Set_EmailReadonly"><value>Email cannot be changed</value></data>
+  <data name="Set_MemberSince"><value>Member since</value></data>
+  <data name="Set_SecurityDesc"><value>Update your password to keep your account secure</value></data>
+  <data name="Auth_Connecting"><value>Connecting to server...</value></data>
+  <data name="Auth_FirstVisit"><value>This may take a moment on first visit</value></data>
+  <data name="Auth_Creating"><value>Creating your account...</value></data>
+  <data name="Exp_ExportCSV"><value>Export CSV</value></data>
+  <data name="Exp_MonthlyReport"><value>Monthly Report</value></data>
+  <data name="Exp_AdvancedFilters"><value>Advanced Filters</value></data>
+  <data name="Exp_NoMatches"><value>No transactions matched your filters. Try adjusting them.</value></data>
+  <data name="Imp_PreviewTitle"><value>Import Preview</value></data>
+  <data name="Imp_ReviewData"><value>Review data before importing</value></data>
+  <data name="Imp_TotalRows"><value>Total Rows</value></data>
+  <data name="Imp_Valid"><value>Valid</value></data>
+  <data name="Inc_History"><value>Income History</value></data>
+  <data name="Cat_Default"><value>Default</value></data>
+  <data name="Cat_NoCategoriesMessage"><value>No categories yet. Create your first one!</value></data>
+  <data name="Offline_Title"><value>Offline - Spendly</value></data>
+  <data name="Offline_TryAgain"><value>Try Again</value></data>
+  <data name="Error_Title"><value>Error.</value></data>
+  <data name="Error_Desc"><value>An error occurred while processing your request.</value></data>
+  <data name="Offline_Heading"><value>You're Offline</value></data>
+  <data name="Offline_Desc"><value>It looks like you've lost your internet connection. Please check and try again.</value></data>
 </root>

@@ -312,6 +312,19 @@
   <data name="Tags_ManageSubtitle"><value>Organiza gastos con etiquetas personalizadas</value></data>
   <data name="Tags_NoTags"><value>Aún no hay etiquetas</value></data>
   <data name="Tags_Title"><value>Etiquetas</value></data>
+  <data name="Cat_TitleDesc"><value>Organiza tus gastos con categorías personalizadas</value></data>
+  <data name="Set_ProfileDesc"><value>Administra tu información personal y preferencias</value></data>
+  <data name="Inc_UpdateDesc"><value>Actualiza los detalles de este ingreso</value></data>
+  <data name="Inc_IsRecurringDesc"><value>Este es un ingreso recurrente</value></data>
+  <data name="Inc_RecordDesc"><value>Registra un nuevo ingreso</value></data>
+  <data name="Imp_FileLimit"><value>Tamaño máximo de archivo: 5MB</value></data>
+  <data name="Imp_FormatGuide"><value>Guía de Formato</value></data>
+  <data name="Imp_FormatDesc"><value>Asegúrate de que tu archivo CSV tenga las siguientes columnas:</value></data>
+  <data name="Imp_ColHeader1"><value>Columna</value></data>
+  <data name="Imp_ColHeader2"><value>Nombres Aceptados</value></data>
+  <data name="Imp_ColHeader3"><value>Requerido</value></data>
+  <data name="Common_Yes"><value>Sí</value></data>
+  <data name="Common_No"><value>No</value></data>
 
   <!-- ═══════ Resumen Presupuestos ═══════ -->
   <data name="Bud_TotalBudget"><value>Presupuesto Total</value></data>
@@ -462,4 +475,35 @@
   <data name="Common_Activate"><value>Activar</value></data>
 
   <data name="Common_DangerZone"><value>Zona de Peligro</value></data>
+  
+  <!-- UI Missing Translations -->
+  <data name="Common_Spent"><value>Gastado</value></data>
+  <data name="Bud_Limit"><value>Límite</value></data>
+  <data name="Bud_Used"><value>Usado</value></data>
+  <data name="Bud_OverBudgetAmount"><value>Cantidad excedida</value></data>
+  <data name="Common_Example"><value>Ejemplo</value></data>
+  <data name="Common_Frequency"><value>Frecuencia</value></data>
+  <data name="Set_EmailReadonly"><value>El correo electrónico no se puede cambiar</value></data>
+  <data name="Set_MemberSince"><value>Miembro desde</value></data>
+  <data name="Set_SecurityDesc"><value>Actualiza tu contraseña para mantener tu cuenta segura</value></data>
+  <data name="Auth_Connecting"><value>Conectando al servidor...</value></data>
+  <data name="Auth_FirstVisit"><value>Esto puede tomar un momento en tu primera visita</value></data>
+  <data name="Auth_Creating"><value>Creando tu cuenta...</value></data>
+  <data name="Exp_ExportCSV"><value>Exportar CSV</value></data>
+  <data name="Exp_MonthlyReport"><value>Reporte Mensual</value></data>
+  <data name="Exp_AdvancedFilters"><value>Filtros Avanzados</value></data>
+  <data name="Exp_NoMatches"><value>Ninguna transacción coincide con tus filtros. Intenta ajustarlos.</value></data>
+  <data name="Imp_PreviewTitle"><value>Vista Previa de Importación</value></data>
+  <data name="Imp_ReviewData"><value>Revisa los datos antes de importar</value></data>
+  <data name="Imp_TotalRows"><value>Filas Totales</value></data>
+  <data name="Imp_Valid"><value>Válido</value></data>
+  <data name="Inc_History"><value>Historial de Ingresos</value></data>
+  <data name="Cat_Default"><value>Predeterminado</value></data>
+  <data name="Cat_NoCategoriesMessage"><value>Aún no hay categorías. ¡Crea la primera!</value></data>
+  <data name="Offline_Title"><value>Sin conexión - Spendly</value></data>
+  <data name="Offline_TryAgain"><value>Reintentar</value></data>
+  <data name="Error_Title"><value>Error.</value></data>
+  <data name="Error_Desc"><value>Ha ocurrido un error al procesar tu solicitud.</value></data>
+  <data name="Offline_Heading"><value>Estás sin conexión</value></data>
+  <data name="Offline_Desc"><value>Parece que has perdido tu conexión a internet. Por favor, verifica e inténtalo de nuevo.</value></data>
 </root>
