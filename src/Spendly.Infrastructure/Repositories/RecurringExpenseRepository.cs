@@ -49,12 +49,38 @@ namespace Spendly.Infrastructure.Repositories
 
         public async Task<List<RecurringExpense>> GetAllDueForGenerationAsync()
         {
-            var today = DateTime.Today;
+            var today = DateTime.UtcNow.Date;
 
             return await _context.RecurringExpenses
                 .Where(r => r.IsActive && r.StartDate <= today)
                 .Where(r => !r.EndDate.HasValue || r.EndDate.Value >= today)
                 .ToListAsync();
+        }
+
+        public async Task<int> CountByCategoryAsync(int userId, string categoryName)
+        {
+            return await _context.RecurringExpenses
+                .CountAsync(r => r.UserId == userId && r.Category.ToLower() == categoryName.ToLower());
+        }
+
+        public async Task UpdateCategoryNameAsync(int userId, string oldName, string newName)
+        {
+            var recurrings = await _context.RecurringExpenses
+                .Where(r => r.UserId == userId && r.Category.ToLower() == oldName.ToLower())
+                .ToListAsync();
+
+            foreach (var recurring in recurrings)
+            {
+                recurring.Update(
+                    recurring.Description,
+                    recurring.Amount.Value,
+                    newName,
+                    recurring.Frequency,
+                    recurring.StartDate,
+                    recurring.EndDate);
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

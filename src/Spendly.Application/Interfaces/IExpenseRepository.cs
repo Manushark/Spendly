@@ -52,5 +52,21 @@ namespace Spendly.Application.Interfaces
         /// Obtiene gastos agrupados por mes (últimos N meses).
         /// </summary>
         Task<Dictionary<DateTime, decimal>> GetMonthlyTotalsAsync(int userId, int monthsBack);
+
+        /// <summary>
+        /// Cuenta la cantidad de gastos de un usuario que pertenecen a una categoría específica.
+        /// </summary>
+        Task<int> CountByCategoryAsync(int userId, string categoryName);
+
+        /// <summary>
+        /// Actualiza el nombre de categoría en todos los gastos de un usuario.
+        /// </summary>
+        Task UpdateCategoryNameAsync(int userId, string oldName, string newName);
+
+        /// <summary>
+        /// Verifica si ya existe un gasto generado para un usuario con la misma descripción, categoría y fecha.
+        /// Se usa para prevenir duplicación en la generación de gastos recurrentes.
+        /// </summary>
+        Task<bool> ExistsByRecurrenceOnDateAsync(int userId, string description, string category, DateTime date);
     }
 }

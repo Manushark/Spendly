@@ -11,5 +11,7 @@ namespace Spendly.Application.Interfaces
         Task<List<Budget>> GetByUserAndMonthAsync(int userId, int year, int month);
         Task<List<Budget>> GetAllByUserAsync(int userId);
         Task<Budget?> GetByUserCategoryAndMonthAsync(int userId, string category, int year, int month);
+        Task<int> CountByCategoryAsync(int userId, string categoryName);
+        Task UpdateCategoryNameAsync(int userId, string oldName, string newName);
     }
 }

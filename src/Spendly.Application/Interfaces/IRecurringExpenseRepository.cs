@@ -11,5 +11,7 @@ namespace Spendly.Application.Interfaces
         Task<List<RecurringExpense>> GetAllByUserAsync(int userId);
         Task<List<RecurringExpense>> GetActiveByUserAsync(int userId);
         Task<List<RecurringExpense>> GetAllDueForGenerationAsync();
+        Task<int> CountByCategoryAsync(int userId, string categoryName);
+        Task UpdateCategoryNameAsync(int userId, string oldName, string newName);
     }
 }

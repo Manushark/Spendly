@@ -57,5 +57,25 @@ namespace Spendly.Infrastructure.Repositories
                     b.Category.ToLower() == category.ToLower() &&
                     b.Year == year &&
                     b.Month == month);
+
+        public async Task<int> CountByCategoryAsync(int userId, string categoryName)
+        {
+            return await _context.Budgets
+                .CountAsync(b => b.UserId == userId && b.Category.ToLower() == categoryName.ToLower());
+        }
+
+        public async Task UpdateCategoryNameAsync(int userId, string oldName, string newName)
+        {
+            var budgets = await _context.Budgets
+                .Where(b => b.UserId == userId && b.Category.ToLower() == oldName.ToLower())
+                .ToListAsync();
+
+            foreach (var budget in budgets)
+            {
+                budget.Update(newName, budget.MonthlyLimit, budget.Year, budget.Month);
+            }
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

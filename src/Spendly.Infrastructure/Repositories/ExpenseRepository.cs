@@ -192,5 +192,35 @@ namespace Spendly.Infrastructure.Repositories
                     g => g.Sum(e => e.Amount.Value)
                 );
         }
+
+        public async Task<int> CountByCategoryAsync(int userId, string categoryName)
+        {
+            return await _context.Expenses
+                .CountAsync(e => e.UserId == userId && e.Category.ToLower() == categoryName.ToLower());
+        }
+
+        public async Task UpdateCategoryNameAsync(int userId, string oldName, string newName)
+        {
+            var expenses = await _context.Expenses
+                .Where(e => e.UserId == userId && e.Category.ToLower() == oldName.ToLower())
+                .ToListAsync();
+
+            foreach (var expense in expenses)
+            {
+                expense.Update(expense.Amount, expense.Description, expense.Date, newName);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> ExistsByRecurrenceOnDateAsync(int userId, string description, string category, DateTime date)
+        {
+            return await _context.Expenses
+                .AnyAsync(e =>
+                    e.UserId == userId &&
+                    e.Description == description &&
+                    e.Category.ToLower() == category.ToLower() &&
+                    e.Date == date.Date);
+        }
     }
 }
