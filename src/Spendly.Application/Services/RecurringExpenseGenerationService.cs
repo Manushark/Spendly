@@ -36,7 +36,7 @@ namespace Spendly.Application.Services
                 try
                 {
                     await GenerateExpenseFromRecurrenceAsync(recurrence);
-                    recurrence.MarkAsGenerated(DateTime.Today);
+                    recurrence.MarkAsGenerated(DateTime.UtcNow.Date);
                     await _recurringRepo.UpdateAsync(recurrence);
                     generatedCount++;
                 }
@@ -52,15 +52,24 @@ namespace Spendly.Application.Services
 
         /// <summary>
         /// Genera un gasto individual desde una recurrencia.
+        /// Verifica que no exista un duplicado antes de insertar.
         /// </summary>
         public async Task GenerateExpenseFromRecurrenceAsync(RecurringExpense recurrence)
         {
+            var today = DateTime.UtcNow.Date;
+
+            // Verificar si ya se generó un gasto idéntico hoy (previene duplicados por reinicio del servidor)
+            var alreadyExists = await _expenseRepo.ExistsByRecurrenceOnDateAsync(
+                recurrence.UserId, recurrence.Description, recurrence.Category, today);
+
+            if (alreadyExists) return;
+
             var expense = Expense.Create(
                 userId: recurrence.UserId,
                 description: recurrence.Description,
                 amount: recurrence.Amount,
                 category: recurrence.Category,
-                date: DateTime.Today
+                date: today
             );
 
             await _expenseRepo.AddAsync(expense);

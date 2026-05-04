@@ -111,7 +111,7 @@ namespace Spendly.Domain.Entities
         {
             if (!IsActive) return false;
 
-            var today = DateTime.Today;
+            var today = DateTime.UtcNow.Date;
             var nextOccurrence = GetNextOccurrence();
 
             return nextOccurrence.HasValue && nextOccurrence.Value <= today;
