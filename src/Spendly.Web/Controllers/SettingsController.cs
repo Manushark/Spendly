@@ -108,11 +108,11 @@ namespace Spendly.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var success = await _categoryApi.DeleteAsync(id);
+            var (success, error) = await _categoryApi.DeleteAsync(id);
             if (!success)
-                TempData["Error"] = "Failed to delete category.";
+                TempData["Error"] = error ?? "Failed to delete category.";
             else
-                TempData["Success"] = "Category deleted.";
+                TempData["Success"] = "Category deleted successfully.";
 
             return RedirectToAction(nameof(Index));
         }

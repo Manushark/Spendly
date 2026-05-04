@@ -54,11 +54,16 @@ namespace Spendly.Web.Services
             return (true, null);
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<(bool Success, string? Error)> DeleteAsync(int id)
         {
             SetAuth();
             var response = await _http.DeleteAsync($"api/categories/{id}");
-            return response.IsSuccessStatusCode;
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                return (false, body);
+            }
+            return (true, null);
         }
     }
 
