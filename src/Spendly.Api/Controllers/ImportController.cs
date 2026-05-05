@@ -34,6 +34,11 @@ namespace Spendly.Api.Controllers
             var content = await reader.ReadToEndAsync();
 
             var preview = _importUseCase.Preview(content, currency);
+
+            // Validar categorías contra el catálogo del usuario
+            var userId = User.GetUserId();
+            await _importUseCase.ValidateCategoriesAsync(preview, userId);
+
             return Ok(preview);
         }
 

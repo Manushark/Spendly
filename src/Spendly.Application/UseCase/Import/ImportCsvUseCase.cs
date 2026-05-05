@@ -9,10 +9,12 @@ namespace Spendly.Application.UseCases.Import
     public class ImportCsvUseCase
     {
         private readonly IExpenseRepository _expenseRepo;
+        private readonly ICategoryRepository _categoryRepo;
 
-        public ImportCsvUseCase(IExpenseRepository expenseRepo)
+        public ImportCsvUseCase(IExpenseRepository expenseRepo, ICategoryRepository categoryRepo)
         {
             _expenseRepo = expenseRepo;
+            _categoryRepo = categoryRepo;
         }
 
         /// <summary>
@@ -87,23 +89,39 @@ namespace Spendly.Application.UseCases.Import
                     var dateStr = cols[dateIdx].Trim('"', ' ');
                     if (DateTime.TryParse(dateStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
                     {
-                        row.Date = dt;
+                        if (dt > DateTime.UtcNow)
+                        {
+                            row.IsValid = false;
+                            row.ValidationError = $"Future date not allowed: {dateStr} (row {row.RowNumber})";
+                        }
+                        else
+                        {
+                            row.Date = dt;
+                        }
                     }
                     else if (DateTime.TryParseExact(dateStr, new[] { "dd/MM/yyyy", "MM/dd/yyyy", "yyyy-MM-dd", "d/M/yyyy" },
                         CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
                     {
-                        row.Date = dt;
+                        if (dt > DateTime.UtcNow)
+                        {
+                            row.IsValid = false;
+                            row.ValidationError = $"Future date not allowed: {dateStr} (row {row.RowNumber})";
+                        }
+                        else
+                        {
+                            row.Date = dt;
+                        }
                     }
                     else
                     {
                         row.IsValid = false;
-                        row.ValidationError = $"Invalid date: {dateStr}";
+                        row.ValidationError = $"Unrecognized date format: '{dateStr}' (row {row.RowNumber}). Expected formats: yyyy-MM-dd, MM/dd/yyyy, dd/MM/yyyy";
                     }
                 }
                 else
                 {
                     row.IsValid = false;
-                    row.ValidationError = "Missing date";
+                    row.ValidationError = $"Missing date (row {row.RowNumber})";
                 }
 
                 // Currency
@@ -119,6 +137,26 @@ namespace Spendly.Application.UseCases.Import
             result.InvalidRows = result.Rows.Count(r => !r.IsValid);
 
             return result;
+        }
+
+        /// <summary>
+        /// Validates CSV row categories against the user's category catalogue.
+        /// Adds warnings to rows whose categories don't exist.
+        /// </summary>
+        public async Task ValidateCategoriesAsync(CsvImportPreviewDto preview, int userId)
+        {
+            var userCategories = await _categoryRepo.GetAllByUserAsync(userId);
+            var categoryNames = userCategories
+                .Select(c => c.Name.ToLowerInvariant())
+                .ToHashSet();
+
+            foreach (var row in preview.Rows.Where(r => r.IsValid))
+            {
+                if (!categoryNames.Contains(row.Category.ToLowerInvariant()))
+                {
+                    row.CategoryWarning = $"Category '{row.Category}' does not exist in your catalogue. It will be created as text only.";
+                }
+            }
         }
 
         /// <summary>

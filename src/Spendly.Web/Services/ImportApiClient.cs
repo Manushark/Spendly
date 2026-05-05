@@ -64,6 +64,7 @@ namespace Spendly.Web.Services
         public string Currency { get; set; } = "USD";
         public bool IsValid { get; set; } = true;
         public string? ValidationError { get; set; }
+        public string? CategoryWarning { get; set; }
     }
 
     public class CsvImportResultDto
