@@ -68,5 +68,10 @@ namespace Spendly.Application.Interfaces
         /// Se usa para prevenir duplicación en la generación de gastos recurrentes.
         /// </summary>
         Task<bool> ExistsByRecurrenceOnDateAsync(int userId, string description, string category, DateTime date);
+
+        /// <summary>
+        /// Obtiene la moneda predominante de los gastos de un usuario en una categoría y rango de fechas.
+        /// </summary>
+        Task<string> GetPredominantCurrencyAsync(int userId, string category, DateTime startDate, DateTime endDate);
     }
 }

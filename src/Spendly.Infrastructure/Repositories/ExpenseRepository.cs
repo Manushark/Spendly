@@ -222,5 +222,19 @@ namespace Spendly.Infrastructure.Repositories
                     e.Category.ToLower() == category.ToLower() &&
                     e.Date == date.Date);
         }
+
+        public async Task<string> GetPredominantCurrencyAsync(int userId, string category, DateTime startDate, DateTime endDate)
+        {
+            var currency = await _context.Expenses
+                .Where(e => e.UserId == userId
+                    && e.Category.ToLower() == category.ToLower()
+                    && e.Date >= startDate && e.Date <= endDate)
+                .GroupBy(e => e.Currency)
+                .OrderByDescending(g => g.Count())
+                .Select(g => g.Key)
+                .FirstOrDefaultAsync();
+
+            return currency ?? "USD";
+        }
     }
 }

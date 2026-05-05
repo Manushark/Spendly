@@ -45,6 +45,9 @@ namespace Spendly.Application.Services
                     ? (spent / budget.MonthlyLimit) * 100
                     : 0m;
 
+                // Resolver la moneda real de los gastos en esta categoría
+                var currency = await _expenseRepo.GetPredominantCurrencyAsync(userId, budget.Category, startDate, endDate);
+
                 // Check 100% first (exceeded)
                 if (percentageUsed >= 100)
                 {
@@ -55,7 +58,7 @@ namespace Spendly.Application.Services
                     {
                         var notification = Notification.Create(
                             userId,
-                            $"🚨 Budget exceeded! You've spent ${spent:N2} of ${budget.MonthlyLimit:N2} on {budget.Category} ({percentageUsed:N0}%).",
+                            $"🚨 Budget exceeded! You've spent {currency} {spent:N2} of {currency} {budget.MonthlyLimit:N2} on {budget.Category} ({percentageUsed:N0}%).",
                             NotificationType.BudgetExceeded,
                             budget.Id
                         );
@@ -72,7 +75,7 @@ namespace Spendly.Application.Services
                     {
                         var notification = Notification.Create(
                             userId,
-                            $"⚠️ Budget alert: You've used {percentageUsed:N0}% of your {budget.Category} budget (${spent:N2}/${budget.MonthlyLimit:N2}).",
+                            $"⚠️ Budget alert: You've used {percentageUsed:N0}% of your {budget.Category} budget ({currency} {spent:N2}/{budget.MonthlyLimit:N2}).",
                             NotificationType.BudgetWarning,
                             budget.Id
                         );
