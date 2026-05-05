@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Spendly.Web.Contracts.Expenses;
 using Spendly.Web.Services;
 
@@ -60,7 +61,7 @@ namespace Spendly.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
             var categories = await _categoryApi.GetAllAsync();
-            ViewBag.Categories = categories;
+            ViewBag.CategoryList = new SelectList(categories, "Name", "Name", expense.Category);
             return View(expense);
         }
 
@@ -88,12 +89,18 @@ namespace Spendly.Web.Controllers
         public async Task<IActionResult> Edit(int id, ExpenseDto dto)
         {
             if (!ModelState.IsValid)
+            {
+                var categories = await _categoryApi.GetAllAsync();
+                ViewBag.CategoryList = new SelectList(categories, "Name", "Name", dto.Category);
                 return View(dto);
+            }
 
             var (success, error) = await _api.UpdateAsync(id, dto);
             if (!success)
             {
                 TempData["Error"] = error ?? "Failed to update expense.";
+                var categories = await _categoryApi.GetAllAsync();
+                ViewBag.CategoryList = new SelectList(categories, "Name", "Name", dto.Category);
                 return View(dto);
             }
 

@@ -30,7 +30,9 @@
 
                         <div class="mb-3">
                             <label asp-for="Category" class="form-label"></label>
-                            <input asp-for="Category" class="form-control" />
+                            <select asp-for="Category" asp-items="ViewBag.CategoryList" class="form-select">
+                                <option value="">-- Select category --</option>
+                            </select>
                             <span asp-validation-for="Category" class="text-danger"></span>
                         </div>
 
