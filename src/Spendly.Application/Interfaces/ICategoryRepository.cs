@@ -11,5 +11,6 @@ namespace Spendly.Application.Interfaces
         Task UpdateAsync(Category category);
         Task<bool> DeleteAsync(int id);
         Task SeedDefaultsAsync(int userId);
+        Task<int> CountByUserAsync(int userId);
     }
 }

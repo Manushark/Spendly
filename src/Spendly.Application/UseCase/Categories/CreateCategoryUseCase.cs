@@ -13,6 +13,11 @@ namespace Spendly.Application.UseCases.Categories
 
         public async Task<int> ExecuteAsync(int userId, CreateCategoryDto dto)
         {
+            // Check category limit per user
+            var count = await _repo.CountByUserAsync(userId);
+            if (count >= 50)
+                throw new InvalidDomainException("You cannot have more than 50 categories. Please delete an existing category first.");
+
             // Check for duplicate name
             var existing = await _repo.GetByNameAndUserAsync(userId, dto.Name);
             if (existing != null)

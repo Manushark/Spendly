@@ -68,5 +68,8 @@ namespace Spendly.Infrastructure.Repositories
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<int> CountByUserAsync(int userId)
+            => await _context.Categories.CountAsync(c => c.UserId == userId);
     }
 }
