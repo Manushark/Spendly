@@ -2,12 +2,14 @@ using System.Globalization;
 using Spendly.Application.DTOs.Import;
 using Spendly.Application.Interfaces;
 using Spendly.Domain.Entities;
+using Spendly.Domain.Exceptions;
 using Spendly.Domain.ValueObjects;
 
 namespace Spendly.Application.UseCases.Import
 {
     public class ImportCsvUseCase
     {
+        public const int MaxRowsPerImport = 250;
         private readonly IExpenseRepository _expenseRepo;
         private readonly ICategoryRepository _categoryRepo;
 
@@ -28,6 +30,12 @@ namespace Spendly.Application.UseCases.Import
             if (lines.Length < 2)
             {
                 result.Errors.Add("CSV must have at least a header row and one data row.");
+                return result;
+            }
+
+            if (lines.Length - 1 > MaxRowsPerImport)
+            {
+                result.Errors.Add($"CSV exceeds the maximum of {MaxRowsPerImport} rows per import.");
                 return result;
             }
 
@@ -78,10 +86,22 @@ namespace Spendly.Application.UseCases.Import
                 if (string.IsNullOrWhiteSpace(row.Description))
                     row.Description = "Imported expense";
 
+                if (row.Description.Length > 200)
+                {
+                    row.IsValid = false;
+                    row.ValidationError = $"Description exceeds 200 characters (row {row.RowNumber})";
+                }
+
                 // Category
                 row.Category = catIdx >= 0 && catIdx < cols.Length && !string.IsNullOrWhiteSpace(cols[catIdx].Trim('"', ' '))
                     ? cols[catIdx].Trim('"', ' ')
                     : "Other";
+
+                if (row.Category.Length > 100)
+                {
+                    row.IsValid = false;
+                    row.ValidationError = $"Category exceeds 100 characters (row {row.RowNumber})";
+                }
 
                 // Date
                 if (dateIdx < cols.Length)
@@ -129,6 +149,12 @@ namespace Spendly.Application.UseCases.Import
                     ? cols[currIdx].Trim('"', ' ').ToUpperInvariant()
                     : defaultCurrency;
 
+                if (row.Currency.Length > 10)
+                {
+                    row.IsValid = false;
+                    row.ValidationError = $"Currency exceeds 10 characters (row {row.RowNumber})";
+                }
+
                 result.Rows.Add(row);
             }
 
@@ -164,6 +190,9 @@ namespace Spendly.Application.UseCases.Import
         /// </summary>
         public async Task<CsvImportResultDto> ImportAsync(int userId, List<CsvExpenseRow> rows)
         {
+            if (rows.Count > MaxRowsPerImport)
+                throw new InvalidDomainException($"A single import cannot exceed {MaxRowsPerImport} rows.");
+
             var result = new CsvImportResultDto();
             var validRows = rows.Where(r => r.IsValid && r.Amount > 0).ToList();
 
