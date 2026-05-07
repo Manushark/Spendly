@@ -1,9 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.RateLimiting;
 using Spendly.Application.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json;
+using System.Threading.RateLimiting;
 using Spendly.Infrastructure.Persistence;
 using Spendly.Infrastructure.Repositories;
 using Spendly.Infrastructure.Security;
@@ -28,8 +31,10 @@ using Spendly.Application.UseCases.Insights;
 using Spendly.Application.UseCases.SavingsGoals;
 using Spendly.Application.UseCases.Tags;
 using Spendly.Application.UseCases.Import;
+using Spendly.Api.Security;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
 // ────────────────────────────────────────────────────────────────
 // Configuration: Environment variables override appsettings.json
@@ -59,6 +64,83 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowCredentials();
     });
+});
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json";
+
+        if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+        {
+            context.HttpContext.Response.Headers.RetryAfter = Math.Ceiling(retryAfter.TotalSeconds).ToString();
+        }
+
+        var response = JsonSerializer.Serialize(new
+        {
+            status = StatusCodes.Status429TooManyRequests,
+            error = "Too many requests. Please slow down and try again shortly."
+        });
+
+        await context.HttpContext.Response.WriteAsync(response, token);
+    };
+
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: $"global:{RateLimitPolicies.GetPartitionKey(httpContext)}",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 120,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+
+    options.AddPolicy(RateLimitPolicies.Auth, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: $"auth:{RateLimitPolicies.GetPartitionKey(httpContext)}",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(5),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+
+    options.AddPolicy(RateLimitPolicies.WriteOperations, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: $"write:{RateLimitPolicies.GetPartitionKey(httpContext)}",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 30,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+
+    options.AddPolicy(RateLimitPolicies.ImportPreview, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: $"import-preview:{RateLimitPolicies.GetPartitionKey(httpContext)}",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 6,
+                Window = TimeSpan.FromMinutes(10),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+
+    options.AddPolicy(RateLimitPolicies.ImportConfirm, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: $"import-confirm:{RateLimitPolicies.GetPartitionKey(httpContext)}",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 3,
+                Window = TimeSpan.FromMinutes(10),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
 });
 
 // ────────────────────────────────────────────────────────────
@@ -295,9 +377,17 @@ if (isDevelopment)
 }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+if (!isDevelopment)
+{
+    app.UseHsts();
+}
+
+app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseCors("SpendlyPolicy");
 app.UseAuthentication();
+app.UseRateLimiter();
 app.UseAuthorization();
 app.MapControllers();
 
