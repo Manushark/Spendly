@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Spendly.Api.Extensions;
+using Spendly.Api.Security;
 using Spendly.Application.DTOs.Import;
 using Spendly.Application.UseCases.Import;
 
@@ -18,6 +20,9 @@ namespace Spendly.Api.Controllers
         /// <summary>
         /// POST /api/import/preview — Upload CSV and preview parsed data
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.ImportPreview)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 5 * 1024 * 1024)]
+        [RequestSizeLimit(5 * 1024 * 1024)]
         [HttpPost("preview")]
         public async Task<IActionResult> Preview(IFormFile file, [FromQuery] string currency = "USD")
         {
@@ -45,6 +50,8 @@ namespace Spendly.Api.Controllers
         /// <summary>
         /// POST /api/import/confirm — Import validated rows
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.ImportConfirm)]
+        [RequestSizeLimit(512 * 1024)]
         [HttpPost("confirm")]
         public async Task<IActionResult> Confirm([FromBody] List<CsvExpenseRow> rows)
         {
