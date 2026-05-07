@@ -72,9 +72,9 @@ namespace Spendly.Application.UseCases.Tags
         private readonly ITagRepository _repo;
         public SetExpenseTagsUseCase(ITagRepository repo) => _repo = repo;
 
-        public async Task ExecuteAsync(int expenseId, List<int> tagIds)
+        public async Task ExecuteAsync(int userId, int expenseId, List<int> tagIds)
         {
-            await _repo.SetExpenseTagsAsync(expenseId, tagIds);
+            await _repo.SetExpenseTagsAsync(userId, expenseId, tagIds);
         }
     }
 }

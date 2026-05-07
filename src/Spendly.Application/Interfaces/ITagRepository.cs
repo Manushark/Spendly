@@ -12,7 +12,7 @@ namespace Spendly.Application.Interfaces
         Task<Tag?> GetByNameAsync(int userId, string name);
 
         // ExpenseTag operations
-        Task SetExpenseTagsAsync(int expenseId, List<int> tagIds);
+        Task SetExpenseTagsAsync(int userId, int expenseId, List<int> tagIds);
         Task<List<Tag>> GetTagsForExpenseAsync(int expenseId);
         Task<Dictionary<int, List<Tag>>> GetTagsForExpensesAsync(List<int> expenseIds);
     }

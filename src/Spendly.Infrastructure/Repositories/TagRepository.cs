@@ -59,8 +59,30 @@ namespace Spendly.Infrastructure.Repositories
                 .FirstOrDefaultAsync(t => t.UserId == userId && t.Name == name);
         }
 
-        public async Task SetExpenseTagsAsync(int expenseId, List<int> tagIds)
+        public async Task SetExpenseTagsAsync(int userId, int expenseId, List<int> tagIds)
         {
+            var expenseExists = await _context.Expenses
+                .AnyAsync(e => e.Id == expenseId && e.UserId == userId);
+
+            if (!expenseExists)
+                throw new KeyNotFoundException("Expense not found.");
+
+            var distinctTagIds = tagIds
+                .Where(id => id > 0)
+                .Distinct()
+                .ToList();
+
+            if (distinctTagIds.Count > 0)
+            {
+                var ownedTagIds = await _context.Tags
+                    .Where(t => t.UserId == userId && distinctTagIds.Contains(t.Id))
+                    .Select(t => t.Id)
+                    .ToListAsync();
+
+                if (ownedTagIds.Count != distinctTagIds.Count)
+                    throw new InvalidOperationException("One or more tags do not belong to the authenticated user.");
+            }
+
             // Remove existing
             var existing = await _context.ExpenseTags
                 .Where(et => et.ExpenseId == expenseId)
@@ -68,7 +90,7 @@ namespace Spendly.Infrastructure.Repositories
             _context.ExpenseTags.RemoveRange(existing);
 
             // Add new
-            foreach (var tagId in tagIds)
+            foreach (var tagId in distinctTagIds)
             {
                 _context.ExpenseTags.Add(new ExpenseTag { ExpenseId = expenseId, TagId = tagId });
             }
