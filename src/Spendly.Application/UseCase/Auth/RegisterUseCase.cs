@@ -1,6 +1,7 @@
 using Spendly.Application.DTOs.Auth;
 using Spendly.Application.Interfaces;
 using Spendly.Domain.Exceptions;
+using System.Net.Mail;
 using UserEntity = Spendly.Domain.Entities.User;
 
 namespace Spendly.Application.UseCases.Auth
@@ -23,8 +24,7 @@ namespace Spendly.Application.UseCases.Auth
 
         public async Task<AuthResponseDto> ExecuteAsync(RegisterDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Email))
-                throw new InvalidDomainException("Email is required.");
+            var email = NormalizeEmail(dto.Email);
 
             if (string.IsNullOrWhiteSpace(dto.Password))
                 throw new InvalidDomainException("Password is required.");
@@ -35,12 +35,12 @@ namespace Spendly.Application.UseCases.Auth
             if (dto.Password.Length < 6)
                 throw new InvalidDomainException("Password must be at least 6 characters.");
 
-            var existingUser = await _userRepository.GetByEmailAsync(dto.Email);
+            var existingUser = await _userRepository.GetByEmailAsync(email);
             if (existingUser != null)
                 throw new InvalidDomainException("Email is already registered.");
 
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-            var user = UserEntity.Create(dto.Email, passwordHash);
+            var user = UserEntity.Create(email, passwordHash);
 
             await _userRepository.AddAsync(user);
 
@@ -53,6 +53,30 @@ namespace Spendly.Application.UseCases.Auth
             {
                 Token = token
             };
+        }
+
+        private static string NormalizeEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                throw new InvalidDomainException("Email is required.");
+
+            var normalized = email.Trim().ToLowerInvariant();
+
+            if (normalized.Length > 256)
+                throw new InvalidDomainException("Email is too long.");
+
+            try
+            {
+                var address = new MailAddress(normalized);
+                if (!string.Equals(address.Address, normalized, StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidDomainException("Email format is invalid.");
+            }
+            catch (FormatException)
+            {
+                throw new InvalidDomainException("Email format is invalid.");
+            }
+
+            return normalized;
         }
     }
 }
