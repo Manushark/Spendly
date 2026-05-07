@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Spendly.Api.Extensions;
+using Spendly.Api.Security;
 using Spendly.Application.DTOs.Expense;
 using Spendly.Application.UseCase.CreateExpense;
 using Spendly.Application.UseCase.DeleteExpense;
@@ -42,6 +44,7 @@ namespace Spendly.Api.Controllers
             _exportReport = exportReport;
         }
 
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateExpenseDto dto)
         {
@@ -83,6 +86,7 @@ namespace Spendly.Api.Controllers
             return Ok(result);
         }
 
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -94,6 +98,7 @@ namespace Spendly.Api.Controllers
             return NoContent();
         }
 
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateExpenseDto dto)
         {

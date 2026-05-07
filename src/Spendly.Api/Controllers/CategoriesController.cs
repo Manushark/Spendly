@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Spendly.Api.Extensions;
+using Spendly.Api.Security;
 using Spendly.Application.DTOs.Category;
 using Spendly.Application.UseCases.Categories;
 
@@ -43,6 +45,7 @@ namespace Spendly.Api.Controllers
         /// POST /api/categories
         /// Creates a new custom category
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCategoryDto dto)
         {
@@ -54,6 +57,7 @@ namespace Spendly.Api.Controllers
         /// PUT /api/categories/{id}
         /// Updates an existing category
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoryDto dto)
         {
@@ -65,6 +69,7 @@ namespace Spendly.Api.Controllers
         /// DELETE /api/categories/{id}
         /// Deletes a category
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {

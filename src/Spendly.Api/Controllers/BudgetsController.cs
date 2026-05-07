@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Spendly.Api.Extensions;
+using Spendly.Api.Security;
 using Spendly.Application.DTOs.Budget;
 using Spendly.Application.UseCases.Budgets;
 
@@ -35,6 +37,7 @@ namespace Spendly.Api.Controllers
         /// POST /api/budgets
         /// Creates a new budget for the authenticated user
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateBudgetDto dto)
         {
@@ -72,6 +75,7 @@ namespace Spendly.Api.Controllers
         /// PUT /api/budgets/{id}
         /// Updates an existing budget
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateBudgetDto dto)
         {
@@ -83,6 +87,7 @@ namespace Spendly.Api.Controllers
         /// DELETE /api/budgets/{id}
         /// Deletes a budget
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
