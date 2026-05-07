@@ -43,9 +43,11 @@ namespace Spendly.Infrastructure.Repositories
                 .CountAsync(n => n.UserId == userId && !n.IsRead);
         }
 
-        public async Task MarkAsReadAsync(int id)
+        public async Task MarkAsReadAsync(int userId, int id)
         {
-            var notification = await _context.Notifications.FindAsync(id);
+            var notification = await _context.Notifications
+                .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
+
             if (notification != null)
             {
                 notification.MarkAsRead();

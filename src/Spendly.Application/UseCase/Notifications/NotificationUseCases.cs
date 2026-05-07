@@ -30,9 +30,9 @@ namespace Spendly.Application.UseCases.Notifications
 
         public MarkNotificationReadUseCase(INotificationRepository repo) => _repo = repo;
 
-        public async Task ExecuteAsync(int id)
+        public async Task ExecuteAsync(int userId, int id)
         {
-            await _repo.MarkAsReadAsync(id);
+            await _repo.MarkAsReadAsync(userId, id);
         }
     }
 
