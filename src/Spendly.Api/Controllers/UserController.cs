@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Spendly.Api.Extensions;
+using Spendly.Api.Security;
 using Spendly.Application.DTOs.User;
 using Spendly.Application.UseCases.User;
 
@@ -40,6 +42,7 @@ namespace Spendly.Api.Controllers
         /// PUT /api/user/profile
         /// Updates the authenticated user's profile
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPut("profile")]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
         {
@@ -51,6 +54,7 @@ namespace Spendly.Api.Controllers
         /// PUT /api/user/change-password
         /// Changes the authenticated user's password
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPut("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {

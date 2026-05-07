@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Spendly.Api.Extensions;
+using Spendly.Api.Security;
 using Spendly.Application.DTOs.Tag;
 using Spendly.Application.UseCases.Tags;
 
@@ -38,6 +40,7 @@ namespace Spendly.Api.Controllers
             return Ok(tags);
         }
 
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTagDto dto)
         {
@@ -45,6 +48,7 @@ namespace Spendly.Api.Controllers
             return Ok(new { id });
         }
 
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateTagDto dto)
         {
@@ -52,6 +56,7 @@ namespace Spendly.Api.Controllers
             return NoContent();
         }
 
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -62,10 +67,11 @@ namespace Spendly.Api.Controllers
         /// <summary>
         /// PUT /api/tags/expense/{expenseId} — Set tags for an expense
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPut("expense/{expenseId:int}")]
         public async Task<IActionResult> SetExpenseTags(int expenseId, [FromBody] TagExpenseDto dto)
         {
-            await _setTags.ExecuteAsync(expenseId, dto.TagIds);
+            await _setTags.ExecuteAsync(User.GetUserId(), expenseId, dto.TagIds);
             return Ok(new { message = "Tags updated" });
         }
     }

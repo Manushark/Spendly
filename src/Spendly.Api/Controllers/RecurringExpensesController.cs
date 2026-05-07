@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Spendly.Api.Extensions;
+using Spendly.Api.Security;
 using Spendly.Application.DTOs.RecurringExpense;
 using Spendly.Application.UseCases.RecurringExpenses;
 
@@ -60,6 +62,7 @@ namespace Spendly.Api.Controllers
         /// POST /api/recurring-expenses
         /// Creates a new recurring expense template
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateRecurringExpenseDto dto)
         {
@@ -71,6 +74,7 @@ namespace Spendly.Api.Controllers
         /// PUT /api/recurring-expenses/{id}
         /// Updates an existing recurring expense
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateRecurringExpenseDto dto)
         {
@@ -82,6 +86,7 @@ namespace Spendly.Api.Controllers
         /// POST /api/recurring-expenses/{id}/toggle
         /// Activates or pauses a recurring expense
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPost("{id:int}/toggle")]
         public async Task<IActionResult> Toggle(int id, [FromBody] ToggleRequest request)
         {
@@ -94,6 +99,7 @@ namespace Spendly.Api.Controllers
         /// DELETE /api/recurring-expenses/{id}
         /// Deletes a recurring expense
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {

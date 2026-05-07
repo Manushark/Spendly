@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Spendly.Api.Extensions;
+using Spendly.Api.Security;
 using Spendly.Application.UseCases.Notifications;
 
 namespace Spendly.Api.Controllers
@@ -50,16 +52,18 @@ namespace Spendly.Api.Controllers
         /// <summary>
         /// PUT /api/notifications/{id}/read
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPut("{id:int}/read")]
         public async Task<IActionResult> MarkAsRead(int id)
         {
-            await _markRead.ExecuteAsync(id);
+            await _markRead.ExecuteAsync(User.GetUserId(), id);
             return Ok(new { message = "Notification marked as read" });
         }
 
         /// <summary>
         /// PUT /api/notifications/read-all
         /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPut("read-all")]
         public async Task<IActionResult> MarkAllAsRead()
         {

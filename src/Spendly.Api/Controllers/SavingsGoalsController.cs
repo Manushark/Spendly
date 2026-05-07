@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Spendly.Api.Extensions;
+using Spendly.Api.Security;
 using Spendly.Application.DTOs.SavingsGoal;
 using Spendly.Application.UseCases.SavingsGoals;
 
@@ -49,6 +51,7 @@ namespace Spendly.Api.Controllers
             return Ok(goal);
         }
 
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateSavingsGoalDto dto)
         {
@@ -56,6 +59,7 @@ namespace Spendly.Api.Controllers
             return CreatedAtAction(nameof(GetById), new { id }, new { id });
         }
 
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateSavingsGoalDto dto)
         {
@@ -63,6 +67,7 @@ namespace Spendly.Api.Controllers
             return NoContent();
         }
 
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpPost("{id:int}/add-funds")]
         public async Task<IActionResult> AddFunds(int id, [FromBody] AddFundsDto dto)
         {
@@ -70,6 +75,7 @@ namespace Spendly.Api.Controllers
             return Ok(new { message = "Funds added successfully" });
         }
 
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
