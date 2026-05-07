@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Spendly.Application.DTOs.Auth;
 using Spendly.Application.UseCases.Auth;
+using Spendly.Api.Security;
 
 namespace Spendly.Api.Controllers
 {
@@ -17,6 +19,7 @@ namespace Spendly.Api.Controllers
             _registerUseCase = registerUseCase;
         }
 
+        [EnableRateLimiting(RateLimitPolicies.Auth)]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
@@ -24,6 +27,7 @@ namespace Spendly.Api.Controllers
             return Ok(result);
         }
 
+        [EnableRateLimiting(RateLimitPolicies.Auth)]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
