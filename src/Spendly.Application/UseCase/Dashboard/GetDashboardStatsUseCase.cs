@@ -34,7 +34,7 @@ namespace Spendly.Application.UseCase.Dashboard
             var currentMonthTotal = currentMonthExpenses.Sum(e => e.Amount.Value);
             var previousMonthTotal = previousMonthExpenses.Sum(e => e.Amount.Value);
 
-            // Balance y tasa de ahorro
+            // Balance general y tasa de ahorro
             var monthlyBalance = currentMonthIncome - currentMonthTotal;
             var savingsRate = currentMonthIncome > 0
                 ? (monthlyBalance / currentMonthIncome) * 100
