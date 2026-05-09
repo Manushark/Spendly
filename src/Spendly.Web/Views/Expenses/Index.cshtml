@@ -223,15 +223,14 @@
                                                    title="@L["Common_Edit"]">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
-                                                <form asp-action="Delete" asp-route-id="@e.Id"
-                                                      method="post" class="d-inline">
-                                                    @Html.AntiForgeryToken()
-                                                    <button type="submit" class="btn btn-sm btn-light text-danger"
-                                                            title="@L["Common_Delete"]"
-                                                            onclick="return confirm('@L["Exp_DeleteConfirm"].Value');">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </form>
+                                                <button type="button" class="btn btn-sm btn-light text-danger"
+                                                        title="@L["Common_Delete"]"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteExpenseModal"
+                                                        data-expense-id="@e.Id"
+                                                        data-expense-desc="@e.Description">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     }
@@ -384,6 +383,46 @@
     </div>
 </div>
 
+<!-- Delete Expense Modal -->
+<div class="modal fade" id="deleteExpenseModal" tabindex="-1" aria-labelledby="deleteExpenseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form id="deleteExpenseForm" method="post" action="">
+            @Html.AntiForgeryToken()
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title" id="deleteExpenseModalLabel"><i class="bi bi-exclamation-triangle text-warning me-2"></i>@L["Common_Delete"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@L["Exp_DeleteConfirm"]</p>
+                    <p class="fw-bold text-dark mb-0" id="deleteExpenseName"></p>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">@L["Common_Cancel"]</button>
+                    <button type="submit" class="btn btn-danger">@L["Common_Delete"]</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        const deleteExpenseModal = document.getElementById('deleteExpenseModal');
+        if (deleteExpenseModal) {
+            deleteExpenseModal.addEventListener('show.bs.modal', event => {
+                const button = event.relatedTarget;
+                const expenseId = button.getAttribute('data-expense-id');
+                const expenseDesc = button.getAttribute('data-expense-desc');
+
+                const form = document.getElementById('deleteExpenseForm');
+                const deleteUrlTemplate = '@Url.Action("Delete", "Expenses", new { id = "__expenseId__" })';
+                form.action = deleteUrlTemplate.replace('__expenseId__', expenseId);
+
+                const nameDisplay = document.getElementById('deleteExpenseName');
+                nameDisplay.textContent = expenseDesc;
+            });
+        }
+    </script>
 }
