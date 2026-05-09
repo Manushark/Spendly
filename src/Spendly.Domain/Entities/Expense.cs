@@ -12,6 +12,10 @@ namespace Spendly.Domain.Entities
         public string Description { get; private set; }
         public DateTime Date { get; private set; }
         public string Category { get; private set; }
+        
+        // Soft delete properties
+        public bool IsDeleted { get; private set; }
+        public DateTime? DeletedAt { get; private set; }
 
         protected Expense() { }
 
@@ -43,6 +47,13 @@ namespace Spendly.Domain.Entities
         {
             if (UserId != userId)
                 throw new UnauthorizedExpenseAccessException(Id);
+        }
+
+        public void Delete()
+        {
+            if (IsDeleted) return;
+            IsDeleted = true;
+            DeletedAt = DateTime.UtcNow;
         }
 
         private static void Validate(Money amount, string description, DateTime date, string category)

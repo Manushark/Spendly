@@ -45,6 +45,9 @@ namespace Spendly.Infrastructure.Persistence.Configurations
                    .WithMany()
                    .HasForeignKey(e => e.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            // Global query filter para soft delete
+            builder.HasQueryFilter(e => !e.IsDeleted);
         }
     }
 }
