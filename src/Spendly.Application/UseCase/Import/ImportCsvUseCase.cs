@@ -10,6 +10,17 @@ namespace Spendly.Application.UseCases.Import
     public class ImportCsvUseCase
     {
         public const int MaxRowsPerImport = 250;
+        private static readonly string[] YearMonthDayFormats = ["yyyy-MM-dd", "yyyy/M/d", "yyyy/MM/dd"];
+        private static readonly string[] DayMonthYearFormats = ["dd/MM/yyyy", "d/M/yyyy", "dd-MM-yyyy", "d-M-yyyy"];
+        private static readonly string[] MonthDayYearFormats = ["MM/dd/yyyy", "M/d/yyyy", "MM-dd-yyyy", "M-d-yyyy"];
+
+        private enum DateOrder
+        {
+            YearMonthDay,
+            DayMonthYear,
+            MonthDayYear
+        }
+
         private readonly IExpenseRepository _expenseRepo;
         private readonly ICategoryRepository _categoryRepo;
 
@@ -60,6 +71,8 @@ namespace Spendly.Application.UseCases.Import
                 return result;
             }
 
+            var preferredDateOrder = InferDateOrder(lines.Skip(1), dateIdx);
+
             // Parse rows
             for (int i = 1; i < lines.Length; i++)
             {
@@ -107,22 +120,9 @@ namespace Spendly.Application.UseCases.Import
                 if (dateIdx < cols.Length)
                 {
                     var dateStr = cols[dateIdx].Trim('"', ' ');
-                    if (DateTime.TryParse(dateStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
+                    if (TryParseExpenseDate(dateStr, preferredDateOrder, out var dt))
                     {
-                        if (dt > DateTime.UtcNow)
-                        {
-                            row.IsValid = false;
-                            row.ValidationError = $"Future date not allowed: {dateStr} (row {row.RowNumber})";
-                        }
-                        else
-                        {
-                            row.Date = dt;
-                        }
-                    }
-                    else if (DateTime.TryParseExact(dateStr, new[] { "dd/MM/yyyy", "MM/dd/yyyy", "yyyy-MM-dd", "d/M/yyyy" },
-                        CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
-                    {
-                        if (dt > DateTime.UtcNow)
+                        if (dt > DateTime.UtcNow.Date)
                         {
                             row.IsValid = false;
                             row.ValidationError = $"Future date not allowed: {dateStr} (row {row.RowNumber})";
@@ -204,7 +204,7 @@ namespace Spendly.Application.UseCases.Import
                         userId,
                         Money.Create(row.Amount, row.Currency),
                         row.Description,
-                        row.Date > DateTime.UtcNow ? DateTime.UtcNow : row.Date,
+                        row.Date.Date > DateTime.UtcNow.Date ? DateTime.UtcNow.Date : row.Date.Date,
                         row.Category
                     );
                     await _expenseRepo.AddAsync(expense);
@@ -221,6 +221,97 @@ namespace Spendly.Application.UseCases.Import
 
             return result;
         }
+
+        private static bool TryParseExpenseDate(string dateStr, DateOrder preferredDateOrder, out DateTime parsedDate)
+        {
+            foreach (var dateOrder in GetDateOrderPreference(preferredDateOrder))
+            {
+                if (DateTime.TryParseExact(
+                    dateStr,
+                    GetFormatsFor(dateOrder),
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out parsedDate))
+                {
+                    parsedDate = parsedDate.Date;
+                    return true;
+                }
+            }
+
+            parsedDate = default;
+            return false;
+        }
+
+        private static DateOrder InferDateOrder(IEnumerable<string> dataLines, int dateIdx)
+        {
+            var candidates = new[]
+            {
+                EvaluateDateOrder(dataLines, dateIdx, DateOrder.YearMonthDay),
+                EvaluateDateOrder(dataLines, dateIdx, DateOrder.DayMonthYear),
+                EvaluateDateOrder(dataLines, dateIdx, DateOrder.MonthDayYear)
+            };
+
+            return candidates
+                .OrderBy(c => c.InvalidCount)
+                .ThenBy(c => c.FutureCount)
+                .Select(c => c.DateOrder)
+                .First();
+        }
+
+        private static (DateOrder DateOrder, int InvalidCount, int FutureCount) EvaluateDateOrder(
+            IEnumerable<string> dataLines,
+            int dateIdx,
+            DateOrder dateOrder)
+        {
+            int invalidCount = 0;
+            int futureCount = 0;
+
+            foreach (var line in dataLines)
+            {
+                var cols = ParseCsvLine(line);
+                if (dateIdx >= cols.Length)
+                {
+                    invalidCount++;
+                    continue;
+                }
+
+                var dateStr = cols[dateIdx].Trim('"', ' ');
+                if (!DateTime.TryParseExact(
+                    dateStr,
+                    GetFormatsFor(dateOrder),
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out var parsedDate))
+                {
+                    invalidCount++;
+                    continue;
+                }
+
+                if (parsedDate.Date > DateTime.UtcNow.Date)
+                    futureCount++;
+            }
+
+            return (dateOrder, invalidCount, futureCount);
+        }
+
+        private static IEnumerable<DateOrder> GetDateOrderPreference(DateOrder preferredDateOrder)
+        {
+            yield return preferredDateOrder;
+
+            foreach (var fallback in new[] { DateOrder.YearMonthDay, DateOrder.DayMonthYear, DateOrder.MonthDayYear })
+            {
+                if (fallback != preferredDateOrder)
+                    yield return fallback;
+            }
+        }
+
+        private static string[] GetFormatsFor(DateOrder dateOrder) => dateOrder switch
+        {
+            DateOrder.YearMonthDay => YearMonthDayFormats,
+            DateOrder.DayMonthYear => DayMonthYearFormats,
+            DateOrder.MonthDayYear => MonthDayYearFormats,
+            _ => YearMonthDayFormats
+        };
 
         private static int FindColumnIndex(string[] header, params string[] names)
         {
