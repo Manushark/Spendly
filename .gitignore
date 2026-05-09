@@ -15,3 +15,6 @@ obj/
 
 # Data Protection Keys
 **/keys/*.xml
+
+# Logs
+*.log
