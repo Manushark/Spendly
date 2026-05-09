@@ -34,7 +34,8 @@ namespace Spendly.Infrastructure.Repositories
             var expense = await _context.Set<Expense>().FindAsync(id);
             if (expense == null) return false;
 
-            _context.Remove(expense);
+            expense.Delete();
+            _context.Update(expense);
             await _context.SaveChangesAsync();
 
             return true;
@@ -109,13 +110,17 @@ namespace Spendly.Infrastructure.Repositories
             {
                 return await query
                     .OrderByDescending(e => e.Date)
+                    .ThenByDescending(e => e.Id)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
             }
 
             // With amount filters: fetch from DB, filter in-memory, then paginate
-            var allResults = await query.OrderByDescending(e => e.Date).ToListAsync();
+            var allResults = await query
+                .OrderByDescending(e => e.Date)
+                .ThenByDescending(e => e.Id)
+                .ToListAsync();
             return ApplyAmountFilter(allResults, minAmount, maxAmount)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -150,6 +155,7 @@ namespace Spendly.Infrastructure.Repositories
             return await _context.Expenses
                 .Where(e => e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
                 .OrderByDescending(e => e.Date)
+                .ThenByDescending(e => e.Id)
                 .ToListAsync();
         }
 
@@ -169,6 +175,7 @@ namespace Spendly.Infrastructure.Repositories
             return await _context.Expenses
                 .Where(e => e.UserId == userId)
                 .OrderByDescending(e => e.Date)
+                .ThenByDescending(e => e.Id)
                 .Take(count)
                 .ToListAsync();
         }
