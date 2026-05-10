@@ -14,7 +14,7 @@
 
 <br/>
 
-## 📖 Overview
+## 📖 Overview 
 
 Spendly is a full-stack financial management application designed to help users manage expenses, budgets, and recurring transactions in a clean and modern experience.
 
