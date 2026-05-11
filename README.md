@@ -11,7 +11,12 @@
     <img src="https://img.shields.io/badge/Status-Active_Development-success?style=flat-square" alt="Status" />
   </p>
 </div>
-
+   <p>
+    🌐 <strong>Live Demo:</strong><br/>
+    <a href="https://spendly-web-cncja8b2edephcd6.westus2-01.azurewebsites.net/" target="_blank">
+      Spendly Web App
+    </a>
+  </p>
 <br/>
 
 ## 📖 Overview 
