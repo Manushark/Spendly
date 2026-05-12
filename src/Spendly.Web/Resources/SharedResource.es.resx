@@ -506,4 +506,21 @@
   <data name="Error_Desc"><value>Ha ocurrido un error al procesar tu solicitud.</value></data>
   <data name="Offline_Heading"><value>Estás sin conexión</value></data>
   <data name="Offline_Desc"><value>Parece que has perdido tu conexión a internet. Por favor, verifica e inténtalo de nuevo.</value></data>
+
+  <!-- ═══════ Notificaciones / Tiempo ═══════ -->
+  <data name="Time_JustNow"><value>justo ahora</value></data>
+  <data name="Time_MinutesAgo"><value>hace {0}m</value></data>
+  <data name="Time_HoursAgo"><value>hace {0}h</value></data>
+  <data name="Time_DaysAgo"><value>hace {0}d</value></data>
+
+  <!-- ═══════ Página de Notificaciones ═══════ -->
+  <data name="Nav_SeeAllNotifications"><value>Ver todas las notificaciones</value></data>
+  <data name="Notif_Page_Title"><value>Notificaciones</value></data>
+  <data name="Notif_Page_Subtitle"><value>Todas tus alertas y actualizaciones de actividad</value></data>
+  <data name="Notif_FilterAll"><value>Todas</value></data>
+  <data name="Notif_FilterUnread"><value>No leídas</value></data>
+  <data name="Notif_Unread"><value>Nueva</value></data>
+  <data name="Notif_NoHistory"><value>Aún no hay notificaciones</value></data>
+  <data name="Notif_NoUnread"><value>No hay notificaciones sin leer</value></data>
+  <data name="Notif_Toast"><value>Tienes una nueva notificación</value></data>
 </root>

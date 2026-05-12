@@ -512,4 +512,21 @@
   <data name="Error_Desc"><value>An error occurred while processing your request.</value></data>
   <data name="Offline_Heading"><value>You're Offline</value></data>
   <data name="Offline_Desc"><value>It looks like you've lost your internet connection. Please check and try again.</value></data>
+
+  <!-- ═══════ Notifications / Time ═══════ -->
+  <data name="Time_JustNow"><value>just now</value></data>
+  <data name="Time_MinutesAgo"><value>{0}m ago</value></data>
+  <data name="Time_HoursAgo"><value>{0}h ago</value></data>
+  <data name="Time_DaysAgo"><value>{0}d ago</value></data>
+
+  <!-- ═══════ Notifications Page ═══════ -->
+  <data name="Nav_SeeAllNotifications"><value>See all notifications</value></data>
+  <data name="Notif_Page_Title"><value>Notifications</value></data>
+  <data name="Notif_Page_Subtitle"><value>All your alerts and activity updates</value></data>
+  <data name="Notif_FilterAll"><value>All</value></data>
+  <data name="Notif_FilterUnread"><value>Unread</value></data>
+  <data name="Notif_Unread"><value>New</value></data>
+  <data name="Notif_NoHistory"><value>No notifications yet</value></data>
+  <data name="Notif_NoUnread"><value>No unread notifications</value></data>
+  <data name="Notif_Toast"><value>You have a new notification</value></data>
 </root>
