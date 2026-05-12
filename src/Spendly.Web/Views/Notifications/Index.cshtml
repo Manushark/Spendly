@@ -1,0 +1,161 @@
+@model List<Spendly.Web.Services.NotificationDto>
+
+@{
+    ViewData["Title"] = L["Notif_Page_Title"].Value;
+    var currentPage = (int)(ViewBag.CurrentPage ?? 1);
+    var activeFilter = (string)(ViewBag.ActiveFilter ?? "all");
+}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-bell-fill text-primary"></i> @L["Notif_Page_Title"]</h2>
+            <small class="text-muted">@L["Notif_Page_Subtitle"]</small>
+        </div>
+        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-4"
+                id="markAllPageBtn" onclick="markAllReadPage()"
+                @(Model.Any(n => !n.IsRead) ? "" : "disabled")>
+            <i class="bi bi-check2-all me-1"></i> @L["Nav_MarkAllRead"]
+        </button>
+    </div>
+
+    <div class="mb-4">
+        <ul class="nav nav-pills gap-2">
+            <li class="nav-item">
+                <a class="nav-link rounded-pill @(activeFilter == "all" ? "active" : "text-muted bg-light")"
+                   asp-action="Index" asp-route-filter="all" asp-route-page="1">
+                    <i class="bi bi-grid me-1"></i> @L["Notif_FilterAll"]
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link rounded-pill @(activeFilter == "unread" ? "active" : "text-muted bg-light")"
+                   asp-action="Index" asp-route-filter="unread" asp-route-page="1">
+                    <i class="bi bi-circle-fill me-1" style="font-size:0.5rem; vertical-align:middle;"></i> @L["Notif_FilterUnread"]
+                </a>
+            </li>
+        </ul>
+    </div>
+
+   
+    @if (Model.Any())
+    {
+        <div class="card shadow-sm border-0" style="border-radius: 16px; overflow: hidden;">
+            @foreach (var n in Model)
+            {
+                var iconClass = n.Type switch
+                {
+                    "BudgetExceeded"            => "bi-exclamation-triangle-fill text-danger",
+                    "BudgetWarning"             => "bi-exclamation-circle-fill text-warning",
+                    "RecurringExpenseGenerated" => "bi-arrow-repeat text-info",
+                    "SavingsGoalCompleted"      => "bi-trophy-fill text-success",
+                    "SavingsGoalMilestone"      => "bi-flag-fill text-primary",
+                    _                           => "bi-bell-fill text-secondary"
+                };
+                var bgClass = n.IsRead ? "" : "bg-primary bg-opacity-10";
+
+                <div class="d-flex align-items-start gap-3 px-4 py-3 border-bottom notif-row @bgClass"
+                     id="notif-@n.Id"
+                     style="transition: background 0.4s ease; cursor: @(n.IsRead ? "default" : "pointer")"
+                     @(!n.IsRead ? $"onclick=\"markReadPage({n.Id}, this)\"" : "")>
+
+                    <div class="d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle"
+                         style="width:42px; height:42px; background: rgba(99,102,241,0.08);">
+                        <i class="bi @iconClass fs-5"></i>
+                    </div>
+
+                    <div class="flex-grow-1" style="min-width:0;">
+                        <p class="mb-1 fw-@(n.IsRead ? "normal" : "semibold") text-dark" style="line-height:1.4;">
+                            @n.Message
+                        </p>
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i>
+                            @n.CreatedAt.ToString("MMM dd, yyyy · HH:mm")
+                        </small>
+                    </div>
+
+                    <div class="flex-shrink-0 d-flex align-items-center gap-2">
+                        @if (!n.IsRead)
+                        {
+                            <span class="badge bg-primary rounded-pill" style="font-size:0.65rem;">
+                                @L["Notif_Unread"]
+                            </span>
+                            <span class="rounded-circle bg-primary d-inline-block" style="width:8px;height:8px;"></span>
+                        }
+                        else
+                        {
+                            <span class="text-muted" style="font-size:0.75rem;">
+                                <i class="bi bi-check2-all"></i>
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (currentPage > 1 || Model.Count == 20)
+        {
+            <div class="d-flex justify-content-center gap-2 mt-4">
+                @if (currentPage > 1)
+                {
+                    <a asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-filter="@activeFilter"
+                       class="btn btn-outline-secondary btn-sm rounded-pill px-4">
+                        <i class="bi bi-chevron-left me-1"></i> @L["Common_Previous"]
+                    </a>
+                }
+                <span class="btn btn-light btn-sm rounded-pill px-4 disabled">
+                    @currentPage
+                </span>
+                @if (Model.Count == 20)
+                {
+                    <a asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-filter="@activeFilter"
+                       class="btn btn-outline-secondary btn-sm rounded-pill px-4">
+                        @L["Common_Next"] <i class="bi bi-chevron-right ms-1"></i>
+                    </a>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="card shadow-sm border-0 p-5 text-center" style="border-radius: 16px;">
+            <div class="text-primary opacity-25 mb-3" style="font-size: 4rem;">
+                <i class="bi bi-bell-slash"></i>
+            </div>
+            <h5 class="fw-bold mb-1">@L["Notif_NoHistory"]</h5>
+            <p class="text-muted mb-0">
+                @(activeFilter == "unread" ? L["Notif_NoUnread"].Value : L["Notif_NoHistory"].Value)
+            </p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function markReadPage(id, el) {
+            fetch(`/Notifications/MarkAsRead/${id}`, { method: 'POST' })
+                .then(r => r.json())
+                .then(() => {
+                    if (!el) return;
+                    el.classList.remove('bg-primary', 'bg-opacity-10');
+                    el.style.cursor = 'default';
+                    el.removeAttribute('onclick');
+
+                    const badge = el.querySelector('.badge.bg-primary');
+                    const dot   = el.querySelector('.rounded-circle.bg-primary.d-inline-block');
+                    if (badge) badge.remove();
+                    if (dot)   dot.outerHTML = '<span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-check2-all"></i></span>';
+
+                    const msg = el.querySelector('p.fw-semibold');
+                    if (msg) { msg.classList.remove('fw-semibold'); msg.classList.add('fw-normal'); }
+
+                    if (typeof loadNotificationCount === 'function') loadNotificationCount();
+                });
+        }
+
+        function markAllReadPage() {
+            fetch('/Notifications/MarkAllAsRead', { method: 'POST' })
+                .then(() => window.location.reload());
+        }
+    </script>
+}
