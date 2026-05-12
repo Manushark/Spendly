@@ -1,5 +1,6 @@
 using Spendly.Application.Interfaces;
 using Spendly.Domain.Entities;
+using Spendly.Domain.Enums;
 
 namespace Spendly.Application.Services
 {
@@ -10,13 +11,16 @@ namespace Spendly.Application.Services
     {
         private readonly IRecurringExpenseRepository _recurringRepo;
         private readonly IExpenseRepository _expenseRepo;
+        private readonly INotificationRepository _notificationRepo;
 
         public RecurringExpenseGenerationService(
             IRecurringExpenseRepository recurringRepo,
-            IExpenseRepository expenseRepo)
+            IExpenseRepository expenseRepo,
+            INotificationRepository notificationRepo)
         {
             _recurringRepo = recurringRepo;
             _expenseRepo = expenseRepo;
+            _notificationRepo = notificationRepo;
         }
 
         /// <summary>
@@ -39,6 +43,15 @@ namespace Spendly.Application.Services
                     recurrence.MarkAsGenerated(DateTime.UtcNow.Date);
                     await _recurringRepo.UpdateAsync(recurrence);
                     generatedCount++;
+
+                    // Create notification for the user
+                    var notification = Notification.Create(
+                        recurrence.UserId,
+                        $"🔄 {recurrence.Description}: {recurrence.Amount.Value:N2} → {recurrence.Category}",
+                        NotificationType.RecurringExpenseGenerated,
+                        recurrence.Id
+                    );
+                    await _notificationRepo.AddAsync(notification);
                 }
                 catch (Exception ex)
                 {

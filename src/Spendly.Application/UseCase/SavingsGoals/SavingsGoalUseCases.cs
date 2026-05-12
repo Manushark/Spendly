@@ -47,14 +47,48 @@ namespace Spendly.Application.UseCases.SavingsGoals
     public class AddFundsUseCase
     {
         private readonly ISavingsGoalRepository _repo;
-        public AddFundsUseCase(ISavingsGoalRepository repo) => _repo = repo;
+        private readonly INotificationRepository _notificationRepo;
+
+        public AddFundsUseCase(ISavingsGoalRepository repo, INotificationRepository notificationRepo)
+        {
+            _repo = repo;
+            _notificationRepo = notificationRepo;
+        }
 
         public async Task ExecuteAsync(int userId, int id, decimal amount)
         {
             var goal = await _repo.GetByIdAsync(id) ?? throw new KeyNotFoundException($"Savings goal {id} not found.");
             goal.EnsureOwnership(userId);
+
+            var previousPercentage = goal.ProgressPercentage;
+
             goal.AddFunds(amount);
             await _repo.UpdateAsync(goal);
+
+            var currentPercentage = goal.ProgressPercentage;
+
+            // Notify when goal is completed (crossed 100%)
+            if (currentPercentage >= 100 && previousPercentage < 100)
+            {
+                var notification = Domain.Entities.Notification.Create(
+                    userId,
+                    $"🎉 {goal.Name}: {goal.CurrentAmount:N2} / {goal.TargetAmount:N2}",
+                    Domain.Enums.NotificationType.SavingsGoalCompleted,
+                    goal.Id
+                );
+                await _notificationRepo.AddAsync(notification);
+            }
+            // Notify when goal crosses 50%
+            else if (currentPercentage >= 50 && previousPercentage < 50)
+            {
+                var notification = Domain.Entities.Notification.Create(
+                    userId,
+                    $"🎯 {goal.Name}: {currentPercentage:N0}% ({goal.CurrentAmount:N2} / {goal.TargetAmount:N2})",
+                    Domain.Enums.NotificationType.SavingsGoalMilestone,
+                    goal.Id
+                );
+                await _notificationRepo.AddAsync(notification);
+            }
         }
     }
 
