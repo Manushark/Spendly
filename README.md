@@ -11,10 +11,15 @@
     <img src="https://img.shields.io/badge/Status-Active_Development-success?style=flat-square" alt="Status" />
   </p>
 </div>
-
+   <p>
+    🌐 <strong>Live Demo:</strong><br/>
+    <a href="https://spendly-web-cncja8b2edephcd6.westus2-01.azurewebsites.net/" target="_blank">
+      Spendly Web App
+    </a>
+  </p>
 <br/>
 
-## 📖 Overview
+## 📖 Overview 
 
 Spendly is a full-stack financial management application designed to help users manage expenses, budgets, and recurring transactions in a clean and modern experience.
 
@@ -111,7 +116,7 @@ To get a local copy up and running, follow these steps.
 
 * [ ] Implement Mobile Application
 * [ ] Integrate Subscription-based premium features (Stripe/RevenueCat)
-* [ ] Cloud deployment & CI/CD pipeline
+* [x] Cloud deployment & CI/CD pipeline
 * [ ] Advanced reporting system
 
 ## ⚖️ License
