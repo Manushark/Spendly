@@ -10,6 +10,27 @@ namespace Spendly.Web.Controllers
         public NotificationsController(NotificationApiClient api) => _api = api;
 
         /// <summary>
+        /// GET /Notifications — Full paginated history page
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> Index(int page = 1, string? filter = null)
+        {
+            var token = HttpContext.Session.GetString("token");
+            if (string.IsNullOrEmpty(token))
+                return RedirectToAction("Login", "Auth");
+
+            var notifications = await _api.GetAllAsync(page, 20);
+
+            // Client-side filter applied to the page result
+            if (!string.IsNullOrEmpty(filter) && filter == "unread")
+                notifications = notifications.Where(n => !n.IsRead).ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.ActiveFilter = filter ?? "all";
+            return View(notifications);
+        }
+
+        /// <summary>
         /// GET /Notifications/UnreadCount — AJAX endpoint for the bell badge
         /// </summary>
         [HttpGet]
