@@ -67,10 +67,16 @@ namespace Spendly.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> ExistsForBudgetThisMonthAsync(int userId, int budgetId, NotificationType type, int year, int month)
+        /// <summary>
+        /// Checks whether a notification of the given type already exists for this
+        /// budget in the specified month. Uses explicit DateTimeKind.Utc to ensure
+        /// the comparison against CreatedAt (stored as UTC) is consistent.
+        /// </summary>
+        public async Task<bool> ExistsForBudgetThisMonthAsync(
+            int userId, int budgetId, NotificationType type, int year, int month)
         {
-            var monthStart = new DateTime(year, month, 1);
-            var monthEnd = monthStart.AddMonths(1);
+            var monthStart = new DateTime(year, month, 1, 0, 0, 0, DateTimeKind.Utc);
+            var monthEnd   = monthStart.AddMonths(1);
 
             return await _context.Notifications
                 .AnyAsync(n => n.UserId == userId
