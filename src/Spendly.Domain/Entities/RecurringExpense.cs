@@ -105,16 +105,19 @@ namespace Spendly.Domain.Entities
         }
 
         /// <summary>
-        /// Verifica si debe generar un gasto hoy.
+        /// Verifica si debe generar un gasto hoy según la zona horaria del usuario.
+        /// Recibe el <paramref name="userTimeZone"/> para convertir UTC a hora local
+        /// antes de comparar, evitando generaciones prematuras (ej: 10 PM en UTC-4).
         /// </summary>
-        public bool ShouldGenerateToday()
+        public bool ShouldGenerateToday(TimeZoneInfo userTimeZone)
         {
             if (!IsActive) return false;
 
-            var today = DateTime.UtcNow.Date;
+            // Convertir UTC actual a la fecha LOCAL del usuario
+            var localToday = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, userTimeZone).Date;
             var nextOccurrence = GetNextOccurrence();
 
-            return nextOccurrence.HasValue && nextOccurrence.Value <= today;
+            return nextOccurrence.HasValue && nextOccurrence.Value <= localToday;
         }
 
         private static void Validate(

@@ -12,19 +12,24 @@ namespace Spendly.Application.Services
         private readonly IRecurringExpenseRepository _recurringRepo;
         private readonly IExpenseRepository _expenseRepo;
         private readonly INotificationRepository _notificationRepo;
+        private readonly IUserRepository _userRepo;
 
         public RecurringExpenseGenerationService(
             IRecurringExpenseRepository recurringRepo,
             IExpenseRepository expenseRepo,
-            INotificationRepository notificationRepo)
+            INotificationRepository notificationRepo,
+            IUserRepository userRepo)
         {
             _recurringRepo = recurringRepo;
             _expenseRepo = expenseRepo;
             _notificationRepo = notificationRepo;
+            _userRepo = userRepo;
         }
 
         /// <summary>
         /// Genera todos los gastos pendientes de las recurrencias activas.
+        /// Usa la zona horaria almacenada en el perfil del usuario para determinar
+        /// si "hoy" corresponde a la fecha local del usuario, no a UTC.
         /// Retorna la cantidad de gastos generados.
         /// </summary>
         public async Task<int> GeneratePendingExpensesAsync()
@@ -34,13 +39,20 @@ namespace Spendly.Application.Services
 
             foreach (var recurrence in dueRecurrences)
             {
-                if (!recurrence.ShouldGenerateToday())
+                // Cargar el usuario para obtener su zona horaria configurada
+                var user = await _userRepo.GetByIdAsync(recurrence.UserId);
+                var userTimeZone = ResolveTimeZone(user?.TimeZone);
+
+                if (!recurrence.ShouldGenerateToday(userTimeZone))
                     continue;
 
                 try
                 {
-                    await GenerateExpenseFromRecurrenceAsync(recurrence);
-                    recurrence.MarkAsGenerated(DateTime.UtcNow.Date);
+                    await GenerateExpenseFromRecurrenceAsync(recurrence, userTimeZone);
+
+                    // MarkAsGenerated recibe la fecha LOCAL del usuario, no UTC
+                    var localToday = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, userTimeZone).Date;
+                    recurrence.MarkAsGenerated(localToday);
                     await _recurringRepo.UpdateAsync(recurrence);
                     generatedCount++;
 
@@ -55,7 +67,6 @@ namespace Spendly.Application.Services
                 }
                 catch (Exception ex)
                 {
-                    // Log error pero continúa con las demás recurrencias
                     Console.WriteLine($"Error generating expense from recurrence {recurrence.Id}: {ex.Message}");
                 }
             }
@@ -64,16 +75,17 @@ namespace Spendly.Application.Services
         }
 
         /// <summary>
-        /// Genera un gasto individual desde una recurrencia.
+        /// Genera un gasto individual desde una recurrencia usando la fecha LOCAL del usuario.
         /// Verifica que no exista un duplicado antes de insertar.
         /// </summary>
-        public async Task GenerateExpenseFromRecurrenceAsync(RecurringExpense recurrence)
+        public async Task GenerateExpenseFromRecurrenceAsync(RecurringExpense recurrence, TimeZoneInfo userTimeZone)
         {
-            var today = DateTime.UtcNow.Date;
+            // Usar la fecha local del usuario, no UTC, para evitar crear gastos del "día siguiente"
+            var localToday = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, userTimeZone).Date;
 
-            // Verificar si ya se generó un gasto idéntico hoy (previene duplicados por reinicio del servidor)
+            // Previene duplicados por reinicio del servidor
             var alreadyExists = await _expenseRepo.ExistsByRecurrenceOnDateAsync(
-                recurrence.UserId, recurrence.Description, recurrence.Category, today);
+                recurrence.UserId, recurrence.Description, recurrence.Category, localToday);
 
             if (alreadyExists) return;
 
@@ -82,7 +94,7 @@ namespace Spendly.Application.Services
                 description: recurrence.Description,
                 amount: recurrence.Amount,
                 category: recurrence.Category,
-                date: today
+                date: localToday
             );
 
             await _expenseRepo.AddAsync(expense);
@@ -111,6 +123,23 @@ namespace Spendly.Application.Services
             }
 
             return total;
+        }
+
+        /// <summary>
+        /// Resuelve el string de zona horaria del usuario (IANA o Windows) a un
+        /// objeto <see cref="TimeZoneInfo"/>. Devuelve UTC si es nulo o desconocido.
+        /// </summary>
+        private static TimeZoneInfo ResolveTimeZone(string? timeZoneId)
+        {
+            if (string.IsNullOrWhiteSpace(timeZoneId))
+                return TimeZoneInfo.Utc;
+
+            // Intenta con el ID exacto (Windows o IANA en .NET 6+)
+            if (TimeZoneInfo.TryFindSystemTimeZoneById(timeZoneId, out var tz))
+                return tz;
+
+            // Fallback seguro: UTC
+            return TimeZoneInfo.Utc;
         }
     }
 }
