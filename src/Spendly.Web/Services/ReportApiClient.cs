@@ -11,11 +11,13 @@ namespace Spendly.Web.Services
     {
         private readonly HttpClient _http;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<ReportApiClient> _logger;
 
-        public ReportApiClient(HttpClient http, IHttpContextAccessor httpContextAccessor)
+        public ReportApiClient(HttpClient http, IHttpContextAccessor httpContextAccessor, ILogger<ReportApiClient> logger)
         {
             _http = http;
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         private void SetAuthHeader()
@@ -43,12 +45,18 @@ namespace Spendly.Web.Services
                 var response = await _http.GetAsync(query);
 
                 if (!response.IsSuccessStatusCode)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    _logger.LogError("[Reports] API returned {Status} for {Url}. Body: {Body}",
+                        (int)response.StatusCode, query, body);
                     return null;
+                }
 
                 return await response.Content.ReadFromJsonAsync<FinancialReportDto>();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "[Reports] Exception calling API at {Url}", _http.BaseAddress);
                 return null;
             }
         }
