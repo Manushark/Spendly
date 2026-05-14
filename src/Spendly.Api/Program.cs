@@ -31,7 +31,9 @@ using Spendly.Application.UseCases.Insights;
 using Spendly.Application.UseCases.SavingsGoals;
 using Spendly.Application.UseCases.Tags;
 using Spendly.Application.UseCases.Import;
+using Spendly.Application.UseCase.Reports;
 using Spendly.Api.Security;
+
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
@@ -254,6 +256,12 @@ builder.Services.AddScoped<GetBudgetSummaryUseCase>();
 // Use Cases — Dashboard
 // ────────────────────────────────────────────────────────────
 builder.Services.AddScoped<GetDashboardStatsUseCase>();
+
+// ────────────────────────────────────────────────────────────
+// Use Cases — Reports
+// ────────────────────────────────────────────────────────────
+builder.Services.AddScoped<GetFinancialReportUseCase>();
+
 
 // ────────────────────────────────────────────────────────────
 // Use Cases — Auth

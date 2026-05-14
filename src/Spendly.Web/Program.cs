@@ -110,6 +110,13 @@ builder.Services.AddHttpClient<ImportApiClient>(client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+// Reports API client
+builder.Services.AddHttpClient<ReportApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
+
 // Keep the API warm in production (prevents Azure F1 cold start)
 if (!builder.Environment.IsDevelopment())
 {
