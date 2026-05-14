@@ -29,6 +29,7 @@
   <data name="Nav_Income"><value>Ingresos</value></data>
   <data name="Nav_Goals"><value>Metas</value></data>
   <data name="Nav_Insights"><value>Análisis</value></data>
+  <data name="Nav_Reports"><value>Reportes</value></data>
   <data name="Nav_Import"><value>Importar</value></data>
   <data name="Nav_Settings"><value>Ajustes</value></data>
   <data name="Nav_LoggedInAs"><value>Conectado como</value></data>

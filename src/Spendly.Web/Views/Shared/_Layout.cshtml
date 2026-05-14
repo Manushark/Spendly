@@ -100,6 +100,11 @@
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
+                        <a class="sidebar-link @(controller == "Reports" ? "active" : "")" asp-controller="Reports" asp-action="Index">
+                            <i class="bi bi-bar-chart-fill"></i> @L["Nav_Reports"]
+                        </a>
+                    </div>
+                    <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Import" ? "active" : "")" asp-controller="Import" asp-action="Index">
                             <i class="bi bi-cloud-upload"></i> @L["Nav_Import"]
                         </a>
