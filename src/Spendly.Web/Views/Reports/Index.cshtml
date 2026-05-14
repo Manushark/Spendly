@@ -1,6 +1,7 @@
 @model Spendly.Web.Contracts.Reports.FinancialReportDto
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer<Spendly.Web.Resources.SharedResource> L
 @{
-    ViewData["Title"] = "Financial Report";
+    ViewData["Title"] = L["Rep_Title"].Value;
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var trend        = Model.MonthlyTrend;
@@ -54,22 +55,22 @@
         <div>
             <h2 class="mb-1">
                 <i class="bi bi-bar-chart-fill text-primary"></i> 
-                Financial Report
+                @L["Rep_Title"]
             </h2>
             <small class="text-muted">
-                <i class="bi bi-calendar3"></i> @Model.PeriodLabel Analysis
+                <i class="bi bi-calendar3"></i> @L["Rep_Analysis"] @Model.PeriodLabel
             </small>
         </div>
         
         <div class="btn-group shadow-sm">
             <a href="@Url.Action("Index", "Reports", new { year = ViewBag.PrevYear, month = ViewBag.PrevMonth })" class="btn btn-outline-primary">
-                <i class="bi bi-chevron-left"></i> Previous
+                <i class="bi bi-chevron-left"></i> @L["Rep_Previous"]
             </a>
             <button type="button" class="btn btn-primary" disabled>
                 @Model.PeriodLabel
             </button>
             <a href="@Url.Action("Index", "Reports", new { year = ViewBag.NextYear, month = ViewBag.NextMonth })" class="btn btn-outline-primary @(canGoNext ? "" : "disabled")">
-                Next <i class="bi bi-chevron-right"></i>
+                @L["Rep_Next"] <i class="bi bi-chevron-right"></i>
             </a>
         </div>
     </div>
@@ -81,7 +82,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
-                            <p class="text-muted mb-1 fw-semibold small text-uppercase">Total Expenses</p>
+                            <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_TotalExpenses"]</p>
                             <h3 class="mb-0 fw-bold text-danger">@Model.TotalExpenses.ToString("N2")</h3>
                         </div>
                         <div class="stat-icon bg-danger bg-opacity-10">
@@ -97,7 +98,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
-                            <p class="text-muted mb-1 fw-semibold small text-uppercase">Total Income</p>
+                            <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_TotalIncome"]</p>
                             <h3 class="mb-0 fw-bold text-success">@Model.TotalIncomes.ToString("N2")</h3>
                         </div>
                         <div class="stat-icon bg-success bg-opacity-10">
@@ -113,7 +114,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
-                            <p class="text-muted mb-1 fw-semibold small text-uppercase">Net Balance</p>
+                            <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_NetBalance"]</p>
                             <h3 class="mb-0 fw-bold @(isProfit ? "text-success" : "text-danger")">
                                 @(isProfit ? "+" : "")@Model.NetBalance.ToString("N2")
                             </h3>
@@ -131,7 +132,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
-                            <p class="text-muted mb-1 fw-semibold small text-uppercase">Daily Average</p>
+                            <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_DailyAverage"]</p>
                             <h3 class="mb-0 fw-bold text-info">@Model.AverageDailyExpense.ToString("N2")</h3>
                         </div>
                         <div class="stat-icon bg-info bg-opacity-10">
@@ -147,7 +148,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
-                            <p class="text-muted mb-1 fw-semibold small text-uppercase">Top Category</p>
+                            <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_TopCategory"]</p>
                             <h3 class="mb-0 fw-bold text-truncate" style="max-width: 150px;" title="@Model.TopCategory">
                                 @Model.TopCategory
                             </h3>
@@ -165,7 +166,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
-                            <p class="text-muted mb-1 fw-semibold small text-uppercase">Expense Ratio</p>
+                            <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_ExpenseRatio"]</p>
                             <h3 class="mb-0 fw-bold @(Model.ExpenseToIncomeRatio > 100 ? "text-danger" : "text-primary")">
                                 @Model.ExpenseToIncomeRatio.ToString("N1")%
                             </h3>
@@ -190,7 +191,7 @@
             <div class="card chart-card shadow-sm h-100">
                 <div class="card-header bg-white border-0 pt-4 pb-3">
                     <h5 class="mb-0 fw-semibold">
-                        <i class="bi bi-graph-up text-primary me-2"></i> 6-Month Financial Trend
+                        <i class="bi bi-graph-up text-primary me-2"></i> @L["Rep_TrendTitle"]
                     </h5>
                 </div>
                 <div class="card-body pt-2">
@@ -204,7 +205,7 @@
                     {
                         <div class="text-center py-5 text-muted">
                             <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
-                            <p>No trend data available.</p>
+                            <p>@L["Rep_NoTrendData"]</p>
                         </div>
                     }
                 </div>
@@ -215,7 +216,7 @@
             <div class="card chart-card shadow-sm h-100">
                 <div class="card-header bg-white border-0 pt-4 pb-3">
                     <h5 class="mb-0 fw-semibold">
-                        <i class="bi bi-pie-chart text-primary me-2"></i> Spending by Category
+                        <i class="bi bi-pie-chart text-primary me-2"></i> @L["Rep_CategoryChartTitle"]
                     </h5>
                 </div>
                 <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 280px;">
@@ -227,7 +228,7 @@
                     {
                         <div class="text-center text-muted">
                             <i class="bi bi-pie-chart fs-1 d-block mb-3 opacity-50"></i>
-                            <p>No category data available.</p>
+                            <p>@L["Rep_NoCategoryData"]</p>
                         </div>
                     }
                 </div>
@@ -241,7 +242,7 @@
         <div class="card chart-card shadow-sm">
             <div class="card-header bg-white border-0 pt-4 pb-3">
                 <h5 class="mb-0 fw-semibold">
-                    <i class="bi bi-list-ul text-primary me-2"></i> Category Detail Breakdown
+                    <i class="bi bi-list-ul text-primary me-2"></i> @L["Rep_CategoryDetail"]
                 </h5>
             </div>
             <div class="card-body p-0">
@@ -249,10 +250,10 @@
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="bg-light">
                             <tr>
-                                <th class="border-0 py-3 ps-4">Category</th>
-                                <th class="border-0 py-3 text-end">Amount</th>
-                                <th class="border-0 py-3 text-center">Transactions</th>
-                                <th class="border-0 py-3 pe-4" style="width: 250px">% of Total</th>
+                                <th class="border-0 py-3 ps-4">@L["Common_Category"]</th>
+                                <th class="border-0 py-3 text-end">@L["Common_Amount"]</th>
+                                <th class="border-0 py-3 text-center">@L["Dash_Transactions"]</th>
+                                <th class="border-0 py-3 pe-4" style="width: 250px">@L["Rep_PercentOfTotal"]</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -326,7 +327,7 @@
                     labels: [@Html.Raw(labels)],
                     datasets: [
                         {
-                            label: 'Expenses',
+                            label: '@L["Rep_TotalExpenses"].Value',
                             data: [@Html.Raw(expData)],
                             borderColor: 'rgb(220, 53, 69)',
                             backgroundColor: expGrad,
@@ -340,7 +341,7 @@
                             pointBorderWidth: 2
                         },
                         {
-                            label: 'Income',
+                            label: '@L["Rep_TotalIncome"].Value',
                             data: [@Html.Raw(incData)],
                             borderColor: 'rgb(25, 135, 84)',
                             backgroundColor: incGrad,

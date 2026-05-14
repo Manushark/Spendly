@@ -530,4 +530,22 @@
   <data name="Notif_NoHistory"><value>No notifications yet</value></data>
   <data name="Notif_NoUnread"><value>No unread notifications</value></data>
   <data name="Notif_Toast"><value>You have a new notification</value></data>
+
+  <!-- ═══════ Reports ═══════ -->
+  <data name="Rep_Title"><value>Financial Report</value></data>
+  <data name="Rep_Analysis"><value>Analysis</value></data>
+  <data name="Rep_Previous"><value>Previous</value></data>
+  <data name="Rep_Next"><value>Next</value></data>
+  <data name="Rep_TotalExpenses"><value>Total Expenses</value></data>
+  <data name="Rep_TotalIncome"><value>Total Income</value></data>
+  <data name="Rep_NetBalance"><value>Net Balance</value></data>
+  <data name="Rep_DailyAverage"><value>Daily Average</value></data>
+  <data name="Rep_TopCategory"><value>Top Category</value></data>
+  <data name="Rep_ExpenseRatio"><value>Expense Ratio</value></data>
+  <data name="Rep_TrendTitle"><value>6-Month Financial Trend</value></data>
+  <data name="Rep_NoTrendData"><value>No trend data available.</value></data>
+  <data name="Rep_CategoryChartTitle"><value>Spending by Category</value></data>
+  <data name="Rep_NoCategoryData"><value>No category data available.</value></data>
+  <data name="Rep_CategoryDetail"><value>Category Detail Breakdown</value></data>
+  <data name="Rep_PercentOfTotal"><value>% of Total</value></data>
 </root>

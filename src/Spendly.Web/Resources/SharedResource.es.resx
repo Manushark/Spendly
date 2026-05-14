@@ -524,4 +524,22 @@
   <data name="Notif_NoHistory"><value>Aún no hay notificaciones</value></data>
   <data name="Notif_NoUnread"><value>No hay notificaciones sin leer</value></data>
   <data name="Notif_Toast"><value>Tienes una nueva notificación</value></data>
+
+  <!-- ═══════ Reports ═══════ -->
+  <data name="Rep_Title"><value>Reporte Financiero</value></data>
+  <data name="Rep_Analysis"><value>Análisis de</value></data>
+  <data name="Rep_Previous"><value>Anterior</value></data>
+  <data name="Rep_Next"><value>Siguiente</value></data>
+  <data name="Rep_TotalExpenses"><value>Gastos Totales</value></data>
+  <data name="Rep_TotalIncome"><value>Ingresos Totales</value></data>
+  <data name="Rep_NetBalance"><value>Balance Neto</value></data>
+  <data name="Rep_DailyAverage"><value>Promedio Diario</value></data>
+  <data name="Rep_TopCategory"><value>Categoría Principal</value></data>
+  <data name="Rep_ExpenseRatio"><value>Ratio de Gastos</value></data>
+  <data name="Rep_TrendTitle"><value>Tendencia de 6 Meses</value></data>
+  <data name="Rep_NoTrendData"><value>No hay datos de tendencia disponibles.</value></data>
+  <data name="Rep_CategoryChartTitle"><value>Gastos por Categoría</value></data>
+  <data name="Rep_NoCategoryData"><value>No hay datos de categorías disponibles.</value></data>
+  <data name="Rep_CategoryDetail"><value>Desglose Detallado por Categoría</value></data>
+  <data name="Rep_PercentOfTotal"><value>% del Total</value></data>
 </root>
