@@ -51,7 +51,7 @@
 
 <div class="container-fluid py-4">
     @* Header *@
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
             <h2 class="mb-1">
                 <i class="bi bi-bar-chart-fill text-primary"></i> 
@@ -62,16 +62,41 @@
             </small>
         </div>
         
-        <div class="btn-group shadow-sm">
-            <a href="@Url.Action("Index", "Reports", new { year = ViewBag.PrevYear, month = ViewBag.PrevMonth })" class="btn btn-outline-primary">
-                <i class="bi bi-chevron-left"></i> @L["Rep_Previous"]
-            </a>
-            <button type="button" class="btn btn-primary" disabled>
-                @Model.PeriodLabel
-            </button>
-            <a href="@Url.Action("Index", "Reports", new { year = ViewBag.NextYear, month = ViewBag.NextMonth })" class="btn btn-outline-primary @(canGoNext ? "" : "disabled")">
-                @L["Rep_Next"] <i class="bi bi-chevron-right"></i>
-            </a>
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+            @* Period Navigator *@
+            <div class="btn-group shadow-sm">
+                <a href="@Url.Action("Index", "Reports", new { year = ViewBag.PrevYear, month = ViewBag.PrevMonth })" class="btn btn-outline-primary">
+                    <i class="bi bi-chevron-left"></i> @L["Rep_Previous"]
+                </a>
+                <button type="button" class="btn btn-primary" disabled>
+                    @Model.PeriodLabel
+                </button>
+                <a href="@Url.Action("Index", "Reports", new { year = ViewBag.NextYear, month = ViewBag.NextMonth })" class="btn btn-outline-primary @(canGoNext ? "" : "disabled")">
+                    @L["Rep_Next"] <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+
+            @* Export Dropdown *@
+            <div class="dropdown">
+                <button class="btn btn-success dropdown-toggle shadow-sm" type="button"
+                        id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-download me-1"></i> @L["Rep_ExportBtn"]
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="exportDropdown">
+                    <li>
+                        <a class="dropdown-item" 
+                           href="@Url.Action("ExportPdf", "Reports", new { year = ViewBag.CurrentYear, month = ViewBag.CurrentMonth })">
+                            <i class="bi bi-file-earmark-pdf text-danger me-2"></i>@L["Rep_ExportPdf"]
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item"
+                           href="@Url.Action("ExportCsv", "Reports", new { year = ViewBag.CurrentYear, month = ViewBag.CurrentMonth })">
+                            <i class="bi bi-filetype-csv text-success me-2"></i>@L["Rep_ExportCsv"]
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
