@@ -548,4 +548,7 @@
   <data name="Rep_NoCategoryData"><value>No category data available.</value></data>
   <data name="Rep_CategoryDetail"><value>Category Detail Breakdown</value></data>
   <data name="Rep_PercentOfTotal"><value>% of Total</value></data>
+  <data name="Rep_ExportBtn"><value>Export</value></data>
+  <data name="Rep_ExportPdf"><value>Download PDF</value></data>
+  <data name="Rep_ExportCsv"><value>Download CSV</value></data>
 </root>
