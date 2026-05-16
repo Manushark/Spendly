@@ -1,4 +1,4 @@
-﻿@model Spendly.Web.Contracts.Reports.FinancialReportDto
+@model Spendly.Web.Contracts.Reports.FinancialReportDto
 @inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer<Spendly.Web.Resources.SharedResource> L
 @{
     ViewData["Title"] = L["Rep_Title"].Value;
@@ -334,7 +334,8 @@
                                 <th class="border-0 py-3 ps-4">@L["Common_Category"]</th>
                                 <th class="border-0 py-3 text-end">@L["Common_Amount"]</th>
                                 <th class="border-0 py-3 text-center">@L["Dash_Transactions"]</th>
-                                <th class="border-0 py-3 pe-4" style="width: 250px">@L["Rep_PercentOfTotal"]</th>
+                                <th class="border-0 py-3 pe-4" style="width: 220px">@L["Rep_PercentOfTotal"]</th>
+                                <th class="border-0 py-3" style="width: 220px">@L["Rep_BudgetVsActual"]</th>
                                 <th class="border-0 py-3" style="width:40px"></th>
                             </tr>
                         </thead>
@@ -368,6 +369,38 @@
                                                 @cat.Percentage.ToString("N1")%
                                             </span>
                                         </div>
+                                    </td>
+                                    @* ── Budget vs. Actual ── *@
+                                    <td>
+                                        @if (cat.BudgetLimit.HasValue)
+                                        {
+                                            var budgetPct  = Math.Min((double)(cat.BudgetUsagePercent ?? 0), 100);
+                                            var barClass   = cat.IsBudgetExceeded ? "bg-danger" : (budgetPct >= 80 ? "bg-warning" : "bg-success");
+                                            var textClass  = cat.IsBudgetExceeded ? "text-danger fw-bold" : "text-muted";
+                                            <div class="d-flex flex-column gap-1">
+                                                <div class="progress" style="height: 8px; border-radius: 10px;">
+                                                    <div class="progress-bar @barClass"
+                                                         role="progressbar"
+                                                         style="width: @(budgetPct.ToString(System.Globalization.CultureInfo.InvariantCulture))%"
+                                                         aria-valuenow="@budgetPct" aria-valuemin="0" aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <small class="@textClass">
+                                                        @cat.Amount.ToString("N0") @L["Rep_BudgetOf"] @cat.BudgetLimit.Value.ToString("N0")
+                                                        @if (cat.IsBudgetExceeded)
+                                                        {
+                                                            <span class="badge bg-danger ms-1" style="font-size: 0.65rem;">@L["Rep_BudgetExceeded"]</span>
+                                                        }
+                                                    </small>
+                                                    <small class="@textClass">@(cat.BudgetUsagePercent?.ToString("N0") ?? "0")%</small>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted" style="font-size: 0.8rem;">@L["Rep_NoBudget"]</span>
+                                        }
                                     </td>
                                     <td class="text-center">
                                         <i class="bi bi-chevron-right text-primary drill-btn"></i>
