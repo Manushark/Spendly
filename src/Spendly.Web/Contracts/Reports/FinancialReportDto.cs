@@ -13,6 +13,14 @@ namespace Spendly.Web.Contracts.Reports
         public decimal TopCategoryAmount { get; set; }
         public List<MonthlyFinancialTrendDto> MonthlyTrend { get; set; } = new();
         public List<CategoryReportItemDto> CategoryBreakdown { get; set; } = new();
+
+        // ── Comparativa mes anterior ──────────────────────────────────────
+        public decimal PrevMonthExpenses { get; set; }
+        public decimal PrevMonthIncomes { get; set; }
+        public decimal ExpenseDelta { get; set; }
+        public decimal? ExpenseChangePercent { get; set; }
+        public decimal IncomeDelta { get; set; }
+        public decimal? IncomeChangePercent { get; set; }
     }
 
     public class MonthlyFinancialTrendDto
@@ -28,5 +36,16 @@ namespace Spendly.Web.Contracts.Reports
         public decimal Amount { get; set; }
         public decimal Percentage { get; set; }
         public int TransactionCount { get; set; }
+    }
+
+    /// <summary>Transacción individual devuelta por el endpoint de drill-down.</summary>
+    public class CategoryTransactionDto
+    {
+        public int Id { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public decimal Amount { get; set; }
+        public string Currency { get; set; } = string.Empty;
+        public string Date { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
     }
 }

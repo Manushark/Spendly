@@ -28,10 +28,7 @@ namespace Spendly.Web.Services
                 : new AuthenticationHeaderValue("Bearer", token);
         }
 
-        /// <summary>
-        /// Obtiene el reporte financiero del mes y año indicados.
-        /// Si no se especifican, se usa el mes actual.
-        /// </summary>
+        /// <summary>Obtiene el reporte financiero del mes y año indicados.</summary>
         public async Task<FinancialReportDto?> GetReportAsync(int? year = null, int? month = null)
         {
             SetAuthHeader();
@@ -58,6 +55,36 @@ namespace Spendly.Web.Services
             {
                 _logger.LogError(ex, "[Reports] Exception calling API at {Url}", _http.BaseAddress);
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene las transacciones individuales de una categoría y mes específicos.
+        /// Usado para el modal de drill-down.
+        /// </summary>
+        public async Task<List<CategoryTransactionDto>> GetCategoryTransactionsAsync(
+            int year, int month, string category)
+        {
+            SetAuthHeader();
+
+            try
+            {
+                var encodedCategory = Uri.EscapeDataString(category);
+                var query = $"api/reports/category-transactions?year={year}&month={month}&category={encodedCategory}";
+                var response = await _http.GetAsync(query);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogError("[Reports] category-transactions returned {Status}", (int)response.StatusCode);
+                    return new();
+                }
+
+                return await response.Content.ReadFromJsonAsync<List<CategoryTransactionDto>>() ?? new();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[Reports] Exception fetching category transactions");
+                return new();
             }
         }
     }
