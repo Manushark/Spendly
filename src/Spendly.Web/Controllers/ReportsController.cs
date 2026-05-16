@@ -82,6 +82,18 @@ namespace Spendly.Web.Controllers
             return File(csvBytes, "text/csv", fileName);
         }
 
+        // ── CategoryTransactions (AJAX para drill-down modal) ─────────────────
+        [HttpGet]
+        public async Task<IActionResult> CategoryTransactions(int year, int month, string category)
+        {
+            var token = HttpContext.Session.GetString("token");
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized();
+
+            var transactions = await _api.GetCategoryTransactionsAsync(year, month, category);
+            return Json(transactions);
+        }
+
         // ── Helpers ───────────────────────────────────────────────────
         private void SetNavigationViewBag(int year, int month, DateTime now)
         {
