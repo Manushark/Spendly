@@ -90,5 +90,16 @@ namespace Spendly.Application.DTOs.Reports
 
         /// <summary>Cantidad de transacciones en esta categoría.</summary>
         public int TransactionCount { get; set; }
+
+        // ── Budget vs. Actual ────────────────────────────────────────────
+
+        /// <summary>Límite mensual del presupuesto para esta categoría. Null si no tiene presupuesto definido.</summary>
+        public decimal? BudgetLimit { get; set; }
+
+        /// <summary>Porcentaje del presupuesto consumido (Amount / BudgetLimit * 100). Null si no hay presupuesto.</summary>
+        public decimal? BudgetUsagePercent { get; set; }
+
+        /// <summary>True si el gasto superó el límite del presupuesto.</summary>
+        public bool IsBudgetExceeded => BudgetLimit.HasValue && Amount > BudgetLimit.Value;
     }
 }
