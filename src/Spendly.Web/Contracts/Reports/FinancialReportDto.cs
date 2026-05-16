@@ -36,6 +36,11 @@ namespace Spendly.Web.Contracts.Reports
         public decimal Amount { get; set; }
         public decimal Percentage { get; set; }
         public int TransactionCount { get; set; }
+
+        // ── Budget vs. Actual ────────────────────────────────────────────
+        public decimal? BudgetLimit { get; set; }
+        public decimal? BudgetUsagePercent { get; set; }
+        public bool IsBudgetExceeded => BudgetLimit.HasValue && Amount > BudgetLimit.Value;
     }
 
     /// <summary>Transacción individual devuelta por el endpoint de drill-down.</summary>
