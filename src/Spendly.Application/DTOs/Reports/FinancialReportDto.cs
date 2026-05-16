@@ -35,6 +35,26 @@ namespace Spendly.Application.DTOs.Reports
 
         /// <summary>Promedio diario de gasto durante el mes.</summary>
         public decimal AverageDailyExpense { get; set; }
+
+        // ── Comparativa con el mes anterior ─────────────────────────────────────
+
+        /// <summary>Total de gastos del mes anterior (para comparativa).</summary>
+        public decimal PrevMonthExpenses { get; set; }
+
+        /// <summary>Total de ingresos del mes anterior (para comparativa).</summary>
+        public decimal PrevMonthIncomes { get; set; }
+
+        /// <summary>Variación absoluta de gastos vs. mes anterior.</summary>
+        public decimal ExpenseDelta { get; set; }
+
+        /// <summary>Variación porcentual de gastos vs. mes anterior (puede ser null si el mes anterior es 0).</summary>
+        public decimal? ExpenseChangePercent { get; set; }
+
+        /// <summary>Variación absoluta de ingresos vs. mes anterior.</summary>
+        public decimal IncomeDelta { get; set; }
+
+        /// <summary>Variación porcentual de ingresos vs. mes anterior.</summary>
+        public decimal? IncomeChangePercent { get; set; }
     }
 
     /// <summary>
