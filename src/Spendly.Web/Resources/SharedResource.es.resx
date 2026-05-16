@@ -553,4 +553,8 @@
   <data name="Rep_DrillDown_Amount"><value>Monto</value></data>
   <data name="Rep_DrillDown_Empty"><value>No se encontraron transacciones para esta categoría.</value></data>
   <data name="Rep_DrillDown_Loading"><value>Cargando transacciones...</value></data>
+  <data name="Rep_BudgetVsActual"><value>Presupuesto</value></data>
+  <data name="Rep_NoBudget"><value>Sin presupuesto</value></data>
+  <data name="Rep_BudgetExceeded"><value>Excedido</value></data>
+  <data name="Rep_BudgetOf"><value>de</value></data>
 </root>

@@ -559,4 +559,8 @@
   <data name="Rep_DrillDown_Amount"><value>Amount</value></data>
   <data name="Rep_DrillDown_Empty"><value>No transactions found for this category.</value></data>
   <data name="Rep_DrillDown_Loading"><value>Loading transactions...</value></data>
+  <data name="Rep_BudgetVsActual"><value>Budget</value></data>
+  <data name="Rep_NoBudget"><value>No budget set</value></data>
+  <data name="Rep_BudgetExceeded"><value>Exceeded</value></data>
+  <data name="Rep_BudgetOf"><value>of</value></data>
 </root>
