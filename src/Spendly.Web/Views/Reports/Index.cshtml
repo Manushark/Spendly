@@ -1,4 +1,4 @@
-@model Spendly.Web.Contracts.Reports.FinancialReportDto
+﻿@model Spendly.Web.Contracts.Reports.FinancialReportDto
 @inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer<Spendly.Web.Resources.SharedResource> L
 @{
     ViewData["Title"] = L["Rep_Title"].Value;
@@ -14,6 +14,12 @@
 
     bool isProfit    = Model.NetBalance >= 0;
     bool canGoNext   = !(bool)ViewBag.IsCurrentMonth;
+
+    // Comparativa badges helpers
+    string ExpBadgeClass  = Model.ExpenseDelta > 0 ? "text-danger" : "text-success";
+    string ExpArrow       = Model.ExpenseDelta > 0 ? "bi-arrow-up-short" : "bi-arrow-down-short";
+    string IncBadgeClass  = Model.IncomeDelta  > 0 ? "text-success" : "text-danger";
+    string IncArrow       = Model.IncomeDelta  > 0 ? "bi-arrow-up-short" : "bi-arrow-down-short";
 }
 
 @section Styles {
@@ -46,6 +52,32 @@
             font-weight: 500;
             border-radius: 20px;
         }
+        /* Comparison badges */
+        .comparison-badge {
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        /* Category table drill-down */
+        .cat-row {
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
+        .cat-row:hover { background-color: rgba(13,110,253,0.06) !important; }
+        .cat-row.highlighted { background-color: rgba(13,110,253,0.12) !important; outline: 2px solid rgba(13,110,253,0.3); }
+        .cat-row td:first-child::before {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .drill-btn { font-size: 0.75rem; opacity: 0; transition: opacity 0.15s; }
+        .cat-row:hover .drill-btn { opacity: 1; }
     </style>
 }
 
@@ -105,7 +137,7 @@
         <div class="col-md-6 col-lg-4">
             <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
                             <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_TotalExpenses"]</p>
                             <h3 class="mb-0 fw-bold text-danger">@Model.TotalExpenses.ToString("N2")</h3>
@@ -114,6 +146,18 @@
                             <i class="bi bi-graph-down-arrow text-danger"></i>
                         </div>
                     </div>
+                    @if (Model.ExpenseChangePercent.HasValue)
+                    {
+                        <div class="comparison-badge @ExpBadgeClass">
+                            <i class="bi @ExpArrow fs-5"></i>
+                            @Math.Abs(Model.ExpenseChangePercent.Value).ToString("N1")%
+                            <span class="text-muted fw-normal ms-1">@L["Rep_VsPrevMonth"]</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <small class="text-muted">@L["Rep_NoComparison"]</small>
+                    }
                 </div>
             </div>
         </div>
@@ -121,7 +165,7 @@
         <div class="col-md-6 col-lg-4">
             <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
                             <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_TotalIncome"]</p>
                             <h3 class="mb-0 fw-bold text-success">@Model.TotalIncomes.ToString("N2")</h3>
@@ -130,6 +174,18 @@
                             <i class="bi bi-graph-up-arrow text-success"></i>
                         </div>
                     </div>
+                    @if (Model.IncomeChangePercent.HasValue)
+                    {
+                        <div class="comparison-badge @IncBadgeClass">
+                            <i class="bi @IncArrow fs-5"></i>
+                            @Math.Abs(Model.IncomeChangePercent.Value).ToString("N1")%
+                            <span class="text-muted fw-normal ms-1">@L["Rep_VsPrevMonth"]</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <small class="text-muted">@L["Rep_NoComparison"]</small>
+                    }
                 </div>
             </div>
         </div>
@@ -279,12 +335,19 @@
                                 <th class="border-0 py-3 text-end">@L["Common_Amount"]</th>
                                 <th class="border-0 py-3 text-center">@L["Dash_Transactions"]</th>
                                 <th class="border-0 py-3 pe-4" style="width: 250px">@L["Rep_PercentOfTotal"]</th>
+                                <th class="border-0 py-3" style="width:40px"></th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="categoryTableBody">
+                            @{ int catIdx = 0; }
                             @foreach (var cat in Model.CategoryBreakdown)
                             {
-                                <tr>
+                                <tr class="cat-row"
+                                    data-category="@cat.Category"
+                                    data-index="@catIdx"
+                                    data-year="@ViewBag.CurrentYear"
+                                    data-month="@ViewBag.CurrentMonth"
+                                    title="Click to see transactions">
                                     <td class="ps-4">
                                         <span class="badge-category bg-secondary bg-opacity-10 text-dark">
                                             <i class="bi bi-tag-fill me-1"></i>@cat.Category
@@ -297,7 +360,7 @@
                                     <td class="pe-4">
                                         <div class="d-flex align-items-center gap-2">
                                             <div class="progress flex-grow-1" style="height: 8px; border-radius: 10px;">
-                                                <div class="progress-bar bg-primary" 
+                                                <div class="progress-bar"
                                                      role="progressbar"
                                                      style="width: @cat.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%"></div>
                                             </div>
@@ -306,7 +369,11 @@
                                             </span>
                                         </div>
                                     </td>
+                                    <td class="text-center">
+                                        <i class="bi bi-chevron-right text-primary drill-btn"></i>
+                                    </td>
                                 </tr>
+                                catIdx++;
                             }
                         </tbody>
                     </table>
@@ -316,35 +383,84 @@
     }
 </div>
 
+@* â”€â”€ Drill-down Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ *@
+<div class="modal fade" id="drillDownModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-receipt text-primary me-2"></i>
+                    <span id="modalCategoryTitle">@L["Rep_DrillDown_Title"]</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalLoading" class="text-center py-4 text-muted">
+                    <div class="spinner-border spinner-border-sm me-2"></div>
+                    @L["Rep_DrillDown_Loading"]
+                </div>
+                <div id="modalContent" class="d-none">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 py-2">@L["Rep_DrillDown_Date"]</th>
+                                <th class="border-0 py-2">@L["Rep_DrillDown_Desc"]</th>
+                                <th class="border-0 py-2 text-end">@L["Rep_DrillDown_Amount"]</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalTableBody"></tbody>
+                    </table>
+                </div>
+                <div id="modalEmpty" class="text-center py-4 text-muted d-none">
+                    <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                    @L["Rep_DrillDown_Empty"]
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="~/lib/chart.js/chart.umd.min.js"></script>
     <script>
-        // Enhanced color palette for Light Mode
         const colors = [
-            { bg: 'rgba(13, 110, 253, 0.8)', border: 'rgb(13, 110, 253)' },
-            { bg: 'rgba(220, 53, 69, 0.8)', border: 'rgb(220, 53, 69)' },
-            { bg: 'rgba(255, 193, 7, 0.8)', border: 'rgb(255, 193, 7)' },
-            { bg: 'rgba(25, 135, 84, 0.8)', border: 'rgb(25, 135, 84)' },
-            { bg: 'rgba(111, 66, 193, 0.8)', border: 'rgb(111, 66, 193)' },
-            { bg: 'rgba(255, 99, 71, 0.8)', border: 'rgb(255, 99, 71)' },
-            { bg: 'rgba(32, 201, 151, 0.8)', border: 'rgb(32, 201, 151)' },
-            { bg: 'rgba(253, 126, 20, 0.8)', border: 'rgb(253, 126, 20)' }
+            { bg: 'rgba(13,110,253,0.8)',  border: 'rgb(13,110,253)'  },
+            { bg: 'rgba(220,53,69,0.8)',   border: 'rgb(220,53,69)'   },
+            { bg: 'rgba(255,193,7,0.8)',   border: 'rgb(255,193,7)'   },
+            { bg: 'rgba(25,135,84,0.8)',   border: 'rgb(25,135,84)'   },
+            { bg: 'rgba(111,66,193,0.8)',  border: 'rgb(111,66,193)'  },
+            { bg: 'rgba(255,99,71,0.8)',   border: 'rgb(255,99,71)'   },
+            { bg: 'rgba(32,201,151,0.8)',  border: 'rgb(32,201,151)'  },
+            { bg: 'rgba(253,126,20,0.8)',  border: 'rgb(253,126,20)'  }
         ];
 
-        // ── 6-Month Trend (Line Chart) ───────────────────────────────
+        // Paint progress bars and row color dots with category colors
+        document.querySelectorAll('.cat-row').forEach((row, i) => {
+            const color = colors[i % colors.length].border;
+            const bar = row.querySelector('.progress-bar');
+            if (bar) bar.style.backgroundColor = color;
+        });
+
+        // â”€â”€ Highlight helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        function highlightRow(index) {
+            document.querySelectorAll('.cat-row').forEach(r => r.classList.remove('highlighted'));
+            const target = document.querySelector(`.cat-row[data-index="${index}"]`);
+            if (target) {
+                target.classList.add('highlighted');
+                target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // â”€â”€ Trend Line Chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const trendCtx = document.getElementById('trendChart');
         if (trendCtx) {
             const ctx = trendCtx.getContext('2d');
-            
-            // Expenses gradient (Red)
             const expGrad = ctx.createLinearGradient(0, 0, 0, 300);
-            expGrad.addColorStop(0, 'rgba(220, 53, 69, 0.3)');
-            expGrad.addColorStop(1, 'rgba(220, 53, 69, 0.01)');
-            
-            // Income gradient (Green)
+            expGrad.addColorStop(0, 'rgba(220,53,69,0.3)');
+            expGrad.addColorStop(1, 'rgba(220,53,69,0.01)');
             const incGrad = ctx.createLinearGradient(0, 0, 0, 300);
-            incGrad.addColorStop(0, 'rgba(25, 135, 84, 0.3)');
-            incGrad.addColorStop(1, 'rgba(25, 135, 84, 0.01)');
+            incGrad.addColorStop(0, 'rgba(25,135,84,0.3)');
+            incGrad.addColorStop(1, 'rgba(25,135,84,0.01)');
 
             new Chart(ctx, {
                 type: 'line',
@@ -354,67 +470,43 @@
                         {
                             label: '@L["Rep_TotalExpenses"].Value',
                             data: [@Html.Raw(expData)],
-                            borderColor: 'rgb(220, 53, 69)',
-                            backgroundColor: expGrad,
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 4,
-                            pointHoverRadius: 8,
-                            pointBackgroundColor: 'rgb(220, 53, 69)',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2
+                            borderColor: 'rgb(220,53,69)', backgroundColor: expGrad,
+                            borderWidth: 3, fill: true, tension: 0.4,
+                            pointRadius: 4, pointHoverRadius: 8,
+                            pointBackgroundColor: 'rgb(220,53,69)', pointBorderColor: '#fff', pointBorderWidth: 2
                         },
                         {
                             label: '@L["Rep_TotalIncome"].Value',
                             data: [@Html.Raw(incData)],
-                            borderColor: 'rgb(25, 135, 84)',
-                            backgroundColor: incGrad,
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 4,
-                            pointHoverRadius: 8,
-                            pointBackgroundColor: 'rgb(25, 135, 84)',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2
+                            borderColor: 'rgb(25,135,84)', backgroundColor: incGrad,
+                            borderWidth: 3, fill: true, tension: 0.4,
+                            pointRadius: 4, pointHoverRadius: 8,
+                            pointBackgroundColor: 'rgb(25,135,84)', pointBorderColor: '#fff', pointBorderWidth: 2
                         }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
                     plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: { usePointStyle: true, boxWidth: 8, font: { size: 12, family: "'Inter', sans-serif" } }
-                        },
+                        legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } },
                         tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            padding: 12,
-                            cornerRadius: 8,
-                            callbacks: {
-                                label: ctx => ` ${ctx.dataset.label}: ${Number(ctx.raw).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`
-                            }
+                            backgroundColor: 'rgba(0,0,0,0.8)', padding: 12,
+                            callbacks: { label: c => ` ${c.dataset.label}: ${Number(c.raw).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}` }
                         }
                     },
                     scales: {
-                        x: { grid: { display: false }, ticks: { font: { size: 12 } } },
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false },
-                            ticks: { callback: v => Number(v).toLocaleString() }
-                        }
+                        x: { grid: { display: false } },
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { callback: v => Number(v).toLocaleString() } }
                     }
                 }
             });
         }
 
-        // ── Category Doughnut Chart ──────────────────────────────────
+        // â”€â”€ Category Doughnut Chart (with click-to-highlight) â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const catCtx = document.getElementById('categoryChart');
         if (catCtx) {
-            new Chart(catCtx.getContext('2d'), {
+            const donut = new Chart(catCtx.getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     labels: [@Html.Raw(catLabels)],
@@ -422,40 +514,91 @@
                         data: [@Html.Raw(catData)],
                         backgroundColor: colors.map(c => c.bg),
                         borderColor: colors.map(c => c.border),
-                        borderWidth: 2,
-                        hoverOffset: 15
+                        borderWidth: 2, hoverOffset: 15
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    cutout: '65%',
+                    responsive: true, maintainAspectRatio: true, cutout: '65%',
                     plugins: {
                         legend: {
                             position: 'bottom',
-                            labels: {
-                                padding: 15,
-                                font: { size: 12, weight: '500', family: "'Inter', sans-serif" },
-                                usePointStyle: true,
-                                pointStyle: 'circle'
-                            }
+                            labels: { padding: 15, font: { size: 12, weight: '500' }, usePointStyle: true, pointStyle: 'circle' }
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            padding: 12,
-                            cornerRadius: 8,
+                            backgroundColor: 'rgba(0,0,0,0.8)', padding: 12,
                             callbacks: {
-                                label: (ctx) => {
-                                    const value = Number(ctx.raw).toLocaleString(undefined, {minimumFractionDigits:2});
-                                    const pct = ((ctx.raw / [@Html.Raw(catData)].reduce((a,b)=>a+b,0))*100).toFixed(1) + '%';
-                                    return ` ${ctx.label}: ${value} (${pct})`;
+                                label: (c) => {
+                                    const total = [@Html.Raw(catData)].reduce((a,b)=>a+b,0);
+                                    const pct = total > 0 ? ((c.raw/total)*100).toFixed(1) : 0;
+                                    return ` ${c.label}: ${Number(c.raw).toLocaleString(undefined,{minimumFractionDigits:2})} (${pct}%)`;
                                 }
                             }
                         }
                     },
-                    animation: { animateRotate: true, animateScale: true }
+                    animation: { animateRotate: true, animateScale: true },
+                    onClick(evt, elements) {
+                        if (elements.length > 0) {
+                            highlightRow(elements[0].index);
+                        }
+                    }
                 }
             });
         }
+
+        // â”€â”€ Drill-down Modal (AJAX) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        const drillModal   = new bootstrap.Modal(document.getElementById('drillDownModal'));
+        const modalTitle   = document.getElementById('modalCategoryTitle');
+        const modalLoading = document.getElementById('modalLoading');
+        const modalContent = document.getElementById('modalContent');
+        const modalEmpty   = document.getElementById('modalEmpty');
+        const modalBody    = document.getElementById('modalTableBody');
+
+        document.querySelectorAll('.cat-row').forEach(row => {
+            row.addEventListener('click', async () => {
+                const category = row.dataset.category;
+                const year     = row.dataset.year;
+                const month    = row.dataset.month;
+                const idx      = parseInt(row.dataset.index);
+
+                // Highlight row + update donut selection
+                highlightRow(idx);
+
+                // Reset modal state
+                modalTitle.textContent = `@L["Rep_DrillDown_Title"].Value ${category}`;
+                modalLoading.classList.remove('d-none');
+                modalContent.classList.add('d-none');
+                modalEmpty.classList.add('d-none');
+                modalBody.innerHTML = '';
+                drillModal.show();
+
+                try {
+                    const url = `/Reports/CategoryTransactions?year=${year}&month=${month}&category=${encodeURIComponent(category)}`;
+                    const res  = await fetch(url);
+                    const data = await res.json();
+
+                    modalLoading.classList.add('d-none');
+
+                    if (!data || data.length === 0) {
+                        modalEmpty.classList.remove('d-none');
+                        return;
+                    }
+
+                    data.forEach(t => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="text-muted">${t.date}</td>
+                            <td>${t.description}</td>
+                            <td class="text-end fw-bold text-danger">${Number(t.amount).toLocaleString(undefined,{minimumFractionDigits:2})} ${t.currency}</td>
+                        `;
+                        modalBody.appendChild(tr);
+                    });
+
+                    modalContent.classList.remove('d-none');
+                } catch (e) {
+                    modalLoading.classList.add('d-none');
+                    modalEmpty.classList.remove('d-none');
+                }
+            });
+        });
     </script>
 }
