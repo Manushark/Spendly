@@ -5,20 +5,23 @@ namespace Spendly.Application.UseCase.Reports
 {
     /// <summary>
     /// Caso de uso que genera el reporte financiero completo de un usuario para un mes dado.
-    /// Combina datos de gastos e ingresos para producir tendencias, desglose por categoría
-    /// y métricas clave de salud financiera.
+    /// Combina datos de gastos, ingresos y presupuestos para producir tendencias, desglose por categoría
+    /// y métricas clave de salud financiera, incluyendo comparativa Budget vs. Actual.
     /// </summary>
     public class GetFinancialReportUseCase
     {
-        private readonly IExpenseRepository _expenseRepo;
-        private readonly IIncomeRepository _incomeRepo;
+        private readonly IExpenseRepository  _expenseRepo;
+        private readonly IIncomeRepository   _incomeRepo;
+        private readonly IBudgetRepository   _budgetRepo;
 
         public GetFinancialReportUseCase(
-            IExpenseRepository expenseRepo,
-            IIncomeRepository incomeRepo)
+            IExpenseRepository  expenseRepo,
+            IIncomeRepository   incomeRepo,
+            IBudgetRepository   budgetRepo)
         {
             _expenseRepo = expenseRepo;
-            _incomeRepo = incomeRepo;
+            _incomeRepo  = incomeRepo;
+            _budgetRepo  = budgetRepo;
         }
 
         /// <summary>
@@ -57,18 +60,38 @@ namespace Spendly.Application.UseCase.Reports
                 ? Math.Round((incomeDelta / prevIncomes) * 100, 1)
                 : (decimal?)null;
 
-            // ── Desglose por categoría ────────────────────────────────────────────
+            // ── Desglose por categoría + Budget vs. Actual ─────────────────────
             var categoryTotals   = await _expenseRepo.GetTotalByCategoryAsync(userId, periodStart, periodEnd);
             var expensesInPeriod = (await _expenseRepo.GetByDateRangeAsync(userId, periodStart, periodEnd)).ToList();
 
+            // Cargar todos los presupuestos del mes de una sola vez (1 query)
+            var budgets = await _budgetRepo.GetByUserAndMonthAsync(userId, year, month);
+            var budgetByCategory = budgets.ToDictionary(
+                b => b.Category,
+                b => b.MonthlyLimit,
+                StringComparer.OrdinalIgnoreCase);
+
             var categoryBreakdown = categoryTotals
-                .Select(kvp => new CategoryReportItemDto
+                .Select(kvp =>
                 {
-                    Category         = kvp.Key,
-                    Amount           = kvp.Value,
-                    Percentage       = totalExpenses > 0 ? Math.Round((kvp.Value / totalExpenses) * 100, 1) : 0,
-                    TransactionCount = expensesInPeriod.Count(e =>
-                        e.Category.Equals(kvp.Key, StringComparison.OrdinalIgnoreCase))
+                    var budgetLimit = budgetByCategory.TryGetValue(kvp.Key, out var limit)
+                        ? (decimal?)limit
+                        : null;
+
+                    var usagePct = budgetLimit.HasValue && budgetLimit.Value > 0
+                        ? Math.Round((kvp.Value / budgetLimit.Value) * 100, 1)
+                        : (decimal?)null;
+
+                    return new CategoryReportItemDto
+                    {
+                        Category         = kvp.Key,
+                        Amount           = kvp.Value,
+                        Percentage       = totalExpenses > 0 ? Math.Round((kvp.Value / totalExpenses) * 100, 1) : 0,
+                        TransactionCount = expensesInPeriod.Count(e =>
+                            e.Category.Equals(kvp.Key, StringComparison.OrdinalIgnoreCase)),
+                        BudgetLimit        = budgetLimit,
+                        BudgetUsagePercent = usagePct
+                    };
                 })
                 .OrderByDescending(c => c.Amount)
                 .ToList();
