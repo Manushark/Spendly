@@ -545,4 +545,12 @@
   <data name="Rep_ExportBtn"><value>Exportar</value></data>
   <data name="Rep_ExportPdf"><value>Descargar PDF</value></data>
   <data name="Rep_ExportCsv"><value>Descargar CSV</value></data>
+  <data name="Rep_VsPrevMonth"><value>vs mes anterior</value></data>
+  <data name="Rep_NoComparison"><value>Sin datos del mes anterior</value></data>
+  <data name="Rep_DrillDown_Title"><value>Transacciones en</value></data>
+  <data name="Rep_DrillDown_Date"><value>Fecha</value></data>
+  <data name="Rep_DrillDown_Desc"><value>Descripción</value></data>
+  <data name="Rep_DrillDown_Amount"><value>Monto</value></data>
+  <data name="Rep_DrillDown_Empty"><value>No se encontraron transacciones para esta categoría.</value></data>
+  <data name="Rep_DrillDown_Loading"><value>Cargando transacciones...</value></data>
 </root>
