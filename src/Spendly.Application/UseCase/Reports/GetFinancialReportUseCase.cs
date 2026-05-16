@@ -33,15 +33,33 @@ namespace Spendly.Application.UseCase.Reports
             var periodStart = new DateTime(year, month, 1);
             var periodEnd   = periodStart.AddMonths(1).AddDays(-1);
 
+            // ── Rango del mes anterior (para comparativa) ─────────────────────────
+            var prevStart = periodStart.AddMonths(-1);
+            var prevEnd   = prevStart.AddMonths(1).AddDays(-1);
+
             // ── Totales del período ───────────────────────────────────────────────
             var totalExpenses = await _expenseRepo.GetTotalAmountAsync(userId, periodStart, periodEnd);
             var totalIncomes  = await _incomeRepo.GetTotalAmountAsync(userId, periodStart, periodEnd);
             var netBalance    = totalIncomes - totalExpenses;
             var ratio         = totalIncomes > 0 ? (totalExpenses / totalIncomes) * 100 : 0m;
 
+            // ── Totales del mes anterior ──────────────────────────────────────────
+            var prevExpenses = await _expenseRepo.GetTotalAmountAsync(userId, prevStart, prevEnd);
+            var prevIncomes  = await _incomeRepo.GetTotalAmountAsync(userId, prevStart, prevEnd);
+
+            var expenseDelta         = totalExpenses - prevExpenses;
+            var expenseChangePercent = prevExpenses > 0
+                ? Math.Round((expenseDelta / prevExpenses) * 100, 1)
+                : (decimal?)null;
+
+            var incomeDelta         = totalIncomes - prevIncomes;
+            var incomeChangePercent = prevIncomes > 0
+                ? Math.Round((incomeDelta / prevIncomes) * 100, 1)
+                : (decimal?)null;
+
             // ── Desglose por categoría ────────────────────────────────────────────
-            var categoryTotals     = await _expenseRepo.GetTotalByCategoryAsync(userId, periodStart, periodEnd);
-            var expensesInPeriod   = (await _expenseRepo.GetByDateRangeAsync(userId, periodStart, periodEnd)).ToList();
+            var categoryTotals   = await _expenseRepo.GetTotalByCategoryAsync(userId, periodStart, periodEnd);
+            var expensesInPeriod = (await _expenseRepo.GetByDateRangeAsync(userId, periodStart, periodEnd)).ToList();
 
             var categoryBreakdown = categoryTotals
                 .Select(kvp => new CategoryReportItemDto
@@ -58,7 +76,6 @@ namespace Spendly.Application.UseCase.Reports
             var topCategory = categoryBreakdown.FirstOrDefault();
 
             // ── Promedio diario ───────────────────────────────────────────────────
-            // Si el mes solicitado es el mes actual, solo dividir entre días transcurridos.
             var today      = DateTime.UtcNow.Date;
             var daysInCalc = (year == today.Year && month == today.Month)
                 ? (today - periodStart.Date).Days + 1
@@ -95,7 +112,14 @@ namespace Spendly.Application.UseCase.Reports
                 TopCategory          = topCategory?.Category ?? "N/A",
                 TopCategoryAmount    = topCategory?.Amount ?? 0,
                 MonthlyTrend         = trend,
-                CategoryBreakdown    = categoryBreakdown
+                CategoryBreakdown    = categoryBreakdown,
+                // Comparativa mes anterior
+                PrevMonthExpenses    = prevExpenses,
+                PrevMonthIncomes     = prevIncomes,
+                ExpenseDelta         = expenseDelta,
+                ExpenseChangePercent = expenseChangePercent,
+                IncomeDelta          = incomeDelta,
+                IncomeChangePercent  = incomeChangePercent
             };
         }
     }
