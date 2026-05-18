@@ -4,26 +4,31 @@
     ViewData["Title"] = L["Rep_Title"].Value;
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    var trend        = Model.MonthlyTrend;
-    var labels       = string.Join(",", trend.Select(t => $"\"{t.Month}\""));
-    var expData      = string.Join(",", trend.Select(t => t.Expenses.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
-    var incData      = string.Join(",", trend.Select(t => t.Incomes.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
+    var trend     = Model.MonthlyTrend;
+    var labels    = string.Join(",", trend.Select(t => $"\"{t.Month}\""));
+    var expData   = string.Join(",", trend.Select(t => t.Expenses.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
+    var incData   = string.Join(",", trend.Select(t => t.Incomes.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
 
-    var catLabels    = string.Join(",", Model.CategoryBreakdown.Select(c => $"\"{c.Category}\""));
-    var catData      = string.Join(",", Model.CategoryBreakdown.Select(c => c.Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
+    var catLabels = string.Join(",", Model.CategoryBreakdown.Select(c => $"\"{c.Category}\""));
+    var catData   = string.Join(",", Model.CategoryBreakdown.Select(c => c.Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
 
-    bool isProfit    = Model.NetBalance >= 0;
-    bool canGoNext   = !(bool)ViewBag.IsCurrentMonth;
+    bool isProfit = Model.NetBalance >= 0;
+
+    string activePreset = ViewBag.ActivePreset ?? "this_month";
+    string dateFromStr  = ViewBag.DateFrom    ?? DateTime.Now.ToString("yyyy-MM-01");
+    string dateToStr    = ViewBag.DateTo      ?? DateTime.Now.ToString("yyyy-MM-dd");
 
     // Comparativa badges helpers
-    string ExpBadgeClass  = Model.ExpenseDelta > 0 ? "text-danger" : "text-success";
-    string ExpArrow       = Model.ExpenseDelta > 0 ? "bi-arrow-up-short" : "bi-arrow-down-short";
-    string IncBadgeClass  = Model.IncomeDelta  > 0 ? "text-success" : "text-danger";
-    string IncArrow       = Model.IncomeDelta  > 0 ? "bi-arrow-up-short" : "bi-arrow-down-short";
+    string ExpBadgeClass = Model.ExpenseDelta > 0 ? "text-danger" : "text-success";
+    string ExpArrow      = Model.ExpenseDelta > 0 ? "bi-arrow-up-short" : "bi-arrow-down-short";
+    string IncBadgeClass = Model.IncomeDelta  > 0 ? "text-success" : "text-danger";
+    string IncArrow      = Model.IncomeDelta  > 0 ? "bi-arrow-up-short" : "bi-arrow-down-short";
 }
 
 @section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
+        /* ── Stat cards ── */
         .stat-card {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             border: none;
@@ -34,101 +39,135 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
         }
         .stat-icon {
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            font-size: 24px;
+            width: 60px; height: 60px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 12px; font-size: 24px;
         }
-        .chart-card {
-            border: none;
-            border-radius: 16px;
-            overflow: hidden;
-        }
-        .badge-category {
-            padding: 6px 12px;
-            font-weight: 500;
-            border-radius: 20px;
-        }
-        /* Comparison badges */
+        .chart-card { border: none; border-radius: 16px; overflow: hidden; }
+        .badge-category { padding: 6px 12px; font-weight: 500; border-radius: 20px; }
+        /* ── Comparison badges ── */
         .comparison-badge {
-            font-size: 0.78rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 2px;
+            font-size: 0.78rem; font-weight: 600;
+            display: flex; align-items: center; gap: 2px;
         }
-        /* Category table drill-down */
-        .cat-row {
-            cursor: pointer;
-            transition: background-color 0.15s;
-        }
+        /* ── Category table ── */
+        .cat-row { cursor: pointer; transition: background-color 0.15s; }
         .cat-row:hover { background-color: rgba(13,110,253,0.06) !important; }
         .cat-row.highlighted { background-color: rgba(13,110,253,0.12) !important; outline: 2px solid rgba(13,110,253,0.3); }
         .cat-row td:first-child::before {
-            content: '';
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
-            vertical-align: middle;
+            content: ''; display: inline-block;
+            width: 10px; height: 10px; border-radius: 50%;
+            margin-right: 8px; vertical-align: middle;
         }
         .drill-btn { font-size: 0.75rem; opacity: 0; transition: opacity 0.15s; }
         .cat-row:hover .drill-btn { opacity: 1; }
+        /* ── Date range preset pills ── */
+        .preset-bar .btn { font-size: 0.82rem; padding: 0.3rem 0.75rem; border-radius: 20px; }
+        .preset-bar .btn.active {
+            background: #0d6efd;
+            color: #fff;
+            border-color: #0d6efd;
+            box-shadow: 0 2px 8px rgba(13,110,253,0.35);
+        }
+        /* ── Flatpickr custom panel ── */
+        #customRangePanel {
+            display: none;
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        #customRangePanel.show { display: flex; }
+        .flatpickr-input { border-radius: 8px !important; }
     </style>
 }
 
 <div class="container-fluid py-4">
-    @* Header *@
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    @* ── Header ── *@
+    <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-3">
         <div>
             <h2 class="mb-1">
                 <i class="bi bi-bar-chart-fill text-primary"></i> 
                 @L["Rep_Title"]
             </h2>
             <small class="text-muted">
-                <i class="bi bi-calendar3"></i> @L["Rep_Analysis"] @Model.PeriodLabel
+                <i class="bi bi-calendar3"></i> @L["Rep_Analysis"] <strong>@Model.PeriodLabel</strong>
             </small>
         </div>
-        
-        <div class="d-flex gap-2 align-items-center flex-wrap">
-            @* Period Navigator *@
-            <div class="btn-group shadow-sm">
-                <a href="@Url.Action("Index", "Reports", new { year = ViewBag.PrevYear, month = ViewBag.PrevMonth })" class="btn btn-outline-primary">
-                    <i class="bi bi-chevron-left"></i> @L["Rep_Previous"]
-                </a>
-                <button type="button" class="btn btn-primary" disabled>
-                    @Model.PeriodLabel
-                </button>
-                <a href="@Url.Action("Index", "Reports", new { year = ViewBag.NextYear, month = ViewBag.NextMonth })" class="btn btn-outline-primary @(canGoNext ? "" : "disabled")">
-                    @L["Rep_Next"] <i class="bi bi-chevron-right"></i>
-                </a>
-            </div>
 
-            @* Export Dropdown *@
-            <div class="dropdown">
-                <button class="btn btn-success dropdown-toggle shadow-sm" type="button"
-                        id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-download me-1"></i> @L["Rep_ExportBtn"]
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="exportDropdown">
-                    <li>
-                        <a class="dropdown-item" 
-                           href="@Url.Action("ExportPdf", "Reports", new { year = ViewBag.CurrentYear, month = ViewBag.CurrentMonth })">
-                            <i class="bi bi-file-earmark-pdf text-danger me-2"></i>@L["Rep_ExportPdf"]
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item"
-                           href="@Url.Action("ExportCsv", "Reports", new { year = ViewBag.CurrentYear, month = ViewBag.CurrentMonth })">
-                            <i class="bi bi-filetype-csv text-success me-2"></i>@L["Rep_ExportCsv"]
-                        </a>
-                    </li>
-                </ul>
-            </div>
+        @* Export Dropdown *@
+        <div class="dropdown">
+            <button class="btn btn-success dropdown-toggle shadow-sm" type="button"
+                    id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-download me-1"></i> @L["Rep_ExportBtn"]
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="exportDropdown">
+                <li>
+                    <a class="dropdown-item"
+                       href="@Url.Action("ExportPdf", "Reports", new { dateFrom = dateFromStr, dateTo = dateToStr, preset = activePreset })">
+                        <i class="bi bi-file-earmark-pdf text-danger me-2"></i>@L["Rep_ExportPdf"]
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       href="@Url.Action("ExportCsv", "Reports", new { dateFrom = dateFromStr, dateTo = dateToStr, preset = activePreset })">
+                        <i class="bi bi-filetype-csv text-success me-2"></i>@L["Rep_ExportCsv"]
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    @* ── Date Range Selector ── *@
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
+        <div class="card-body py-3 px-4">
+            <form id="rangeForm" method="get" action="@Url.Action("Index", "Reports")" class="d-flex flex-column gap-2">
+                <input type="hidden" id="hiddenPreset"   name="preset"   value="@activePreset">
+                <input type="hidden" id="hiddenDateFrom" name="dateFrom" value="@dateFromStr">
+                <input type="hidden" id="hiddenDateTo"   name="dateTo"   value="@dateToStr">
+
+                @* Preset pills *@
+                <div class="preset-bar d-flex gap-2 flex-wrap">
+                    <button type="button" class="btn btn-outline-primary @(activePreset == "this_month"    ? "active" : "")" data-preset="this_month">
+                        @L["Rep_Preset_ThisMonth"]
+                    </button>
+                    <button type="button" class="btn btn-outline-primary @(activePreset == "last_month"    ? "active" : "")" data-preset="last_month">
+                        @L["Rep_Preset_LastMonth"]
+                    </button>
+                    <button type="button" class="btn btn-outline-primary @(activePreset == "last_3_months" ? "active" : "")" data-preset="last_3_months">
+                        @L["Rep_Preset_Last3M"]
+                    </button>
+                    <button type="button" class="btn btn-outline-primary @(activePreset == "last_6_months" ? "active" : "")" data-preset="last_6_months">
+                        @L["Rep_Preset_Last6M"]
+                    </button>
+                    <button type="button" class="btn btn-outline-primary @(activePreset == "ytd"           ? "active" : "")" data-preset="ytd">
+                        @L["Rep_Preset_YTD"]
+                    </button>
+                    <button type="button" class="btn btn-outline-primary @(activePreset == "last_year"     ? "active" : "")" data-preset="last_year">
+                        @L["Rep_Preset_LastYear"]
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary @(activePreset == "custom"      ? "active" : "")" id="customPresetBtn" data-preset="custom">
+                        <i class="bi bi-calendar-range me-1"></i>@L["Rep_Preset_Custom"]
+                    </button>
+                </div>
+
+                @* Custom range Flatpickr panel *@
+                <div id="customRangePanel" class="@(activePreset == "custom" ? "show" : "")">
+                    <label class="text-muted small fw-semibold">@L["Rep_DateFrom"]</label>
+                    <input type="text" id="fpFrom" class="form-control form-control-sm" style="width:140px;"
+                           value="@dateFromStr" placeholder="yyyy-MM-dd">
+                    <label class="text-muted small fw-semibold">@L["Rep_DateTo"]</label>
+                    <input type="text" id="fpTo" class="form-control form-control-sm" style="width:140px;"
+                           value="@dateToStr" placeholder="yyyy-MM-dd">
+                    <button type="submit" id="applyRangeBtn" class="btn btn-primary btn-sm px-3">
+                        <i class="bi bi-check2 me-1"></i>@L["Rep_ApplyRange"]
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -455,6 +494,7 @@
 
 @section Scripts {
     <script src="~/lib/chart.js/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         const colors = [
             { bg: 'rgba(13,110,253,0.8)',  border: 'rgb(13,110,253)'  },
@@ -578,7 +618,11 @@
             });
         }
 
-        // â”€â”€ Drill-down Modal (AJAX) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Drill-down Modal (AJAX) ─────────────────────────────────────
+        const REPORT_DATE_FROM = '@dateFromStr';
+        const REPORT_DATE_TO   = '@dateToStr';
+        const REPORT_PRESET    = '@activePreset';
+
         const drillModal   = new bootstrap.Modal(document.getElementById('drillDownModal'));
         const modalTitle   = document.getElementById('modalCategoryTitle');
         const modalLoading = document.getElementById('modalLoading');
@@ -586,18 +630,13 @@
         const modalEmpty   = document.getElementById('modalEmpty');
         const modalBody    = document.getElementById('modalTableBody');
 
-        document.querySelectorAll('.cat-row').forEach(row => {
-            row.addEventListener('click', async () => {
-                const category = row.dataset.category;
-                const year     = row.dataset.year;
-                const month    = row.dataset.month;
-                const idx      = parseInt(row.dataset.index);
+        document.querySelectorAll('.cat-row').forEach(function(row) {
+            row.addEventListener('click', async function() {
+                var category = row.dataset.category;
+                var idx      = parseInt(row.dataset.index);
 
-                // Highlight row + update donut selection
                 highlightRow(idx);
-
-                // Reset modal state
-                modalTitle.textContent = `@L["Rep_DrillDown_Title"].Value ${category}`;
+                modalTitle.textContent = '@L["Rep_DrillDown_Title"].Value ' + category;
                 modalLoading.classList.remove('d-none');
                 modalContent.classList.add('d-none');
                 modalEmpty.classList.add('d-none');
@@ -605,10 +644,13 @@
                 drillModal.show();
 
                 try {
-                    const url = `/Reports/CategoryTransactions?year=${year}&month=${month}&category=${encodeURIComponent(category)}`;
-                    const res  = await fetch(url);
-                    const data = await res.json();
-
+                    var url = '/Reports/CategoryTransactions'
+                        + '?dateFrom=' + REPORT_DATE_FROM
+                        + '&dateTo='   + REPORT_DATE_TO
+                        + '&preset='   + REPORT_PRESET
+                        + '&category=' + encodeURIComponent(category);
+                    var res  = await fetch(url);
+                    var data = await res.json();
                     modalLoading.classList.add('d-none');
 
                     if (!data || data.length === 0) {
@@ -616,13 +658,12 @@
                         return;
                     }
 
-                    data.forEach(t => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td class="text-muted">${t.date}</td>
-                            <td>${t.description}</td>
-                            <td class="text-end fw-bold text-danger">${Number(t.amount).toLocaleString(undefined,{minimumFractionDigits:2})} ${t.currency}</td>
-                        `;
+                    data.forEach(function(t) {
+                        var tr  = document.createElement('tr');
+                        var amt = Number(t.amount).toLocaleString(undefined, {minimumFractionDigits: 2});
+                        tr.innerHTML = '<td class="text-muted">' + t.date + '</td>'
+                            + '<td>' + t.description + '</td>'
+                            + '<td class="text-end fw-bold text-danger">' + amt + ' ' + t.currency + '</td>';
                         modalBody.appendChild(tr);
                     });
 
@@ -630,6 +671,35 @@
                 } catch (e) {
                     modalLoading.classList.add('d-none');
                     modalEmpty.classList.remove('d-none');
+                }
+            });
+        });
+
+        // ── Flatpickr ──────────────────────────────────────────────────
+        if (typeof flatpickr !== 'undefined') {
+            flatpickr('#fpFrom', {
+                dateFormat: 'Y-m-d', allowInput: true,
+                onChange: function(_, dateStr) { document.getElementById('hiddenDateFrom').value = dateStr; }
+            });
+            flatpickr('#fpTo', {
+                dateFormat: 'Y-m-d', allowInput: true,
+                onChange: function(_, dateStr) { document.getElementById('hiddenDateTo').value = dateStr; }
+            });
+        }
+
+        // ── Preset pill click ──────────────────────────────────────────
+        document.querySelectorAll('.preset-bar [data-preset]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var preset = btn.dataset.preset;
+                var panel  = document.getElementById('customRangePanel');
+                document.querySelectorAll('.preset-bar [data-preset]').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                document.getElementById('hiddenPreset').value = preset;
+                if (preset === 'custom') {
+                    panel.classList.add('show');
+                } else {
+                    panel.classList.remove('show');
+                    document.getElementById('rangeForm').submit();
                 }
             });
         });
