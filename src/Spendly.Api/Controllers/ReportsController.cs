@@ -16,7 +16,7 @@ namespace Spendly.Api.Controllers
     public class ReportsController : ControllerBase
     {
         private readonly GetFinancialReportUseCase _getReport;
-        private readonly IExpenseRepository _expenseRepo;
+        private readonly IExpenseRepository        _expenseRepo;
 
         public ReportsController(GetFinancialReportUseCase getReport, IExpenseRepository expenseRepo)
         {
@@ -25,49 +25,49 @@ namespace Spendly.Api.Controllers
         }
 
         /// <summary>
-        /// Genera el reporte financiero mensual del usuario autenticado.
+        /// Genera el reporte financiero para el rango de fechas indicado.
+        /// Acepta dateFrom/dateTo (ISO 8601) o year/month como fallback para retrocompatibilidad.
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetReport([FromQuery] int? year, [FromQuery] int? month)
+        public async Task<IActionResult> GetReport(
+            [FromQuery] string? dateFrom,
+            [FromQuery] string? dateTo,
+            [FromQuery] string? periodLabel,
+            // Legacy fallback
+            [FromQuery] int?    year,
+            [FromQuery] int?    month)
         {
-            var now         = DateTime.UtcNow;
-            var targetYear  = year  ?? now.Year;
-            var targetMonth = month ?? now.Month;
+            var (start, end, label) = ResolveDateRange(dateFrom, dateTo, periodLabel, year, month);
 
-            if (targetMonth < 1 || targetMonth > 12)
-                return BadRequest("El mes debe estar entre 1 y 12.");
+            if (start > end)
+                return BadRequest("dateFrom must be before dateTo.");
 
-            if (targetYear < 2000 || targetYear > 2100)
-                return BadRequest("El año debe estar entre 2000 y 2100.");
+            if ((end - start).Days > 730)
+                return BadRequest("El rango no puede superar 2 años.");
 
-            var report = await _getReport.ExecuteAsync(User.GetUserId(), targetYear, targetMonth);
+            var report = await _getReport.ExecuteAsync(User.GetUserId(), start, end, label);
             return Ok(report);
         }
 
         /// <summary>
-        /// Devuelve las transacciones individuales de una categoría específica en un mes dado.
-        /// Usado para el drill-down interactivo de la tabla de categorías.
+        /// Devuelve las transacciones individuales de una categoría en un rango de fechas.
+        /// Usado para el drill-down interactivo.
         /// </summary>
         [HttpGet("category-transactions")]
         public async Task<IActionResult> GetCategoryTransactions(
-            [FromQuery] int? year,
-            [FromQuery] int? month,
-            [FromQuery] string? category)
+            [FromQuery] string? dateFrom,
+            [FromQuery] string? dateTo,
+            [FromQuery] string? category,
+            // Legacy fallback
+            [FromQuery] int?    year,
+            [FromQuery] int?    month)
         {
             if (string.IsNullOrWhiteSpace(category))
                 return BadRequest("La categoría es requerida.");
 
-            var now         = DateTime.UtcNow;
-            var targetYear  = year  ?? now.Year;
-            var targetMonth = month ?? now.Month;
+            var (start, end, _) = ResolveDateRange(dateFrom, dateTo, null, year, month);
 
-            if (targetMonth < 1 || targetMonth > 12)
-                return BadRequest("El mes debe estar entre 1 y 12.");
-
-            var periodStart = new DateTime(targetYear, targetMonth, 1);
-            var periodEnd   = periodStart.AddMonths(1).AddDays(-1);
-
-            var expenses = await _expenseRepo.GetByDateRangeAsync(User.GetUserId(), periodStart, periodEnd);
+            var expenses = await _expenseRepo.GetByDateRangeAsync(User.GetUserId(), start, end);
 
             var transactions = expenses
                 .Where(e => e.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
@@ -84,6 +84,32 @@ namespace Spendly.Api.Controllers
                 .ToList();
 
             return Ok(transactions);
+        }
+
+        // ── Helpers ───────────────────────────────────────────────────────────
+
+        private static (DateTime start, DateTime end, string label) ResolveDateRange(
+            string? dateFrom, string? dateTo, string? periodLabel,
+            int? year, int? month)
+        {
+            var now = DateTime.UtcNow;
+
+            // Try dateFrom / dateTo first
+            if (!string.IsNullOrWhiteSpace(dateFrom) && !string.IsNullOrWhiteSpace(dateTo)
+                && DateTime.TryParse(dateFrom, out var parsedFrom)
+                && DateTime.TryParse(dateTo,   out var parsedTo))
+            {
+                return (parsedFrom.Date, parsedTo.Date, periodLabel ?? "");
+            }
+
+            // Legacy: year + month
+            var targetYear  = year  ?? now.Year;
+            var targetMonth = month ?? now.Month;
+            targetMonth = Math.Clamp(targetMonth, 1, 12);
+
+            var start = new DateTime(targetYear, targetMonth, 1);
+            var end   = start.AddMonths(1).AddDays(-1);
+            return (start, end, periodLabel ?? "");
         }
     }
 }
