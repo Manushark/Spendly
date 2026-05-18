@@ -6,18 +6,22 @@ namespace Spendly.Web.Services
 {
     /// <summary>
     /// Cliente HTTP que consume el endpoint de reportes financieros de la API.
+    /// Todos los métodos usan el rango de fechas (dateFrom/dateTo) como parámetros principales.
     /// </summary>
     public class ReportApiClient
     {
-        private readonly HttpClient _http;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly HttpClient             _http;
+        private readonly IHttpContextAccessor   _httpContextAccessor;
         private readonly ILogger<ReportApiClient> _logger;
 
-        public ReportApiClient(HttpClient http, IHttpContextAccessor httpContextAccessor, ILogger<ReportApiClient> logger)
+        public ReportApiClient(
+            HttpClient             http,
+            IHttpContextAccessor   httpContextAccessor,
+            ILogger<ReportApiClient> logger)
         {
-            _http = http;
+            _http                = http;
             _httpContextAccessor = httpContextAccessor;
-            _logger = logger;
+            _logger              = logger;
         }
 
         private void SetAuthHeader()
@@ -28,16 +32,25 @@ namespace Spendly.Web.Services
                 : new AuthenticationHeaderValue("Bearer", token);
         }
 
-        /// <summary>Obtiene el reporte financiero del mes y año indicados.</summary>
-        public async Task<FinancialReportDto?> GetReportAsync(int? year = null, int? month = null)
+        /// <summary>
+        /// Obtiene el reporte financiero para el rango de fechas indicado.
+        /// </summary>
+        /// <param name="dateFrom">Inicio del período (yyyy-MM-dd).</param>
+        /// <param name="dateTo">Fin del período (yyyy-MM-dd).</param>
+        /// <param name="periodLabel">Etiqueta del preset seleccionado (ej. "Últimos 90 días").</param>
+        public async Task<FinancialReportDto?> GetReportAsync(
+            DateTime dateFrom,
+            DateTime dateTo,
+            string   periodLabel = "")
         {
             SetAuthHeader();
 
             try
             {
-                var query = (year.HasValue && month.HasValue)
-                    ? $"api/reports?year={year}&month={month}"
-                    : "api/reports";
+                var from  = dateFrom.ToString("yyyy-MM-dd");
+                var to    = dateTo.ToString("yyyy-MM-dd");
+                var label = Uri.EscapeDataString(periodLabel);
+                var query = $"api/reports?dateFrom={from}&dateTo={to}&periodLabel={label}";
 
                 var response = await _http.GetAsync(query);
 
@@ -59,18 +72,23 @@ namespace Spendly.Web.Services
         }
 
         /// <summary>
-        /// Obtiene las transacciones individuales de una categoría y mes específicos.
+        /// Obtiene las transacciones individuales de una categoría en un rango de fechas.
         /// Usado para el modal de drill-down.
         /// </summary>
         public async Task<List<CategoryTransactionDto>> GetCategoryTransactionsAsync(
-            int year, int month, string category)
+            DateTime dateFrom,
+            DateTime dateTo,
+            string   category)
         {
             SetAuthHeader();
 
             try
             {
-                var encodedCategory = Uri.EscapeDataString(category);
-                var query = $"api/reports/category-transactions?year={year}&month={month}&category={encodedCategory}";
+                var from    = dateFrom.ToString("yyyy-MM-dd");
+                var to      = dateTo.ToString("yyyy-MM-dd");
+                var encoded = Uri.EscapeDataString(category);
+                var query   = $"api/reports/category-transactions?dateFrom={from}&dateTo={to}&category={encoded}";
+
                 var response = await _http.GetAsync(query);
 
                 if (!response.IsSuccessStatusCode)
