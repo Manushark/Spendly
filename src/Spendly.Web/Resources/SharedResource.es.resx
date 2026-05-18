@@ -557,4 +557,14 @@
   <data name="Rep_NoBudget"><value>Sin presupuesto</value></data>
   <data name="Rep_BudgetExceeded"><value>Excedido</value></data>
   <data name="Rep_BudgetOf"><value>de</value></data>
+  <data name="Rep_Preset_ThisMonth"><value>Este mes</value></data>
+  <data name="Rep_Preset_LastMonth"><value>Mes anterior</value></data>
+  <data name="Rep_Preset_Last3M"><value>Últimos 90 días</value></data>
+  <data name="Rep_Preset_Last6M"><value>Últimos 6 meses</value></data>
+  <data name="Rep_Preset_YTD"><value>Año a la fecha</value></data>
+  <data name="Rep_Preset_LastYear"><value>Año anterior</value></data>
+  <data name="Rep_Preset_Custom"><value>Rango personalizado</value></data>
+  <data name="Rep_DateFrom"><value>Desde</value></data>
+  <data name="Rep_DateTo"><value>Hasta</value></data>
+  <data name="Rep_ApplyRange"><value>Aplicar</value></data>
 </root>
