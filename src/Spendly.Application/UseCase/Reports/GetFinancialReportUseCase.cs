@@ -4,9 +4,9 @@ using Spendly.Application.Interfaces;
 namespace Spendly.Application.UseCase.Reports
 {
     /// <summary>
-    /// Caso de uso que genera el reporte financiero completo de un usuario para un mes dado.
+    /// Caso de uso que genera el reporte financiero completo de un usuario para un rango de fechas.
     /// Combina datos de gastos, ingresos y presupuestos para producir tendencias, desglose por categoría
-    /// y métricas clave de salud financiera, incluyendo comparativa Budget vs. Actual.
+    /// y métricas clave de salud financiera, incluyendo comparativa Budget vs. Actual y período anterior.
     /// </summary>
     public class GetFinancialReportUseCase
     {
@@ -25,28 +25,35 @@ namespace Spendly.Application.UseCase.Reports
         }
 
         /// <summary>
-        /// Ejecuta la generación del reporte financiero para el mes y año indicados.
+        /// Ejecuta la generación del reporte financiero para el rango de fechas indicado.
         /// </summary>
         /// <param name="userId">ID del usuario autenticado.</param>
-        /// <param name="year">Año del reporte (ej: 2026).</param>
-        /// <param name="month">Mes del reporte (1–12).</param>
-        public async Task<FinancialReportDto> ExecuteAsync(int userId, int year, int month)
+        /// <param name="startDate">Inicio del período (inclusive).</param>
+        /// <param name="endDate">Fin del período (inclusive). Se clampea al día actual si es futuro.</param>
+        /// <param name="periodLabel">Etiqueta legible del período (ej: "Año a la fecha 2026"). Si vacío, se calcula automáticamente.</param>
+        public async Task<FinancialReportDto> ExecuteAsync(
+            int      userId,
+            DateTime startDate,
+            DateTime endDate,
+            string   periodLabel = "")
         {
-            // ── Rango del mes de referencia ──────────────────────────────────────
-            var periodStart = new DateTime(year, month, 1);
-            var periodEnd   = periodStart.AddMonths(1).AddDays(-1);
+            // Normalizar: nunca ir al futuro
+            var today = DateTime.UtcNow.Date;
+            if (endDate.Date > today) endDate = today;
+            startDate = startDate.Date;
 
-            // ── Rango del mes anterior (para comparativa) ─────────────────────────
-            var prevStart = periodStart.AddMonths(-1);
-            var prevEnd   = prevStart.AddMonths(1).AddDays(-1);
+            // ── Período anterior (misma duración, justo antes de startDate) ───────
+            var durationDays = Math.Max((endDate - startDate).Days + 1, 1);
+            var prevStart    = startDate.AddDays(-durationDays);
+            var prevEnd      = startDate.AddDays(-1);
 
             // ── Totales del período ───────────────────────────────────────────────
-            var totalExpenses = await _expenseRepo.GetTotalAmountAsync(userId, periodStart, periodEnd);
-            var totalIncomes  = await _incomeRepo.GetTotalAmountAsync(userId, periodStart, periodEnd);
+            var totalExpenses = await _expenseRepo.GetTotalAmountAsync(userId, startDate, endDate);
+            var totalIncomes  = await _incomeRepo.GetTotalAmountAsync(userId, startDate, endDate);
             var netBalance    = totalIncomes - totalExpenses;
             var ratio         = totalIncomes > 0 ? (totalExpenses / totalIncomes) * 100 : 0m;
 
-            // ── Totales del mes anterior ──────────────────────────────────────────
+            // ── Totales del período anterior ──────────────────────────────────────
             var prevExpenses = await _expenseRepo.GetTotalAmountAsync(userId, prevStart, prevEnd);
             var prevIncomes  = await _incomeRepo.GetTotalAmountAsync(userId, prevStart, prevEnd);
 
@@ -60,12 +67,13 @@ namespace Spendly.Application.UseCase.Reports
                 ? Math.Round((incomeDelta / prevIncomes) * 100, 1)
                 : (decimal?)null;
 
-            // ── Desglose por categoría + Budget vs. Actual ─────────────────────
-            var categoryTotals   = await _expenseRepo.GetTotalByCategoryAsync(userId, periodStart, periodEnd);
-            var expensesInPeriod = (await _expenseRepo.GetByDateRangeAsync(userId, periodStart, periodEnd)).ToList();
+            // ── Desglose por categoría + Budget vs. Actual ────────────────────────
+            var categoryTotals   = await _expenseRepo.GetTotalByCategoryAsync(userId, startDate, endDate);
+            var expensesInPeriod = (await _expenseRepo.GetByDateRangeAsync(userId, startDate, endDate)).ToList();
 
-            // Cargar todos los presupuestos del mes de una sola vez (1 query)
-            var budgets = await _budgetRepo.GetByUserAndMonthAsync(userId, year, month);
+            // Presupuesto: se usa el mes de startDate como referencia
+            // (para rangos multi-mes se muestra el budget del primer mes del período)
+            var budgets = await _budgetRepo.GetByUserAndMonthAsync(userId, startDate.Year, startDate.Month);
             var budgetByCategory = budgets.ToDictionary(
                 b => b.Category,
                 b => b.MonthlyLimit,
@@ -99,34 +107,43 @@ namespace Spendly.Application.UseCase.Reports
             var topCategory = categoryBreakdown.FirstOrDefault();
 
             // ── Promedio diario ───────────────────────────────────────────────────
-            var today      = DateTime.UtcNow.Date;
-            var daysInCalc = (year == today.Year && month == today.Month)
-                ? (today - periodStart.Date).Days + 1
-                : DateTime.DaysInMonth(year, month);
-            var avgDaily = daysInCalc > 0 ? totalExpenses / daysInCalc : 0m;
+            var avgDaily = totalExpenses / durationDays;
 
-            // ── Tendencia mensual (últimos 6 meses) ───────────────────────────────
+            // ── Tendencia mensual (dinámica según el rango) ───────────────────────
+            // Muestra al menos 6 meses de contexto, y crece con el rango (máx 12 meses).
+            var rangeMonths = ((endDate.Year - startDate.Year) * 12) + endDate.Month - startDate.Month + 1;
+            var contextBack = Math.Max(6 - rangeMonths, 0);
+            var trendFrom   = new DateTime(startDate.Year, startDate.Month, 1).AddMonths(-contextBack);
+            var trendTo     = new DateTime(endDate.Year, endDate.Month, 1);
+
             var trend = new List<MonthlyFinancialTrendDto>();
-            for (int i = 5; i >= 0; i--)
+            for (var m = trendFrom; m <= trendTo; m = m.AddMonths(1))
             {
-                var trendDate  = new DateTime(year, month, 1).AddMonths(-i);
-                var trendStart = trendDate;
-                var trendEnd   = trendStart.AddMonths(1).AddDays(-1);
+                if (trend.Count >= 12) break; // Cota máxima
+                var ms = m;
+                var me = m.AddMonths(1).AddDays(-1);
 
-                var expAmount = await _expenseRepo.GetTotalAmountAsync(userId, trendStart, trendEnd);
-                var incAmount = await _incomeRepo.GetTotalAmountAsync(userId, trendStart, trendEnd);
+                var expAmount = await _expenseRepo.GetTotalAmountAsync(userId, ms, me);
+                var incAmount = await _incomeRepo.GetTotalAmountAsync(userId, ms, me);
 
                 trend.Add(new MonthlyFinancialTrendDto
                 {
-                    Month    = trendDate.ToString("MMM yyyy"),
+                    Month    = m.ToString("MMM yyyy"),
                     Expenses = expAmount,
                     Incomes  = incAmount
                 });
             }
 
+            // ── Etiqueta del período ──────────────────────────────────────────────
+            var label = !string.IsNullOrEmpty(periodLabel)
+                ? periodLabel
+                : (startDate.Year == endDate.Year && startDate.Month == endDate.Month)
+                    ? startDate.ToString("MMMM yyyy")
+                    : $"{startDate:d MMM yyyy} – {endDate:d MMM yyyy}";
+
             return new FinancialReportDto
             {
-                PeriodLabel          = periodStart.ToString("MMMM yyyy"),
+                PeriodLabel          = label,
                 TotalExpenses        = totalExpenses,
                 TotalIncomes         = totalIncomes,
                 NetBalance           = netBalance,
@@ -136,7 +153,7 @@ namespace Spendly.Application.UseCase.Reports
                 TopCategoryAmount    = topCategory?.Amount ?? 0,
                 MonthlyTrend         = trend,
                 CategoryBreakdown    = categoryBreakdown,
-                // Comparativa mes anterior
+                // Comparativa período anterior
                 PrevMonthExpenses    = prevExpenses,
                 PrevMonthIncomes     = prevIncomes,
                 ExpenseDelta         = expenseDelta,
