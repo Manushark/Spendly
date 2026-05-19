@@ -18,6 +18,13 @@
     string dateFromStr  = ViewBag.DateFrom    ?? DateTime.Now.ToString("yyyy-MM-01");
     string dateToStr    = ViewBag.DateTo      ?? DateTime.Now.ToString("yyyy-MM-dd");
 
+    // Heatmap: serializa los datos diarios como dict {"yyyy-MM-dd": {amount, count}}
+    var dailyDict = Model.DailySpending.ToDictionary(
+        d => d.Date,
+        d => new { amount = d.Amount, count = d.TransactionCount });
+    var dailyJson = System.Text.Json.JsonSerializer.Serialize(dailyDict);
+    var maxDaily  = Model.MaxDailyAmount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+
     // Comparativa badges helpers
     string ExpBadgeClass = Model.ExpenseDelta > 0 ? "text-danger" : "text-success";
     string ExpArrow      = Model.ExpenseDelta > 0 ? "bi-arrow-up-short" : "bi-arrow-down-short";
@@ -83,6 +90,56 @@
         }
         #customRangePanel.show { display: flex; }
         .flatpickr-input { border-radius: 8px !important; }
+        /* ── Heatmap ── */
+        .heatmap-scroll { overflow-x: auto; padding-bottom: 4px; }
+        .heatmap-body   { display: flex; gap: 2px; align-items: flex-start; }
+        .heatmap-day-labels {
+            display: flex; flex-direction: column;
+            gap: 3px; padding-top: 18px;
+            min-width: 28px;
+        }
+        .heatmap-day-label {
+            height: 13px; font-size: 0.65rem;
+            color: #6c757d; line-height: 13px;
+            text-align: right; padding-right: 4px;
+        }
+        .heatmap-grid { display: flex; gap: 3px; }
+        .heatmap-week { display: flex; flex-direction: column; gap: 3px; }
+        .heatmap-week-header {
+            height: 16px; font-size: 0.65rem;
+            color: #6c757d; white-space: nowrap;
+            overflow: visible;
+        }
+        .heatmap-cell {
+            width: 13px; height: 13px;
+            border-radius: 3px;
+            background: #edf0f4;
+            cursor: default;
+            transition: transform 0.1s;
+        }
+        .heatmap-cell:hover { transform: scale(1.4); z-index: 5; }
+        .heatmap-cell.out-of-range { background: transparent !important; pointer-events: none; }
+        /* Tooltip flotante */
+        #heatTooltip {
+            position: fixed;
+            display: none;
+            background: rgba(15,20,30,0.92);
+            color: #fff;
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 9999;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .heatmap-legend {
+            display: flex; align-items: center;
+            gap: 4px; font-size: 0.72rem; color: #6c757d;
+        }
+        .heatmap-legend-cell {
+            width: 13px; height: 13px; border-radius: 3px;
+        }
     </style>
 }
 
@@ -305,7 +362,58 @@
         </div>
     </div>
 
-    @* Row 2: Trend & Category Breakdown *@
+    @* ── Heatmap de Gastos (tipo GitHub) ── *@
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius:16px;">
+                <div class="card-header bg-white border-0 pt-4 pb-2 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-calendar3 text-danger me-2"></i>@L["Rep_HeatmapTitle"]
+                        </h5>
+                        <small class="text-muted">@L["Rep_HeatmapSubtitle"]</small>
+                    </div>
+                    <div class="heatmap-legend">
+                        <span>@L["Rep_HeatmapLegendLess"]</span>
+                        <div class="heatmap-legend-cell" style="background:#edf0f4;"></div>
+                        <div class="heatmap-legend-cell" style="background:#fecaca;"></div>
+                        <div class="heatmap-legend-cell" style="background:#f87171;"></div>
+                        <div class="heatmap-legend-cell" style="background:#ef4444;"></div>
+                        <div class="heatmap-legend-cell" style="background:#991b1b;"></div>
+                        <span>@L["Rep_HeatmapLegendMore"]</span>
+                    </div>
+                </div>
+                <div class="card-body pt-2 pb-4">
+                    @if (Model.DailySpending.Any())
+                    {
+                        <div class="heatmap-scroll">
+                            <div class="heatmap-body">
+                                <div class="heatmap-day-labels">
+                                    <div class="heatmap-day-label"></div>
+                                    <div class="heatmap-day-label">Mon</div>
+                                    <div class="heatmap-day-label"></div>
+                                    <div class="heatmap-day-label">Wed</div>
+                                    <div class="heatmap-day-label"></div>
+                                    <div class="heatmap-day-label">Fri</div>
+                                    <div class="heatmap-day-label"></div>
+                                </div>
+                                <div id="heatmapGrid" class="heatmap-grid"></div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-calendar-x fs-2 d-block mb-2 opacity-50"></i>
+                            <small>@L["Rep_HeatmapNoData"]</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Row 2: Trend &amp; Category Breakdown *@
     <div class="row g-4 mb-4">
         <div class="col-lg-8">
             <div class="card chart-card shadow-sm h-100">
@@ -703,5 +811,103 @@
                 }
             });
         });
+
+        // ── Spending Heatmap (GitHub-style) ────────────────────────────
+        (function buildHeatmap() {
+            var grid = document.getElementById('heatmapGrid');
+            if (!grid) return;
+
+            var dailyData = @Html.Raw(dailyJson);
+            var maxAmt    = @Html.Raw(maxDaily);
+
+            var MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+            // Color scale: 5 buckets
+            function heatColor(amount) {
+                if (!amount || amount <= 0 || maxAmt <= 0) return '#edf0f4';
+                var r = amount / maxAmt;
+                if (r < 0.15) return '#fee2e2';
+                if (r < 0.35) return '#fca5a5';
+                if (r < 0.60) return '#f87171';
+                if (r < 0.80) return '#ef4444';
+                return '#991b1b';
+            }
+
+            // Parse range
+            var start = new Date('@Html.Raw(dateFromStr)');
+            var end   = new Date('@Html.Raw(dateToStr)');
+
+            // Align to Monday of start week (ISO week: Mon=0)
+            var dow0 = (start.getDay() + 6) % 7; // 0=Mon
+            var aligned = new Date(start);
+            aligned.setDate(aligned.getDate() - dow0);
+
+            // Floating tooltip
+            var tip = document.getElementById('heatTooltip');
+            if (!tip) {
+                tip = document.createElement('div');
+                tip.id = 'heatTooltip';
+                document.body.appendChild(tip);
+            }
+
+            var cur = new Date(aligned);
+            var lastMonth = -1;
+
+            while (cur <= end) {
+                // New week column
+                var week = document.createElement('div');
+                week.className = 'heatmap-week';
+
+                // Month header (show only on first week of a new month)
+                var header = document.createElement('div');
+                header.className = 'heatmap-week-header';
+                if (cur.getMonth() !== lastMonth && cur >= start) {
+                    header.textContent = MONTH_NAMES[cur.getMonth()];
+                    lastMonth = cur.getMonth();
+                }
+                week.appendChild(header);
+
+                // 7 day cells
+                for (var d = 0; d < 7; d++) {
+                    var cell = document.createElement('div');
+                    cell.className = 'heatmap-cell';
+
+                    if (cur < start || cur > end) {
+                        cell.classList.add('out-of-range');
+                    } else {
+                        var iso = cur.toISOString().slice(0, 10);
+                        var entry   = dailyData[iso];
+                        var amount  = entry ? entry.amount  : 0;
+                        var count   = entry ? entry.count   : 0;
+
+                        cell.style.backgroundColor = heatColor(amount);
+
+                        // Tooltip
+                        (function(c, i, a, n) {
+                            c.addEventListener('mouseover', function(e) {
+                                var amtStr = a > 0
+                                    ? '$' + Number(a).toLocaleString(undefined, {minimumFractionDigits: 2})
+                                    : 'No spending';
+                                var label = n > 0 ? amtStr + ' \u00b7 ' + n + ' txn' + (n !== 1 ? 's' : '') : amtStr;
+                                tip.textContent = i + ': ' + label;
+                                tip.style.display = 'block';
+                            });
+                            c.addEventListener('mousemove', function(e) {
+                                tip.style.left = (e.clientX + 14) + 'px';
+                                tip.style.top  = (e.clientY - 32) + 'px';
+                            });
+                            c.addEventListener('mouseout', function() {
+                                tip.style.display = 'none';
+                            });
+                        })(cell, iso, amount, count);
+                    }
+
+                    week.appendChild(cell);
+                    cur.setDate(cur.getDate() + 1);
+                }
+
+                grid.appendChild(week);
+            }
+        })();
     </script>
 }
