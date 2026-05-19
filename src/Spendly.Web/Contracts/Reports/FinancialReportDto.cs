@@ -21,6 +21,10 @@ namespace Spendly.Web.Contracts.Reports
         public decimal? ExpenseChangePercent { get; set; }
         public decimal IncomeDelta { get; set; }
         public decimal? IncomeChangePercent { get; set; }
+
+        // ── Heatmap ──────────────────────────────────────────
+        public List<DailySpendingDto> DailySpending { get; set; } = new();
+        public decimal MaxDailyAmount { get; set; }
     }
 
     public class MonthlyFinancialTrendDto
@@ -52,5 +56,13 @@ namespace Spendly.Web.Contracts.Reports
         public string Currency { get; set; } = string.Empty;
         public string Date { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
+    }
+
+    /// <summary>Total de gastos de un día. Usado para el Spending Heatmap.</summary>
+    public class DailySpendingDto
+    {
+        public string Date { get; set; } = string.Empty;
+        public decimal Amount { get; set; }
+        public int TransactionCount { get; set; }
     }
 }
