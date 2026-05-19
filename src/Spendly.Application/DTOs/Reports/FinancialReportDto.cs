@@ -36,25 +36,33 @@ namespace Spendly.Application.DTOs.Reports
         /// <summary>Promedio diario de gasto durante el mes.</summary>
         public decimal AverageDailyExpense { get; set; }
 
-        // ── Comparativa con el mes anterior ─────────────────────────────────────
+        // ── Comparativa con el período anterior ──────────────────────────────────────
 
-        /// <summary>Total de gastos del mes anterior (para comparativa).</summary>
+        /// <summary>Total de gastos del período anterior (para comparativa).</summary>
         public decimal PrevMonthExpenses { get; set; }
 
-        /// <summary>Total de ingresos del mes anterior (para comparativa).</summary>
+        /// <summary>Total de ingresos del período anterior (para comparativa).</summary>
         public decimal PrevMonthIncomes { get; set; }
 
-        /// <summary>Variación absoluta de gastos vs. mes anterior.</summary>
+        /// <summary>Variación absoluta de gastos vs. período anterior.</summary>
         public decimal ExpenseDelta { get; set; }
 
-        /// <summary>Variación porcentual de gastos vs. mes anterior (puede ser null si el mes anterior es 0).</summary>
+        /// <summary>Variación porcentual de gastos vs. período anterior (null si el período anterior es 0).</summary>
         public decimal? ExpenseChangePercent { get; set; }
 
-        /// <summary>Variación absoluta de ingresos vs. mes anterior.</summary>
+        /// <summary>Variación absoluta de ingresos vs. período anterior.</summary>
         public decimal IncomeDelta { get; set; }
 
-        /// <summary>Variación porcentual de ingresos vs. mes anterior.</summary>
+        /// <summary>Variación porcentual de ingresos vs. período anterior.</summary>
         public decimal? IncomeChangePercent { get; set; }
+
+        // ── Mapa de Calor de Gastos ──────────────────────────────────────────
+
+        /// <summary>Totales diarios de gasto en el período (usado para el heatmap tipo GitHub).</summary>
+        public List<DailySpendingDto> DailySpending { get; set; } = new();
+
+        /// <summary>Máximo gasto diario del período. Usado para escalar los colores del heatmap.</summary>
+        public decimal MaxDailyAmount { get; set; }
     }
 
     /// <summary>
@@ -101,5 +109,21 @@ namespace Spendly.Application.DTOs.Reports
 
         /// <summary>True si el gasto superó el límite del presupuesto.</summary>
         public bool IsBudgetExceeded => BudgetLimit.HasValue && Amount > BudgetLimit.Value;
+    }
+
+    /// <summary>
+    /// Representa el total de gastos de un día específico.
+    /// Usado para construir el mapa de calor tipo GitHub en la vista de reportes.
+    /// </summary>
+    public class DailySpendingDto
+    {
+        /// <summary>Fecha en formato "yyyy-MM-dd".</summary>
+        public string Date { get; set; } = string.Empty;
+
+        /// <summary>Suma total de los gastos del día.</summary>
+        public decimal Amount { get; set; }
+
+        /// <summary>Número de transacciones en ese día.</summary>
+        public int TransactionCount { get; set; }
     }
 }
