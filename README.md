@@ -131,5 +131,5 @@ See the `LICENSE` file for full details.
 
 ## 👨‍💻 Author
 
-**Manuel Rivas**  
+**Manuel Rivas T.**  
 *Software developer passionate about backend development, software architecture, and scalable application design.*
