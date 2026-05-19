@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -567,4 +567,11 @@
   <data name="Rep_DateFrom"><value>Desde</value></data>
   <data name="Rep_DateTo"><value>Hasta</value></data>
   <data name="Rep_ApplyRange"><value>Aplicar</value></data>
+  <data name="Rep_HeatmapTitle"><value>Mapa de Calor de Gastos</value></data>
+  <data name="Rep_HeatmapSubtitle"><value>Intensidad diaria — más oscuro significa más gasto</value></data>
+  <data name="Rep_HeatmapLegendLess"><value>Menos</value></data>
+  <data name="Rep_HeatmapLegendMore"><value>Más</value></data>
+  <data name="Rep_HeatmapNoData"><value>Sin datos de gasto para este período.</value></data>
+  <data name="Rep_HeatmapTxns"><value>transacciones</value></data>
 </root>
+

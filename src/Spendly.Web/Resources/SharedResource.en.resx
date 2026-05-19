@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -768,4 +768,11 @@
   <data name="Rep_DateFrom"><value>From</value></data>
   <data name="Rep_DateTo"><value>To</value></data>
   <data name="Rep_ApplyRange"><value>Apply</value></data>
+  <data name="Rep_HeatmapTitle"><value>Spending Heatmap</value></data>
+  <data name="Rep_HeatmapSubtitle"><value>Daily spending intensity — darker means more spent</value></data>
+  <data name="Rep_HeatmapLegendLess"><value>Less</value></data>
+  <data name="Rep_HeatmapLegendMore"><value>More</value></data>
+  <data name="Rep_HeatmapNoData"><value>No spending data available for this period.</value></data>
+  <data name="Rep_HeatmapTxns"><value>txns</value></data>
 </root>
+
