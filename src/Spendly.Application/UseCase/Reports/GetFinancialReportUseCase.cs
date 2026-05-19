@@ -141,6 +141,20 @@ namespace Spendly.Application.UseCase.Reports
                     ? startDate.ToString("MMMM yyyy")
                     : $"{startDate:d MMM yyyy} – {endDate:d MMM yyyy}";
 
+            // ── Mapa de Calor: agrupación diaria (reutiliza expensesInPeriod, 0 queries adicionales) ──
+            var dailySpending = expensesInPeriod
+                .GroupBy(e => e.Date.Date)
+                .Select(g => new DailySpendingDto
+                {
+                    Date             = g.Key.ToString("yyyy-MM-dd"),
+                    Amount           = g.Sum(e => e.Amount.Value),
+                    TransactionCount = g.Count()
+                })
+                .OrderBy(d => d.Date)
+                .ToList();
+
+            var maxDailyAmount = dailySpending.Any() ? dailySpending.Max(d => d.Amount) : 0m;
+
             return new FinancialReportDto
             {
                 PeriodLabel          = label,
@@ -159,7 +173,10 @@ namespace Spendly.Application.UseCase.Reports
                 ExpenseDelta         = expenseDelta,
                 ExpenseChangePercent = expenseChangePercent,
                 IncomeDelta          = incomeDelta,
-                IncomeChangePercent  = incomeChangePercent
+                IncomeChangePercent  = incomeChangePercent,
+                // Heatmap
+                DailySpending        = dailySpending,
+                MaxDailyAmount       = maxDailyAmount
             };
         }
     }
