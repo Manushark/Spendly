@@ -25,6 +25,9 @@ namespace Spendly.Web.Contracts.Reports
         // ── Heatmap ──────────────────────────────────────────
         public List<DailySpendingDto> DailySpending { get; set; } = new();
         public decimal MaxDailyAmount { get; set; }
+
+        // ── Insights ────────────────────────────────────────────
+        public List<InsightDto> Insights { get; set; } = new();
     }
 
     public class MonthlyFinancialTrendDto
@@ -64,5 +67,16 @@ namespace Spendly.Web.Contracts.Reports
         public string Date { get; set; } = string.Empty;
         public decimal Amount { get; set; }
         public int TransactionCount { get; set; }
+    }
+
+    /// <summary>Insight financiero generado automáticamente por el motor de reglas.</summary>
+    public class InsightDto
+    {
+        public string Type { get; set; } = "info";
+        public string Icon { get; set; } = "bi-lightbulb";
+        public string MessageKey { get; set; } = string.Empty;
+        public string Param1 { get; set; } = string.Empty;
+        public string Param2 { get; set; } = string.Empty;
+        public string Param3 { get; set; } = string.Empty;
     }
 }
