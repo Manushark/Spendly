@@ -386,57 +386,6 @@
         </div>
     </div>
 
-    @* ── Heatmap de Gastos (tipo GitHub) ── *@
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm" style="border-radius:16px;">
-                <div class="card-header bg-white border-0 pt-4 pb-2 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="mb-0 fw-semibold">
-                            <i class="bi bi-calendar3 text-danger me-2"></i>@L["Rep_HeatmapTitle"]
-                        </h5>
-                        <small class="text-muted">@L["Rep_HeatmapSubtitle"]</small>
-                    </div>
-                    <div class="heatmap-legend">
-                        <span>@L["Rep_HeatmapLegendLess"]</span>
-                        <div class="heatmap-legend-cell" style="background:#edf0f4;"></div>
-                        <div class="heatmap-legend-cell" style="background:#fecaca;"></div>
-                        <div class="heatmap-legend-cell" style="background:#f87171;"></div>
-                        <div class="heatmap-legend-cell" style="background:#ef4444;"></div>
-                        <div class="heatmap-legend-cell" style="background:#991b1b;"></div>
-                        <span>@L["Rep_HeatmapLegendMore"]</span>
-                    </div>
-                </div>
-                <div class="card-body pt-2 pb-4">
-                    @if (Model.DailySpending.Any())
-                    {
-                        <div class="heatmap-scroll">
-                            <div class="heatmap-body">
-                                <div class="heatmap-day-labels">
-                                    <div class="heatmap-day-label"></div>
-                                    <div class="heatmap-day-label">Mon</div>
-                                    <div class="heatmap-day-label"></div>
-                                    <div class="heatmap-day-label">Wed</div>
-                                    <div class="heatmap-day-label"></div>
-                                    <div class="heatmap-day-label">Fri</div>
-                                    <div class="heatmap-day-label"></div>
-                                </div>
-                                <div id="heatmapGrid" class="heatmap-grid"></div>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-4 text-muted">
-                            <i class="bi bi-calendar-x fs-2 d-block mb-2 opacity-50"></i>
-                            <small>@L["Rep_HeatmapNoData"]</small>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-
     @* Row 2: Trend &amp; Category Breakdown *@
     <div class="row g-4 mb-4">
         <div class="col-lg-8">
@@ -481,6 +430,57 @@
                         <div class="text-center text-muted">
                             <i class="bi bi-pie-chart fs-1 d-block mb-3 opacity-50"></i>
                             <p>@L["Rep_NoCategoryData"]</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Heatmap de Gastos (tipo GitHub) ── *@
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius:16px;">
+                <div class="card-header bg-white border-0 pt-4 pb-2 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-calendar3 text-danger me-2"></i>@L["Rep_HeatmapTitle"]
+                        </h5>
+                        <small class="text-muted">@L["Rep_HeatmapSubtitle"]</small>
+                    </div>
+                    <div class="heatmap-legend">
+                        <span>@L["Rep_HeatmapLegendLess"]</span>
+                        <div class="heatmap-legend-cell" style="background:#edf0f4;"></div>
+                        <div class="heatmap-legend-cell" style="background:#fecaca;"></div>
+                        <div class="heatmap-legend-cell" style="background:#f87171;"></div>
+                        <div class="heatmap-legend-cell" style="background:#ef4444;"></div>
+                        <div class="heatmap-legend-cell" style="background:#991b1b;"></div>
+                        <span>@L["Rep_HeatmapLegendMore"]</span>
+                    </div>
+                </div>
+                <div class="card-body pt-2 pb-4">
+                    @if (Model.DailySpending.Any())
+                    {
+                        <div class="heatmap-scroll">
+                            <div class="heatmap-body">
+                                <div class="heatmap-day-labels">
+                                    <div class="heatmap-day-label"></div>
+                                    <div class="heatmap-day-label">Mon</div>
+                                    <div class="heatmap-day-label"></div>
+                                    <div class="heatmap-day-label">Wed</div>
+                                    <div class="heatmap-day-label"></div>
+                                    <div class="heatmap-day-label">Fri</div>
+                                    <div class="heatmap-day-label"></div>
+                                </div>
+                                <div id="heatmapGrid" class="heatmap-grid"></div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-calendar-x fs-2 d-block mb-2 opacity-50"></i>
+                            <small>@L["Rep_HeatmapNoData"]</small>
                         </div>
                     }
                 </div>
