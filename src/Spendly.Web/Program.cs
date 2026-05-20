@@ -110,6 +110,17 @@ builder.Services.AddHttpClient<ImportApiClient>(client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+// Reports API client
+builder.Services.AddHttpClient<ReportApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
+// Report export (PDF + CSV)
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+builder.Services.AddSingleton<Spendly.Web.Services.ReportExportService>();
+
+
 // Keep the API warm in production (prevents Azure F1 cold start)
 if (!builder.Environment.IsDevelopment())
 {

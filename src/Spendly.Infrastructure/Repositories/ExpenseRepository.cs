@@ -153,7 +153,7 @@ namespace Spendly.Infrastructure.Repositories
         public async Task<IEnumerable<Expense>> GetByDateRangeAsync(int userId, DateTime startDate, DateTime endDate)
         {
             return await _context.Expenses
-                .Where(e => e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
+                .Where(e => !e.IsDeleted && e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
                 .OrderByDescending(e => e.Date)
                 .ThenByDescending(e => e.Id)
                 .ToListAsync();
@@ -161,14 +161,18 @@ namespace Spendly.Infrastructure.Repositories
 
         public async Task<Dictionary<string, decimal>> GetTotalByCategoryAsync(int userId, DateTime startDate, DateTime endDate)
         {
-            return await _context.Expenses
-                .Where(e => e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
+            var expenses = await _context.Expenses
+                .Where(e => !e.IsDeleted && e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
+                .ToListAsync();
+
+            return expenses
                 .GroupBy(e => e.Category)
-                .ToDictionaryAsync(
+                .ToDictionary(
                     g => g.Key,
                     g => g.Sum(e => e.Amount.Value)
                 );
         }
+
 
         public async Task<IEnumerable<Expense>> GetRecentAsync(int userId, int count)
         {
@@ -182,23 +186,29 @@ namespace Spendly.Infrastructure.Repositories
 
         public async Task<decimal> GetTotalAmountAsync(int userId, DateTime startDate, DateTime endDate)
         {
-            return await _context.Expenses
-                .Where(e => e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
-                .SumAsync(e => (decimal?)e.Amount.Value) ?? 0m;
+            var expenses = await _context.Expenses
+                .Where(e => !e.IsDeleted && e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
+                .ToListAsync();
+
+            return expenses.Sum(e => e.Amount.Value);
         }
 
         public async Task<Dictionary<DateTime, decimal>> GetMonthlyTotalsAsync(int userId, int monthsBack)
         {
             var startDate = DateTime.UtcNow.AddMonths(-monthsBack).Date;
 
-            return await _context.Expenses
-                .Where(e => e.UserId == userId && e.Date >= startDate)
+            var expenses = await _context.Expenses
+                .Where(e => !e.IsDeleted && e.UserId == userId && e.Date >= startDate)
+                .ToListAsync();
+
+            return expenses
                 .GroupBy(e => new DateTime(e.Date.Year, e.Date.Month, 1))
-                .ToDictionaryAsync(
+                .ToDictionary(
                     g => g.Key,
                     g => g.Sum(e => e.Amount.Value)
                 );
         }
+
 
         public async Task<int> CountByCategoryAsync(int userId, string categoryName)
         {
