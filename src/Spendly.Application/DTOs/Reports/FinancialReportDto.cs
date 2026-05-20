@@ -63,6 +63,11 @@ namespace Spendly.Application.DTOs.Reports
 
         /// <summary>Máximo gasto diario del período. Usado para escalar los colores del heatmap.</summary>
         public decimal MaxDailyAmount { get; set; }
+
+        // ── Insights automáticos ───────────────────────────────────────────
+
+        /// <summary>Insights financieros generados automáticamente por reglas de negocio.</summary>
+        public List<InsightDto> Insights { get; set; } = new();
     }
 
     /// <summary>
@@ -125,5 +130,25 @@ namespace Spendly.Application.DTOs.Reports
 
         /// <summary>Número de transacciones en ese día.</summary>
         public int TransactionCount { get; set; }
+    }
+
+    /// <summary>
+    /// Un insight financiero generado automáticamente por reglas de negocio.
+    /// Contiene la clave i18n del mensaje y los parámetros dinámicos para interpolación.
+    /// </summary>
+    public class InsightDto
+    {
+        /// <summary>Nivel visual: "positive", "warning", "danger", "info".</summary>
+        public string Type { get; set; } = "info";
+
+        /// <summary>Clase de Bootstrap Icons (ej. "bi-piggy-bank-fill").</summary>
+        public string Icon { get; set; } = "bi-lightbulb";
+
+        /// <summary>Clave de recurso i18n. Soporta {0}, {1}, {2} como placeholders.</summary>
+        public string MessageKey { get; set; } = string.Empty;
+
+        public string Param1 { get; set; } = string.Empty;
+        public string Param2 { get; set; } = string.Empty;
+        public string Param3 { get; set; } = string.Empty;
     }
 }
