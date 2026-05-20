@@ -774,5 +774,15 @@
   <data name="Rep_HeatmapLegendMore"><value>More</value></data>
   <data name="Rep_HeatmapNoData"><value>No spending data available for this period.</value></data>
   <data name="Rep_HeatmapTxns"><value>txns</value></data>
-</root>
+  <data name="Ins_SectionTitle"><value>✨ Financial Insights</value></data>
+  <data name="Ins_SectionSubtitle"><value>Automatically generated based on your activity</value></data>
+  <data name="Ins_NoSpending"><value>No expenses recorded this period. Great financial discipline!</value></data>
+  <data name="Ins_SavingsExcellent"><value>You saved {0}% of your income this period. Outstanding work! 🎉</value></data>
+  <data name="Ins_SavingsGood"><value>You saved {0}% of your income this period. Keep it up!</value></data>
+  <data name="Ins_SavingsNegative"><value>You spent {0}% more than you earned. Time to review your budget.</value></data>
+  <data name="Ins_TopCategory"><value>Your biggest expense category was '{0}', representing {1}% of total spending.</value></data>
+  <data name="Ins_BudgetExceeded"><value>You exceeded your '{0}' budget by ${1}. Consider adjusting your limit.</value></data>
+  <data name="Ins_PeakDay"><value>Your highest spending day was {0} with ${1}.</value></data>
+  <data name="Ins_WeekendSpender"><value>{0}% of your spending happens on weekends. Watch those weekend expenses!</value></data></root>
+
 
