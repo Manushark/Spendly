@@ -176,8 +176,122 @@ namespace Spendly.Application.UseCase.Reports
                 IncomeChangePercent  = incomeChangePercent,
                 // Heatmap
                 DailySpending        = dailySpending,
-                MaxDailyAmount       = maxDailyAmount
+                MaxDailyAmount       = maxDailyAmount,
+                // Insights
+                Insights = GenerateInsights(totalExpenses, totalIncomes, categoryBreakdown, dailySpending)
             };
+        }
+
+        // ── Motor de Insights ─────────────────────────────────────────────────
+
+        /// <summary>
+        /// Genera hasta 5 insights financieros basados en reglas de negocio.
+        /// Sin IA: lógica determinista que "habla" como un asesor financiero.
+        /// </summary>
+        private static List<InsightDto> GenerateInsights(
+            decimal                  totalExpenses,
+            decimal                  totalIncomes,
+            List<CategoryReportItemDto> categories,
+            List<DailySpendingDto>   daily)
+        {
+            var insights = new List<InsightDto>();
+
+            // ── Caso especial: sin gastos ─────────────────────────────────────
+            if (totalExpenses == 0)
+            {
+                insights.Add(new InsightDto
+                {
+                    Type       = "positive",
+                    Icon       = "bi-shield-check",
+                    MessageKey = "Ins_NoSpending"
+                });
+                return insights;
+            }
+
+            // ── 1. Tasa de ahorro ─────────────────────────────────────────────
+            if (totalIncomes > 0)
+            {
+                var savingsRate = Math.Round(((totalIncomes - totalExpenses) / totalIncomes) * 100, 1);
+
+                if (savingsRate >= 20)
+                    insights.Add(new InsightDto
+                    {
+                        Type = "positive", Icon = "bi-piggy-bank-fill",
+                        MessageKey = "Ins_SavingsExcellent",
+                        Param1 = savingsRate.ToString("N1")
+                    });
+                else if (savingsRate >= 1)
+                    insights.Add(new InsightDto
+                    {
+                        Type = "info", Icon = "bi-check-circle-fill",
+                        MessageKey = "Ins_SavingsGood",
+                        Param1 = savingsRate.ToString("N1")
+                    });
+                else if (savingsRate < 0)
+                    insights.Add(new InsightDto
+                    {
+                        Type = "danger", Icon = "bi-exclamation-triangle-fill",
+                        MessageKey = "Ins_SavingsNegative",
+                        Param1 = Math.Abs(savingsRate).ToString("N1")
+                    });
+            }
+
+            // ── 2. Categoría con mayor gasto ──────────────────────────────────
+            var top = categories.FirstOrDefault();
+            if (top is not null)
+                insights.Add(new InsightDto
+                {
+                    Type = "info", Icon = "bi-bar-chart-fill",
+                    MessageKey = "Ins_TopCategory",
+                    Param1 = top.Category,
+                    Param2 = top.Percentage.ToString("N1")
+                });
+
+            // ── 3. Presupuesto más excedido ───────────────────────────────────
+            var mostExceeded = categories
+                .Where(c => c.IsBudgetExceeded && c.BudgetLimit.HasValue)
+                .OrderByDescending(c => c.Amount - c.BudgetLimit!.Value)
+                .FirstOrDefault();
+
+            if (mostExceeded is not null)
+                insights.Add(new InsightDto
+                {
+                    Type = "warning", Icon = "bi-wallet2",
+                    MessageKey = "Ins_BudgetExceeded",
+                    Param1 = mostExceeded.Category,
+                    Param2 = (mostExceeded.Amount - mostExceeded.BudgetLimit!.Value).ToString("N2")
+                });
+
+            // ── 4. Día pico de gasto ──────────────────────────────────────────
+            var peak = daily.OrderByDescending(d => d.Amount).FirstOrDefault();
+            if (peak is not null && peak.Amount > 0)
+                insights.Add(new InsightDto
+                {
+                    Type = "info", Icon = "bi-calendar-event",
+                    MessageKey = "Ins_PeakDay",
+                    Param1 = peak.Date,
+                    Param2 = peak.Amount.ToString("N2")
+                });
+
+            // ── 5. Patrón fin de semana ───────────────────────────────────────
+            if (daily.Any() && totalExpenses > 0)
+            {
+                var weekendTotal = daily
+                    .Where(d => DateTime.TryParse(d.Date, out var dt)
+                             && (dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday))
+                    .Sum(d => d.Amount);
+
+                var weekendPct = Math.Round((weekendTotal / totalExpenses) * 100, 1);
+                if (weekendPct > 40)
+                    insights.Add(new InsightDto
+                    {
+                        Type = "warning", Icon = "bi-moon-stars-fill",
+                        MessageKey = "Ins_WeekendSpender",
+                        Param1 = weekendPct.ToString("N1")
+                    });
+            }
+
+            return insights.Take(5).ToList();
         }
     }
 }
