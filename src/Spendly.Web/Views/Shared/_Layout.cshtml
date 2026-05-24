@@ -33,6 +33,7 @@
         }
         .bell-shake { animation: bellShake 0.6s ease; }
     </style>
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
     
@@ -97,6 +98,11 @@
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Insights" ? "active" : "")" asp-controller="Insights" asp-action="Index">
                             <i class="bi bi-lightbulb"></i> @L["Nav_Insights"]
+                        </a>
+                    </div>
+                    <div class="sidebar-nav-item">
+                        <a class="sidebar-link @(controller == "Reports" ? "active" : "")" asp-controller="Reports" asp-action="Index">
+                            <i class="bi bi-bar-chart-fill"></i> @L["Nav_Reports"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">

@@ -1,0 +1,996 @@
+@model Spendly.Web.Contracts.Reports.FinancialReportDto
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer<Spendly.Web.Resources.SharedResource> L
+@{
+    ViewData["Title"] = L["Rep_Title"].Value;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var trend     = Model.MonthlyTrend;
+    var labels    = string.Join(",", trend.Select(t => $"\"{t.Month}\""));
+    var expData   = string.Join(",", trend.Select(t => t.Expenses.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
+    var incData   = string.Join(",", trend.Select(t => t.Incomes.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
+
+    var catLabels = string.Join(",", Model.CategoryBreakdown.Select(c => $"\"{c.Category}\""));
+    var catData   = string.Join(",", Model.CategoryBreakdown.Select(c => c.Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
+
+    bool isProfit = Model.NetBalance >= 0;
+
+    string activePreset = ViewBag.ActivePreset ?? "this_month";
+    string dateFromStr  = ViewBag.DateFrom    ?? DateTime.Now.ToString("yyyy-MM-01");
+    string dateToStr    = ViewBag.DateTo      ?? DateTime.Now.ToString("yyyy-MM-dd");
+
+    // Heatmap: serializa los datos diarios como dict {"yyyy-MM-dd": {amount, count}}
+    var dailyDict = Model.DailySpending.ToDictionary(
+        d => d.Date,
+        d => new { amount = d.Amount, count = d.TransactionCount });
+    var dailyJson = System.Text.Json.JsonSerializer.Serialize(dailyDict);
+    var maxDaily  = Model.MaxDailyAmount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+
+    // Comparativa badges helpers
+    string ExpBadgeClass = Model.ExpenseDelta > 0 ? "text-danger" : "text-success";
+    string ExpArrow      = Model.ExpenseDelta > 0 ? "bi-arrow-up-short" : "bi-arrow-down-short";
+    string IncBadgeClass = Model.IncomeDelta  > 0 ? "text-success" : "text-danger";
+    string IncArrow      = Model.IncomeDelta  > 0 ? "bi-arrow-up-short" : "bi-arrow-down-short";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        /* ── Stat cards ── */
+        .stat-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+        }
+        .stat-icon {
+            width: 60px; height: 60px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 12px; font-size: 24px;
+        }
+        .chart-card { border: none; border-radius: 16px; overflow: hidden; }
+        .badge-category { padding: 6px 12px; font-weight: 500; border-radius: 20px; }
+        /* ── Comparison badges ── */
+        .comparison-badge {
+            font-size: 0.78rem; font-weight: 600;
+            display: flex; align-items: center; gap: 2px;
+        }
+        /* ── Category table ── */
+        .cat-row { cursor: pointer; transition: background-color 0.15s; }
+        .cat-row:hover { background-color: rgba(13,110,253,0.06) !important; }
+        .cat-row.highlighted { background-color: rgba(13,110,253,0.12) !important; outline: 2px solid rgba(13,110,253,0.3); }
+        .cat-row td:first-child::before {
+            content: ''; display: inline-block;
+            width: 10px; height: 10px; border-radius: 50%;
+            margin-right: 8px; vertical-align: middle;
+        }
+        .drill-btn { font-size: 0.75rem; opacity: 0; transition: opacity 0.15s; }
+        .cat-row:hover .drill-btn { opacity: 1; }
+        /* ── Date range preset pills ── */
+        .preset-bar .btn { font-size: 0.82rem; padding: 0.3rem 0.75rem; border-radius: 20px; }
+        .preset-bar .btn.active {
+            background: #0d6efd;
+            color: #fff;
+            border-color: #0d6efd;
+            box-shadow: 0 2px 8px rgba(13,110,253,0.35);
+        }
+        /* ── Flatpickr custom panel ── */
+        #customRangePanel {
+            display: none;
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        #customRangePanel.show { display: flex; }
+        .flatpickr-input { border-radius: 8px !important; }
+        /* ── Heatmap ── */
+        .heatmap-scroll { overflow-x: auto; padding-bottom: 4px; }
+        .heatmap-body   { display: flex; gap: 2px; align-items: flex-start; }
+        .heatmap-day-labels {
+            display: flex; flex-direction: column;
+            gap: 3px; padding-top: 18px;
+            min-width: 28px;
+        }
+        .heatmap-day-label {
+            height: 13px; font-size: 0.65rem;
+            color: #6c757d; line-height: 13px;
+            text-align: right; padding-right: 4px;
+        }
+        .heatmap-grid { display: flex; gap: 3px; }
+        .heatmap-week { display: flex; flex-direction: column; gap: 3px; }
+        .heatmap-week-header {
+            height: 16px; font-size: 0.65rem;
+            color: #6c757d; white-space: nowrap;
+            overflow: visible;
+        }
+        .heatmap-cell {
+            width: 13px; height: 13px;
+            border-radius: 3px;
+            background: #edf0f4;
+            cursor: default;
+            transition: transform 0.1s;
+        }
+        .heatmap-cell:hover { transform: scale(1.4); z-index: 5; }
+        .heatmap-cell.out-of-range { background: transparent !important; pointer-events: none; }
+        /* Tooltip flotante */
+        #heatTooltip {
+            position: fixed;
+            display: none;
+            background: rgba(15,20,30,0.92);
+            color: #fff;
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 9999;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .heatmap-legend {
+            display: flex; align-items: center;
+            gap: 4px; font-size: 0.72rem; color: #6c757d;
+        }
+        .heatmap-legend-cell {
+            width: 13px; height: 13px; border-radius: 3px;
+        }
+        /* ── Insights Offcanvas ── */
+        .insight-advisor-badge {
+            width: 42px; height: 42px; flex-shrink: 0;
+            background: linear-gradient(135deg, #e8d5ff 0%, #c7e0ff 100%);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem;
+        }
+        .insight-row { transition: transform 0.15s ease, box-shadow 0.15s ease; border: 1px solid rgba(0,0,0,0.03); }
+        .insight-row:hover { transform: translateX(5px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .insight-text { font-size: 0.875rem; line-height: 1.55; color: #1e293b; }
+        .offcanvas-insights { background: linear-gradient(135deg, #fdfbfe 0%, #f4f9ff 100%); }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    @* ── Header ── *@
+    <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-3">
+        <div>
+            <h2 class="mb-1">
+                <i class="bi bi-bar-chart-fill text-primary"></i> 
+                @L["Rep_Title"]
+            </h2>
+            <small class="text-muted">
+                <i class="bi bi-calendar3"></i> @L["Rep_Analysis"] <strong>@Model.PeriodLabel</strong>
+            </small>
+        </div>
+
+        @* Actions Row *@
+        <div class="d-flex gap-2">
+            @if (Model.Insights.Any())
+            {
+                <button class="btn btn-outline-primary border-primary border-opacity-25 shadow-sm bg-white" type="button" 
+                        data-bs-toggle="offcanvas" data-bs-target="#insightsOffcanvas">
+                    ✨ <span class="fw-semibold ms-1">Insights</span>
+                    <span class="badge bg-primary rounded-pill ms-1">@Model.Insights.Count</span>
+                </button>
+            }
+
+            @* Export Dropdown *@
+            <div class="dropdown">
+                <button class="btn btn-success dropdown-toggle shadow-sm" type="button"
+                        id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-download me-1"></i> @L["Rep_ExportBtn"]
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="exportDropdown">
+                    <li>
+                        <a class="dropdown-item"
+                           href="@Url.Action("ExportPdf", "Reports", new { dateFrom = dateFromStr, dateTo = dateToStr, preset = activePreset })">
+                            <i class="bi bi-file-earmark-pdf text-danger me-2"></i>@L["Rep_ExportPdf"]
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item"
+                           href="@Url.Action("ExportCsv", "Reports", new { dateFrom = dateFromStr, dateTo = dateToStr, preset = activePreset })">
+                            <i class="bi bi-filetype-csv text-success me-2"></i>@L["Rep_ExportCsv"]
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    @* ── Date Range Selector ── *@
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
+        <div class="card-body py-3 px-4">
+            <form id="rangeForm" method="get" action="@Url.Action("Index", "Reports")" class="d-flex flex-column gap-2">
+                <input type="hidden" id="hiddenPreset"   name="preset"   value="@activePreset">
+                <input type="hidden" id="hiddenDateFrom" name="dateFrom" value="@dateFromStr">
+                <input type="hidden" id="hiddenDateTo"   name="dateTo"   value="@dateToStr">
+
+                @* Preset pills *@
+                <div class="preset-bar d-flex gap-2 flex-wrap">
+                    <button type="button" class="btn btn-outline-primary @(activePreset == "this_month"    ? "active" : "")" data-preset="this_month">
+                        @L["Rep_Preset_ThisMonth"]
+                    </button>
+                    <button type="button" class="btn btn-outline-primary @(activePreset == "last_month"    ? "active" : "")" data-preset="last_month">
+                        @L["Rep_Preset_LastMonth"]
+                    </button>
+                    <button type="button" class="btn btn-outline-primary @(activePreset == "last_3_months" ? "active" : "")" data-preset="last_3_months">
+                        @L["Rep_Preset_Last3M"]
+                    </button>
+                    <button type="button" class="btn btn-outline-primary @(activePreset == "last_6_months" ? "active" : "")" data-preset="last_6_months">
+                        @L["Rep_Preset_Last6M"]
+                    </button>
+                    <button type="button" class="btn btn-outline-primary @(activePreset == "ytd"           ? "active" : "")" data-preset="ytd">
+                        @L["Rep_Preset_YTD"]
+                    </button>
+                    <button type="button" class="btn btn-outline-primary @(activePreset == "last_year"     ? "active" : "")" data-preset="last_year">
+                        @L["Rep_Preset_LastYear"]
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary @(activePreset == "custom"      ? "active" : "")" id="customPresetBtn" data-preset="custom">
+                        <i class="bi bi-calendar-range me-1"></i>@L["Rep_Preset_Custom"]
+                    </button>
+                </div>
+
+                @* Custom range Flatpickr panel *@
+                <div id="customRangePanel" class="@(activePreset == "custom" ? "show" : "")">
+                    <label class="text-muted small fw-semibold">@L["Rep_DateFrom"]</label>
+                    <input type="text" id="fpFrom" class="form-control form-control-sm" style="width:140px;"
+                           value="@dateFromStr" placeholder="yyyy-MM-dd">
+                    <label class="text-muted small fw-semibold">@L["Rep_DateTo"]</label>
+                    <input type="text" id="fpTo" class="form-control form-control-sm" style="width:140px;"
+                           value="@dateToStr" placeholder="yyyy-MM-dd">
+                    <button type="submit" id="applyRangeBtn" class="btn btn-primary btn-sm px-3">
+                        <i class="bi bi-check2 me-1"></i>@L["Rep_ApplyRange"]
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @* Stats Cards *@
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card stat-card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_TotalExpenses"]</p>
+                            <h3 class="mb-0 fw-bold text-danger">@Model.TotalExpenses.ToString("N2")</h3>
+                        </div>
+                        <div class="stat-icon bg-danger bg-opacity-10">
+                            <i class="bi bi-graph-down-arrow text-danger"></i>
+                        </div>
+                    </div>
+                    @if (Model.ExpenseChangePercent.HasValue)
+                    {
+                        <div class="comparison-badge @ExpBadgeClass">
+                            <i class="bi @ExpArrow fs-5"></i>
+                            @Math.Abs(Model.ExpenseChangePercent.Value).ToString("N1")%
+                            <span class="text-muted fw-normal ms-1">@L["Rep_VsPrevMonth"]</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <small class="text-muted">@L["Rep_NoComparison"]</small>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card stat-card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_TotalIncome"]</p>
+                            <h3 class="mb-0 fw-bold text-success">@Model.TotalIncomes.ToString("N2")</h3>
+                        </div>
+                        <div class="stat-icon bg-success bg-opacity-10">
+                            <i class="bi bi-graph-up-arrow text-success"></i>
+                        </div>
+                    </div>
+                    @if (Model.IncomeChangePercent.HasValue)
+                    {
+                        <div class="comparison-badge @IncBadgeClass">
+                            <i class="bi @IncArrow fs-5"></i>
+                            @Math.Abs(Model.IncomeChangePercent.Value).ToString("N1")%
+                            <span class="text-muted fw-normal ms-1">@L["Rep_VsPrevMonth"]</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <small class="text-muted">@L["Rep_NoComparison"]</small>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card stat-card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_NetBalance"]</p>
+                            <h3 class="mb-0 fw-bold @(isProfit ? "text-success" : "text-danger")">
+                                @(isProfit ? "+" : "")@Model.NetBalance.ToString("N2")
+                            </h3>
+                        </div>
+                        <div class="stat-icon @(isProfit ? "bg-success" : "bg-danger") bg-opacity-10">
+                            <i class="bi bi-wallet-fill @(isProfit ? "text-success" : "text-danger")"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card stat-card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_DailyAverage"]</p>
+                            <h3 class="mb-0 fw-bold text-info">@Model.AverageDailyExpense.ToString("N2")</h3>
+                        </div>
+                        <div class="stat-icon bg-info bg-opacity-10">
+                            <i class="bi bi-calendar-day text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card stat-card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_TopCategory"]</p>
+                            <h3 class="mb-0 fw-bold text-truncate" style="max-width: 150px;" title="@Model.TopCategory">
+                                @Model.TopCategory
+                            </h3>
+                        </div>
+                        <div class="stat-icon bg-warning bg-opacity-10">
+                            <i class="bi bi-star-fill text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card stat-card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_ExpenseRatio"]</p>
+                            <h3 class="mb-0 fw-bold @(Model.ExpenseToIncomeRatio > 100 ? "text-danger" : "text-primary")">
+                                @Model.ExpenseToIncomeRatio.ToString("N1")%
+                            </h3>
+                        </div>
+                        <div class="stat-icon bg-primary bg-opacity-10">
+                            <i class="bi bi-pie-chart-fill text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="progress mt-1" style="height: 6px; border-radius: 6px;">
+                        <div class="progress-bar @(Model.ExpenseToIncomeRatio <= 50 ? "bg-success" : Model.ExpenseToIncomeRatio <= 90 ? "bg-warning" : "bg-danger")"
+                             role="progressbar"
+                             style="width: @(Math.Min(100, Model.ExpenseToIncomeRatio).ToString(System.Globalization.CultureInfo.InvariantCulture))%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Row 2: Trend &amp; Category Breakdown *@
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="card chart-card shadow-sm h-100">
+                <div class="card-header bg-white border-0 pt-4 pb-3">
+                    <h5 class="mb-0 fw-semibold">
+                        <i class="bi bi-graph-up text-primary me-2"></i> @L["Rep_TrendTitle"]
+                    </h5>
+                </div>
+                <div class="card-body pt-2">
+                    @if (trend.Any())
+                    {
+                        <div style="position: relative; height: 280px; width: 100%;">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
+                            <p>@L["Rep_NoTrendData"]</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card chart-card shadow-sm h-100">
+                <div class="card-header bg-white border-0 pt-4 pb-3">
+                    <h5 class="mb-0 fw-semibold">
+                        <i class="bi bi-pie-chart text-primary me-2"></i> @L["Rep_CategoryChartTitle"]
+                    </h5>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 280px;">
+                    @if (Model.CategoryBreakdown.Any())
+                    {
+                        <canvas id="categoryChart"></canvas>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted">
+                            <i class="bi bi-pie-chart fs-1 d-block mb-3 opacity-50"></i>
+                            <p>@L["Rep_NoCategoryData"]</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Heatmap de Gastos (tipo GitHub) ── *@
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius:16px;">
+                <div class="card-header bg-white border-0 pt-4 pb-2 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-calendar3 text-danger me-2"></i>@L["Rep_HeatmapTitle"]
+                        </h5>
+                        <small class="text-muted">@L["Rep_HeatmapSubtitle"]</small>
+                    </div>
+                    <div class="heatmap-legend">
+                        <span>@L["Rep_HeatmapLegendLess"]</span>
+                        <div class="heatmap-legend-cell" style="background:#edf0f4;"></div>
+                        <div class="heatmap-legend-cell" style="background:#fecaca;"></div>
+                        <div class="heatmap-legend-cell" style="background:#f87171;"></div>
+                        <div class="heatmap-legend-cell" style="background:#ef4444;"></div>
+                        <div class="heatmap-legend-cell" style="background:#991b1b;"></div>
+                        <span>@L["Rep_HeatmapLegendMore"]</span>
+                    </div>
+                </div>
+                <div class="card-body pt-2 pb-4">
+                    @if (Model.DailySpending.Any())
+                    {
+                        <div class="heatmap-scroll">
+                            <div class="heatmap-body">
+                                <div class="heatmap-day-labels">
+                                    <div class="heatmap-day-label"></div>
+                                    <div class="heatmap-day-label">Mon</div>
+                                    <div class="heatmap-day-label"></div>
+                                    <div class="heatmap-day-label">Wed</div>
+                                    <div class="heatmap-day-label"></div>
+                                    <div class="heatmap-day-label">Fri</div>
+                                    <div class="heatmap-day-label"></div>
+                                </div>
+                                <div id="heatmapGrid" class="heatmap-grid"></div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-calendar-x fs-2 d-block mb-2 opacity-50"></i>
+                            <small>@L["Rep_HeatmapNoData"]</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Category Breakdown Table *@
+    @if (Model.CategoryBreakdown.Any())
+    {
+        <div class="card chart-card shadow-sm">
+            <div class="card-header bg-white border-0 pt-4 pb-3">
+                <h5 class="mb-0 fw-semibold">
+                    <i class="bi bi-list-ul text-primary me-2"></i> @L["Rep_CategoryDetail"]
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 py-3 ps-4">@L["Common_Category"]</th>
+                                <th class="border-0 py-3 text-end">@L["Common_Amount"]</th>
+                                <th class="border-0 py-3 text-center">@L["Dash_Transactions"]</th>
+                                <th class="border-0 py-3 pe-4" style="width: 220px">@L["Rep_PercentOfTotal"]</th>
+                                <th class="border-0 py-3" style="width: 220px">@L["Rep_BudgetVsActual"]</th>
+                                <th class="border-0 py-3" style="width:40px"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoryTableBody">
+                            @{ int catIdx = 0; }
+                            @foreach (var cat in Model.CategoryBreakdown)
+                            {
+                                <tr class="cat-row"
+                                    data-category="@cat.Category"
+                                    data-index="@catIdx"
+                                    data-year="@ViewBag.CurrentYear"
+                                    data-month="@ViewBag.CurrentMonth"
+                                    title="Click to see transactions">
+                                    <td class="ps-4">
+                                        <span class="badge-category bg-secondary bg-opacity-10 text-dark">
+                                            <i class="bi bi-tag-fill me-1"></i>@cat.Category
+                                        </span>
+                                    </td>
+                                    <td class="text-end fw-bold">@cat.Amount.ToString("N2")</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-light text-dark border">@cat.TransactionCount</span>
+                                    </td>
+                                    <td class="pe-4">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="progress flex-grow-1" style="height: 8px; border-radius: 10px;">
+                                                <div class="progress-bar"
+                                                     role="progressbar"
+                                                     style="width: @cat.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%"></div>
+                                            </div>
+                                            <span class="text-muted fw-semibold" style="min-width: 45px; font-size: 0.9rem;">
+                                                @cat.Percentage.ToString("N1")%
+                                            </span>
+                                        </div>
+                                    </td>
+                                    @* ── Budget vs. Actual ── *@
+                                    <td>
+                                        @if (cat.BudgetLimit.HasValue)
+                                        {
+                                            var budgetPct  = Math.Min((double)(cat.BudgetUsagePercent ?? 0), 100);
+                                            var barClass   = cat.IsBudgetExceeded ? "bg-danger" : (budgetPct >= 80 ? "bg-warning" : "bg-success");
+                                            var textClass  = cat.IsBudgetExceeded ? "text-danger fw-bold" : "text-muted";
+                                            <div class="d-flex flex-column gap-1">
+                                                <div class="progress" style="height: 8px; border-radius: 10px;">
+                                                    <div class="progress-bar @barClass"
+                                                         role="progressbar"
+                                                         style="width: @(budgetPct.ToString(System.Globalization.CultureInfo.InvariantCulture))%"
+                                                         aria-valuenow="@budgetPct" aria-valuemin="0" aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <small class="@textClass">
+                                                        @cat.Amount.ToString("N0") @L["Rep_BudgetOf"] @cat.BudgetLimit.Value.ToString("N0")
+                                                        @if (cat.IsBudgetExceeded)
+                                                        {
+                                                            <span class="badge bg-danger ms-1" style="font-size: 0.65rem;">@L["Rep_BudgetExceeded"]</span>
+                                                        }
+                                                    </small>
+                                                    <small class="@textClass">@(cat.BudgetUsagePercent?.ToString("N0") ?? "0")%</small>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted" style="font-size: 0.8rem;">@L["Rep_NoBudget"]</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="bi bi-chevron-right text-primary drill-btn"></i>
+                                    </td>
+                                </tr>
+                                catIdx++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@* ── Insights Offcanvas ── *@
+@if (Model.Insights.Any())
+{
+    <div class="offcanvas offcanvas-end offcanvas-insights shadow" tabindex="-1" id="insightsOffcanvas" aria-labelledby="insightsOffcanvasLabel" style="width: 400px; border-left: none;">
+        <div class="offcanvas-header pb-2">
+            <div class="d-flex align-items-center gap-3">
+                <div class="insight-advisor-badge shadow-sm">
+                    <i class="bi bi-robot text-primary"></i>
+                </div>
+                <div>
+                    <h5 class="offcanvas-title fw-bold" id="insightsOffcanvasLabel">@L["Ins_SectionTitle"]</h5>
+                    <small class="text-muted d-block" style="line-height: 1;">@L["Ins_SectionSubtitle"]</small>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body pt-3">
+            <div class="d-flex flex-column gap-3">
+                @foreach (var insight in Model.Insights)
+                {
+                    var bgColor = insight.Type switch {
+                        "positive" => "rgba(25,135,84,0.06)",
+                        "warning"  => "rgba(255,193,7,0.1)",
+                        "danger"   => "rgba(220,53,69,0.06)",
+                        _          => "rgba(13,110,253,0.05)"
+                    };
+                    var iconColor = insight.Type switch {
+                        "positive" => "text-success",
+                        "warning"  => "text-warning",
+                        "danger"   => "text-danger",
+                        _          => "text-primary"
+                    };
+                    var badgeBg = insight.Type switch {
+                        "positive" => "bg-success",
+                        "warning"  => "bg-warning",
+                        "danger"   => "bg-danger",
+                        _          => "bg-primary"
+                    };
+                    
+                    <div class="insight-row d-flex align-items-start gap-3 rounded-4 px-3 py-3 shadow-sm bg-white">
+                        <div class="mt-1">
+                            <span class="badge @badgeBg bg-opacity-15 p-2 rounded-3">
+                                <i class="bi @insight.Icon @iconColor fs-6"></i>
+                            </span>
+                        </div>
+                        <span class="insight-text">
+                            @Html.Raw(string.Format(L[insight.MessageKey].Value,
+                                insight.Param1, insight.Param2, insight.Param3))
+                        </span>
+                    </div>
+                }
+            </div>
+            <div class="text-center mt-5 mb-2">
+                <i class="bi bi-stars text-primary fs-3 opacity-25"></i>
+            </div>
+        </div>
+    </div>
+}
+
+@* â”€â”€ Drill-down Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ *@
+<div class="modal fade" id="drillDownModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-receipt text-primary me-2"></i>
+                    <span id="modalCategoryTitle">@L["Rep_DrillDown_Title"]</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalLoading" class="text-center py-4 text-muted">
+                    <div class="spinner-border spinner-border-sm me-2"></div>
+                    @L["Rep_DrillDown_Loading"]
+                </div>
+                <div id="modalContent" class="d-none">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 py-2">@L["Rep_DrillDown_Date"]</th>
+                                <th class="border-0 py-2">@L["Rep_DrillDown_Desc"]</th>
+                                <th class="border-0 py-2 text-end">@L["Rep_DrillDown_Amount"]</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalTableBody"></tbody>
+                    </table>
+                </div>
+                <div id="modalEmpty" class="text-center py-4 text-muted d-none">
+                    <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                    @L["Rep_DrillDown_Empty"]
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/chart.js/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        const colors = [
+            { bg: 'rgba(13,110,253,0.8)',  border: 'rgb(13,110,253)'  },
+            { bg: 'rgba(220,53,69,0.8)',   border: 'rgb(220,53,69)'   },
+            { bg: 'rgba(255,193,7,0.8)',   border: 'rgb(255,193,7)'   },
+            { bg: 'rgba(25,135,84,0.8)',   border: 'rgb(25,135,84)'   },
+            { bg: 'rgba(111,66,193,0.8)',  border: 'rgb(111,66,193)'  },
+            { bg: 'rgba(255,99,71,0.8)',   border: 'rgb(255,99,71)'   },
+            { bg: 'rgba(32,201,151,0.8)',  border: 'rgb(32,201,151)'  },
+            { bg: 'rgba(253,126,20,0.8)',  border: 'rgb(253,126,20)'  }
+        ];
+
+        // Paint progress bars and row color dots with category colors
+        document.querySelectorAll('.cat-row').forEach((row, i) => {
+            const color = colors[i % colors.length].border;
+            const bar = row.querySelector('.progress-bar');
+            if (bar) bar.style.backgroundColor = color;
+        });
+
+        // â”€â”€ Highlight helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        function highlightRow(index) {
+            document.querySelectorAll('.cat-row').forEach(r => r.classList.remove('highlighted'));
+            const target = document.querySelector(`.cat-row[data-index="${index}"]`);
+            if (target) {
+                target.classList.add('highlighted');
+                target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // â”€â”€ Trend Line Chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        const trendCtx = document.getElementById('trendChart');
+        if (trendCtx) {
+            const ctx = trendCtx.getContext('2d');
+            const expGrad = ctx.createLinearGradient(0, 0, 0, 300);
+            expGrad.addColorStop(0, 'rgba(220,53,69,0.3)');
+            expGrad.addColorStop(1, 'rgba(220,53,69,0.01)');
+            const incGrad = ctx.createLinearGradient(0, 0, 0, 300);
+            incGrad.addColorStop(0, 'rgba(25,135,84,0.3)');
+            incGrad.addColorStop(1, 'rgba(25,135,84,0.01)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [@Html.Raw(labels)],
+                    datasets: [
+                        {
+                            label: '@L["Rep_TotalExpenses"].Value',
+                            data: [@Html.Raw(expData)],
+                            borderColor: 'rgb(220,53,69)', backgroundColor: expGrad,
+                            borderWidth: 3, fill: true, tension: 0.4,
+                            pointRadius: 4, pointHoverRadius: 8,
+                            pointBackgroundColor: 'rgb(220,53,69)', pointBorderColor: '#fff', pointBorderWidth: 2
+                        },
+                        {
+                            label: '@L["Rep_TotalIncome"].Value',
+                            data: [@Html.Raw(incData)],
+                            borderColor: 'rgb(25,135,84)', backgroundColor: incGrad,
+                            borderWidth: 3, fill: true, tension: 0.4,
+                            pointRadius: 4, pointHoverRadius: 8,
+                            pointBackgroundColor: 'rgb(25,135,84)', pointBorderColor: '#fff', pointBorderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)', padding: 12,
+                            callbacks: { label: c => ` ${c.dataset.label}: ${Number(c.raw).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}` }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { callback: v => Number(v).toLocaleString() } }
+                    }
+                }
+            });
+        }
+
+        // â”€â”€ Category Doughnut Chart (with click-to-highlight) â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        const catCtx = document.getElementById('categoryChart');
+        if (catCtx) {
+            const donut = new Chart(catCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: [@Html.Raw(catLabels)],
+                    datasets: [{
+                        data: [@Html.Raw(catData)],
+                        backgroundColor: colors.map(c => c.bg),
+                        borderColor: colors.map(c => c.border),
+                        borderWidth: 2, hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: true, cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { padding: 15, font: { size: 12, weight: '500' }, usePointStyle: true, pointStyle: 'circle' }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)', padding: 12,
+                            callbacks: {
+                                label: (c) => {
+                                    const total = [@Html.Raw(catData)].reduce((a,b)=>a+b,0);
+                                    const pct = total > 0 ? ((c.raw/total)*100).toFixed(1) : 0;
+                                    return ` ${c.label}: ${Number(c.raw).toLocaleString(undefined,{minimumFractionDigits:2})} (${pct}%)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: { animateRotate: true, animateScale: true },
+                    onClick(evt, elements) {
+                        if (elements.length > 0) {
+                            highlightRow(elements[0].index);
+                        }
+                    }
+                }
+            });
+        }
+
+        // ── Drill-down Modal (AJAX) ─────────────────────────────────────
+        const REPORT_DATE_FROM = '@dateFromStr';
+        const REPORT_DATE_TO   = '@dateToStr';
+        const REPORT_PRESET    = '@activePreset';
+
+        const drillModal   = new bootstrap.Modal(document.getElementById('drillDownModal'));
+        const modalTitle   = document.getElementById('modalCategoryTitle');
+        const modalLoading = document.getElementById('modalLoading');
+        const modalContent = document.getElementById('modalContent');
+        const modalEmpty   = document.getElementById('modalEmpty');
+        const modalBody    = document.getElementById('modalTableBody');
+
+        document.querySelectorAll('.cat-row').forEach(function(row) {
+            row.addEventListener('click', async function() {
+                var category = row.dataset.category;
+                var idx      = parseInt(row.dataset.index);
+
+                highlightRow(idx);
+                modalTitle.textContent = '@L["Rep_DrillDown_Title"].Value ' + category;
+                modalLoading.classList.remove('d-none');
+                modalContent.classList.add('d-none');
+                modalEmpty.classList.add('d-none');
+                modalBody.innerHTML = '';
+                drillModal.show();
+
+                try {
+                    var url = '/Reports/CategoryTransactions'
+                        + '?dateFrom=' + REPORT_DATE_FROM
+                        + '&dateTo='   + REPORT_DATE_TO
+                        + '&preset='   + REPORT_PRESET
+                        + '&category=' + encodeURIComponent(category);
+                    var res  = await fetch(url);
+                    var data = await res.json();
+                    modalLoading.classList.add('d-none');
+
+                    if (!data || data.length === 0) {
+                        modalEmpty.classList.remove('d-none');
+                        return;
+                    }
+
+                    data.forEach(function(t) {
+                        var tr  = document.createElement('tr');
+                        var amt = Number(t.amount).toLocaleString(undefined, {minimumFractionDigits: 2});
+                        tr.innerHTML = '<td class="text-muted">' + t.date + '</td>'
+                            + '<td>' + t.description + '</td>'
+                            + '<td class="text-end fw-bold text-danger">' + amt + ' ' + t.currency + '</td>';
+                        modalBody.appendChild(tr);
+                    });
+
+                    modalContent.classList.remove('d-none');
+                } catch (e) {
+                    modalLoading.classList.add('d-none');
+                    modalEmpty.classList.remove('d-none');
+                }
+            });
+        });
+
+        // ── Flatpickr ──────────────────────────────────────────────────
+        if (typeof flatpickr !== 'undefined') {
+            flatpickr('#fpFrom', {
+                dateFormat: 'Y-m-d', allowInput: true,
+                onChange: function(_, dateStr) { document.getElementById('hiddenDateFrom').value = dateStr; }
+            });
+            flatpickr('#fpTo', {
+                dateFormat: 'Y-m-d', allowInput: true,
+                onChange: function(_, dateStr) { document.getElementById('hiddenDateTo').value = dateStr; }
+            });
+        }
+
+        // ── Preset pill click ──────────────────────────────────────────
+        document.querySelectorAll('.preset-bar [data-preset]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var preset = btn.dataset.preset;
+                var panel  = document.getElementById('customRangePanel');
+                document.querySelectorAll('.preset-bar [data-preset]').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                document.getElementById('hiddenPreset').value = preset;
+                if (preset === 'custom') {
+                    panel.classList.add('show');
+                } else {
+                    panel.classList.remove('show');
+                    document.getElementById('rangeForm').submit();
+                }
+            });
+        });
+
+        // ── Spending Heatmap (GitHub-style) ────────────────────────────
+        (function buildHeatmap() {
+            var grid = document.getElementById('heatmapGrid');
+            if (!grid) return;
+
+            var dailyData = @Html.Raw(dailyJson);
+            var maxAmt    = @Html.Raw(maxDaily);
+
+            var MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+            // Color scale: 5 buckets
+            function heatColor(amount) {
+                if (!amount || amount <= 0 || maxAmt <= 0) return '#edf0f4';
+                var r = amount / maxAmt;
+                if (r < 0.15) return '#fee2e2';
+                if (r < 0.35) return '#fca5a5';
+                if (r < 0.60) return '#f87171';
+                if (r < 0.80) return '#ef4444';
+                return '#991b1b';
+            }
+
+            // Parse range
+            var start = new Date('@Html.Raw(dateFromStr)');
+            var end   = new Date('@Html.Raw(dateToStr)');
+
+            // Align to Monday of start week (ISO week: Mon=0)
+            var dow0 = (start.getDay() + 6) % 7; // 0=Mon
+            var aligned = new Date(start);
+            aligned.setDate(aligned.getDate() - dow0);
+
+            // Floating tooltip
+            var tip = document.getElementById('heatTooltip');
+            if (!tip) {
+                tip = document.createElement('div');
+                tip.id = 'heatTooltip';
+                document.body.appendChild(tip);
+            }
+
+            var cur = new Date(aligned);
+            var lastMonth = -1;
+
+            while (cur <= end) {
+                // New week column
+                var week = document.createElement('div');
+                week.className = 'heatmap-week';
+
+                // Month header (show only on first week of a new month)
+                var header = document.createElement('div');
+                header.className = 'heatmap-week-header';
+                if (cur.getMonth() !== lastMonth && cur >= start) {
+                    header.textContent = MONTH_NAMES[cur.getMonth()];
+                    lastMonth = cur.getMonth();
+                }
+                week.appendChild(header);
+
+                // 7 day cells
+                for (var d = 0; d < 7; d++) {
+                    var cell = document.createElement('div');
+                    cell.className = 'heatmap-cell';
+
+                    if (cur < start || cur > end) {
+                        cell.classList.add('out-of-range');
+                    } else {
+                        var iso = cur.toISOString().slice(0, 10);
+                        var entry   = dailyData[iso];
+                        var amount  = entry ? entry.amount  : 0;
+                        var count   = entry ? entry.count   : 0;
+
+                        cell.style.backgroundColor = heatColor(amount);
+
+                        // Tooltip
+                        (function(c, i, a, n) {
+                            c.addEventListener('mouseover', function(e) {
+                                var amtStr = a > 0
+                                    ? '$' + Number(a).toLocaleString(undefined, {minimumFractionDigits: 2})
+                                    : 'No spending';
+                                var label = n > 0 ? amtStr + ' \u00b7 ' + n + ' txn' + (n !== 1 ? 's' : '') : amtStr;
+                                tip.textContent = i + ': ' + label;
+                                tip.style.display = 'block';
+                            });
+                            c.addEventListener('mousemove', function(e) {
+                                tip.style.left = (e.clientX + 14) + 'px';
+                                tip.style.top  = (e.clientY - 32) + 'px';
+                            });
+                            c.addEventListener('mouseout', function() {
+                                tip.style.display = 'none';
+                            });
+                        })(cell, iso, amount, count);
+                    }
+
+                    week.appendChild(cell);
+                    cur.setDate(cur.getDate() + 1);
+                }
+
+                grid.appendChild(week);
+            }
+        })();
+    </script>
+}

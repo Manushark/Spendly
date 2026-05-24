@@ -123,7 +123,7 @@ namespace Spendly.Tests.UseCases
             repo.Setup(r => r.GetByIdAsync(10)).ReturnsAsync(expense);
             repo.Setup(r => r.UpdateAsync(It.IsAny<Expense>())).Returns(Task.CompletedTask);
 
-            var useCase = new UpdateExpenseUseCase(repo.Object);
+            var useCase = new UpdateExpenseUseCase(repo.Object, CreateMockAlertService());
 
             var dto = new UpdateExpenseDto
             {
@@ -145,7 +145,7 @@ namespace Spendly.Tests.UseCases
             var repo = new Mock<IExpenseRepository>();
             repo.Setup(r => r.GetByIdAsync(10)).ReturnsAsync(expense);
 
-            var useCase = new UpdateExpenseUseCase(repo.Object);
+            var useCase = new UpdateExpenseUseCase(repo.Object, CreateMockAlertService());
 
             var dto = new UpdateExpenseDto
             {
@@ -168,7 +168,7 @@ namespace Spendly.Tests.UseCases
             var repo = new Mock<IExpenseRepository>();
             repo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((Expense?)null);
 
-            var useCase = new UpdateExpenseUseCase(repo.Object);
+            var useCase = new UpdateExpenseUseCase(repo.Object, CreateMockAlertService());
 
             await Assert.ThrowsAsync<ExpenseNotFoundException>(() =>
                 useCase.ExecuteAsync(1, 99, new UpdateExpenseDto
