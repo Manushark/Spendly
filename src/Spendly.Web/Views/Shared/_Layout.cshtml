@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName" data-bs-theme="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,10 +7,10 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="~/favicon.png" />
     <link rel="shortcut icon" href="~/favicon.ico" />
-    <!-- Fonts: Inter -->
+    <!-- Fonts: Calistoga · Inter · JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Calistoga:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -19,20 +19,11 @@
     <link rel="stylesheet" href="~/Spendly.Web.styles.css" asp-append-version="true" />
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#6366f1">
+    <meta name="theme-color" content="#0B1120">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/icon-192.svg">
-    <style>
-        @@keyframes bellShake {
-            0%,100% { transform: rotate(0deg); }
-            20%     { transform: rotate(-15deg); }
-            40%     { transform: rotate(15deg); }
-            60%     { transform: rotate(-10deg); }
-            80%     { transform: rotate(10deg); }
-        }
-        .bell-shake { animation: bellShake 0.6s ease; }
-    </style>
+    <!-- bellShake animation is now in site.css -->
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
@@ -51,28 +42,31 @@
             
             <aside class="sidebar" id="app-sidebar">
                 <div class="sidebar-header">
-                    <i class="bi bi-wallet2 me-2 text-primary shadow-sm" style="color: var(--accent-color) !important;"></i> Spendly
+                    <div class="sidebar-logo-icon">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                    Spendly
                 </div>
                 
                 <div class="sidebar-menu">
+
+                    <!-- ── Main ──────────────────────────────── -->
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Dashboard" ? "active" : "")" asp-area="" asp-controller="Dashboard" asp-action="Index">
                             <i class="bi bi-grid-1x2"></i> @L["Nav_Dashboard"]
                         </a>
                     </div>
+
+                    <!-- ── Finance ───────────────────────────── -->
+                    <div class="sidebar-section-label">@L["Nav_Finance"]</div>
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Expenses" ? "active" : "")" asp-area="" asp-controller="Expenses" asp-action="Index">
                             <i class="bi bi-receipt"></i> @L["Nav_Expenses"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
-                        <a class="sidebar-link @(controller == "Categories" ? "active" : "")" asp-controller="Categories" asp-action="Index">
-                            <i class="bi bi-grid"></i> @L["Nav_Categories"]
-                        </a>
-                    </div>
-                    <div class="sidebar-nav-item">
-                        <a class="sidebar-link @(controller == "Tags" ? "active" : "")" asp-controller="Tags" asp-action="Index">
-                            <i class="bi bi-tags"></i> @L["Nav_Tags"]
+                        <a class="sidebar-link @(controller == "Incomes" ? "active" : "")" asp-controller="Incomes" asp-action="Index">
+                            <i class="bi bi-cash-stack"></i> @L["Nav_Income"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
@@ -86,13 +80,29 @@
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
-                        <a class="sidebar-link @(controller == "Incomes" ? "active" : "")" asp-controller="Incomes" asp-action="Index">
-                            <i class="bi bi-cash-stack"></i> @L["Nav_Income"]
+                        <a class="sidebar-link @(controller == "SavingsGoals" ? "active" : "")" asp-controller="SavingsGoals" asp-action="Index">
+                            <i class="bi bi-trophy"></i> @L["Nav_Goals"]
+                        </a>
+                    </div>
+
+                    <!-- ── Organize ───────────────────────────── -->
+                    <div class="sidebar-section-label">@L["Nav_Organize"]</div>
+                    <div class="sidebar-nav-item">
+                        <a class="sidebar-link @(controller == "Categories" ? "active" : "")" asp-controller="Categories" asp-action="Index">
+                            <i class="bi bi-grid"></i> @L["Nav_Categories"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
-                        <a class="sidebar-link @(controller == "SavingsGoals" ? "active" : "")" asp-controller="SavingsGoals" asp-action="Index">
-                            <i class="bi bi-trophy"></i> @L["Nav_Goals"]
+                        <a class="sidebar-link @(controller == "Tags" ? "active" : "")" asp-controller="Tags" asp-action="Index">
+                            <i class="bi bi-tags"></i> @L["Nav_Tags"]
+                        </a>
+                    </div>
+
+                    <!-- ── Analytics ─────────────────────────── -->
+                    <div class="sidebar-section-label">@L["Nav_Analytics"]</div>
+                    <div class="sidebar-nav-item">
+                        <a class="sidebar-link @(controller == "Reports" ? "active" : "")" asp-controller="Reports" asp-action="Index">
+                            <i class="bi bi-bar-chart-fill"></i> @L["Nav_Reports"]
                         </a>
                     </div>
                     <div class="sidebar-nav-item">
@@ -100,11 +110,9 @@
                             <i class="bi bi-lightbulb"></i> @L["Nav_Insights"]
                         </a>
                     </div>
-                    <div class="sidebar-nav-item">
-                        <a class="sidebar-link @(controller == "Reports" ? "active" : "")" asp-controller="Reports" asp-action="Index">
-                            <i class="bi bi-bar-chart-fill"></i> @L["Nav_Reports"]
-                        </a>
-                    </div>
+
+                    <!-- ── Tools ─────────────────────────────── -->
+                    <div class="sidebar-section-label">@L["Nav_Tools"]</div>
                     <div class="sidebar-nav-item">
                         <a class="sidebar-link @(controller == "Import" ? "active" : "")" asp-controller="Import" asp-action="Index">
                             <i class="bi bi-cloud-upload"></i> @L["Nav_Import"]
@@ -115,25 +123,22 @@
                             <i class="bi bi-gear"></i> @L["Nav_Settings"]
                         </a>
                     </div>
+
                 </div>
 
                 <div class="sidebar-footer">
                     <!-- Language Switcher -->
-                    <div class="px-3 mb-2">
-                        <form asp-controller="Language" asp-action="Change" method="post" class="d-flex gap-1">
-                            <input type="hidden" name="returnUrl" value="@currentUrl" />
-                            <button type="submit" name="culture" value="en"
-                                    class="btn btn-sm flex-fill rounded-pill @(currentCulture == "en" ? "btn-primary" : "btn-outline-secondary text-white-50 border-secondary")"
-                                    style="font-size: 0.75rem; padding: 2px 0;">
-                                🇺🇸 EN
-                            </button>
-                            <button type="submit" name="culture" value="es"
-                                    class="btn btn-sm flex-fill rounded-pill @(currentCulture == "es" ? "btn-primary" : "btn-outline-secondary text-white-50 border-secondary")"
-                                    style="font-size: 0.75rem; padding: 2px 0;">
-                                🇪🇸 ES
-                            </button>
-                        </form>
-                    </div>
+                    <form asp-controller="Language" asp-action="Change" method="post" class="lang-switcher">
+                        <input type="hidden" name="returnUrl" value="@currentUrl" />
+                        <button type="submit" name="culture" value="en"
+                                class="lang-btn @(currentCulture == "en" ? "is-active" : "")">
+                            🇺🇸 EN
+                        </button>
+                        <button type="submit" name="culture" value="es"
+                                class="lang-btn @(currentCulture == "es" ? "is-active" : "")">
+                            🇪🇸 ES
+                        </button>
+                    </form>
 
                     <div class="user-profile">
                         <div class="user-profile-icon">
