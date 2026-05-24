@@ -7,12 +7,20 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.20.0] - 2026-05-23
+*(Implementación del sistema de reportes avanzados, exportación, heatmap de gastos y sugerencias financieras)*
+
 ### Añadido
+- Sistema de reportes financieros avanzados con gráficos interactivos de categorías y tendencias (Chart.js).
+- Exportación de reportes a PDF y CSV integrando el servicio `ReportExportService` con QuestPDF.
+- Heatmap de gastos diarios estilo GitHub con escala de colores de 5 niveles y tooltip flotante interactivo.
+- Tarjeta de sugerencias financieras avanzadas ("Financial Insights") basada en un motor de reglas en la capa de casos de uso.
+- Columna "Presupuesto vs Real" en la tabla de desglose de categorías en los reportes.
+- Selector interactivo de rango de fechas con presets dinámicos y Flatpickr.
+- Localización completa de la sección de reportes al español y al inglés.
+- Rediseño visual de la sección de reportes para alinearse al tema premium de Spendly.
 - Estrategia de ramas GitFlow simplificada (main, develop, feature/, fix/).
 - Documentación inicial del proyecto (CHANGELOG).
-
-### Planificado
-- Sistema de reportes avanzados (Gráficos interactivos y exportación a PDF).
 
 ## [1.0.0] - 2026-05-13
 *(Finalización del sistema de notificaciones y consolidación de la versión estable)*
