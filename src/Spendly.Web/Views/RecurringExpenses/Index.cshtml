@@ -5,244 +5,412 @@
 }
 
 <style>
+    /* ── RECURRING-PAGE PREMIUM SPECIFICS ────────────────────── */
+
+    /* Summary KPI Cards */
+    .kpi-card {
+        border-radius: 16px;
+        border: 1px solid var(--clr-border);
+        background: var(--clr-surface);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+        overflow: hidden;
+        position: relative;
+    }
+    .kpi-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+    .kpi-card .kpi-accent {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        border-radius: 16px 16px 0 0;
+    }
+    .kpi-accent-primary  { background: linear-gradient(90deg, var(--clr-primary), var(--clr-primary-light)); }
+    .kpi-accent-success  { background: linear-gradient(90deg, #10b981, #34d399); }
+    .kpi-accent-warning  { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+
+    .kpi-icon {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+    .kpi-icon-primary { background: rgba(59,130,246,.12); color: var(--clr-primary-light); }
+    .kpi-icon-success { background: rgba(16,185,129,.12); color: #10b981; }
+    .kpi-icon-warning { background: rgba(245,158,11,.12); color: #f59e0b; }
+
+    /* Recurring Cards */
     .recurring-card {
+        border-radius: 16px;
+        border: 1px solid var(--clr-border);
+        background: var(--clr-surface);
+        box-shadow: var(--shadow-sm);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
-        border-left: 4px solid #dee2e6;
-    }
-    .recurring-card.active {
-        border-left-color: #198754;
-    }
-    .recurring-card.paused {
-        border-left-color: #ffc107;
-        opacity: 0.7;
+        position: relative;
     }
     .recurring-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+        box-shadow: var(--shadow-md);
     }
-    .frequency-badge {
-        font-size: 0.75rem;
-        padding: 4px 8px;
+    .status-indicator-bar {
+        position: absolute;
+        top: 0; bottom: 0; left: 0;
+        width: 4px;
+        border-radius: 16px 0 0 16px;
+    }
+    .status-active   { background-color: #10b981; }
+    .status-paused   { background-color: #f59e0b; }
+
+    /* Timeline Styling */
+    .timeline-visual {
+        position: relative;
+    }
+    .timeline-item {
+        position: relative;
+        padding-left: 28px;
+    }
+    .timeline-node {
+        position: absolute;
+        left: -6px;
+        top: 4px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2.5px solid var(--clr-surface);
+        box-shadow: 0 0 0 2.5px rgba(59, 130, 246, 0.2);
+        z-index: 2;
+    }
+
+    /* Action Buttons styling */
+    .action-btn {
+        width: 32px; height: 32px;
+        border-radius: 8px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        transition: all 0.18s ease;
+        cursor: pointer;
+        text-decoration: none;
+        background: var(--clr-surface-3);
+        color: var(--clr-text-muted);
+        border: 1px solid var(--clr-border);
+    }
+    .action-btn:hover {
+        background: var(--clr-primary);
+        color: #fff;
+        border-color: var(--clr-primary);
+        transform: scale(1.08);
+    }
+    .action-btn-danger:hover {
+        background: #ef4444;
+        color: #fff;
+        border-color: #ef4444;
+    }
+    .action-btn-warning:hover {
+        background: #f59e0b;
+        color: #fff;
+        border-color: #f59e0b;
+    }
+    .action-btn-success:hover {
+        background: #10b981;
+        color: #fff;
+        border-color: #10b981;
     }
 </style>
 
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    @* ─── Header ─────────────────────────────────────────────── *@
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <h2 class="mb-1">
-                <i class="bi bi-arrow-repeat text-primary"></i> @L["Rec_Title"]
+            <h2 class="mb-1" style="font-family:'Calistoga',serif;letter-spacing:-0.5px;">
+                <i class="bi bi-arrow-repeat text-primary me-2"></i>@L["Rec_Title"]
             </h2>
-            <small class="text-muted">
-                @L["Rec_ManageSubtitle"]
-            </small>
+            <small class="text-muted">@L["Rec_ManageSubtitle"]</small>
         </div>
-        <a asp-action="Create" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> @L["Rec_NewRecurring"]
+        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 fw-semibold">
+            <i class="bi bi-plus-circle me-2"></i>@L["Rec_NewRecurring"]
         </a>
     </div>
 
     @* Alerts *@
     @if (TempData["Error"] is string errorMsg)
     {
-            <div class="alert alert-danger alert-dismissible fade show">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMsg
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
     }
     @if (TempData["Success"] is string successMsg)
     {
-            <div class="alert alert-success alert-dismissible fade show">
-                <i class="bi bi-check-circle-fill me-2"></i>@successMsg
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@successMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
     }
 
     @if (!Model.Recurrences.Any())
     {
-            <div class="card shadow-sm border-0">
-                <div class="card-body text-center py-5">
-                    <div class="mb-4" style="font-size: 80px; opacity: 0.3;">
-                        <i class="bi bi-arrow-repeat"></i>
-                    </div>
-                    <h3 class="mb-3">@L["Rec_NoRecurring"]</h3>
-                    <p class="text-muted mb-4">
-                        @L["Rec_EmptyDescription"]
-                    </p>
-                    <a asp-action="Create" class="btn btn-primary btn-lg">
+        <div class="row">
+            <div class="col-12">
+                <div class="kpi-card p-5 text-center">
+                    <i class="bi bi-arrow-repeat text-primary d-block mb-3" style="font-size:5rem;opacity:.3;"></i>
+                    <h3 class="fw-bold mb-2" style="font-family:'Calistoga',serif;">@L["Rec_NoRecurring"]</h3>
+                    <p class="text-muted mb-4 max-w-md mx-auto">@L["Rec_EmptyDescription"]</p>
+                    <a asp-action="Create" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
                         <i class="bi bi-plus-circle me-2"></i>@L["Rec_CreateFirst"]
                     </a>
                 </div>
             </div>
+        </div>
     }
     else
     {
-        @* Summary Cards *@
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <p class="text-muted mb-1 small text-uppercase fw-semibold">@L["Rec_TotalRecurrences"]</p>
-                                    <h4 class="mb-0 fw-bold">@Model.TotalRecurrences</h4>
-                                </div>
-                                <div class="bg-primary bg-opacity-10 p-3 rounded">
-                                    <i class="bi bi-arrow-repeat text-primary fs-4"></i>
-                                </div>
-                            </div>
-                            <small class="text-muted">@Model.ActiveRecurrences @L["Common_Active"]</small>
-                        </div>
+        @* ─── KPI Summary Cards ───────────────────────────────────── *@
+        <div class="row g-3 mb-4">
+            @* Total Recurrences *@
+            <div class="col-md-4">
+                <div class="kpi-card h-100 p-3">
+                    <div class="kpi-accent kpi-accent-primary"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-2 pt-1">
+                        <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Rec_TotalRecurrences"]</span>
+                        <div class="kpi-icon kpi-icon-primary"><i class="bi bi-arrow-repeat"></i></div>
                     </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <p class="text-muted mb-1 small text-uppercase fw-semibold">@L["Rec_MonthlyProjected"]</p>
-                                    <h4 class="mb-0 fw-bold">$@Model.MonthlyProjectedTotal.ToString("N2")</h4>
-                                </div>
-                                <div class="bg-success bg-opacity-10 p-3 rounded">
-                                    <i class="bi bi-calendar-month text-success fs-4"></i>
-                                </div>
-                            </div>
-                            <small class="text-muted">@L["Rec_EstimatedPerMonth"]</small>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <p class="text-muted mb-1 small text-uppercase fw-semibold">@L["Rec_Paused"]</p>
-                                    <h4 class="mb-0 fw-bold">@(Model.TotalRecurrences - Model.ActiveRecurrences)</h4>
-                                </div>
-                                <div class="bg-warning bg-opacity-10 p-3 rounded">
-                                    <i class="bi bi-pause-circle text-warning fs-4"></i>
-                                </div>
-                            </div>
-                            <small class="text-muted">@L["Rec_TempInactive"]</small>
-                        </div>
-                    </div>
+                    <h3 class="fw-bold font-mono mb-1">@Model.TotalRecurrences</h3>
+                    <small class="text-muted">@Model.ActiveRecurrences @L["Common_Active"]</small>
                 </div>
             </div>
 
-        @* Recurring Expenses List *@
-            <div class="row g-4">
-            @foreach (var recurring in Model.Recurrences)
-            {
-                var frequencyIcon = recurring.Frequency switch
-                {
-                    "Daily" => "calendar-day",
-                    "Weekly" => "calendar-week",
-                    "Monthly" => "calendar-month",
-                    "Yearly" => "calendar-event",
-                    _ => "calendar"
-                };
+            @* Projected Monthly *@
+            <div class="col-md-4">
+                <div class="kpi-card h-100 p-3">
+                    <div class="kpi-accent kpi-accent-success"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-2 pt-1">
+                        <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Rec_MonthlyProjected"]</span>
+                        <div class="kpi-icon kpi-icon-success"><i class="bi bi-calendar-month"></i></div>
+                    </div>
+                    <h3 class="fw-bold font-mono mb-1 text-success">$@Model.MonthlyProjectedTotal.ToString("N2")</h3>
+                    <small class="text-muted">@L["Rec_EstimatedPerMonth"]</small>
+                </div>
+            </div>
 
-                var statusClass = recurring.IsActive ? "active" : "paused";
+            @* Paused Recurrences *@
+            <div class="col-md-4">
+                <div class="kpi-card h-100 p-3">
+                    <div class="kpi-accent kpi-accent-warning"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-2 pt-1">
+                        <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Rec_Paused"]</span>
+                        <div class="kpi-icon kpi-icon-warning"><i class="bi bi-pause-circle"></i></div>
+                    </div>
+                    <h3 class="fw-bold font-mono mb-1 text-warning">@(Model.TotalRecurrences - Model.ActiveRecurrences)</h3>
+                    <small class="text-muted">@L["Rec_TempInactive"]</small>
+                </div>
+            </div>
+        </div>
 
-                        <div class="col-md-6 col-xl-4">
-                            <div class="card recurring-card @statusClass shadow-sm h-100" style="border-radius:12px;">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div class="flex-grow-1">
-                                            <h5 class="mb-1 fw-semibold">@recurring.Description</h5>
-                                            <div class="d-flex gap-2 align-items-center flex-wrap mt-2">
-                                                <span class="badge bg-secondary">@recurring.Category</span>
-                                                <span class="badge bg-info frequency-badge">
+        @* ─── Main Content Grid ───────────────────────────────────── *@
+        <div class="row g-4">
+            
+            @* Left: List of recurring items (Col 8) *@
+            <div class="col-lg-8">
+                <div class="row g-3">
+                    @foreach (var recurring in Model.Recurrences)
+                    {
+                        var frequencyIcon = recurring.Frequency switch
+                        {
+                            "Daily" => "calendar-day",
+                            "Weekly" => "calendar-week",
+                            "Monthly" => "calendar-month",
+                            "Yearly" => "calendar-event",
+                            _ => "calendar"
+                        };
+                        var statusClass = recurring.IsActive ? "status-active" : "status-paused";
+                        var catColor = GetCategoryColor(recurring.Category, 0);
+
+                        <div class="col-md-6">
+                            <div class="recurring-card h-100 p-4">
+                                <div class="status-indicator-bar @statusClass"></div>
+                                <div class="ps-2">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="min-w-0">
+                                            <h5 class="mb-1 fw-bold text-truncate" style="font-size: 1rem;" title="@recurring.Description">@recurring.Description</h5>
+                                            <div class="d-flex gap-1 flex-wrap mt-1">
+                                                <span class="badge-label bg-secondary bg-opacity-10 text-muted px-2 py-1" style="font-size:0.72rem; border-radius:10px;">
+                                                    @recurring.Category
+                                                </span>
+                                                <span class="badge-label bg-info bg-opacity-10 text-info px-2 py-1" style="font-size:0.72rem; border-radius:10px;">
                                                     <i class="bi bi-@frequencyIcon me-1"></i>@L["Freq_" + recurring.Frequency]
                                                 </span>
-                                        @if (recurring.IsActive)
+                                            </div>
+                                        </div>
+                                        <span class="fw-bold font-mono text-danger" style="font-size: 1.1rem; flex-shrink: 0;">
+                                            -$@recurring.Amount.ToString("N2")
+                                        </span>
+                                    </div>
+
+                                    <hr class="my-3 opacity-25" />
+
+                                    <div class="mb-3" style="font-size: 0.78rem;">
+                                        <div class="d-flex justify-content-between text-muted mb-1">
+                                            <span><i class="bi bi-play-circle me-1"></i>@L["Rec_Starts"]:</span>
+                                            <span class="fw-semibold">@recurring.StartDate.ToString("dd MMM, yyyy")</span>
+                                        </div>
+                                        @if (recurring.EndDate.HasValue)
                                         {
-                                                        <span class="badge bg-success">@L["Common_Active"]</span>
+                                            <div class="d-flex justify-content-between text-muted mb-1">
+                                                <span><i class="bi bi-stop-circle me-1"></i>@L["Rec_Ends"]:</span>
+                                                <span class="fw-semibold">@recurring.EndDate.Value.ToString("dd MMM, yyyy")</span>
+                                            </div>
                                         }
                                         else
                                         {
-                                                        <span class="badge bg-warning text-dark">@L["Common_Paused"]</span>
+                                            <div class="d-flex justify-content-between text-muted mb-1">
+                                                <span><i class="bi bi-infinity me-1"></i>@L["Rec_Indefinite"]:</span>
+                                                <span class="fw-semibold">@L["Rec_Indefinite"].Value</span>
+                                            </div>
                                         }
+                                        @if (recurring.LastGeneratedDate.HasValue)
+                                        {
+                                            <div class="d-flex justify-content-between text-muted mb-1">
+                                                <span><i class="bi bi-check-circle me-1"></i>@L["Rec_LastGenerated"]:</span>
+                                                <span class="fw-semibold">@recurring.LastGeneratedDate.Value.ToString("dd MMM, yyyy")</span>
                                             </div>
-                                        </div>
-                                        <h4 class="mb-0 text-primary">$@recurring.Amount.ToString("N2")</h4>
+                                        }
+                                        @if (recurring.NextOccurrence.HasValue && recurring.IsActive)
+                                        {
+                                            <div class="d-flex justify-content-between text-success">
+                                                <span><i class="bi bi-arrow-right-circle me-1"></i>@L["Rec_Next"]:</span>
+                                                <span class="fw-bold">@recurring.NextOccurrence.Value.ToString("dd MMM, yyyy")</span>
+                                            </div>
+                                        }
                                     </div>
 
-                                    <div class="mb-3">
-                                        <div class="row g-2 small">
-                                            <div class="col-6">
-                                                <i class="bi bi-play-circle text-muted me-1"></i>
-                                                <strong>@L["Rec_Starts"]</strong> @recurring.StartDate.ToString("MMM dd, yyyy")
-                                            </div>
-                                    @if (recurring.EndDate.HasValue)
-                                    {
-                                                    <div class="col-6">
-                                                        <i class="bi bi-stop-circle text-muted me-1"></i>
-                                                        <strong>@L["Rec_Ends"]</strong> @recurring.EndDate.Value.ToString("MMM dd, yyyy")
-                                                    </div>
-                                    }
-                                    else
-                                    {
-                                                    <div class="col-6 text-muted">
-                                                        <i class="bi bi-infinity me-1"></i>
-                                                        <strong>@L["Rec_Indefinite"]</strong>
-                                                    </div>
-                                    }
-                                        </div>
-                                @if (recurring.LastGeneratedDate.HasValue)
-                                {
-                                                <div class="small text-muted mt-2">
-                                                    <i class="bi bi-check-circle me-1"></i>
-                                                    @L["Rec_LastGenerated"] @recurring.LastGeneratedDate.Value.ToString("MMM dd, yyyy")
-                                                </div>
-                                }
-                                @if (recurring.NextOccurrence.HasValue && recurring.IsActive)
-                                {
-                                                <div class="small text-success mt-1">
-                                                    <i class="bi bi-arrow-right-circle me-1"></i>
-                                                    @L["Rec_Next"] @recurring.NextOccurrence.Value.ToString("MMM dd, yyyy")
-                                                </div>
-                                }
-                                    </div>
-
-                                    <div class="d-flex gap-2 justify-content-end">
+                                    <div class="d-flex gap-1 justify-content-end">
                                         <a asp-action="Edit" asp-route-id="@recurring.Id" 
-                                           class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-pencil"></i> @L["Common_Edit"]
+                                           class="action-btn" title="@L["Common_Edit"]">
+                                            <i class="bi bi-pencil-fill"></i>
                                         </a>
 
                                         <form asp-action="Toggle" asp-route-id="@recurring.Id" 
                                               asp-route-activate="@(!recurring.IsActive)"
                                               method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    @if (recurring.IsActive)
-                                    {
-                                                    <button type="submit" class="btn btn-sm btn-outline-warning">
-                                                        <i class="bi bi-pause"></i> @L["Common_Pause"]
-                                                    </button>
-                                    }
-                                    else
-                                    {
-                                                    <button type="submit" class="btn btn-sm btn-outline-success">
-                                                        <i class="bi bi-play"></i> @L["Common_Activate"]
-                                                    </button>
-                                    }
+                                            @Html.AntiForgeryToken()
+                                            @if (recurring.IsActive)
+                                            {
+                                                <button type="submit" class="action-btn action-btn-warning" title="@L["Common_Pause"]">
+                                                    <i class="bi bi-pause-fill"></i>
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="submit" class="action-btn action-btn-success" title="@L["Common_Activate"]">
+                                                    <i class="bi bi-play-fill"></i>
+                                                </button>
+                                            }
                                         </form>
 
                                         <form asp-action="Delete" asp-route-id="@recurring.Id" 
-                                              method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                            onclick="return confirm('@L["Rec_DeleteConfirm"].Value');">
-                                                <i class="bi bi-trash"></i> @L["Common_Delete"]
+                                              method="post" class="d-inline"
+                                              onsubmit="return confirm('@L["Rec_DeleteConfirm"].Value');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="action-btn action-btn-danger" title="@L["Common_Delete"]">
+                                                <i class="bi bi-trash-fill"></i>
                                             </button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
-            }
+                    }
+                </div>
             </div>
+
+            @* Right: Visual Timeline of future dates (Col 4) ──────────── *@
+            <div class="col-lg-4">
+                <div class="kpi-card p-4 h-100">
+                    <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                        <i class="bi bi-clock-history text-primary"></i>
+                        <span>Cronograma Visual</span>
+                    </h5>
+                    <p class="text-muted small mb-4">Próximos cobros automáticos programados para los siguientes meses.</p>
+
+                    @{
+                        var upcomingList = Model.Recurrences
+                            .Where(r => r.IsActive && r.NextOccurrence.HasValue)
+                            .OrderBy(r => r.NextOccurrence)
+                            .ToList();
+                    }
+
+                    @if (upcomingList.Any())
+                    {
+                        <div class="timeline-visual ps-2 border-start ms-2" style="border-color: var(--clr-border) !important;">
+                            @foreach (var rec in upcomingList)
+                            {
+                                var catColor = GetCategoryColor(rec.Category, 0);
+                                var icon = GetCategoryIcon(rec.Category);
+
+                                <div class="timeline-item pb-4">
+                                    <span class="timeline-node" style="background: @catColor; box-shadow: 0 0 0 3px @(catColor)22;"></span>
+                                    <div class="ps-2">
+                                        <span class="badge rounded-pill px-2 py-1 text-muted" style="font-size: 0.65rem; background: var(--clr-surface-3);">
+                                            <i class="bi bi-calendar-event me-1"></i>@(rec.NextOccurrence?.ToString("dd MMM, yyyy"))
+                                        </span>
+                                        <h6 class="mb-0 fw-semibold mt-1" style="font-size: 0.85rem;">@rec.Description</h6>
+                                        <div class="d-flex justify-content-between align-items-center mt-1">
+                                            <small class="text-muted" style="font-size: 0.75rem;">
+                                                <i class="bi @icon me-1" style="color:@catColor;"></i>@rec.Category
+                                            </small>
+                                            <span class="fw-bold font-mono text-danger" style="font-size: 0.85rem;">
+                                                -$@rec.Amount.ToString("N2")
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-calendar-x fs-1 d-block mb-2 opacity-30"></i>
+                            <span class="small">No hay cobros recurrentes programados.</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     }
 </div>
+
+@functions {
+    public string GetCategoryColor(string categoryName, int index)
+    {
+        var colors = new[] { "#3b82f6","#ef4444","#f59e0b","#10b981","#8b5cf6","#ec4899","#14b8a6","#f97316" };
+        var name   = categoryName.ToLowerInvariant();
+        if (name.Contains("food")||name.Contains("comi")||name.Contains("rest")||name.Contains("alim")) return "#ef4444";
+        if (name.Contains("trans")||name.Contains("viaj")||name.Contains("auto")||name.Contains("car"))  return "#3b82f6";
+        if (name.Contains("util")||name.Contains("serv")||name.Contains("luz")||name.Contains("agua"))   return "#f59e0b";
+        if (name.Contains("health")||name.Contains("salu")||name.Contains("med"))                        return "#10b981";
+        if (name.Contains("enter")||name.Contains("diver")||name.Contains("cine")||name.Contains("ocio"))return "#8b5cf6";
+        if (name.Contains("house")||name.Contains("viv")||name.Contains("rent")||name.Contains("alqu"))  return "#ec4899";
+        if (name.Contains("educ")||name.Contains("curs")||name.Contains("estu"))                         return "#6366f1";
+        return colors[index % colors.Length];
+    }
+
+    public string GetCategoryIcon(string categoryName)
+    {
+        var name = categoryName.ToLowerInvariant();
+        if (name.Contains("food")||name.Contains("comi")||name.Contains("rest")||name.Contains("alim")) return "bi-egg-fried";
+        if (name.Contains("trans")||name.Contains("viaj")||name.Contains("auto")||name.Contains("car"))  return "bi-car-front";
+        if (name.Contains("util")||name.Contains("serv")||name.Contains("luz")||name.Contains("agua"))   return "bi-lightning-charge";
+        if (name.Contains("health")||name.Contains("salu")||name.Contains("med"))                        return "bi-heart-pulse";
+        if (name.Contains("enter")||name.Contains("diver")||name.Contains("cine")||name.Contains("ocio"))return "bi-controller";
+        if (name.Contains("house")||name.Contains("viv")||name.Contains("rent")||name.Contains("alqu"))  return "bi-house";
+        if (name.Contains("educ")||name.Contains("curs")||name.Contains("estu"))                         return "bi-book";
+        return "bi-tag";
+    }
+}
