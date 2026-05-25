@@ -7,10 +7,10 @@
 
 <style>
     .glass-card {
-        background: rgba(16, 26, 52, 0.45);
+        background: var(--clr-glass-card-bg);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--clr-glass-card-border);
         border-radius: 20px;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         position: relative;
@@ -30,9 +30,8 @@
     
     .glass-card:hover {
         transform: translateY(-4px);
-        border-color: rgba(255, 255, 255, 0.12);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 
-                    0 0 20px rgba(59, 130, 246, 0.1);
+        border-color: var(--clr-border-hover);
+        box-shadow: var(--shadow-lg);
     }
     
     .stat-glow-icon {
@@ -48,34 +47,29 @@
     }
     
     .glow-primary {
-        background: rgba(30, 64, 175, 0.2);
-        border: 1px solid rgba(59, 130, 246, 0.25);
-        color: #60a5fa;
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
+        background: var(--glow-primary-bg);
+        border: 1px solid var(--glow-primary-border);
+        color: var(--glow-primary-text);
     }
     .glow-success {
-        background: rgba(6, 95, 70, 0.2);
-        border: 1px solid rgba(16, 185, 129, 0.25);
-        color: #34d399;
-        box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+        background: var(--glow-success-bg);
+        border: 1px solid var(--glow-success-border);
+        color: var(--glow-success-text);
     }
     .glow-danger {
-        background: rgba(153, 27, 27, 0.2);
-        border: 1px solid rgba(239, 68, 68, 0.25);
-        color: #f87171;
-        box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+        background: var(--glow-danger-bg);
+        border: 1px solid var(--glow-danger-border);
+        color: var(--glow-danger-text);
     }
     .glow-warning {
-        background: rgba(146, 64, 14, 0.2);
-        border: 1px solid rgba(245, 158, 11, 0.25);
-        color: #fbbf24;
-        box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+        background: var(--glow-warning-bg);
+        border: 1px solid var(--glow-warning-border);
+        color: var(--glow-warning-text);
     }
     .glow-info {
-        background: rgba(107, 33, 168, 0.2);
-        border: 1px solid rgba(139, 92, 246, 0.25);
-        color: #a78bfa;
-        box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+        background: var(--glow-info-bg);
+        border: 1px solid var(--glow-info-border);
+        color: var(--glow-info-text);
     }
 
     .trend-indicator {
@@ -100,10 +94,13 @@
     
     .progress-track-premium {
         height: 6px;
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(0, 0, 0, 0.05);
         border-radius: 10px;
         overflow: hidden;
         position: relative;
+    }
+    [data-bs-theme="dark"] .progress-track-premium {
+        background: rgba(255, 255, 255, 0.05);
     }
     
     .progress-bar-premium {
@@ -113,8 +110,11 @@
     }
 
     .category-row-premium:hover {
-        background-color: rgba(255, 255, 255, 0.03) !important;
+        background-color: rgba(0, 0, 0, 0.02) !important;
         transform: translateX(4px);
+    }
+    [data-bs-theme="dark"] .category-row-premium:hover {
+        background-color: rgba(255, 255, 255, 0.03) !important;
     }
     
     .empty-state {
@@ -137,7 +137,7 @@
     @* Header *@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1 text-white" style="font-family: 'Calistoga', serif; letter-spacing: -0.5px;">
+            <h2 class="mb-1" style="font-family: 'Calistoga', serif; letter-spacing: -0.5px;">
                 <i class="bi bi-speedometer2 text-primary me-2"></i> 
                 @L["Dash_Title"]
             </h2>
@@ -163,7 +163,7 @@
                         <div class="empty-state-icon">
                             <i class="bi bi-wallet2"></i>
                         </div>
-                        <h3 class="mb-3 text-white" style="font-family: 'Calistoga', serif;">@L["Dash_NoExpensesMonth"]</h3>
+                        <h3 class="mb-3" style="font-family: 'Calistoga', serif;">@L["Dash_NoExpensesMonth"]</h3>
                         <p class="text-muted mb-4 max-w-md mx-auto">@L["Dash_StartTracking"]</p>
                         <a asp-controller="Expenses" asp-action="Index" class="btn btn-primary rounded-pill px-4 py-2">
                             <i class="bi bi-plus-circle me-2"></i>@L["Dash_AddFirstExpense"]
@@ -221,8 +221,8 @@
                             }
                         </div>
                         <div class="d-flex justify-content-between align-items-center border-top border-secondary border-opacity-10 pt-2 mt-2">
-                            <small class="text-muted font-sans text-xs">Avg/día: <span class="text-white font-mono fw-semibold">@Model.DailyAverage.ToString("C2")</span></small>
-                            <small class="text-muted font-sans text-xs">Máx: <span class="text-white font-mono fw-semibold">@Model.HighestExpense.ToString("C2")</span></small>
+                            <small class="text-muted font-sans text-xs">Avg/día: <span class="font-mono fw-semibold">@Model.DailyAverage.ToString("C2")</span></small>
+                            <small class="text-muted font-sans text-xs">Máx: <span class="font-mono fw-semibold">@Model.HighestExpense.ToString("C2")</span></small>
                         </div>
                     </div>
                 </div>
@@ -279,18 +279,19 @@
             </div>
         </div>
 
-        @* Row 2: Cash Flow Chart & Top 5 Expenses *@
+        @* Row 2: Spending Trend & Top 5 Expenses *@
         <div class="row g-4 mb-4">
             <div class="col-lg-8">
                 <div class="card glass-card shadow-sm h-100">
                     <div class="card-header border-0 bg-transparent pt-4 pb-3">
-                        <h5 class="mb-0 fw-semibold text-white">
-                            <i class="bi bi-graph-up text-primary me-2"></i>@L["Dash_CashFlowSummary"]
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-graph-up text-primary me-2"></i>@L["Dash_SpendingTrend"]
+                            <span class="badge bg-secondary bg-opacity-20 text-muted ms-2">@L["Dash_Last30Days"]</span>
                         </h5>
                     </div>
                     <div class="card-body pt-2">
                         <div style="position: relative; height: 320px; width: 100%;">
-                            <canvas id="cashFlowChart"></canvas>
+                            <canvas id="dailyTrendChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -299,7 +300,7 @@
             <div class="col-lg-4">
                 <div class="card glass-card shadow-sm h-100">
                     <div class="card-header border-0 bg-transparent pt-4 pb-3">
-                        <h5 class="mb-0 fw-semibold text-white">
+                        <h5 class="mb-0 fw-semibold">
                             <i class="bi bi-star-fill text-warning me-2"></i>@L["Dash_Top5Expenses"]
                         </h5>
                     </div>
@@ -311,13 +312,13 @@
                                 {
                                     var icon = GetCategoryIcon(exp.Category);
                                     var color = GetCategoryColor(exp.Category, 0);
-                                    <div class="d-flex justify-content-between align-items-center p-3 rounded-4 category-row-premium" style="background-color: rgba(255, 255, 255, 0.015); border: 1px solid rgba(255, 255, 255, 0.03); transition: all 0.2s ease;">
+                                    <div class="d-flex justify-content-between align-items-center p-3 rounded-4 category-row-premium" style="background-color: rgba(0, 0, 0, 0.015); border: 1px solid var(--clr-border); transition: all 0.2s ease;">
                                         <div class="d-flex align-items-center gap-3">
                                             <span class="d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 10px; background-color: @(color)1a; color: @color; border: 1px solid @(color)26; font-size: 1.1rem;">
                                                 <i class="bi @icon"></i>
                                             </span>
                                             <div>
-                                                <h6 class="text-white mb-0 fw-semibold font-sans text-sm">@exp.Description</h6>
+                                                <h6 class="mb-0 fw-semibold font-sans text-sm">@exp.Description</h6>
                                                 <small class="text-muted font-sans text-xs">@exp.Date.ToString("dd MMM, yyyy")</small>
                                             </div>
                                         </div>
@@ -338,15 +339,15 @@
             <div class="col-lg-8">
                 <div class="card glass-card shadow-sm h-100">
                     <div class="card-header border-0 bg-transparent pt-4 pb-3">
-                        <h5 class="mb-0 fw-semibold text-white">
+                        <h5 class="mb-0 fw-semibold">
                             <i class="bi bi-list-ul text-primary me-2"></i>@L["Dash_CategoryBreakdown"]
                         </h5>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover table-dark mb-0 align-middle table-borderless" style="background: transparent;">
+                            <table class="table table-hover mb-0 align-middle table-borderless" style="background: transparent;">
                                 <thead>
-                                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                                    <tr style="border-bottom: 1px solid var(--clr-border);">
                                         <th class="py-3 ps-4 text-muted fw-semibold text-xs text-uppercase font-sans">@L["Common_Category"]</th>
                                         <th class="py-3 text-end text-muted fw-semibold text-xs text-uppercase font-sans">@L["Common_Amount"]</th>
                                         <th class="py-3 text-center text-muted fw-semibold text-xs text-uppercase font-sans">@L["Dash_Count"]</th>
@@ -360,18 +361,18 @@
                                     {
                                         var color = GetCategoryColor(cat.Category, index++);
                                         var icon = GetCategoryIcon(cat.Category);
-                                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+                                        <tr style="border-bottom: 1px solid var(--clr-border);">
                                             <td class="ps-4 py-3">
                                                 <div class="d-flex align-items-center gap-2">
                                                     <span class="d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border-radius: 8px; background-color: @(color)1a; color: @color; border: 1px solid @(color)26; font-size: 0.95rem;">
                                                         <i class="bi @icon"></i>
                                                     </span>
-                                                    <span class="text-white fw-medium font-sans text-sm">@cat.Category</span>
+                                                    <span class="fw-medium font-sans text-sm">@cat.Category</span>
                                                 </div>
                                             </td>
-                                            <td class="text-end fw-bold text-white font-mono text-sm py-3">@cat.Total.ToString("N2")</td>
+                                            <td class="text-end fw-bold font-mono text-sm py-3">@cat.Total.ToString("N2")</td>
                                             <td class="text-center py-3">
-                                                <span class="badge bg-secondary bg-opacity-20 text-white rounded-pill px-2 py-1 font-mono" style="font-size: 0.75rem;">@cat.Count</span>
+                                                <span class="badge bg-secondary bg-opacity-10 text-body rounded-pill px-2 py-1 font-mono" style="font-size: 0.75rem;">@cat.Count</span>
                                             </td>
                                             <td class="pe-4 py-3">
                                                 <div class="d-flex align-items-center gap-2">
@@ -401,7 +402,7 @@
             <div class="col-lg-4">
                 <div class="card glass-card shadow-sm h-100">
                     <div class="card-header border-0 bg-transparent pt-4 pb-2">
-                        <h5 class="mb-0 fw-semibold text-white">
+                        <h5 class="mb-0 fw-semibold">
                             <i class="bi bi-pie-chart text-primary me-2"></i>@L["Ins_Percentage"]
                         </h5>
                     </div>
@@ -420,10 +421,10 @@
                                                 <span class="d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px; border-radius: 6px; background-color: @(color)1a; color: @color; border: 1px solid @(color)26; font-size: 0.8rem;">
                                                     <i class="bi @icon"></i>
                                                 </span>
-                                                <span class="text-white fw-semibold font-sans text-xs">@cat.Category</span>
+                                                <span class="fw-semibold font-sans text-xs">@cat.Category</span>
                                             </div>
                                             <div class="text-end">
-                                                <span class="text-white fw-bold font-mono text-xs">@cat.Total.ToString("N2")</span>
+                                                <span class="fw-bold font-mono text-xs">@cat.Total.ToString("N2")</span>
                                                 <span class="text-muted font-sans text-xs ms-1">(@cat.Percentage.ToString("N0")%)</span>
                                             </div>
                                         </div>
@@ -454,67 +455,65 @@
     @if (hasData)
     {
         <text>
-            const incomeVal = @Model.CurrentMonthIncome.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            const expenseVal = @Model.CurrentMonthTotal.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            const balanceVal = @Model.MonthlyBalance.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            const prevExpenseVal = @Model.PreviousMonthTotal.ToString(System.Globalization.CultureInfo.InvariantCulture);
-
-            const cashFlowCtx = document.getElementById('cashFlowChart').getContext('2d');
+            const trendData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DailyTrend));
+            const trendCtx = document.getElementById('dailyTrendChart').getContext('2d');
             
-            const incomeGrad = cashFlowCtx.createLinearGradient(0, 0, 0, 300);
-            incomeGrad.addColorStop(0, 'rgba(16, 185, 129, 0.45)');
-            incomeGrad.addColorStop(1, 'rgba(16, 185, 129, 0.02)');
-
-            const expenseGrad = cashFlowCtx.createLinearGradient(0, 0, 0, 300);
-            expenseGrad.addColorStop(0, 'rgba(239, 68, 68, 0.45)');
-            expenseGrad.addColorStop(1, 'rgba(239, 68, 68, 0.02)');
-
-            const balanceGrad = cashFlowCtx.createLinearGradient(0, 0, 0, 300);
-            if (balanceVal >= 0) {
-                balanceGrad.addColorStop(0, 'rgba(59, 130, 246, 0.45)');
-                balanceGrad.addColorStop(1, 'rgba(59, 130, 246, 0.02)');
-            } else {
-                balanceGrad.addColorStop(0, 'rgba(239, 68, 68, 0.45)');
-                balanceGrad.addColorStop(1, 'rgba(239, 68, 68, 0.02)');
+            // Function to generate premium theme-appropriate colors
+            function getChartThemeColors() {
+                const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+                return {
+                    grid: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(15, 23, 42, 0.04)',
+                    ticks: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(15, 23, 42, 0.4)',
+                    tooltipBg: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.98)',
+                    tooltipBorder: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(15, 23, 42, 0.08)',
+                    tooltipText: isDark ? '#cbd5e1' : '#334155',
+                    tooltipTitle: isDark ? '#fff' : '#0f172a'
+                };
             }
 
-            const prevExpenseGrad = cashFlowCtx.createLinearGradient(0, 0, 0, 300);
-            prevExpenseGrad.addColorStop(0, 'rgba(156, 163, 175, 0.25)');
-            prevExpenseGrad.addColorStop(1, 'rgba(156, 163, 175, 0.02)');
+            // Create linear gradient for the line area
+            const gradient = trendCtx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.35)');  // emerald green with transparency
+            gradient.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
 
-            new Chart(cashFlowCtx, {
-                type: 'bar',
+            let themeColors = getChartThemeColors();
+
+            const trendChart = new Chart(trendCtx, {
+                type: 'line',
                 data: {
-                    labels: [
-                        '@L["Dash_MonthlyIncome"].Value', 
-                        '@L["Dash_TotalThisMonth"].Value', 
-                        '@L["Dash_Balance"].Value', 
-                        '@L["Dash_VsLastMonth"].Value'
-                    ],
+                    labels: trendData.map(d => d.Date),
                     datasets: [{
-                        data: [incomeVal, expenseVal, balanceVal, prevExpenseVal],
-                        backgroundColor: [incomeGrad, expenseGrad, balanceGrad, prevExpenseGrad],
-                        borderColor: [
-                            '#10b981', 
-                            '#ef4444', 
-                            balanceVal >= 0 ? '#3b82f6' : '#ef4444', 
-                            '#9ca3af'
-                        ],
-                        borderWidth: 2,
-                        borderRadius: 12,
-                        borderSkipped: false
+                        label: '@L["Dash_DailySpending"].Value',
+                        data: trendData.map(d => d.Amount),
+                        borderColor: '#10b981', // emerald green line
+                        backgroundColor: gradient,
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: 'var(--clr-surface)',
+                        pointBorderWidth: 2,
+                        pointHoverBackgroundColor: '#10b981',
+                        pointHoverBorderColor: 'var(--clr-surface)',
+                        pointHoverBorderWidth: 3
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                            titleColor: '#fff',
-                            bodyColor: '#cbd5e1',
-                            borderColor: 'rgba(255, 255, 255, 0.08)',
+                            backgroundColor: themeColors.tooltipBg,
+                            titleColor: themeColors.tooltipTitle,
+                            bodyColor: themeColors.tooltipText,
+                            borderColor: themeColors.tooltipBorder,
                             borderWidth: 1,
                             padding: 12,
                             cornerRadius: 12,
@@ -522,32 +521,47 @@
                             titleFont: { family: 'Inter', size: 13, weight: 'bold' },
                             bodyFont: { family: 'JetBrains Mono', size: 12 },
                             callbacks: {
-                                label: function(context) {
-                                    return '@L["Common_Amount"].Value: ' + context.parsed.y.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                }
+                                label: (ctx) => '@L["Dash_SpentLabel"].Value: ' + ctx.parsed.y.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                             }
                         }
                     },
                     scales: {
                         y: {
+                            beginAtZero: true,
                             grid: {
-                                color: 'rgba(255, 255, 255, 0.04)',
+                                color: themeColors.grid,
                                 drawBorder: false
                             },
                             ticks: {
-                                color: 'rgba(255, 255, 255, 0.4)',
+                                color: themeColors.ticks,
                                 font: { family: 'JetBrains Mono', size: 11 }
                             }
                         },
                         x: {
                             grid: { display: false },
                             ticks: {
-                                color: 'rgba(255, 255, 255, 0.6)',
-                                font: { family: 'Inter', size: 12, weight: '500' }
+                                color: themeColors.ticks,
+                                font: { family: 'Inter', size: 11 }
                             }
                         }
                     }
                 }
+            });
+
+            // Listen for theme change events to dynamically update chart colors
+            window.addEventListener('themeChanged', () => {
+                const colors = getChartThemeColors();
+                
+                trendChart.options.scales.y.grid.color = colors.grid;
+                trendChart.options.scales.y.ticks.color = colors.ticks;
+                trendChart.options.scales.x.ticks.color = colors.ticks;
+                
+                trendChart.options.plugins.tooltip.backgroundColor = colors.tooltipBg;
+                trendChart.options.plugins.tooltip.titleColor = colors.tooltipTitle;
+                trendChart.options.plugins.tooltip.bodyColor = colors.tooltipText;
+                trendChart.options.plugins.tooltip.borderColor = colors.tooltipBorder;
+                
+                trendChart.update();
             });
         </text>
     }
