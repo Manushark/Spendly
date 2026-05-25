@@ -14,22 +14,22 @@
   --clr-accent:        #059669;
   --clr-accent-light:  #10B981;
 
-  /* Surfaces */
-  --clr-bg:            #0B1120;
-  --clr-surface:       #0F172A;
-  --clr-surface-2:     #131F35;
-  --clr-surface-3:     #1A2845;
-  --clr-sidebar:       #090E1A;
-  --clr-sidebar-hover: #111827;
+  /* Surfaces (Light Mode default) */
+  --clr-bg:            #F8FAFC;
+  --clr-surface:       #FFFFFF;
+  --clr-surface-2:     #FFFFFF;
+  --clr-surface-3:     #F1F5F9;
+  --clr-sidebar:       #FFFFFF;
+  --clr-sidebar-hover: #F1F5F9;
 
-  /* Text */
-  --clr-text:          #F1F5F9;
-  --clr-text-muted:    #94A3B8;
-  --clr-text-faint:    #475569;
+  /* Text (Light Mode default) */
+  --clr-text:          #0F172A;
+  --clr-text-muted:    #475569;
+  --clr-text-faint:    #94A3B8;
 
-  /* Borders */
-  --clr-border:        rgba(255, 255, 255, 0.07);
-  --clr-border-hover:  rgba(255, 255, 255, 0.14);
+  /* Borders (Light Mode default) */
+  --clr-border:        rgba(15, 23, 42, 0.08);
+  --clr-border-hover:  rgba(15, 23, 42, 0.15);
 
   /* Semantic */
   --clr-success:  #059669;
@@ -37,10 +37,35 @@
   --clr-danger:   #DC2626;
   --clr-info:     #0EA5E9;
 
+  /* Glass Card overrides (Light Mode default) */
+  --clr-glass-card-bg:     rgba(255, 255, 255, 0.7);
+  --clr-glass-card-border: rgba(15, 23, 42, 0.08);
+
+  /* Stat Glow Icon overrides (Light Mode default) */
+  --glow-primary-bg:     rgba(30, 64, 175, 0.08);
+  --glow-primary-border: rgba(59, 130, 246, 0.2);
+  --glow-primary-text:   #1E40AF;
+
+  --glow-success-bg:     rgba(16, 185, 129, 0.1);
+  --glow-success-border: rgba(16, 185, 129, 0.2);
+  --glow-success-text:   #059669;
+
+  --glow-danger-bg:      rgba(239, 68, 68, 0.08);
+  --glow-danger-border:  rgba(239, 68, 68, 0.2);
+  --glow-danger-text:    #DC2626;
+
+  --glow-warning-bg:     rgba(245, 158, 11, 0.08);
+  --glow-warning-border: rgba(245, 158, 11, 0.2);
+  --glow-warning-text:   #D97706;
+
+  --glow-info-bg:        rgba(139, 92, 246, 0.08);
+  --glow-info-border:    rgba(139, 92, 246, 0.2);
+  --glow-info-text:      #7C3AED;
+
   /* Glow effects */
-  --glow-primary:   0 0 24px rgba(30,  64, 175, 0.35);
-  --glow-accent:    0 0 24px rgba(5,  150, 105, 0.35);
-  --glow-secondary: 0 0 16px rgba(59, 130, 246, 0.25);
+  --glow-primary:   0 0 24px rgba(30,  64, 175, 0.15);
+  --glow-accent:    0 0 24px rgba(5,  150, 105, 0.15);
+  --glow-secondary: 0 0 16px rgba(59, 130, 246, 0.12);
 
   /* Typography */
   --font-heading: 'Calistoga', Georgia, serif;
@@ -72,30 +97,114 @@
   --dur-base:    250ms;
   --dur-slow:    380ms;
 
-  /* Elevation shadows */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3);
-  --shadow-md: 0 4px 14px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.3);
-  --shadow-lg: 0 10px 32px rgba(0,0,0,.5),  0 4px 12px rgba(0,0,0,.35);
-  --shadow-xl: 0 20px 52px rgba(0,0,0,.6),  0 8px 20px rgba(0,0,0,.4);
+  /* Elevation shadows (Light Mode default) */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.03);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.05), 0 2px 4px rgba(15, 23, 42, 0.03);
+  --shadow-lg: 0 10px 24px rgba(15, 23, 42, 0.06), 0 4px 8px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 20px 40px rgba(15, 23, 42, 0.08), 0 8px 16px rgba(15, 23, 42, 0.05);
 
   /* Sidebar */
   --sidebar-width: 260px;
+
+  /* Theme-specific custom variables */
+  --clr-navbar-bg:         rgba(248, 250, 252, 0.8);
+  --clr-logout-text:       #dc2626;
+  --clr-logout-hover-text: #b91c1c;
 
   /* ── Legacy aliases so existing views keep working ── */
   --bg-body:            var(--clr-bg);
   --bg-sidebar:         var(--clr-sidebar);
   --bg-sidebar-hover:   var(--clr-sidebar-hover);
   --text-sidebar:       var(--clr-text-muted);
-  --text-sidebar-active:var(--clr-text);
+  --text-sidebar-active:var(--clr-primary);
   --accent-color:       var(--clr-secondary);
-  --card-bg:            var(--clr-surface-2);
+  --card-bg:            var(--clr-surface);
   --card-shadow:        var(--shadow-md);
   --border-radius:      var(--radius-lg);
   --transition-speed:   var(--dur-base);
+
+  /* ── Bootstrap Light overrides ── */
+  --bs-body-bg:              var(--clr-bg);
+  --bs-body-color:           var(--clr-text);
+  --bs-border-color:         var(--clr-border);
+  --bs-secondary-color:      var(--clr-text-muted);
+  --bs-card-bg:              var(--clr-surface);
+  --bs-card-border-color:    var(--clr-border);
+  --bs-modal-bg:             var(--clr-surface);
+  --bs-dropdown-bg:          var(--clr-surface);
+  --bs-dropdown-border-color:var(--clr-border);
+  --bs-input-bg:             var(--clr-surface-3);
+  --bs-input-border-color:   var(--clr-border);
+  --bs-input-color:          var(--clr-text);
+  --bs-table-bg:             transparent;
+  --bs-table-striped-bg:     rgba(0, 0, 0, 0.015);
+  --bs-table-hover-bg:       rgba(0, 0, 0, 0.03);
 }
 
-/* ── 2. BOOTSTRAP 5 DARK OVERRIDES ───────────────────────── */
+/* ── 2. DUAL-THEME OVERRIDES ────────────────────────────── */
 [data-bs-theme="dark"] {
+  /* Surfaces (Dark Mode overrides) */
+  --clr-bg:            #0B1120;
+  --clr-surface:       #0F172A;
+  --clr-surface-2:     #131F35;
+  --clr-surface-3:     #1A2845;
+  --clr-sidebar:       #090E1A;
+  --clr-sidebar-hover: #111827;
+
+  /* Text (Dark Mode overrides) */
+  --clr-text:          #F1F5F9;
+  --clr-text-muted:    #94A3B8;
+  --clr-text-faint:    #475569;
+
+  /* Borders (Dark Mode overrides) */
+  --clr-border:        rgba(255, 255, 255, 0.07);
+  --clr-border-hover:  rgba(255, 255, 255, 0.14);
+
+  /* Glass Card overrides (Dark Mode overrides) */
+  --clr-glass-card-bg:     rgba(16, 26, 52, 0.45);
+  --clr-glass-card-border: rgba(255, 255, 255, 0.06);
+
+  /* Stat Glow Icon overrides (Dark Mode overrides) */
+  --glow-primary-bg:     rgba(30, 64, 175, 0.2);
+  --glow-primary-border: rgba(59, 130, 246, 0.25);
+  --glow-primary-text:   #60a5fa;
+
+  --glow-success-bg:     rgba(6, 95, 70, 0.2);
+  --glow-success-border: rgba(16, 185, 129, 0.25);
+  --glow-success-text:   #34d399;
+
+  --glow-danger-bg:      rgba(153, 27, 27, 0.2);
+  --glow-danger-border:  rgba(239, 68, 68, 0.25);
+  --glow-danger-text:    #F87171;
+
+  --glow-warning-bg:     rgba(146, 64, 14, 0.2);
+  --glow-warning-border: rgba(245, 158, 11, 0.25);
+  --glow-warning-text:   #FBBF24;
+
+  --glow-info-bg:        rgba(107, 33, 168, 0.2);
+  --glow-info-border:    rgba(139, 92, 246, 0.25);
+  --glow-info-text:      #A78BFA;
+
+  /* Theme-specific custom variables */
+  --clr-navbar-bg:         rgba(11, 17, 32, 0.75);
+  --clr-logout-text:       #FCA5A5;
+  --clr-logout-hover-text: #FECACA;
+
+  /* Glow effects */
+  --glow-primary:   0 0 24px rgba(30,  64, 175, 0.35);
+  --glow-accent:    0 0 24px rgba(5,  150, 105, 0.35);
+  --glow-secondary: 0 0 16px rgba(59, 130, 246, 0.25);
+
+  /* Shadows (Dark Mode overrides) */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3);
+  --shadow-md: 0 4px 14px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.3);
+  --shadow-lg: 0 10px 32px rgba(0,0,0,.5),  0 4px 12px rgba(0,0,0,.35);
+  --shadow-xl: 0 20px 52px rgba(0,0,0,.6),  0 8px 20px rgba(0,0,0,.4);
+
+  /* Legacy aliases overrides for Dark Mode */
+  --text-sidebar-active: var(--clr-text);
+
+  /* Bootstrap overrides for Dark Mode */
   --bs-body-bg:              var(--clr-bg);
   --bs-body-color:           var(--clr-text);
   --bs-border-color:         var(--clr-border);
@@ -271,7 +380,7 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
 }
 
 .sidebar-link:hover {
-  background: rgba(255,255,255,.05);
+  background: var(--clr-sidebar-hover);
   color: var(--clr-text);
   transform: translateX(3px);
 }
@@ -376,7 +485,7 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   width: 100%;
   padding: var(--sp-2) var(--sp-4);
   background: rgba(220,38,38,.08);
-  color: #FCA5A5;
+  color: var(--clr-logout-text);
   border: 1px solid rgba(220,38,38,.18);
   border-radius: var(--radius-md);
   font-size: .82rem;
@@ -388,7 +497,7 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
 
 .btn-logout:hover {
   background: rgba(220,38,38,.18);
-  color: #FECACA;
+  color: var(--clr-logout-hover-text);
   border-color: rgba(220,38,38,.32);
   transform: translateY(-1px);
 }
@@ -407,7 +516,7 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
 
 /* ── 9. TOP NAVBAR ────────────────────────────────────────── */
 .top-navbar {
-  background: rgba(11,17,32,.75);
+  background: var(--clr-navbar-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--clr-border);
@@ -425,7 +534,7 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   display: none;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,.06);
+  background: var(--clr-surface-3);
   border: 1px solid var(--clr-border);
   color: var(--clr-text);
   font-size: 1.2rem;
@@ -436,7 +545,7 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   margin-right: auto;
 }
 
-.sidebar-toggler:hover { background: rgba(255,255,255,.1); }
+.sidebar-toggler:hover { background: var(--clr-sidebar-hover); }
 
 /* Bell button */
 #notificationBell {
