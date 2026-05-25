@@ -8,13 +8,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (sidebar && toggleBtn && overlay) {
         toggleBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("show");
-            overlay.classList.toggle("d-none");
+            const isOpen = sidebar.classList.toggle("show");
+            if (isOpen) {
+                overlay.classList.remove("d-none");
+                overlay.style.pointerEvents = "auto";
+            } else {
+                overlay.classList.add("d-none");
+                overlay.style.pointerEvents = "none";
+            }
         });
 
         overlay.addEventListener("click", () => {
             sidebar.classList.remove("show");
             overlay.classList.add("d-none");
+            overlay.style.pointerEvents = "none";
         });
     }
 
