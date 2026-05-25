@@ -1,6 +1,12 @@
 <!DOCTYPE html>
-<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName" data-bs-theme="dark">
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName" data-bs-theme="light">
 <head>
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Spendly</title>
@@ -161,8 +167,14 @@
                         <i class="bi bi-list"></i>
                     </button>
 
-                    <!-- Notification Bell -->
-                    <div class="dropdown me-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <!-- Theme Switcher Button -->
+                        <button class="btn btn-link p-0 border-0" id="themeToggleBtn" type="button" style="font-size: 1.25rem; color: var(--clr-text-muted); transition: color 0.2s;">
+                            <i class="bi bi-sun" id="themeToggleIcon"></i>
+                        </button>
+
+                        <!-- Notification Bell -->
+                        <div class="dropdown me-3">
                         <button class="btn btn-link text-dark position-relative p-0 border-0" type="button"
                                 id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false"
                                 style="font-size: 1.3rem;">
@@ -193,7 +205,8 @@
                             </div>
                         </div>
                     </div>
-                </nav>
+                </div>
+            </nav>
 
                 <div class="content-wrapper">
                     @RenderBody()
@@ -396,7 +409,7 @@
                                 <div class="d-flex align-items-start gap-2">
                                     <i class="bi ${ni.icon} ${ni.color} mt-1 flex-shrink-0"></i>
                                     <div class="flex-grow-1">
-                                        <small class="d-block text-dark" style="line-height:1.3;">${n.message}</small>
+                                        <small class="d-block text-body" style="line-height:1.3;">${n.message}</small>
                                         <small class="text-muted" style="font-size:0.7rem;">${timeAgo(n.createdAt)}</small>
                                     </div>
                                     ${n.isRead ? '' : '<span class="rounded-circle bg-primary flex-shrink-0" style="width:8px;height:8px;margin-top:6px;"></span>'}
@@ -430,6 +443,38 @@
                 if (hrs  < 24)   return _timeStrings.hAgo.replace('{0}', hrs);
                 return _timeStrings.dAgo.replace('{0}', Math.floor(hrs / 24));
             }
+
+            // Theme toggle initialization and event handler
+            document.addEventListener('DOMContentLoaded', () => {
+                const btn = document.getElementById('themeToggleBtn');
+                if (btn) {
+                    const icon = document.getElementById('themeToggleIcon');
+                    
+                    function updateToggleUI(theme) {
+                        if (theme === 'dark') {
+                            icon.className = 'bi bi-sun';
+                            btn.setAttribute('title', 'Switch to Light Mode');
+                            btn.style.color = '#fbbf24';
+                        } else {
+                            icon.className = 'bi bi-moon-stars';
+                            btn.setAttribute('title', 'Switch to Dark Mode');
+                            btn.style.color = 'var(--clr-text-muted)';
+                        }
+                    }
+                    
+                    const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+                    updateToggleUI(currentTheme);
+                    
+                    btn.addEventListener('click', () => {
+                        const newTheme = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+                        document.documentElement.setAttribute('data-bs-theme', newTheme);
+                        localStorage.setItem('theme', newTheme);
+                        updateToggleUI(newTheme);
+                        
+                        window.dispatchEvent(new Event('themeChanged'));
+                    });
+                }
+            });
         </script>
     }
 
