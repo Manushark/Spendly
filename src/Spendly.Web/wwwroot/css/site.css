@@ -14,28 +14,37 @@
   --clr-accent:        #059669;
   --clr-accent-light:  #10B981;
 
-  /* Surfaces (Light Mode default) */
-  --clr-bg:            #F8FAFC;
+  /* Surfaces (Light Mode – clean, premium white) */
+  --clr-bg:            #F0F4F8;
   --clr-surface:       #FFFFFF;
   --clr-surface-2:     #FFFFFF;
-  --clr-surface-3:     #F1F5F9;
-  --clr-sidebar:       #FFFFFF;
-  --clr-sidebar-hover: #F1F5F9;
+  --clr-surface-3:     #EEF2F7;
+  --clr-sidebar:       #1E293B;
+  --clr-sidebar-hover: #334155;
 
-  /* Text (Light Mode default) */
+  /* Text (Light Mode) */
   --clr-text:          #0F172A;
   --clr-text-muted:    #475569;
   --clr-text-faint:    #94A3B8;
 
-  /* Borders (Light Mode default) */
-  --clr-border:        rgba(15, 23, 42, 0.08);
-  --clr-border-hover:  rgba(15, 23, 42, 0.15);
+  /* Borders (Light Mode) */
+  --clr-border:        rgba(15, 23, 42, 0.10);
+  --clr-border-hover:  rgba(15, 23, 42, 0.20);
 
   /* Semantic */
   --clr-success:  #059669;
   --clr-warning:  #D97706;
   --clr-danger:   #DC2626;
   --clr-info:     #0EA5E9;
+
+  /* Trend Indicators (Light Mode default) */
+  --clr-trend-up-bg:       rgba(220, 38, 38, 0.08);
+  --clr-trend-up-border:   rgba(220, 38, 38, 0.16);
+  --clr-trend-up-text:     #DC2626;
+
+  --clr-trend-down-bg:     rgba(16, 185, 129, 0.08);
+  --clr-trend-down-border: rgba(16, 185, 129, 0.16);
+  --clr-trend-down-text:   #059669;
 
   /* Glass Card overrides (Light Mode default) */
   --clr-glass-card-bg:     rgba(255, 255, 255, 0.7);
@@ -107,7 +116,7 @@
   --sidebar-width: 260px;
 
   /* Theme-specific custom variables */
-  --clr-navbar-bg:         rgba(248, 250, 252, 0.8);
+  --clr-navbar-bg:         rgba(240, 244, 248, 0.92);
   --clr-logout-text:       #dc2626;
   --clr-logout-hover-text: #b91c1c;
 
@@ -123,7 +132,7 @@
   --border-radius:      var(--radius-lg);
   --transition-speed:   var(--dur-base);
 
-  /* ── Bootstrap Light overrides ── */
+  /* Bootstrap overrides (Light Mode) */
   --bs-body-bg:              var(--clr-bg);
   --bs-body-color:           var(--clr-text);
   --bs-border-color:         var(--clr-border);
@@ -137,8 +146,10 @@
   --bs-input-border-color:   var(--clr-border);
   --bs-input-color:          var(--clr-text);
   --bs-table-bg:             transparent;
-  --bs-table-striped-bg:     rgba(0, 0, 0, 0.015);
+  --bs-table-striped-bg:     rgba(0, 0, 0, 0.02);
   --bs-table-hover-bg:       rgba(0, 0, 0, 0.03);
+  --bs-danger:               #ef4444;
+  --bs-success:              #10b981;
 }
 
 /* ── 2. DUAL-THEME OVERRIDES ────────────────────────────── */
@@ -159,6 +170,15 @@
   /* Borders (Dark Mode overrides) */
   --clr-border:        rgba(255, 255, 255, 0.07);
   --clr-border-hover:  rgba(255, 255, 255, 0.14);
+
+  /* Trend Indicators (Dark Mode overrides) */
+  --clr-trend-up-bg:       rgba(239, 68, 68, 0.12);
+  --clr-trend-up-border:   rgba(239, 68, 68, 0.25);
+  --clr-trend-up-text:     #f87171;
+
+  --clr-trend-down-bg:     rgba(16, 185, 129, 0.12);
+  --clr-trend-down-border: rgba(16, 185, 129, 0.25);
+  --clr-trend-down-text:   #34d399;
 
   /* Glass Card overrides (Dark Mode overrides) */
   --clr-glass-card-bg:     rgba(16, 26, 52, 0.45);
@@ -308,8 +328,8 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   font-family: var(--font-heading);
   font-size: 1.35rem;
   font-weight: 400;
-  color: var(--clr-text);
-  border-bottom: 1px solid var(--clr-border);
+  color: #F1F5F9;
+  border-bottom: 1px solid rgba(255,255,255,.08);
   letter-spacing: -0.01em;
   flex-shrink: 0;
 }
@@ -346,7 +366,7 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .1em;
-  color: var(--clr-text-faint);
+  color: rgba(255,255,255,.35);
   user-select: none;
 }
 
@@ -359,7 +379,7 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   align-items: center;
   gap: var(--sp-3);
   padding: 10px var(--sp-4);
-  color: var(--clr-text-muted);
+  color: rgba(255,255,255,.60);
   text-decoration: none;
   border-radius: var(--radius-md);
   font-weight: 500;
@@ -380,8 +400,8 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
 }
 
 .sidebar-link:hover {
-  background: var(--clr-sidebar-hover);
-  color: var(--clr-text);
+  background: rgba(255,255,255,.08);
+  color: #fff;
   transform: translateX(3px);
 }
 
@@ -1007,4 +1027,26 @@ hr            { border-color: var(--clr-border); opacity: 1; }
 
 @media (max-width: 575.98px) {
   .content-wrapper { padding: var(--sp-3); }
+}
+
+/* ── 29. TREND INDICATORS ─────────────────────────────────── */
+.trend-indicator {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.trend-up {
+  background: var(--clr-trend-up-bg);
+  color: var(--clr-trend-up-text);
+  border: 1px solid var(--clr-trend-up-border);
+}
+
+.trend-down {
+  background: var(--clr-trend-down-bg);
+  color: var(--clr-trend-down-text);
+  border: 1px solid var(--clr-trend-down-border);
 }
