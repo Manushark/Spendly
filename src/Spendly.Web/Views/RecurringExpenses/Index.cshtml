@@ -120,6 +120,36 @@
         background: #10b981;
         color: #fff;
         border-color: #10b981;
+        transform: scale(1.08);
+    }
+
+    /* High intensity vivid colors for text and numbers */
+    .vivid-red {
+        color: #d92727 !important;
+    }
+    [data-bs-theme="dark"] .vivid-red {
+        color: #ff5252 !important;
+    }
+    
+    .vivid-green {
+        color: #166534 !important; /* highly visible emerald green */
+    }
+    [data-bs-theme="dark"] .vivid-green {
+        color: #10b981 !important;
+    }
+    
+    .vivid-blue {
+        color: #1d4ed8 !important;
+    }
+    [data-bs-theme="dark"] .vivid-blue {
+        color: #60a5fa !important;
+    }
+    
+    .vivid-warning {
+        color: #b45309 !important;
+    }
+    [data-bs-theme="dark"] .vivid-warning {
+        color: #fbbf24 !important;
     }
 </style>
 
@@ -180,7 +210,7 @@
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Rec_TotalRecurrences"]</span>
                         <div class="kpi-icon kpi-icon-primary"><i class="bi bi-arrow-repeat"></i></div>
                     </div>
-                    <h3 class="fw-bold font-mono mb-1">@Model.TotalRecurrences</h3>
+                    <h3 class="fw-bold font-mono mb-1 vivid-blue">@Model.TotalRecurrences</h3>
                     <small class="text-muted">@Model.ActiveRecurrences @L["Common_Active"]</small>
                 </div>
             </div>
@@ -193,7 +223,7 @@
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Rec_MonthlyProjected"]</span>
                         <div class="kpi-icon kpi-icon-success"><i class="bi bi-calendar-month"></i></div>
                     </div>
-                    <h3 class="fw-bold font-mono mb-1 text-success">$@Model.MonthlyProjectedTotal.ToString("N2")</h3>
+                    <h3 class="fw-bold font-mono mb-1 vivid-green">$@Model.MonthlyProjectedTotal.ToString("N2")</h3>
                     <small class="text-muted">@L["Rec_EstimatedPerMonth"]</small>
                 </div>
             </div>
@@ -206,7 +236,7 @@
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Rec_Paused"]</span>
                         <div class="kpi-icon kpi-icon-warning"><i class="bi bi-pause-circle"></i></div>
                     </div>
-                    <h3 class="fw-bold font-mono mb-1 text-warning">@(Model.TotalRecurrences - Model.ActiveRecurrences)</h3>
+                    <h3 class="fw-bold font-mono mb-1 vivid-warning">@(Model.TotalRecurrences - Model.ActiveRecurrences)</h3>
                     <small class="text-muted">@L["Rec_TempInactive"]</small>
                 </div>
             </div>
@@ -247,7 +277,7 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        <span class="fw-bold font-mono text-danger" style="font-size: 1.1rem; flex-shrink: 0;">
+                                        <span class="fw-bold font-mono vivid-red" style="font-size: 1.1rem; flex-shrink: 0;">
                                             -$@recurring.Amount.ToString("N2")
                                         </span>
                                     </div>
@@ -364,7 +394,7 @@
                                             <small class="text-muted" style="font-size: 0.75rem;">
                                                 <i class="bi @icon me-1" style="color:@catColor;"></i>@rec.Category
                                             </small>
-                                            <span class="fw-bold font-mono text-danger" style="font-size: 0.85rem;">
+                                            <span class="fw-bold font-mono vivid-red" style="font-size: 0.85rem;">
                                                 -$@rec.Amount.ToString("N2")
                                             </span>
                                         </div>
