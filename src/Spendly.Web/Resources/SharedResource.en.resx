@@ -316,6 +316,12 @@
   <data name="Dash_SpentLabel">
     <value>Spent</value>
   </data>
+  <data name="Dash_CashFlowSummary">
+    <value>Cash Flow Summary</value>
+  </data>
+  <data name="Dash_IncomeVsExpenses">
+    <value>Income vs. Expenses</value>
+  </data>
   <!-- ═══════ Expenses ═══════ -->
   <data name="Exp_Title">
     <value>Expenses</value>
