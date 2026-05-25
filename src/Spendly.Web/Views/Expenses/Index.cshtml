@@ -4,21 +4,138 @@
 @{
     ViewData["Title"] = L["Exp_Title"].Value;
     var currentCategory = ViewBag.Category as string;
-    var currentSearch = ViewBag.Search as string;
-    var dateFrom = ViewBag.DateFrom as DateTime?;
-    var dateTo = ViewBag.DateTo as DateTime?;
-    var minAmount = ViewBag.MinAmount as decimal?;
-    var maxAmount = ViewBag.MaxAmount as decimal?;
-    var currentPage = (int)(ViewBag.CurrentPage ?? 1);
-    var categories = ViewBag.Categories as List<CategoryViewModel> ?? new List<CategoryViewModel>();
+    var currentSearch   = ViewBag.Search   as string;
+    var dateFrom        = ViewBag.DateFrom as DateTime?;
+    var dateTo          = ViewBag.DateTo   as DateTime?;
+    var minAmount       = ViewBag.MinAmount as decimal?;
+    var maxAmount       = ViewBag.MaxAmount as decimal?;
+    var currentPage     = (int)(ViewBag.CurrentPage ?? 1);
+    var categories      = ViewBag.Categories as List<CategoryViewModel> ?? new List<CategoryViewModel>();
     var hasActiveFilters = !string.IsNullOrEmpty(currentCategory) || !string.IsNullOrEmpty(currentSearch)
-        || dateFrom.HasValue || dateTo.HasValue || minAmount.HasValue || maxAmount.HasValue;
+                       || dateFrom.HasValue || dateTo.HasValue || minAmount.HasValue || maxAmount.HasValue;
 }
 
+<style>
+    /* ── EXPENSE-PAGE SPECIFICS ──────────────────────────────── */
+
+    /* Filter bar card */
+    .filter-card {
+        background: var(--clr-surface);
+        border: 1px solid var(--clr-border);
+        border-radius: 14px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    /* Main list card */
+    .expense-card {
+        background: var(--clr-surface);
+        border: 1px solid var(--clr-border);
+        border-radius: 14px;
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+
+    /* Add-expense sidebar card */
+    .add-card {
+        background: var(--clr-surface);
+        border: 1px solid var(--clr-border);
+        border-radius: 14px;
+        box-shadow: var(--shadow-sm);
+        position: sticky;
+        top: 20px;
+    }
+
+    /* Table rows */
+    .expense-table tbody tr {
+        border-bottom: 1px solid var(--clr-border);
+        transition: background 0.15s ease;
+    }
+    .expense-table tbody tr:last-child { border-bottom: none; }
+    .expense-table tbody tr:hover { background: var(--clr-surface-3); }
+
+    /* Amount – always vivid red */
+    .amount-cell {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        color: #ef4444 !important;
+        font-size: .93rem;
+        white-space: nowrap;
+    }
+
+    /* Category badge */
+    .cat-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: .82rem;
+        white-space: nowrap;
+    }
+
+    /* Action buttons */
+    .action-btn {
+        width: 30px; height: 30px;
+        border-radius: 8px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        transition: all 0.18s ease;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .action-btn-edit {
+        background: rgba(59,130,246,.12);
+        color: #3b82f6;
+        border: 1px solid rgba(59,130,246,.22);
+    }
+    .action-btn-edit:hover {
+        background: #3b82f6;
+        color: #fff;
+        transform: scale(1.1);
+    }
+    .action-btn-delete {
+        background: rgba(239,68,68,.12);
+        color: #ef4444;
+        border: 1px solid rgba(239,68,68,.22);
+    }
+    .action-btn-delete:hover {
+        background: #ef4444;
+        color: #fff;
+        transform: scale(1.1);
+    }
+
+    /* Pagination */
+    .pagination .page-link {
+        background: transparent;
+        border: none;
+        color: var(--clr-text-muted);
+        border-radius: 8px !important;
+        font-weight: 600;
+        padding: 6px 12px;
+        transition: all .15s ease;
+    }
+    .pagination .page-link:hover {
+        background: var(--clr-surface-3);
+        color: var(--clr-text);
+    }
+    .pagination .page-item.active .page-link {
+        background: var(--clr-primary);
+        color: #fff;
+    }
+    .pagination .page-item.disabled .page-link { opacity: .4; }
+</style>
+
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    @* ─── Header ─────────────────────────────────────────────── *@
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <h2 class="mb-1"><i class="bi bi-receipt text-primary"></i> @L["Exp_Title"]</h2>
+            <h2 class="mb-1" style="font-family:'Calistoga',serif;letter-spacing:-0.5px;">
+                <i class="bi bi-receipt text-primary me-2"></i>@L["Exp_Title"]
+            </h2>
             <small class="text-muted">@L["Exp_TrackSubtitle"]</small>
         </div>
         <div class="d-flex gap-2">
@@ -26,271 +143,270 @@
                asp-route-category="@currentCategory"
                asp-route-dateFrom="@(dateFrom?.ToString("yyyy-MM-dd"))"
                asp-route-dateTo="@(dateTo?.ToString("yyyy-MM-dd"))"
-               class="btn btn-outline-success btn-sm rounded-pill px-3">
-                <i class="bi bi-file-earmark-spreadsheet me-1"></i> @L["Exp_ExportCSV"]
+               class="btn btn-outline-success btn-sm rounded-pill px-3 fw-semibold">
+                <i class="bi bi-file-earmark-spreadsheet me-1"></i>@L["Exp_ExportCSV"]
             </a>
             <a asp-action="ExportReport" target="_blank"
-               class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                <i class="bi bi-file-earmark-pdf me-1"></i> @L["Exp_MonthlyReport"]
+               class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">
+                <i class="bi bi-file-earmark-pdf me-1"></i>@L["Exp_MonthlyReport"]
             </a>
         </div>
     </div>
 
+    @* Alerts *@
     @if (TempData["Error"] is string errorMsg)
     {
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMsg
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
     @if (TempData["Success"] is string successMsg)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i>@successMsg
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
     <div class="row g-4">
-        @* Main Content: Filters & Expense List *@
+        @* ─── LEFT: Filters + Expense List ───────────────────────── *@
         <div class="col-lg-8">
 
-            @* Advanced Filter Bar *@
-            <div class="card mb-4 border-0 bg-light shadow-sm" style="border-radius: 12px;">
-                <div class="card-body py-3 px-4">
-                    <form asp-action="Index" method="get">
-                        @* Search & Category Row *@
-                        <div class="row g-2 align-items-end mb-2">
-                            <div class="col-md-5">
-                                <label class="form-label text-muted small fw-semibold mb-1">@L["Common_Search"]</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                                    <input type="text" name="search" value="@currentSearch"
-                                           class="form-control border-start-0 ps-0"
-                                           placeholder="@L["Ph_SearchDesc"]" />
-                                </div>
+            @* Filter Bar *@
+            <div class="filter-card mb-4 p-3">
+                <form asp-action="Index" method="get">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label text-muted small fw-semibold mb-1">@L["Common_Search"]</label>
+                            <div class="input-group">
+                                <span class="input-group-text border-end-0" style="background:var(--clr-surface-3);border-color:var(--clr-border);">
+                                    <i class="bi bi-search text-muted"></i>
+                                </span>
+                                <input type="text" name="search" value="@currentSearch"
+                                       class="form-control border-start-0 ps-0"
+                                       placeholder="@L["Ph_SearchDesc"]" />
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label text-muted small fw-semibold mb-1">@L["Common_Category"]</label>
-                                <select name="category" class="form-select" style="border-radius:10px; padding:10px 15px;">
-                                    <option value="">@L["Exp_AllCategories"]</option>
-                                    @foreach (var cat in categories)
-                                    {
-                                        <option value="@cat.Name" selected="@(currentCategory == cat.Name)">
-                                            @cat.Name
-                                        </option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="col-md-3 d-flex gap-1">
-                                <button type="submit" class="btn btn-primary flex-grow-1">
-                                    <i class="bi bi-funnel"></i> @L["Common_Filter"]
-                                </button>
-                                @if (hasActiveFilters)
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-muted small fw-semibold mb-1">@L["Common_Category"]</label>
+                            <select name="category" class="form-select">
+                                <option value="">@L["Exp_AllCategories"]</option>
+                                @foreach (var cat in categories)
                                 {
-                                    <a asp-action="Index" class="btn btn-outline-secondary">
-                                        <i class="bi bi-x-lg"></i>
-                                    </a>
+                                    <option value="@cat.Name" selected="@(currentCategory == cat.Name)">@cat.Name</option>
                                 }
-                            </div>
+                            </select>
                         </div>
-
-                        @* Collapsible Advanced Filters *@
-                        <div class="collapse @(dateFrom.HasValue || dateTo.HasValue || minAmount.HasValue || maxAmount.HasValue ? "show" : "")"
-                             id="advancedFilters">
-                            <hr class="my-2 opacity-25" />
-                            <div class="row g-2">
-                                <div class="col-md-3">
-                                    <label class="form-label text-muted small fw-semibold mb-1">@L["Common_Date"]</label>
-                                    <input type="date" name="dateFrom" class="form-control"
-                                           value="@(dateFrom?.ToString("yyyy-MM-dd"))" />
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label text-muted small fw-semibold mb-1">@L["Common_Date"]</label>
-                                    <input type="date" name="dateTo" class="form-control"
-                                           value="@(dateTo?.ToString("yyyy-MM-dd"))" />
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label text-muted small fw-semibold mb-1">@L["Exp_MinAmount"]</label>
-                                    <input type="number" name="minAmount" step="0.01" min="0"
-                                           class="form-control" placeholder="@L["Ph_ZeroDoll"]"
-                                           value="@minAmount" />
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label text-muted small fw-semibold mb-1">@L["Exp_MaxAmount"]</label>
-                                    <input type="number" name="maxAmount" step="0.01" min="0"
-                                           class="form-control" placeholder="@L["Ph_NineDoll"]"
-                                           value="@maxAmount" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center mt-2">
-                            <button class="btn btn-link btn-sm text-muted text-decoration-none p-0"
-                                    type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
-                                <i class="bi bi-sliders2 me-1"></i>
-                                @L["Exp_AdvancedFilters"]
-                                <i class="bi bi-chevron-down ms-1" style="font-size:0.7rem;"></i>
+                        <div class="col-md-3 d-flex gap-1">
+                            <button type="submit" class="btn btn-primary flex-grow-1 fw-semibold">
+                                <i class="bi bi-funnel me-1"></i>@L["Common_Filter"]
                             </button>
+                            @if (hasActiveFilters)
+                            {
+                                <a asp-action="Index" class="btn btn-outline-secondary" title="Clear filters">
+                                    <i class="bi bi-x-lg"></i>
+                                </a>
+                            }
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+                    @* Advanced filters *@
+                    <div class="collapse @(dateFrom.HasValue || dateTo.HasValue || minAmount.HasValue || maxAmount.HasValue ? "show" : "")"
+                         id="advancedFilters">
+                        <hr class="my-2 opacity-25" />
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small fw-semibold mb-1">Desde</label>
+                                <input type="date" name="dateFrom" class="form-control" value="@(dateFrom?.ToString("yyyy-MM-dd"))" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small fw-semibold mb-1">Hasta</label>
+                                <input type="date" name="dateTo" class="form-control" value="@(dateTo?.ToString("yyyy-MM-dd"))" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small fw-semibold mb-1">@L["Exp_MinAmount"]</label>
+                                <input type="number" name="minAmount" step="0.01" min="0" class="form-control"
+                                       placeholder="0.00" value="@minAmount" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small fw-semibold mb-1">@L["Exp_MaxAmount"]</label>
+                                <input type="number" name="maxAmount" step="0.01" min="0" class="form-control"
+                                       placeholder="9999.00" value="@maxAmount" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-2">
+                        <button class="btn btn-link btn-sm text-muted text-decoration-none p-0"
+                                type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                            <i class="bi bi-sliders2 me-1"></i>@L["Exp_AdvancedFilters"]
+                            <i class="bi bi-chevron-down ms-1" style="font-size:.7rem;"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            @* Active Filters Badges *@
+            @* Active Filter Badges *@
             @if (hasActiveFilters)
             {
                 <div class="d-flex flex-wrap gap-2 mb-3">
                     @if (!string.IsNullOrEmpty(currentSearch))
                     {
-                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
-                            <i class="bi bi-search me-1"></i> "@currentSearch"
+                        <span class="badge rounded-pill fw-semibold px-3 py-2"
+                              style="background:rgba(59,130,246,.12);color:#3b82f6;border:1px solid rgba(59,130,246,.25);">
+                            <i class="bi bi-search me-1"></i>"@currentSearch"
                         </span>
                     }
                     @if (!string.IsNullOrEmpty(currentCategory))
                     {
-                        <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill">
-                            <i class="bi bi-tag me-1"></i> @currentCategory
+                        <span class="badge rounded-pill fw-semibold px-3 py-2"
+                              style="background:rgba(14,165,233,.12);color:#0ea5e9;border:1px solid rgba(14,165,233,.25);">
+                            <i class="bi bi-tag me-1"></i>@currentCategory
                         </span>
                     }
                     @if (dateFrom.HasValue || dateTo.HasValue)
                     {
-                        <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">
+                        <span class="badge rounded-pill fw-semibold px-3 py-2"
+                              style="background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.25);">
                             <i class="bi bi-calendar me-1"></i>
-                            @(dateFrom?.ToString("MMM dd") ?? "...") - @(dateTo?.ToString("MMM dd") ?? "...")
+                            @(dateFrom?.ToString("MMM dd") ?? "...") – @(dateTo?.ToString("MMM dd") ?? "...")
                         </span>
                     }
                     @if (minAmount.HasValue || maxAmount.HasValue)
                     {
-                        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                        <span class="badge rounded-pill fw-semibold px-3 py-2"
+                              style="background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.25);">
                             <i class="bi bi-currency-dollar me-1"></i>
-                            $@(minAmount?.ToString("N0") ?? "0") - $@(maxAmount?.ToString("N0") ?? "...")
+                            $@(minAmount?.ToString("N0") ?? "0") – $@(maxAmount?.ToString("N0") ?? "...")
                         </span>
                     }
                 </div>
             }
 
-            @* Expense list *@
+            @* ─── Expense Table ────────────────────────────────────── *@
             @if (Model.Items.Any())
             {
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white border-0 pt-4 pb-3 d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-semibold"><i class="bi bi-list-ul text-primary me-2"></i>@L["Exp_Showing"]</h5>
-                        <small class="text-muted bg-light px-3 py-1 rounded-pill">
-                            @L["Exp_Showing"]
-                            @((currentPage - 1) * Model.PageSize + 1)&ndash;@(Math.Min(currentPage * Model.PageSize, Model.TotalCount))
-                            of @Model.TotalCount
-                        </small>
+                <div class="expense-card">
+                    <div class="px-4 pt-4 pb-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-semibold d-flex align-items-center gap-2">
+                            <i class="bi bi-list-ul text-primary"></i>@L["Exp_Showing"]
+                        </h5>
+                        <span class="badge rounded-pill fw-semibold px-3 py-2"
+                              style="background:var(--clr-surface-3);color:var(--clr-text-muted);font-size:.78rem;">
+                            @((currentPage - 1) * Model.PageSize + 1)–@(Math.Min(currentPage * Model.PageSize, Model.TotalCount))
+                            / @Model.TotalCount
+                        </span>
                     </div>
 
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0 align-middle">
-                                <thead class="bg-light text-secondary">
+                    <div class="table-responsive">
+                        <table class="table expense-table mb-0 align-middle" style="background:transparent;">
+                            <thead>
+                                <tr style="border-bottom:2px solid var(--clr-border);">
+                                    <th class="ps-4 py-3 text-muted fw-semibold" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;">@L["Common_Description"]</th>
+                                    <th class="py-3 text-muted fw-semibold" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;">@L["Common_Amount"]</th>
+                                    <th class="py-3 text-muted fw-semibold" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;">@L["Common_Category"]</th>
+                                    <th class="py-3 text-muted fw-semibold" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;">@L["Common_Date"]</th>
+                                    <th class="py-3 pe-4 text-center text-muted fw-semibold" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;width:100px;">@L["Common_Actions"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var e in Model.Items)
+                                {
+                                    var matchedCat = categories.FirstOrDefault(c => c.Name == e.Category);
                                     <tr>
-                                        <th class="border-0 ps-4 py-3">@L["Common_Description"]</th>
-                                        <th class="border-0 py-3">@L["Common_Amount"]</th>
-                                        <th class="border-0 py-3">@L["Common_Category"]</th>
-                                        <th class="border-0 py-3">@L["Common_Date"]</th>
-                                        <th class="border-0 py-3 text-center pe-4" style="width:110px">@L["Common_Actions"]</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var e in Model.Items)
-                                    {
-                                        var matchedCat = categories.FirstOrDefault(c => c.Name == e.Category);
-                                        <tr>
-                                            <td class="ps-4 fw-medium text-dark">@e.Description</td>
-                                            <td class="text-danger fw-bold">-$@e.Amount.ToString("N2")</td>
-                                            <td>
-                                                @if (matchedCat != null)
-                                                {
-                                                    <span class="badge px-2 py-1" style="background: @(matchedCat.Color)20; color: @matchedCat.Color; border: 1px solid @(matchedCat.Color)40;">
-                                                        <i class="bi @matchedCat.Icon me-1"></i>@e.Category
-                                                    </span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge bg-secondary bg-opacity-10 text-dark px-2 py-1">
-                                                        <i class="bi bi-tag-fill me-1 opacity-50"></i>@e.Category
-                                                    </span>
-                                                }
-                                            </td>
-                                            <td class="text-muted"><small>@e.Date.ToString("MMM dd, yyyy")</small></td>
-                                            <td class="text-center pe-4">
+                                        <td class="ps-4 py-3">
+                                            <span class="fw-semibold" style="font-size:.9rem;">@e.Description</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <span class="amount-cell">-$@e.Amount.ToString("N2")</span>
+                                        </td>
+                                        <td class="py-3">
+                                            @if (matchedCat != null)
+                                            {
+                                                <span class="cat-badge"
+                                                      style="background:@(matchedCat.Color)22;color:@matchedCat.Color;border:1.5px solid @(matchedCat.Color)44;">
+                                                    <i class="bi @matchedCat.Icon" style="font-size:.85rem;"></i>
+                                                    @e.Category
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="cat-badge"
+                                                      style="background:var(--clr-surface-3);color:var(--clr-text-muted);border:1.5px solid var(--clr-border);">
+                                                    <i class="bi bi-tag-fill" style="font-size:.85rem;"></i>
+                                                    @e.Category
+                                                </span>
+                                            }
+                                        </td>
+                                        <td class="py-3">
+                                            <span class="text-muted" style="font-size:.84rem;">@e.Date.ToString("MMM dd, yyyy")</span>
+                                        </td>
+                                        <td class="py-3 pe-4 text-center">
+                                            <div class="d-inline-flex align-items-center gap-1">
                                                 <a asp-action="Edit" asp-route-id="@e.Id"
-                                                   class="btn btn-sm btn-light text-primary me-1"
+                                                   class="action-btn action-btn-edit"
                                                    title="@L["Common_Edit"]">
-                                                    <i class="bi bi-pencil"></i>
+                                                    <i class="bi bi-pencil-fill"></i>
                                                 </a>
-                                                <button type="button" class="btn btn-sm btn-light text-danger"
+                                                <button type="button"
+                                                        class="action-btn action-btn-delete"
                                                         title="@L["Common_Delete"]"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#deleteExpenseModal"
                                                         data-expense-id="@e.Id"
                                                         data-expense-desc="@e.Description">
-                                                    <i class="bi bi-trash"></i>
+                                                    <i class="bi bi-trash-fill"></i>
                                                 </button>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
 
                     @* Pagination *@
                     @if (Model.TotalPages > 1)
                     {
-                        <div class="card-footer bg-white border-top-0 pt-4 pb-4">
-                            <nav aria-label="Expenses pagination">
-                                <ul class="pagination pagination-sm mb-0 justify-content-center">
+                        <div class="px-4 py-3 border-top" style="border-color:var(--clr-border)!important;">
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0 justify-content-center gap-1">
                                     <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
-                                        <a class="page-link border-0 text-dark fw-bold"
-                                           asp-action="Index"
-                                           asp-route-page="@(currentPage - 1)"
-                                           asp-route-category="@currentCategory"
-                                           asp-route-search="@currentSearch"
+                                        <a class="page-link"
+                                           asp-action="Index" asp-route-page="@(currentPage-1)"
+                                           asp-route-category="@currentCategory" asp-route-search="@currentSearch"
                                            asp-route-dateFrom="@(dateFrom?.ToString("yyyy-MM-dd"))"
                                            asp-route-dateTo="@(dateTo?.ToString("yyyy-MM-dd"))"
-                                           asp-route-minAmount="@minAmount"
-                                           asp-route-maxAmount="@maxAmount"
-                                           tabindex="@(!Model.HasPreviousPage ? -1 : 0)">
+                                           asp-route-minAmount="@minAmount" asp-route-maxAmount="@maxAmount">
                                             <i class="bi bi-chevron-left"></i>
                                         </a>
                                     </li>
-
                                     @{
                                         int start = Math.Max(1, currentPage - 2);
-                                        int end = Math.Min(Model.TotalPages, currentPage + 2);
+                                        int end   = Math.Min(Model.TotalPages, currentPage + 2);
                                     }
                                     @for (int p = start; p <= end; p++)
                                     {
                                         <li class="page-item @(p == currentPage ? "active" : "")">
-                                            <a class="page-link border-0 mx-1 rounded-circle @(p == currentPage ? "shadow-sm" : "bg-transparent text-dark")"
-                                               style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;"
-                                               asp-action="Index"
-                                               asp-route-page="@p"
-                                               asp-route-category="@currentCategory"
-                                               asp-route-search="@currentSearch"
+                                            <a class="page-link"
+                                               style="@(p == currentPage ? "background:var(--clr-primary);color:#fff;" : "")"
+                                               asp-action="Index" asp-route-page="@p"
+                                               asp-route-category="@currentCategory" asp-route-search="@currentSearch"
                                                asp-route-dateFrom="@(dateFrom?.ToString("yyyy-MM-dd"))"
                                                asp-route-dateTo="@(dateTo?.ToString("yyyy-MM-dd"))"
-                                               asp-route-minAmount="@minAmount"
-                                               asp-route-maxAmount="@maxAmount">@p</a>
+                                               asp-route-minAmount="@minAmount" asp-route-maxAmount="@maxAmount">
+                                                @p
+                                            </a>
                                         </li>
                                     }
-
                                     <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
-                                        <a class="page-link border-0 text-dark fw-bold"
-                                           asp-action="Index"
-                                           asp-route-page="@(currentPage + 1)"
-                                           asp-route-category="@currentCategory"
-                                           asp-route-search="@currentSearch"
+                                        <a class="page-link"
+                                           asp-action="Index" asp-route-page="@(currentPage+1)"
+                                           asp-route-category="@currentCategory" asp-route-search="@currentSearch"
                                            asp-route-dateFrom="@(dateFrom?.ToString("yyyy-MM-dd"))"
                                            asp-route-dateTo="@(dateTo?.ToString("yyyy-MM-dd"))"
-                                           asp-route-minAmount="@minAmount"
-                                           asp-route-maxAmount="@maxAmount"
-                                           tabindex="@(!Model.HasNextPage ? -1 : 0)">
+                                           asp-route-minAmount="@minAmount" asp-route-maxAmount="@maxAmount">
                                             <i class="bi bi-chevron-right"></i>
                                         </a>
                                     </li>
@@ -302,104 +418,109 @@
             }
             else
             {
-                <div class="alert bg-white shadow-sm border-0 d-flex align-items-center p-4" style="border-radius: 12px;">
-                    <div class="text-primary fs-1 me-4 opacity-50"><i class="bi bi-inbox"></i></div>
+                <div class="expense-card p-5 d-flex align-items-center gap-4">
+                    <i class="bi bi-inbox text-primary" style="font-size:3rem;opacity:.4;"></i>
                     <div>
                         <h5 class="mb-1 fw-bold">@L["Exp_NoExpenses"]</h5>
-                        @if (hasActiveFilters)
-                        {
-                            <p class="mb-0 text-muted">@L["Exp_NoMatches"]</p>
-                        }
-                        else
-                        {
-                            <p class="mb-0 text-muted">You haven't recorded any expenses yet. Use the panel on the right to add one.</p>
-                        }
+                        <p class="mb-0 text-muted">
+                            @(hasActiveFilters ? L["Exp_NoMatches"].Value : "No has registrado gastos aún. Usa el panel de la derecha para agregar uno.")
+                        </p>
                     </div>
                 </div>
             }
         </div>
 
-        @* Right Sidebar: Add Expense Form *@
+        @* ─── RIGHT: Add Expense Form ─────────────────────────────── *@
         <div class="col-lg-4">
-            <div class="card shadow-sm border-0 position-sticky" style="top: 20px; border-radius: 16px;">
-                <div class="card-header bg-white border-0 pt-4 pb-0 text-center">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
+            <div class="add-card p-4">
+                <div class="text-center mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3"
+                         style="width:52px;height:52px;font-size:1.5rem;">
                         <i class="bi bi-plus-lg"></i>
                     </div>
                     <h5 class="mb-0 fw-bold">@L["Exp_NewExpense"]</h5>
-                    <p class="text-muted small">@L["Exp_TrackSubtitle"]</p>
+                    <p class="text-muted small mb-0">@L["Exp_TrackSubtitle"]</p>
                 </div>
-                <div class="card-body p-4 pt-2">
-                    <form asp-action="Create" method="post">
-                        @Html.AntiForgeryToken()
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
 
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Amount"]</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-currency-dollar"></i></span>
-                                <input name="Amount" type="number" step="0.01" min="0.01"
-                                       class="form-control border-start-0 ps-0 form-control-lg fw-bold text-primary" placeholder="@L["Ph_Zero"]" required />
-                            </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Amount"]</label>
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0" style="background:var(--clr-surface-3);border-color:var(--clr-border);">
+                                <i class="bi bi-currency-dollar text-muted"></i>
+                            </span>
+                            <input name="Amount" type="number" step="0.01" min="0.01"
+                                   class="form-control border-start-0 ps-0 fw-bold"
+                                   style="color:#ef4444;font-size:1.1rem;"
+                                   placeholder="0.00" required />
                         </div>
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Description"]</label>
-                            <input name="Description" class="form-control"
-                                   placeholder="@L["Ph_ExpenseDesc"]" required maxlength="200" />
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Description"]</label>
+                        <input name="Description" class="form-control"
+                               placeholder="@L["Ph_ExpenseDesc"]" required maxlength="200" />
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Category"]</label>
-                            @if (categories.Any())
-                            {
-                                <select name="Category" class="form-select" required style="border-radius:10px; padding:12px 15px;">
-                                    <option value="" disabled selected>Select a category</option>
-                                    @foreach (var cat in categories)
-                                    {
-                                        <option value="@cat.Name">@cat.Name</option>
-                                    }
-                                </select>
-                            }
-                            else
-                            {
-                                <input name="Category" class="form-control"
-                                       placeholder="@L["Ph_CategoryFood"]" required maxlength="100" />
-                            }
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Category"]</label>
+                        @if (categories.Any())
+                        {
+                            <select name="Category" class="form-select" required>
+                                <option value="" disabled selected>Selecciona una categoría</option>
+                                @foreach (var cat in categories)
+                                {
+                                    <option value="@cat.Name">@cat.Name</option>
+                                }
+                            </select>
+                        }
+                        else
+                        {
+                            <input name="Category" class="form-control"
+                                   placeholder="@L["Ph_CategoryFood"]" required maxlength="100" />
+                        }
+                    </div>
 
-                        <div class="mb-4">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Date"]</label>
-                            <input name="Date" type="date" class="form-control" required
-                                   max="@DateTime.Today.ToString("yyyy-MM-dd")" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                        </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Date"]</label>
+                        <input name="Date" type="date" class="form-control" required
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
 
-                        <button type="submit" class="btn btn-primary w-100 py-3 rounded-3 fw-bold shadow-sm">
-                            @L["Exp_NewExpense"]
-                        </button>
-                    </form>
-                </div>
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow-sm">
+                        <i class="bi bi-plus-circle me-2"></i>@L["Exp_NewExpense"]
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Delete Expense Modal -->
-<div class="modal fade" id="deleteExpenseModal" tabindex="-1" aria-labelledby="deleteExpenseModalLabel" aria-hidden="true">
+@* Delete Modal *@
+<div class="modal fade" id="deleteExpenseModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <form id="deleteExpenseForm" method="post" action="">
             @Html.AntiForgeryToken()
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header border-bottom-0 pb-0">
-                    <h5 class="modal-title" id="deleteExpenseModalLabel"><i class="bi bi-exclamation-triangle text-warning me-2"></i>@L["Common_Delete"]</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content border-0 shadow-lg" style="border-radius:16px;background:var(--clr-surface);">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-exclamation-triangle text-warning me-2"></i>@L["Common_Delete"]
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p>@L["Exp_DeleteConfirm"]</p>
-                    <p class="fw-bold text-dark mb-0" id="deleteExpenseName"></p>
+                    <p class="text-muted mb-2">@L["Exp_DeleteConfirm"]</p>
+                    <p class="fw-bold mb-0" id="deleteExpenseName" style="font-size:1rem;"></p>
                 </div>
-                <div class="modal-footer border-top-0 pt-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">@L["Common_Cancel"]</button>
-                    <button type="submit" class="btn btn-danger">@L["Common_Delete"]</button>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+                        @L["Common_Cancel"]
+                    </button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 fw-semibold">
+                        <i class="bi bi-trash-fill me-1"></i>@L["Common_Delete"]
+                    </button>
                 </div>
             </div>
         </form>
@@ -412,16 +533,13 @@
         const deleteExpenseModal = document.getElementById('deleteExpenseModal');
         if (deleteExpenseModal) {
             deleteExpenseModal.addEventListener('show.bs.modal', event => {
-                const button = event.relatedTarget;
-                const expenseId = button.getAttribute('data-expense-id');
+                const button      = event.relatedTarget;
+                const expenseId   = button.getAttribute('data-expense-id');
                 const expenseDesc = button.getAttribute('data-expense-desc');
-
-                const form = document.getElementById('deleteExpenseForm');
-                const deleteUrlTemplate = '@Url.Action("Delete", "Expenses", new { id = "__expenseId__" })';
-                form.action = deleteUrlTemplate.replace('__expenseId__', expenseId);
-
-                const nameDisplay = document.getElementById('deleteExpenseName');
-                nameDisplay.textContent = expenseDesc;
+                const form        = document.getElementById('deleteExpenseForm');
+                const template    = '@Url.Action("Delete", "Expenses", new { id = "__id__" })';
+                form.action = template.replace('__id__', expenseId);
+                document.getElementById('deleteExpenseName').textContent = expenseDesc;
             });
         }
     </script>
