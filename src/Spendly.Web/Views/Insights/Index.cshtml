@@ -355,6 +355,17 @@
                     categories: dailyData.map(d => new Date(d.date).getDate()),
                     axisBorder: { show: false },
                     axisTicks: { show: false },
+                    crosshairs: {
+                        show: true,
+                        width: 1,
+                        position: 'back',
+                        opacity: 0.9,
+                        stroke: {
+                            color: '#6366f1',
+                            width: 1,
+                            dashArray: 3
+                        }
+                    },
                     labels: {
                         style: {
                             colors: 'var(--clr-text-muted)',
@@ -386,8 +397,11 @@
                     }
                 },
                 tooltip: {
+                    shared: true,
+                    intersect: false,
                     theme: isDark ? 'dark' : 'light',
                     x: {
+                        show: true,
                         formatter: function(val) {
                             return "@L["Ins_Day"].Value " + val;
                         }
