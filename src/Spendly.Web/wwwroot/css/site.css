@@ -37,6 +37,12 @@
   --clr-danger:   #DC2626;
   --clr-info:     #0EA5E9;
 
+  --clr-primary-rgb: 37, 99, 235;
+  --clr-success-rgb: 5, 150, 105;
+  --clr-warning-rgb: 217, 119, 6;
+  --clr-danger-rgb:  220, 38, 38;
+  --clr-info-rgb:    14, 165, 233;
+
   /* Trend Indicators (Light Mode default) */
   --clr-trend-up-bg:       rgba(220, 38, 38, 0.08);
   --clr-trend-up-border:   rgba(220, 38, 38, 0.16);
@@ -180,6 +186,12 @@
   --clr-trend-down-bg:     rgba(16, 185, 129, 0.12);
   --clr-trend-down-border: rgba(16, 185, 129, 0.25);
   --clr-trend-down-text:   #34d399;
+
+  --clr-primary-rgb: 96, 165, 250;
+  --clr-success-rgb: 52, 211, 153;
+  --clr-warning-rgb: 251, 191, 36;
+  --clr-danger-rgb:  248, 113, 113;
+  --clr-info-rgb:    167, 139, 250;
 
   /* Glass Card overrides (Dark Mode overrides) */
   --clr-glass-card-bg:     rgba(16, 26, 52, 0.45);
@@ -799,11 +811,11 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   letter-spacing: .04em;
 }
 
-.bg-primary { background: var(--clr-primary-light) !important; }
-.bg-success { background: var(--clr-accent)         !important; }
-.bg-warning { background: var(--clr-warning)         !important; }
-.bg-danger  { background: var(--clr-danger)          !important; }
-.bg-info    { background: var(--clr-info)            !important; }
+.bg-primary { background-color: rgba(var(--clr-primary-rgb), var(--bs-bg-opacity, 1)) !important; }
+.bg-success { background-color: rgba(var(--clr-success-rgb), var(--bs-bg-opacity, 1)) !important; }
+.bg-warning { background-color: rgba(var(--clr-warning-rgb), var(--bs-bg-opacity, 1)) !important; }
+.bg-danger  { background-color: rgba(var(--clr-danger-rgb), var(--bs-bg-opacity, 1)) !important; }
+.bg-info    { background-color: rgba(var(--clr-info-rgb), var(--bs-bg-opacity, 1)) !important; }
 
 /* ── 17. MODALS ───────────────────────────────────────────── */
 .modal-content {
