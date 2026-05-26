@@ -1560,4 +1560,13 @@
   <data name="Ins_WeekendSpender">
     <value>El {0}% de tus gastos ocurre los fines de semana. ¡Cuidado con los gastos del fin de semana!</value>
   </data>
+  <data name="Ins_AccelerationTitle">
+    <value>Aceleración de Gastos</value>
+  </data>
+  <data name="Ins_PrevMonth">
+    <value>mes anterior</value>
+  </data>
+  <data name="Ins_NoAcceleration">
+    <value>Ninguna categoría ha acelerado sus gastos. ¡Buen trabajo!</value>
+  </data>
 </root>
