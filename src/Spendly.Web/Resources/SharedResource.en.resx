@@ -1576,4 +1576,13 @@
   <data name="Ins_WeekendSpender">
     <value>{0}% of your spending happens on weekends. Watch those weekend expenses!</value>
   </data>
+  <data name="Ins_AccelerationTitle">
+    <value>Expense Acceleration</value>
+  </data>
+  <data name="Ins_PrevMonth">
+    <value>prev. month</value>
+  </data>
+  <data name="Ins_NoAcceleration">
+    <value>No categories have accelerated spending. Well done!</value>
+  </data>
 </root>
