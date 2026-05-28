@@ -6,19 +6,41 @@
     var categories = ViewBag.Categories as List<CategoryViewModel> ?? new List<CategoryViewModel>();
 }
 
-<div class="container mt-4">
+<style>
+    .form-card-premium {
+        border-radius: 16px;
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-card);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+    .form-label-custom {
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--clr-text-muted);
+        font-weight: 600;
+    }
+    .tip-card {
+        border-radius: 12px;
+        border: 1px solid var(--clr-border);
+        background: var(--clr-surface-3);
+    }
+</style>
+
+<div class="container mt-4" style="max-width: 650px;">
     <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
+        <div class="col-12">
+            <div class="form-card-premium">
+                <div class="card-header bg-primary text-white py-3 px-4 border-0">
+                    <h4 class="mb-0 fw-bold" style="font-family:'Calistoga',serif;">
                         <i class="bi bi-plus-circle me-2"></i>@L["Bud_NewBudget"]
                     </h4>
                 </div>
                 <div class="card-body p-4">
                     @if (TempData["Error"] is string errorMsg)
                     {
-                        <div class="alert alert-danger alert-dismissible fade show">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius:10px;">
                             <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMsg
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
@@ -27,13 +49,13 @@
                     <form asp-action="Create" method="post">
                         @Html.AntiForgeryToken()
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">
+                        <div class="mb-4">
+                            <label class="form-label form-label-custom mb-2">
                                 <i class="bi bi-tag me-1"></i>@L["Common_Category"]
                             </label>
                             @if (categories.Any())
                             {
-                                <select asp-for="Category" class="form-select form-select-lg" required>
+                                <select asp-for="Category" class="form-select form-select-lg rounded-3" style="font-size:1rem; padding:12px 15px;" required>
                                     <option value="" disabled selected>@L["Exp_SelectCategory"]</option>
                                     @foreach (var cat in categories)
                                     {
@@ -44,53 +66,53 @@
                             else
                             {
                                 <input asp-for="Category" 
-                                       class="form-control form-control-lg" 
+                                       class="form-control form-control-lg rounded-3" 
                                        placeholder="e.g. Food, Transport"
                                        required 
                                        maxlength="100" />
                             }
-                            <small class="text-muted">
+                            <small class="text-muted d-block mt-1">
                                 @L["Bud_ChooseCategory"]
                             </small>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">
+                        <div class="mb-4">
+                            <label class="form-label form-label-custom mb-2">
                                 <i class="bi bi-cash-stack me-1"></i>@L["Bud_MonthlyLimit"]
                             </label>
                             <div class="input-group input-group-lg">
-                                <span class="input-group-text">$</span>
+                                <span class="input-group-text rounded-start-3" style="background: var(--clr-surface-3); border-color: var(--clr-border);">$</span>
                                 <input asp-for="MonthlyLimit" 
                                        type="number" 
                                        step="0.01" 
                                        min="0.01"
-                                       class="form-control" 
+                                       class="form-control rounded-end-3 font-mono fw-bold" 
                                        placeholder="@L["Ph_Zero"]"
                                        required />
                             </div>
-                            <small class="text-muted">
+                            <small class="text-muted d-block mt-1">
                                 @L["Bud_MonthlyLimitHint"]
                             </small>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label form-label-custom mb-2">
                                     <i class="bi bi-calendar-event me-1"></i>@L["Common_Year"]
                                 </label>
                                 <input asp-for="Year" 
                                        type="number" 
                                        min="2000" 
                                        max="2100"
-                                       class="form-control form-control-lg" 
+                                       class="form-control form-control-lg rounded-3 font-mono" 
                                        required />
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label form-label-custom mb-2">
                                     <i class="bi bi-calendar3 me-1"></i>@L["Common_Month"]
                                 </label>
-                                <select asp-for="Month" class="form-select form-select-lg" required>
+                                <select asp-for="Month" class="form-select form-select-lg rounded-3" style="font-size:1rem; padding:12px 15px;" required>
                                     <option value="1">@L["Month_Jan"]</option>
                                     <option value="2">@L["Month_Feb"]</option>
                                     <option value="3">@L["Month_Mar"]</option>
@@ -107,16 +129,16 @@
                             </div>
                         </div>
 
-                        <div class="alert alert-info border-0 bg-info bg-opacity-10">
-                            <i class="bi bi-info-circle me-2"></i>
+                        <div class="alert alert-info border-0 bg-info bg-opacity-10 mb-4" style="border-radius:10px;">
+                            <i class="bi bi-info-circle-fill me-2 text-info"></i>
                             <strong>@L["Bud_TipLabel"]:</strong> @L["Bud_OneBudgetPerCategory"]
                         </div>
 
-                        <div class="d-flex gap-2 justify-content-end mt-4">
-                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
                                 <i class="bi bi-x-circle me-1"></i>@L["Common_Cancel"]
                             </a>
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" class="btn btn-primary rounded-pill px-4">
                                 <i class="bi bi-check-circle me-1"></i>@L["Common_Create"]
                             </button>
                         </div>
@@ -125,12 +147,12 @@
             </div>
 
             @* Quick Tips *@
-            <div class="card border-0 bg-light mt-3">
-                <div class="card-body">
-                    <h6 class="fw-semibold mb-3">
-                        <i class="bi bi-lightbulb text-warning me-2"></i>@L["Bud_BudgetTips"]
+            <div class="tip-card mt-3">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3" style="font-family:'Calistoga',serif; color: var(--clr-warning);">
+                        <i class="bi bi-lightbulb-fill me-2"></i>@L["Bud_BudgetTips"]
                     </h6>
-                    <ul class="mb-0 small">
+                    <ul class="mb-0 small text-muted ps-3">
                         <li class="mb-2">@L["Bud_Tip1"]</li>
                         <li class="mb-2">@L["Bud_Tip2"]</li>
                         <li class="mb-2">@L["Bud_Tip3"]</li>
@@ -145,15 +167,14 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        // Set current year and month as defaults if not set
         document.addEventListener('DOMContentLoaded', function() {
             const monthSelect = document.querySelector('select[name="Month"]');
             const yearInput = document.querySelector('input[name="Year"]');
             
-            if (monthSelect && monthSelect.value) {
+            if (monthSelect && monthSelect.value === "") {
                 monthSelect.value = '@Model.Month';
             }
-            if (yearInput && yearInput.value) {
+            if (yearInput && (yearInput.value === "" || yearInput.value === "0")) {
                 yearInput.value = '@Model.Year';
             }
         });
