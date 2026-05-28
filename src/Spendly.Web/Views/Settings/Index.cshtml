@@ -5,229 +5,329 @@
     var categories = ViewBag.Categories as List<CategoryViewModel> ?? new List<CategoryViewModel>();
 }
 
+<style>
+    /* Premium Nav Pills style */
+    .nav-pills-settings {
+        background: var(--clr-surface-3);
+        padding: 6px;
+        border-radius: 30px;
+        border: 1px solid var(--clr-border);
+        display: inline-flex;
+    }
+    .nav-pills-settings .nav-link {
+        color: var(--clr-text-muted);
+        background: transparent;
+        border: none;
+        border-radius: 24px;
+        padding: 10px 24px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.25s var(--ease-out);
+    }
+    .nav-pills-settings .nav-link.active {
+        color: #fff !important;
+        background: var(--clr-primary) !important;
+        box-shadow: 0 4px 12px rgba(var(--clr-primary-rgb), 0.25);
+    }
+    .nav-pills-settings .nav-link:hover:not(.active) {
+        color: var(--clr-text);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .settings-card {
+        border-radius: 16px;
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-card);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+
+    .form-label-custom {
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--clr-text-muted);
+        font-weight: 600;
+    }
+
+    .category-pill-premium {
+        transition: all 0.25s var(--ease-out);
+        border: 1px solid var(--clr-border);
+        border-radius: 12px;
+    }
+    .category-pill-premium:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .modal-content-premium {
+        background: var(--clr-surface);
+        border-radius: 20px;
+        border: 1px solid var(--clr-border);
+    }
+</style>
+
 <div class="container-fluid py-4">
-    <div class="mb-4">
-        <h2 class="mb-1"><i class="bi bi-gear text-primary"></i> @L["Set_Title"]</h2>
-        <small class="text-muted">@L["Set_ManageSubtitle"]</small>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h2 class="mb-1" style="font-family:'Calistoga',serif; letter-spacing:-0.5px;">
+                <i class="bi bi-gear text-primary me-2"></i>@L["Set_Title"]
+            </h2>
+            <small class="text-muted">@L["Set_ManageSubtitle"]</small>
+        </div>
+        
+        <!-- Tab Navigation Pills -->
+        <ul class="nav nav-pills nav-pills-settings" id="settingsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-pane" type="button" role="tab" aria-controls="profile-pane" aria-selected="true">
+                    <i class="bi bi-person-circle me-1.5"></i>@L["Set_Profile"]
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security-pane" type="button" role="tab" aria-controls="security-pane" aria-selected="false">
+                    <i class="bi bi-shield-lock me-1.5"></i>@L["Set_Security"]
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories-pane" type="button" role="tab" aria-controls="categories-pane" aria-selected="false">
+                    <i class="bi bi-palette me-1.5"></i>@L["Cat_Title"]
+                </button>
+            </li>
+        </ul>
     </div>
 
     @if (TempData["Error"] is string errorMsg)
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius:12px;">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMsg
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
     @if (TempData["Success"] is string successMsg)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius:12px;">
             <i class="bi bi-check-circle-fill me-2"></i>@successMsg
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    <div class="row g-4">
-        @* ── Profile Section ── *@
-        <div class="col-lg-6">
-            <div class="card shadow-sm border-0" style="border-radius: 16px;">
-                <div class="card-header bg-white border-0 pt-4 pb-0">
-                    <h5 class="fw-bold mb-0"><i class="bi bi-person-circle text-primary me-2"></i>@L["Set_Profile"]</h5>
-                    <small class="text-muted">@L["Set_ProfileDesc"]</small>
+    <!-- Tab Contents -->
+    <div class="tab-content id="settingsTabsContent">
+        
+        @* ── Profile Tab Pane ── *@
+        <div class="tab-pane fade show active" id="profile-pane" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card settings-card border-0">
+                        <div class="card-header bg-white border-0 pt-4 pb-0" style="background:transparent !important;">
+                            <h5 class="fw-bold mb-1" style="font-family:'Calistoga',serif;"><i class="bi bi-person-circle text-primary me-2"></i>@L["Set_Profile"]</h5>
+                            <small class="text-muted">@L["Set_ProfileDesc"]</small>
+                        </div>
+                        <div class="card-body p-4">
+                            <form asp-controller="Settings" asp-action="UpdateProfile" method="post">
+                                @Html.AntiForgeryToken()
+
+                                <div class="mb-4">
+                                    <label class="form-label form-label-custom mb-2">@L["Set_Email"]</label>
+                                    <input type="email" class="form-control rounded-3" value="@profile?.Email" disabled style="padding:10px 14px; background-color: var(--clr-surface-3) !important;" />
+                                    <small class="text-muted">@L["Set_EmailReadonly"]</small>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label form-label-custom mb-2">@L["Set_FullName"]</label>
+                                    <input name="FullName" type="text" class="form-control rounded-3"
+                                           value="@profile?.FullName" placeholder="@L["Ph_FullName"]" maxlength="100" style="padding:10px 14px;" />
+                                </div>
+
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label form-label-custom mb-2">@L["Common_Currency"]</label>
+                                        <select name="PreferredCurrency" class="form-select rounded-3" style="padding:10px 14px;">
+                                            @{
+                                                var currencies = new[] { "USD", "EUR", "GBP", "DOP", "MXN", "COP", "ARS", "BRL", "CLP", "PEN", "CAD", "JPY" };
+                                            }
+                                            @foreach (var c in currencies)
+                                            {
+                                                <option value="@c" selected="@(profile?.PreferredCurrency == c)">@c</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label form-label-custom mb-2">@L["Set_TimeZone"]</label>
+                                        <select name="TimeZone" class="form-select rounded-3" style="padding:10px 14px;">
+                                            @{
+                                                var timezones = new[] {
+                                                    "UTC", "America/New_York", "America/Chicago", "America/Denver",
+                                                    "America/Los_Angeles", "America/Santo_Domingo", "America/Mexico_City",
+                                                    "America/Bogota", "America/Sao_Paulo", "America/Argentina/Buenos_Aires",
+                                                    "Europe/London", "Europe/Paris", "Europe/Madrid", "Asia/Tokyo"
+                                                };
+                                            }
+                                            @foreach (var tz in timezones)
+                                            {
+                                                <option value="@tz" selected="@(profile?.TimeZone == tz)">@tz</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 gap-3">
+                                    <small class="text-muted font-mono">
+                                        <i class="bi bi-clock me-1"></i>@L["Set_MemberSince"] @(profile?.CreatedAt.ToString("MMM yyyy") ?? "—")
+                                    </small>
+                                    <button type="submit" class="btn btn-primary rounded-pill px-4">
+                                        <i class="bi bi-check-lg me-1"></i> @L["Common_Save"]
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body p-4">
-                    <form asp-controller="Settings" asp-action="UpdateProfile" method="post">
-                        @Html.AntiForgeryToken()
+            </div>
+        </div>
 
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Set_Email"]</label>
-                            <input type="email" class="form-control bg-light" value="@profile?.Email" disabled />
-                            <small class="text-muted">@L["Set_EmailReadonly"]</small>
+        @* ── Security Tab Pane ── *@
+        <div class="tab-pane fade" id="security-pane" role="tabpanel" aria-labelledby="security-tab">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card settings-card border-0">
+                        <div class="card-header bg-white border-0 pt-4 pb-0" style="background:transparent !important;">
+                            <h5 class="fw-bold mb-1" style="font-family:'Calistoga',serif;"><i class="bi bi-shield-lock text-warning me-2"></i>@L["Set_Security"]</h5>
+                            <small class="text-muted">@L["Set_SecurityDesc"]</small>
                         </div>
+                        <div class="card-body p-4">
+                            <form asp-controller="Settings" asp-action="ChangePassword" method="post">
+                                @Html.AntiForgeryToken()
 
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Set_FullName"]</label>
-                            <input name="FullName" type="text" class="form-control"
-                                   value="@profile?.FullName" placeholder="@L["Ph_FullName"]" maxlength="100" />
+                                <div class="mb-4">
+                                    <label class="form-label form-label-custom mb-2">@L["Set_CurrentPassword"]</label>
+                                    <input name="CurrentPassword" type="password" class="form-control rounded-3"
+                                           placeholder="@L["Ph_CurrentPassword"]" required style="padding:10px 14px;" />
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label form-label-custom mb-2">@L["Set_NewPasswordLabel"]</label>
+                                    <input name="NewPassword" type="password" class="form-control rounded-3"
+                                           placeholder="@L["Ph_Min6Chars"]" required minlength="6" style="padding:10px 14px;" />
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label form-label-custom mb-2">@L["Set_ConfirmNewPassword"]</label>
+                                    <input name="ConfirmNewPassword" type="password" class="form-control rounded-3"
+                                           placeholder="@L["Ph_ConfirmPassword"]" required minlength="6" style="padding:10px 14px;" />
+                                </div>
+
+                                <button type="submit" class="btn btn-warning w-100 py-3 rounded-pill fw-bold text-dark">
+                                    <i class="bi bi-key-fill me-1"></i> @L["Set_ChangePassword"]
+                                </button>
+                            </form>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Currency"]</label>
-                                <select name="PreferredCurrency" class="form-select" style="border-radius:10px; padding:12px 15px;">
-                                    @{
-                                        var currencies = new[] { "USD", "EUR", "GBP", "DOP", "MXN", "COP", "ARS", "BRL", "CLP", "PEN", "CAD", "JPY" };
-                                    }
-                                    @foreach (var c in currencies)
-                                    {
-                                        <option value="@c" selected="@(profile?.PreferredCurrency == c)">@c</option>
-                                    }
-                                </select>
+        @* ── Categories Tab Pane ── *@
+        <div class="tab-pane fade" id="categories-pane" role="tabpanel" aria-labelledby="categories-tab">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card settings-card border-0">
+                        <div class="card-header bg-white border-0 pt-4 pb-0 d-flex flex-wrap justify-content-between align-items-center gap-3" style="background:transparent !important;">
+                            <div>
+                                <h5 class="fw-bold mb-1" style="font-family:'Calistoga',serif;"><i class="bi bi-palette text-success me-2"></i>@L["Cat_Title"]</h5>
+                                <small class="text-muted">@L["Cat_TitleDesc"]</small>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-semibold text-uppercase">@L["Set_TimeZone"]</label>
-                                <select name="TimeZone" class="form-select" style="border-radius:10px; padding:12px 15px;">
-                                    @{
-                                        var timezones = new[] {
-                                            "UTC", "America/New_York", "America/Chicago", "America/Denver",
-                                            "America/Los_Angeles", "America/Santo_Domingo", "America/Mexico_City",
-                                            "America/Bogota", "America/Sao_Paulo", "America/Argentina/Buenos_Aires",
-                                            "Europe/London", "Europe/Paris", "Europe/Madrid", "Asia/Tokyo"
-                                        };
-                                    }
-                                    @foreach (var tz in timezones)
-                                    {
-                                        <option value="@tz" selected="@(profile?.TimeZone == tz)">@tz</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between align-items-center mt-4">
-                            <small class="text-muted">
-                                <i class="bi bi-clock me-1"></i>@L["Set_MemberSince"] @(profile?.CreatedAt.ToString("MMM yyyy") ?? "—")
-                            </small>
-                            <button type="submit" class="btn btn-primary px-4">
-                                <i class="bi bi-check-lg me-1"></i> @L["Common_Save"]
+                            <button type="button" class="btn btn-primary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                                <i class="bi bi-plus-lg me-1"></i> @L["Cat_NewCategory"]
                             </button>
                         </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        @* ── Change Password Section ── *@
-        <div class="col-lg-6">
-            <div class="card shadow-sm border-0" style="border-radius: 16px;">
-                <div class="card-header bg-white border-0 pt-4 pb-0">
-                    <h5 class="fw-bold mb-0"><i class="bi bi-shield-lock text-warning me-2"></i>@L["Set_Security"]</h5>
-                    <small class="text-muted">@L["Set_SecurityDesc"]</small>
-                </div>
-                <div class="card-body p-4">
-                    <form asp-controller="Settings" asp-action="ChangePassword" method="post">
-                        @Html.AntiForgeryToken()
-
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Set_CurrentPassword"]</label>
-                            <input name="CurrentPassword" type="password" class="form-control"
-                                   placeholder="@L["Ph_CurrentPassword"]" required />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Set_NewPasswordLabel"]</label>
-                            <input name="NewPassword" type="password" class="form-control"
-                                   placeholder="@L["Ph_Min6Chars"]" required minlength="6" />
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Set_ConfirmNewPassword"]</label>
-                            <input name="ConfirmNewPassword" type="password" class="form-control"
-                                   placeholder="@L["Ph_ConfirmPassword"]" required minlength="6" />
-                        </div>
-
-                        <button type="submit" class="btn btn-warning w-100 py-3 rounded-3 fw-bold">
-                            <i class="bi bi-key me-1"></i> @L["Set_ChangePassword"]
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        @* ── Categories Section ── *@
-        <div class="col-12">
-            <div class="card shadow-sm border-0" style="border-radius: 16px;">
-                <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="fw-bold mb-0"><i class="bi bi-palette text-success me-2"></i>@L["Cat_Title"]</h5>
-                        <small class="text-muted">@L["Cat_TitleDesc"]</small>
-                    </div>
-                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-                        <i class="bi bi-plus-lg me-1"></i> @L["Cat_NewCategory"]
-                    </button>
-                </div>
-                <div class="card-body p-4">
-                    @if (categories.Any())
-                    {
-                        <div class="row g-3">
-                            @foreach (var cat in categories)
+                        <div class="card-body p-4">
+                            @if (categories.Any())
                             {
-                                <div class="col-md-4 col-lg-3">
-                                    <div class="d-flex align-items-center p-2 rounded-3 border position-relative"
-                                         style="background: @(cat.Color)10; border-color: @(cat.Color)30 !important; transition: all 0.2s; min-width: 0;">
-                                        <div class="d-flex align-items-center justify-content-center rounded-circle me-2 flex-shrink-0"
-                                             style="width: 34px; height: 34px; background: @cat.Color; color: white; font-size: 0.9rem;">
-                                            <i class="bi @cat.Icon"></i>
-                                        </div>
-                                        <div class="flex-grow-1 overflow-hidden" style="min-width: 0;">
-                                            <div class="fw-semibold text-truncate" style="font-size: 0.875rem;">@cat.Name</div>
-                                            @if (cat.IsDefault)
-                                            {
-                                                <small class="text-muted" style="font-size: 0.65rem;">@L["Cat_Default"]</small>
-                                            }
-                                        </div>
-                                        <div class="dropdown flex-shrink-0 ms-1">
-                                            <button class="btn btn-link p-0 text-secondary" 
-                                                    style="line-height: 1; font-size: 1rem;"
-                                                    data-bs-toggle="dropdown" 
-                                                    aria-expanded="false">
-                                                <i class="bi bi-three-dots-vertical"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                                <li>
-                                                    <button type="button" class="dropdown-item"
-                                                            onclick="openEditModal(@cat.Id)">
-                                                        <i class="bi bi-pencil me-2"></i>@L["Common_Edit"]
+                                <div class="row g-3">
+                                    @foreach (var cat in categories)
+                                    {
+                                        <div class="col-sm-6 col-md-4 col-lg-3">
+                                            <div class="d-flex align-items-center p-2.5 category-pill-premium position-relative"
+                                                 style="background: rgba(var(--clr-primary-rgb), 0.03); min-width: 0;">
+                                                <div class="d-flex align-items-center justify-content-center rounded-circle me-3 flex-shrink-0"
+                                                     style="width: 36px; height: 36px; background: @cat.Color; color: white; font-size: 0.95rem; box-shadow: 0 2px 6px @(cat.Color)40;">
+                                                    <i class="bi @cat.Icon"></i>
+                                                </div>
+                                                <div class="flex-grow-1 overflow-hidden" style="min-width: 0;">
+                                                    <div class="fw-bold text-truncate" style="font-size: 0.85rem; font-family:'Calistoga',serif;">@cat.Name</div>
+                                                    @if (cat.IsDefault)
+                                                    {
+                                                        <small class="text-muted" style="font-size: 0.65rem;">@L["Cat_Default"]</small>
+                                                    }
+                                                </div>
+                                                <div class="dropdown flex-shrink-0 ms-1">
+                                                    <button class="btn btn-link p-0 text-muted rounded-circle" 
+                                                            style="width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;"
+                                                            data-bs-toggle="dropdown" 
+                                                            aria-expanded="false">
+                                                        <i class="bi bi-three-dots-vertical"></i>
                                                     </button>
-                                                </li>
-                                                <li>
-                                                    <form asp-action="DeleteCategory" asp-route-id="@cat.Id" method="post">
-                                                        @Html.AntiForgeryToken()
-                                                        <button type="submit" class="dropdown-item text-danger"
-                                                                onclick="return confirm('@L["Cat_DeleteConfirm"].Value');">
-                                                            <i class="bi bi-trash me-2"></i>@L["Common_Delete"]
-                                                        </button>
-                                                    </form>
-                                                </li>
-                                            </ul>
+                                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                                        <li>
+                                                            <button type="button" class="dropdown-item"
+                                                                    onclick="openEditModal(@cat.Id)">
+                                                                <i class="bi bi-pencil me-2"></i>@L["Common_Edit"]
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <form asp-action="DeleteCategory" asp-route-id="@cat.Id" method="post">
+                                                                @Html.AntiForgeryToken()
+                                                                <button type="submit" class="dropdown-item text-danger"
+                                                                        onclick="return confirm('@L["Cat_DeleteConfirm"].Value');">
+                                                                    <i class="bi bi-trash me-2"></i>@L["Common_Delete"]
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center py-5">
+                                    <i class="bi bi-palette display-3 text-muted opacity-30 d-block mb-3"></i>
+                                    <p class="text-muted">@L["Cat_NoCategoriesMessage"]</p>
                                 </div>
                             }
                         </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-4">
-                            <i class="bi bi-palette display-4 text-muted opacity-50"></i>
-                            <p class="text-muted mt-2">@L["Cat_NoCategoriesMessage"]</p>
-                        </div>
-                    }
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
-@* ── Edit Category Modals (rendered outside main layout to avoid flicker) ── *@
+@* ── Edit Category Modals ── *@
 @foreach (var cat in categories)
 {
     <div class="modal fade" id="editCategoryModal-@cat.Id" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold">@L["Cat_EditCategory"]</h5>
+            <div class="modal-content modal-content-premium border-0 shadow">
+                <div class="modal-header border-0 pb-0 px-4 pt-4">
+                    <h5 class="modal-title fw-bold" style="font-family:'Calistoga',serif;">@L["Cat_EditCategory"]</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form asp-action="UpdateCategory" asp-route-id="@cat.Id" method="post">
                     @Html.AntiForgeryToken()
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold">@L["Common_Name"]</label>
-                            <input name="Name" class="form-control" value="@cat.Name" required maxlength="50" />
+                    <div class="modal-body px-4 py-3">
+                        <div class="mb-4">
+                            <label class="form-label form-label-custom mb-2">@L["Common_Name"]</label>
+                            <input name="Name" class="form-control rounded-3" value="@cat.Name" required maxlength="50" style="padding:10px 14px;" />
                         </div>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label small fw-semibold">Icon (Bootstrap)</label>
-                                <select name="Icon" class="form-select" style="border-radius:10px; padding:12px 15px;">
+                                <label class="form-label form-label-custom mb-2">Icon (Bootstrap)</label>
+                                <select name="Icon" class="form-select rounded-3" style="padding:10px 14px;">
                                     @{
                                         var iconOptions = new[] {
                                             ("bi-cup-hot", "☕ Cup"), ("bi-car-front", "🚗 Car"), ("bi-controller", "🎮 Controller"),
@@ -246,15 +346,15 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-semibold">@L["Common_Color"]</label>
-                                <input name="Color" type="color" class="form-control form-control-color w-100"
-                                       value="@cat.Color" required style="height:46px;" />
+                                <label class="form-label form-label-custom mb-2">@L["Common_Color"]</label>
+                                <input name="Color" type="color" class="form-control form-control-color w-100 rounded-3"
+                                       value="@cat.Color" required style="height:44px; padding:6px; border-color:var(--clr-border);" />
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">@L["Common_Cancel"]</button>
-                        <button type="submit" class="btn btn-primary">@L["Common_Save"]</button>
+                    <div class="modal-footer border-0 px-4 pb-4 pt-2">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">@L["Common_Cancel"]</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">@L["Common_Save"]</button>
                     </div>
                 </form>
             </div>
@@ -265,23 +365,25 @@
 @* Add Category Modal *@
 <div class="modal fade" id="addCategoryModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle text-primary me-2"></i>@L["Cat_NewCategory"]</h5>
+        <div class="modal-content modal-content-premium border-0 shadow">
+            <div class="modal-header border-0 pb-0 px-4 pt-4">
+                <h5 class="modal-title fw-bold" style="font-family:'Calistoga',serif;">
+                    <i class="bi bi-plus-circle text-primary me-2"></i>@L["Cat_NewCategory"]
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form asp-action="CreateCategory" method="post">
                 @Html.AntiForgeryToken()
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold">@L["Cat_CategoryName"]</label>
-                        <input name="Name" class="form-control" required maxlength="50"
-                               placeholder="@L["Ph_CategoryName"]" />
+                <div class="modal-body px-4 py-3">
+                    <div class="mb-4">
+                        <label class="form-label form-label-custom mb-2">@L["Cat_CategoryName"]</label>
+                        <input name="Name" class="form-control rounded-3" required maxlength="50"
+                               placeholder="@L["Ph_CategoryName"]" style="padding:10px 14px;" />
                     </div>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold">Icon</label>
-                            <select name="Icon" class="form-select" style="border-radius:10px; padding:12px 15px;">
+                            <label class="form-label form-label-custom mb-2">Icon</label>
+                            <select name="Icon" class="form-select rounded-3" style="padding:10px 14px;">
                                 <option value="bi-cup-hot">☕ Cup (bi-cup-hot)</option>
                                 <option value="bi-car-front">🚗 Car (bi-car-front)</option>
                                 <option value="bi-controller">🎮 Controller (bi-controller)</option>
@@ -305,15 +407,15 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold">@L["Common_Color"]</label>
-                            <input name="Color" type="color" class="form-control form-control-color w-100"
-                                   value="#6c5ce7" required style="height:46px;" />
+                            <label class="form-label form-label-custom mb-2">@L["Common_Color"]</label>
+                            <input name="Color" type="color" class="form-control form-control-color w-100 rounded-3"
+                                   value="#6c5ce7" required style="height:44px; padding:6px; border-color:var(--clr-border);" />
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">@L["Common_Cancel"]</button>
-                    <button type="submit" class="btn btn-primary">
+                <div class="modal-footer border-0 px-4 pb-4 pt-2">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">@L["Common_Cancel"]</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">
                         <i class="bi bi-plus-lg me-1"></i> @L["Common_Create"]
                     </button>
                 </div>
@@ -324,7 +426,6 @@
 
 <script>
     function openEditModal(categoryId) {
-        // Small delay to let the dropdown close before opening the modal
         setTimeout(function () {
             var modal = new bootstrap.Modal(document.getElementById('editCategoryModal-' + categoryId));
             modal.show();
