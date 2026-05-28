@@ -15,7 +15,15 @@ const PRECACHE_ASSETS = [
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => cache.addAll(PRECACHE_ASSETS))
+            .then(cache => {
+                return Promise.all(
+                    PRECACHE_ASSETS.map(url => {
+                        return cache.add(url).catch(err => {
+                            console.warn('Failed to precache asset:', url, err);
+                        });
+                    })
+                );
+            })
             .then(() => self.skipWaiting())
     );
 });
