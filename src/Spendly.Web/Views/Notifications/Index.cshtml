@@ -52,6 +52,28 @@
         color: var(--clr-text);
         background: rgba(255, 255, 255, 0.05);
     }
+
+    .btn-delete-notif {
+        opacity: 0.3;
+        transition: all 0.2s var(--ease-out);
+        border: none !important;
+        background: transparent !important;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        outline: none !important;
+        color: var(--clr-text-muted) !important;
+    }
+    .notif-row:hover .btn-delete-notif {
+        opacity: 0.7;
+    }
+    .btn-delete-notif:hover {
+        opacity: 1 !important;
+        color: var(--clr-danger) !important;
+        background: rgba(var(--clr-danger-rgb), 0.1) !important;
+    }
 </style>
 
 <div class="container-fluid py-4">
@@ -64,11 +86,18 @@
             </h2>
             <small class="text-muted">@L["Notif_Page_Subtitle"]</small>
         </div>
-        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-semibold"
-                id="markAllPageBtn" onclick="markAllReadPage()"
-                @(Model.Any(n => !n.IsRead) ? "" : "disabled")>
-            <i class="bi bi-check2-all me-1"></i> @L["Nav_MarkAllRead"]
-        </button>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-semibold"
+                    id="markAllPageBtn" onclick="markAllReadPage()"
+                    @(Model.Any(n => !n.IsRead) ? "" : "disabled")>
+                <i class="bi bi-check2-all me-1"></i> @L["Nav_MarkAllRead"]
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-4 fw-semibold"
+                    id="clearAllPageBtn" onclick="clearAllNotifications()"
+                    @(Model.Any() ? "" : "disabled")>
+                <i class="bi bi-trash3 me-1"></i> @L["Notif_ClearAll"]
+            </button>
+        </div>
     </div>
 
     <!-- Filters -->
@@ -136,20 +165,27 @@
                         </small>
                     </div>
 
-                    <div class="flex-shrink-0 d-flex align-items-center gap-2">
-                        @if (!n.IsRead)
-                        {
-                            <span class="badge bg-primary rounded-pill fw-semibold" style="font-size:0.65rem; padding: 4px 8px;">
-                                @L["Notif_Unread"]
-                            </span>
-                            <span class="rounded-circle bg-primary d-inline-block" style="width:8px;height:8px;"></span>
-                        }
-                        else
-                        {
-                            <span class="text-muted" style="font-size:0.75rem;">
-                                <i class="bi bi-check2-all text-success"></i>
-                            </span>
-                        }
+                    <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                        <div class="notif-status-badge d-flex align-items-center gap-2">
+                            @if (!n.IsRead)
+                            {
+                                <span class="badge bg-primary rounded-pill fw-semibold" style="font-size:0.65rem; padding: 4px 8px;">
+                                    @L["Notif_Unread"]
+                                </span>
+                                <span class="rounded-circle bg-primary d-inline-block" style="width:8px;height:8px;"></span>
+                            }
+                            else
+                            {
+                                <span class="text-muted" style="font-size:0.75rem;">
+                                    <i class="bi bi-check2-all text-success"></i>
+                                </span>
+                            }
+                        </div>
+                        <button type="button" class="btn-delete-notif btn rounded-circle"
+                                title="@L["Notif_Delete"]"
+                                onclick="deleteNotification(@n.Id, event, this)">
+                            <i class="bi bi-trash fs-6"></i>
+                        </button>
                     </div>
                 </div>
             }
@@ -206,7 +242,11 @@
                     const badge = el.querySelector('.badge.bg-primary');
                     const dot   = el.querySelector('.rounded-circle.bg-primary.d-inline-block');
                     if (badge) badge.remove();
-                    if (dot)   dot.outerHTML = '<span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-check2-all text-success"></i></span>';
+
+                    const badgeContainer = el.querySelector('.notif-status-badge');
+                    if (badgeContainer) {
+                        badgeContainer.innerHTML = '<span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-check2-all text-success"></i></span>';
+                    }
 
                     const msg = el.querySelector('p.fw-semibold');
                     if (msg) { msg.classList.remove('fw-semibold'); msg.classList.add('fw-normal'); }
@@ -218,6 +258,74 @@
         function markAllReadPage() {
             fetch('/Notifications/MarkAllAsRead', { method: 'POST' })
                 .then(() => window.location.reload());
+        }
+
+        function deleteNotification(id, event, btn) {
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+
+            const row = document.getElementById(`notif-${id}`);
+            if (row) {
+                row.style.transition = 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(30px)';
+                row.style.height = '0';
+                row.style.padding = '0';
+                row.style.borderBottom = 'none';
+                
+                setTimeout(() => {
+                    row.remove();
+                    const container = document.querySelector('.notif-card-premium');
+                    if (container && container.querySelectorAll('.notif-row').length === 0) {
+                        window.location.reload();
+                    }
+                }, 350);
+            }
+
+            fetch(`/Notifications/Delete/${id}`, { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        if (typeof loadNotificationCount === 'function') {
+                            loadNotificationCount();
+                        }
+                    }
+                });
+        }
+
+        function clearAllNotifications() {
+            const isEs = document.documentElement.lang === 'es';
+            const confirmMsg = isEs 
+                ? '¿Estás seguro de que deseas borrar todas las notificaciones?' 
+                : 'Are you sure you want to clear all notifications?';
+            
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+
+            const container = document.querySelector('.notif-card-premium');
+            if (container) {
+                const rows = container.querySelectorAll('.notif-row');
+                rows.forEach((row, index) => {
+                    setTimeout(() => {
+                        row.style.transition = 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+                        row.style.opacity = '0';
+                        row.style.transform = 'translateX(30px)';
+                    }, index * 50);
+                });
+            }
+
+            fetch('/Notifications/DeleteAll', { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 400);
+                    }
+                });
         }
     </script>
 }

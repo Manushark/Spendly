@@ -77,5 +77,33 @@ namespace Spendly.Web.Controllers
             await _api.MarkAllAsReadAsync();
             return Json(new { success = true });
         }
+
+        /// <summary>
+        /// POST /Notifications/Delete/{id}
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var token = HttpContext.Session.GetString("token");
+            if (string.IsNullOrEmpty(token))
+                return Json(new { success = false, message = "Unauthorized" });
+
+            await _api.DeleteAsync(id);
+            return Json(new { success = true });
+        }
+
+        /// <summary>
+        /// POST /Notifications/DeleteAll
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> DeleteAll()
+        {
+            var token = HttpContext.Session.GetString("token");
+            if (string.IsNullOrEmpty(token))
+                return Json(new { success = false, message = "Unauthorized" });
+
+            await _api.DeleteAllAsync();
+            return Json(new { success = true });
+        }
     }
 }
