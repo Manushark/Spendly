@@ -353,30 +353,36 @@ builder.Services.AddScoped<ImportCsvUseCase>();
 var app = builder.Build();
 
 // ────────────────────────────────────────────────────────────
-// Auto-apply pending migrations in Production (non-blocking)
+// Auto-apply migrations and fix default user registration dates
 // ────────────────────────────────────────────────────────────
-if (!isDevelopment)
+try
 {
-    _ = Task.Run(async () =>
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<SpendlyDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<SpendlyDbContext>>();
+    logger.LogInformation("Checking database migrations on startup...");
+    db.Database.Migrate();
+
+    var usersToFix = db.Users.ToList().Where(u => u.CreatedAt.Year <= 2000).ToList();
+    if (usersToFix.Any())
     {
-        try
+        logger.LogInformation("Fixing {Count} users with default/invalid CreatedAt dates...", usersToFix.Count);
+        foreach (var u in usersToFix)
         {
-            using var scope = app.Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<SpendlyDbContext>();
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<SpendlyDbContext>>();
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-            logger.LogInformation("Starting database migration...");
-            await db.Database.MigrateAsync();
-            sw.Stop();
-            logger.LogInformation("Database migration completed in {Elapsed}ms", sw.ElapsedMilliseconds);
+            var prop = typeof(Spendly.Domain.Entities.User).GetProperty("CreatedAt");
+            prop?.SetValue(u, new DateTime(2026, 5, 20, 12, 0, 0));
         }
-        catch (Exception ex)
-        {
-            var logger = app.Services.GetRequiredService<ILogger<SpendlyDbContext>>();
-            logger.LogError(ex, "Failed to apply database migrations on startup.");
-        }
-    });
+        db.SaveChanges();
+        logger.LogInformation("Users fixed successfully.");
+    }
 }
+catch (Exception ex)
+{
+    using var scope = app.Services.CreateScope();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<SpendlyDbContext>>();
+    logger.LogError(ex, "Failed to apply database migrations or fix users on startup.");
+}
+
 
 if (isDevelopment)
 {
