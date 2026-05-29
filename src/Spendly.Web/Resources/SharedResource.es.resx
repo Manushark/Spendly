@@ -1388,6 +1388,12 @@
   <data name="Notif_Toast">
     <value>Tienes una nueva notificación</value>
   </data>
+  <data name="Notif_ClearAll" xml:space="preserve">
+    <value>Borrar todas</value>
+  </data>
+  <data name="Notif_Delete" xml:space="preserve">
+    <value>Borrar</value>
+  </data>
   <!-- ═══════ Reports ═══════ -->
   <data name="Rep_Title">
     <value>Reporte Financiero</value>
