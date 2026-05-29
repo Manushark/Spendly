@@ -6,41 +6,92 @@
     var activeFilter = (string)(ViewBag.ActiveFilter ?? "all");
 }
 
+<style>
+    /* Custom Premium Notification styling */
+    .notif-card-premium {
+        border-radius: 16px;
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-card);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+    .notif-row {
+        border-bottom: 1px solid var(--clr-border) !important;
+        transition: background 0.25s var(--ease-out);
+    }
+    .notif-row:hover {
+        background: rgba(var(--clr-primary-rgb), 0.02) !important;
+    }
+    .notif-row.is-unread {
+        background: rgba(var(--clr-primary-rgb), 0.05) !important;
+    }
+    
+    .nav-pills-notif {
+        background: var(--clr-surface-3);
+        padding: 6px;
+        border-radius: 30px;
+        border: 1px solid var(--clr-border);
+        display: inline-flex;
+    }
+    .nav-pills-notif .nav-link {
+        color: var(--clr-text-muted);
+        background: transparent;
+        border: none;
+        border-radius: 24px;
+        padding: 8px 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.25s var(--ease-out);
+    }
+    .nav-pills-notif .nav-link.active {
+        color: #fff !important;
+        background: var(--clr-primary) !important;
+        box-shadow: 0 4px 12px rgba(var(--clr-primary-rgb), 0.25);
+    }
+    .nav-pills-notif .nav-link:hover:not(.active) {
+        color: var(--clr-text);
+        background: rgba(255, 255, 255, 0.05);
+    }
+</style>
+
 <div class="container-fluid py-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
-            <h2 class="mb-1"><i class="bi bi-bell-fill text-primary"></i> @L["Notif_Page_Title"]</h2>
+            <h2 class="mb-1" style="font-family:'Calistoga',serif; letter-spacing:-0.5px;">
+                <i class="bi bi-bell-fill text-primary me-2"></i>@L["Notif_Page_Title"]
+            </h2>
             <small class="text-muted">@L["Notif_Page_Subtitle"]</small>
         </div>
-        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-4"
+        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-semibold"
                 id="markAllPageBtn" onclick="markAllReadPage()"
                 @(Model.Any(n => !n.IsRead) ? "" : "disabled")>
             <i class="bi bi-check2-all me-1"></i> @L["Nav_MarkAllRead"]
         </button>
     </div>
 
+    <!-- Filters -->
     <div class="mb-4">
-        <ul class="nav nav-pills gap-2">
-            <li class="nav-item">
-                <a class="nav-link rounded-pill @(activeFilter == "all" ? "active" : "text-muted bg-light")"
+        <ul class="nav nav-pills nav-pills-notif">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link @(activeFilter == "all" ? "active" : "")"
                    asp-action="Index" asp-route-filter="all" asp-route-page="1">
-                    <i class="bi bi-grid me-1"></i> @L["Notif_FilterAll"]
+                    <i class="bi bi-grid me-1.5"></i> @L["Notif_FilterAll"]
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link rounded-pill @(activeFilter == "unread" ? "active" : "text-muted bg-light")"
+            <li class="nav-item" role="presentation">
+                <a class="nav-link @(activeFilter == "unread" ? "active" : "")"
                    asp-action="Index" asp-route-filter="unread" asp-route-page="1">
-                    <i class="bi bi-circle-fill me-1" style="font-size:0.5rem; vertical-align:middle;"></i> @L["Notif_FilterUnread"]
+                    <i class="bi bi-circle-fill me-1.5" style="font-size:0.5rem; vertical-align:middle;"></i> @L["Notif_FilterUnread"]
                 </a>
             </li>
         </ul>
     </div>
 
-   
     @if (Model.Any())
     {
-        <div class="card shadow-sm border-0" style="border-radius: 16px; overflow: hidden;">
+        <div class="card notif-card-premium border-0">
             @foreach (var n in Model)
             {
                 var iconClass = n.Type switch
@@ -52,23 +103,34 @@
                     "SavingsGoalMilestone"      => "bi-flag-fill text-primary",
                     _                           => "bi-bell-fill text-secondary"
                 };
-                var bgClass = n.IsRead ? "" : "bg-primary bg-opacity-10";
 
-                <div class="d-flex align-items-start gap-3 px-4 py-3 border-bottom notif-row @bgClass"
+                var bgIconColor = n.Type switch
+                {
+                    "BudgetExceeded"            => "rgba(var(--clr-danger-rgb), 0.1)",
+                    "BudgetWarning"             => "rgba(var(--clr-warning-rgb), 0.1)",
+                    "RecurringExpenseGenerated" => "rgba(var(--clr-info-rgb), 0.1)",
+                    "SavingsGoalCompleted"      => "rgba(var(--clr-success-rgb), 0.1)",
+                    "SavingsGoalMilestone"      => "rgba(var(--clr-primary-rgb), 0.1)",
+                    _                           => "rgba(148, 163, 184, 0.1)"
+                };
+
+                var rowClass = n.IsRead ? "" : "is-unread";
+
+                <div class="d-flex align-items-start gap-3 px-4 py-3 notif-row @rowClass"
                      id="notif-@n.Id"
-                     style="transition: background 0.4s ease; cursor: @(n.IsRead ? "default" : "pointer")"
+                     style="cursor: @(n.IsRead ? "default" : "pointer")"
                      @(!n.IsRead ? $"onclick=\"markReadPage({n.Id}, this)\"" : "")>
 
                     <div class="d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle"
-                         style="width:42px; height:42px; background: rgba(99,102,241,0.08);">
+                         style="width:42px; height:42px; background: @bgIconColor;">
                         <i class="bi @iconClass fs-5"></i>
                     </div>
 
                     <div class="flex-grow-1" style="min-width:0;">
-                        <p class="mb-1 fw-@(n.IsRead ? "normal" : "semibold") text-dark" style="line-height:1.4;">
+                        <p class="mb-1 fw-@(n.IsRead ? "normal" : "semibold")" style="line-height:1.4; color: var(--clr-text);">
                             @n.Message
                         </p>
-                        <small class="text-muted">
+                        <small class="text-muted font-mono" style="font-size: 0.78rem;">
                             <i class="bi bi-clock me-1"></i>
                             @n.CreatedAt.ToString("MMM dd, yyyy · HH:mm")
                         </small>
@@ -77,7 +139,7 @@
                     <div class="flex-shrink-0 d-flex align-items-center gap-2">
                         @if (!n.IsRead)
                         {
-                            <span class="badge bg-primary rounded-pill" style="font-size:0.65rem;">
+                            <span class="badge bg-primary rounded-pill fw-semibold" style="font-size:0.65rem; padding: 4px 8px;">
                                 @L["Notif_Unread"]
                             </span>
                             <span class="rounded-circle bg-primary d-inline-block" style="width:8px;height:8px;"></span>
@@ -85,7 +147,7 @@
                         else
                         {
                             <span class="text-muted" style="font-size:0.75rem;">
-                                <i class="bi bi-check2-all"></i>
+                                <i class="bi bi-check2-all text-success"></i>
                             </span>
                         }
                     </div>
@@ -118,11 +180,11 @@
     }
     else
     {
-        <div class="card shadow-sm border-0 p-5 text-center" style="border-radius: 16px;">
+        <div class="card notif-card-premium border-0 p-5 text-center">
             <div class="text-primary opacity-25 mb-3" style="font-size: 4rem;">
                 <i class="bi bi-bell-slash"></i>
             </div>
-            <h5 class="fw-bold mb-1">@L["Notif_NoHistory"]</h5>
+            <h5 class="fw-bold mb-1" style="font-family:'Calistoga',serif;">@L["Notif_NoHistory"]</h5>
             <p class="text-muted mb-0">
                 @(activeFilter == "unread" ? L["Notif_NoUnread"].Value : L["Notif_NoHistory"].Value)
             </p>
@@ -137,14 +199,14 @@
                 .then(r => r.json())
                 .then(() => {
                     if (!el) return;
-                    el.classList.remove('bg-primary', 'bg-opacity-10');
+                    el.classList.remove('is-unread');
                     el.style.cursor = 'default';
                     el.removeAttribute('onclick');
 
                     const badge = el.querySelector('.badge.bg-primary');
                     const dot   = el.querySelector('.rounded-circle.bg-primary.d-inline-block');
                     if (badge) badge.remove();
-                    if (dot)   dot.outerHTML = '<span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-check2-all"></i></span>';
+                    if (dot)   dot.outerHTML = '<span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-check2-all text-success"></i></span>';
 
                     const msg = el.querySelector('p.fw-semibold');
                     if (msg) { msg.classList.remove('fw-semibold'); msg.classList.add('fw-normal'); }
