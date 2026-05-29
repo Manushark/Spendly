@@ -58,6 +58,18 @@ namespace Spendly.Web.Services
             SetAuthHeader();
             await _http.PutAsync("api/notifications/read-all", null);
         }
+
+        public async Task DeleteAsync(int id)
+        {
+            SetAuthHeader();
+            await _http.DeleteAsync($"api/notifications/{id}");
+        }
+
+        public async Task DeleteAllAsync()
+        {
+            SetAuthHeader();
+            await _http.DeleteAsync("api/notifications/clear-all");
+        }
     }
 
     public class NotificationDto
