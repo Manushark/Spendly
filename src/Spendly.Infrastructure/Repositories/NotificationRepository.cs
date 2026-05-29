@@ -85,5 +85,30 @@ namespace Spendly.Infrastructure.Repositories
                     && n.CreatedAt >= monthStart
                     && n.CreatedAt < monthEnd);
         }
+
+        public async Task DeleteAsync(int userId, int id)
+        {
+            var notification = await _context.Notifications
+                .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
+
+            if (notification != null)
+            {
+                _context.Notifications.Remove(notification);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeleteAllAsync(int userId)
+        {
+            var notifications = await _context.Notifications
+                .Where(n => n.UserId == userId)
+                .ToListAsync();
+
+            if (notifications.Any())
+            {
+                _context.Notifications.RemoveRange(notifications);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }
