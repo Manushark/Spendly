@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Spendly.Web.Services;
 
 namespace Spendly.Web.Contracts.Expenses
 {
@@ -20,5 +22,8 @@ namespace Spendly.Web.Contracts.Expenses
         [Required]
         [StringLength(100)]
         public string Category { get; set; } = string.Empty;
+
+        public List<int> TagIds { get; set; } = [];
+        public List<TagDto> Tags { get; set; } = [];
     }
 }
