@@ -10,11 +10,16 @@ namespace Spendly.Application.UseCase.CreateExpense
     {
         private readonly IExpenseRepository _expenseRepository;
         private readonly BudgetAlertService _budgetAlertService;
+        private readonly ITagRepository _tagRepository;
 
-        public CreateExpenseUseCase(IExpenseRepository expenseRepository, BudgetAlertService budgetAlertService)
+        public CreateExpenseUseCase(
+            IExpenseRepository expenseRepository, 
+            BudgetAlertService budgetAlertService,
+            ITagRepository tagRepository)
         {
             _expenseRepository = expenseRepository;
             _budgetAlertService = budgetAlertService;
+            _tagRepository = tagRepository;
         }
 
         public async Task<int> ExecuteAsync(int userId, CreateExpenseDto dto)
@@ -30,6 +35,12 @@ namespace Spendly.Application.UseCase.CreateExpense
 
             // Persist the expense
             await _expenseRepository.AddAsync(expense);
+
+            // Set tags for the expense
+            if (dto.TagIds != null && dto.TagIds.Any())
+            {
+                await _tagRepository.SetExpenseTagsAsync(userId, expense.Id, dto.TagIds);
+            }
 
             // Check budget alerts after creating expense
             await _budgetAlertService.CheckAndCreateAlertsAsync(userId);
