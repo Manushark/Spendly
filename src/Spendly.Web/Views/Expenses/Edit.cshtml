@@ -1,50 +1,100 @@
 @model Spendly.Web.Contracts.Expenses.ExpenseDto
+@using Spendly.Web.Services
 
 @{
     ViewData["Title"] = L["Exp_EditExpense"].Value;
 }
 
-<div class="container mt-4">
+<style>
+    .tag-selector-pill {
+        cursor: pointer;
+    }
+    .btn-check:checked + .tag-selector-pill {
+        background-color: var(--tag-bg) !important;
+        border-color: var(--tag-color) !important;
+        color: var(--clr-text) !important;
+        box-shadow: 0 0 8px var(--tag-bg);
+    }
+</style>
+
+<div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <i class="bi bi-pencil-square"></i> @L["Exp_EditExpense"]
-                </div>
-                <div class="card-body">
+            <div class="card border-0 shadow-sm" style="background: var(--clr-surface); border: 1px solid var(--clr-border) !important; border-radius: 16px; overflow: hidden;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle" style="width: 46px; height: 46px;">
+                            <i class="bi bi-pencil-square fs-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-0 fw-bold" style="font-family:'Calistoga',serif;">@L["Exp_EditExpense"]</h4>
+                            <p class="text-muted small mb-0">Modifica los detalles de tu gasto.</p>
+                        </div>
+                    </div>
+
                     <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
                         @Html.AntiForgeryToken()
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <div class="mb-3">
-                            <label asp-for="Description" class="form-label"></label>
-                            <input asp-for="Description" class="form-control" />
-                            <span asp-validation-for="Description" class="text-danger"></span>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Description"]</label>
+                            <input asp-for="Description" class="form-control" placeholder="@L["Ph_ExpenseDesc"]" required maxlength="200" />
+                            <span asp-validation-for="Description" class="text-danger small"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Amount" class="form-label"></label>
-                            <input asp-for="Amount" class="form-control" type="number" step="0.01" min="0.01" />
-                            <span asp-validation-for="Amount" class="text-danger"></span>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Amount"]</label>
+                            <div class="input-group">
+                                <span class="input-group-text border-end-0" style="background:var(--clr-surface-3);border-color:var(--clr-border);">
+                                    <i class="bi bi-currency-dollar text-muted"></i>
+                                </span>
+                                <input asp-for="Amount" class="form-control border-start-0 ps-0 fw-bold" style="color:#ef4444;" type="number" step="0.01" min="0.01" required />
+                            </div>
+                            <span asp-validation-for="Amount" class="text-danger small"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Category" class="form-label"></label>
-                            <select asp-for="Category" asp-items="ViewBag.CategoryList" class="form-select">
-                                <option value="">-- Select category --</option>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Category"]</label>
+                            <select asp-for="Category" asp-items="ViewBag.CategoryList" class="form-select" required>
+                                <option value="" disabled>-- Selecciona una categoría --</option>
                             </select>
-                            <span asp-validation-for="Category" class="text-danger"></span>
+                            <span asp-validation-for="Category" class="text-danger small"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Date" class="form-label"></label>
-                            <input asp-for="Date" class="form-control" type="date" />
-                            <span asp-validation-for="Date" class="text-danger"></span>
+                            <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Date"]</label>
+                            <input asp-for="Date" class="form-control" type="date" required max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            <span asp-validation-for="Date" class="text-danger small"></span>
                         </div>
 
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="Index" class="btn btn-outline-secondary">@L["Common_Cancel"]</a>
-                            <button type="submit" class="btn btn-primary">@L["Common_Save"]</button>
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-semibold text-uppercase"><i class="bi bi-tags me-1"></i>Etiquetas</label>
+                            @if (ViewBag.Tags is List<TagDto> allTags && allTags.Any())
+                            {
+                                <div class="d-flex flex-wrap gap-2" style="max-height: 120px; overflow-y: auto; padding: 2px;">
+                                    @foreach (var tag in allTags)
+                                    {
+                                        var isChecked = Model.TagIds != null && Model.TagIds.Contains(tag.Id);
+                                        <div class="tag-selector-item">
+                                            <input type="checkbox" name="TagIds" value="@tag.Id" id="edit-tag-@tag.Id" class="btn-check" @(isChecked ? "checked" : "") />
+                                            <label class="btn btn-sm rounded-pill tag-selector-pill" for="edit-tag-@tag.Id" 
+                                                   style="--tag-color: @tag.Color; --tag-bg: @(tag.Color)18; border: 1px solid var(--clr-border); color: var(--clr-text-muted); background: transparent; transition: all 0.2s; font-size: 0.85rem; padding: 4px 12px;">
+                                                <span class="rounded-circle d-inline-block me-1" style="width: 7px; height: 7px; background-color: @tag.Color; vertical-align: middle;"></span>
+                                                @tag.Name
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted small mb-0">No tienes etiquetas creadas. <a asp-controller="Tags" asp-action="Index">Crea una aquí</a>.</p>
+                            }
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-2">
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">@L["Common_Cancel"]</a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">@L["Common_Save"]</button>
                         </div>
                     </form>
                 </div>
