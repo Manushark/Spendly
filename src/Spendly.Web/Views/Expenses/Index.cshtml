@@ -127,6 +127,16 @@
         color: #fff;
     }
     .pagination .page-item.disabled .page-link { opacity: .4; }
+
+    .tag-selector-pill {
+        cursor: pointer;
+    }
+    .btn-check:checked + .tag-selector-pill {
+        background-color: var(--tag-bg) !important;
+        border-color: var(--tag-color) !important;
+        color: var(--clr-text) !important;
+        box-shadow: 0 0 8px var(--tag-bg);
+    }
 </style>
 
 <div class="container-fluid py-4">
@@ -316,7 +326,18 @@
                                     var matchedCat = categories.FirstOrDefault(c => c.Name == e.Category);
                                     <tr>
                                         <td class="ps-4 py-3">
-                                            <span class="fw-semibold" style="font-size:.9rem;">@e.Description</span>
+                                            <span class="fw-semibold d-block" style="font-size:.9rem;">@e.Description</span>
+                                            @if (e.Tags != null && e.Tags.Any())
+                                            {
+                                                <div class="d-flex flex-wrap gap-1 mt-1.5">
+                                                    @foreach (var tag in e.Tags)
+                                                    {
+                                                        <span class="badge rounded-pill" style="font-size:0.68rem; padding: 2px 8px; background: @(tag.Color)18; color: @tag.Color; border: 1px solid @(tag.Color)35;">
+                                                            @tag.Name
+                                                        </span>
+                                                    }
+                                                </div>
+                                            }
                                         </td>
                                         <td class="py-3">
                                             <span class="amount-cell">-$@e.Amount.ToString("N2")</span>
@@ -482,11 +503,35 @@
                         }
                     </div>
 
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <label class="form-label text-muted small fw-semibold text-uppercase">@L["Common_Date"]</label>
                         <input name="Date" type="date" class="form-control" required
                                max="@DateTime.Today.ToString("yyyy-MM-dd")"
                                value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-semibold text-uppercase"><i class="bi bi-tags me-1"></i>Etiquetas</label>
+                        @if (ViewBag.Tags is List<TagDto> allTags && allTags.Any())
+                        {
+                            <div class="d-flex flex-wrap gap-1.5" style="max-height: 120px; overflow-y: auto; padding: 2px;">
+                                @foreach (var tag in allTags)
+                                {
+                                    <div class="tag-selector-item">
+                                        <input type="checkbox" name="TagIds" value="@tag.Id" id="create-tag-@tag.Id" class="btn-check" />
+                                        <label class="btn btn-sm rounded-pill tag-selector-pill" for="create-tag-@tag.Id" 
+                                               style="--tag-color: @tag.Color; --tag-bg: @(tag.Color)18; border: 1px solid var(--clr-border); color: var(--clr-text-muted); background: transparent; transition: all 0.2s; font-size: 0.78rem; padding: 3px 10px;">
+                                            <span class="rounded-circle d-inline-block me-1" style="width: 6px; height: 6px; background-color: @tag.Color; vertical-align: middle;"></span>
+                                            @tag.Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small mb-0">No tienes etiquetas creadas. <a asp-controller="Tags" asp-action="Index">Crea una aquí</a>.</p>
+                        }
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow-sm">
