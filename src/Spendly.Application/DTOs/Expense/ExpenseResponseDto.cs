@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Spendly.Application.DTOs.Tag;
 
 namespace Spendly.Application.DTOs.Expense
 {
@@ -13,5 +14,6 @@ namespace Spendly.Application.DTOs.Expense
         public string Description { get; set; }
         public DateTime Date { get; set; }
         public string Category { get; set; }
+        public List<TagResponseDto> Tags { get; set; } = [];
     }
 }
