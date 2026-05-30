@@ -10,13 +10,16 @@ namespace Spendly.Application.UseCases.Expenses
     {
         private readonly IExpenseRepository _expenseRepository;
         private readonly BudgetAlertService _budgetAlertService;
+        private readonly ITagRepository _tagRepository;
 
         public UpdateExpenseUseCase(
             IExpenseRepository expenseRepository,
-            BudgetAlertService budgetAlertService)
+            BudgetAlertService budgetAlertService,
+            ITagRepository tagRepository)
         {
             _expenseRepository = expenseRepository;
             _budgetAlertService = budgetAlertService;
+            _tagRepository = tagRepository;
         }
 
         public async Task ExecuteAsync(int userId, int id, UpdateExpenseDto dto)
@@ -37,6 +40,9 @@ namespace Spendly.Application.UseCases.Expenses
             );
 
             await _expenseRepository.UpdateAsync(expense);
+
+            // Update tags for the expense
+            await _tagRepository.SetExpenseTagsAsync(userId, expense.Id, dto.TagIds ?? []);
 
             // Re-evaluate budget alerts after modification — the new amount
             // may push the user over a budget limit that was not exceeded before.
