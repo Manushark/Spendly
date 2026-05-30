@@ -18,10 +18,12 @@ namespace Spendly.Application.UseCase.ListExpenses
     public class ListExpensesUseCase
     {
         private readonly IExpenseRepository _expenseRepository;
+        private readonly ITagRepository _tagRepository;
 
-        public ListExpensesUseCase(IExpenseRepository expenseRepository)
+        public ListExpensesUseCase(IExpenseRepository expenseRepository, ITagRepository tagRepository)
         {
             _expenseRepository = expenseRepository;
+            _tagRepository = tagRepository;
         }
 
         public async Task<PagedResult<ExpenseResponseDto>> ExecuteAsync(
@@ -38,9 +40,19 @@ namespace Spendly.Application.UseCase.ListExpenses
             var expenses = await _expenseRepository.GetAllAsync(userId, category, search, dateFrom, dateTo, minAmount, maxAmount, page, pageSize);
             var total = await _expenseRepository.CountAsync(userId, category, search, dateFrom, dateTo, minAmount, maxAmount);
 
+            var expensesList = expenses.ToList();
+            var expenseIds = expensesList.Select(e => e.Id).ToList();
+            var tagsByExpense = await _tagRepository.GetTagsForExpensesAsync(expenseIds);
+
+            var dtos = expensesList.Select(e =>
+            {
+                tagsByExpense.TryGetValue(e.Id, out var tags);
+                return ExpenseMapper.ToDto(e, tags);
+            }).ToList();
+
             return new PagedResult<ExpenseResponseDto>
             {
-                Items = expenses.Select(ExpenseMapper.ToDto),
+                Items = dtos,
                 TotalCount = total,
                 Page = page,
                 PageSize = pageSize
