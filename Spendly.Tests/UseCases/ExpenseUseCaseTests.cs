@@ -57,7 +57,8 @@ namespace Spendly.Tests.UseCases
         {
             var repo = new Mock<IExpenseRepository>();
             repo.Setup(r => r.AddAsync(It.IsAny<Expense>())).Returns(Task.CompletedTask);
-            var useCase = new CreateExpenseUseCase(repo.Object, CreateMockAlertService());
+            var tagRepo = new Mock<ITagRepository>();
+            var useCase = new CreateExpenseUseCase(repo.Object, CreateMockAlertService(), tagRepo.Object);
 
             var dto = new CreateExpenseDto
             {
@@ -80,7 +81,8 @@ namespace Spendly.Tests.UseCases
         public async Task Create_FutureDate_ThrowsDomainException()
         {
             var repo = new Mock<IExpenseRepository>();
-            var useCase = new CreateExpenseUseCase(repo.Object, CreateMockAlertService());
+            var tagRepo = new Mock<ITagRepository>();
+            var useCase = new CreateExpenseUseCase(repo.Object, CreateMockAlertService(), tagRepo.Object);
 
             var dto = new CreateExpenseDto
             {
@@ -98,7 +100,8 @@ namespace Spendly.Tests.UseCases
         public async Task Create_NegativeAmount_ThrowsArgumentException()
         {
             var repo = new Mock<IExpenseRepository>();
-            var useCase = new CreateExpenseUseCase(repo.Object, CreateMockAlertService());
+            var tagRepo = new Mock<ITagRepository>();
+            var useCase = new CreateExpenseUseCase(repo.Object, CreateMockAlertService(), tagRepo.Object);
 
             var dto = new CreateExpenseDto
             {
@@ -122,8 +125,8 @@ namespace Spendly.Tests.UseCases
             var repo = new Mock<IExpenseRepository>();
             repo.Setup(r => r.GetByIdAsync(10)).ReturnsAsync(expense);
             repo.Setup(r => r.UpdateAsync(It.IsAny<Expense>())).Returns(Task.CompletedTask);
-
-            var useCase = new UpdateExpenseUseCase(repo.Object, CreateMockAlertService());
+            var tagRepo = new Mock<ITagRepository>();
+            var useCase = new UpdateExpenseUseCase(repo.Object, CreateMockAlertService(), tagRepo.Object);
 
             var dto = new UpdateExpenseDto
             {
@@ -144,8 +147,8 @@ namespace Spendly.Tests.UseCases
             var expense = MakeExpense(userId: 1, id: 10);  // pertenece a user 1
             var repo = new Mock<IExpenseRepository>();
             repo.Setup(r => r.GetByIdAsync(10)).ReturnsAsync(expense);
-
-            var useCase = new UpdateExpenseUseCase(repo.Object, CreateMockAlertService());
+            var tagRepo = new Mock<ITagRepository>();
+            var useCase = new UpdateExpenseUseCase(repo.Object, CreateMockAlertService(), tagRepo.Object);
 
             var dto = new UpdateExpenseDto
             {
@@ -167,8 +170,8 @@ namespace Spendly.Tests.UseCases
         {
             var repo = new Mock<IExpenseRepository>();
             repo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((Expense?)null);
-
-            var useCase = new UpdateExpenseUseCase(repo.Object, CreateMockAlertService());
+            var tagRepo = new Mock<ITagRepository>();
+            var useCase = new UpdateExpenseUseCase(repo.Object, CreateMockAlertService(), tagRepo.Object);
 
             await Assert.ThrowsAsync<ExpenseNotFoundException>(() =>
                 useCase.ExecuteAsync(1, 99, new UpdateExpenseDto
@@ -223,8 +226,9 @@ namespace Spendly.Tests.UseCases
             var expense = MakeExpense(userId: 1, id: 3);
             var repo = new Mock<IExpenseRepository>();
             repo.Setup(r => r.GetByIdAsync(3)).ReturnsAsync(expense);
-
-            var useCase = new GetExpenseByIdUseCase(repo.Object);
+            var tagRepo = new Mock<ITagRepository>();
+            tagRepo.Setup(r => r.GetTagsForExpenseAsync(It.IsAny<int>())).ReturnsAsync(new List<Tag>());
+            var useCase = new GetExpenseByIdUseCase(repo.Object, tagRepo.Object);
             var result = await useCase.ExecuteAsync(userId: 1, id: 3);
 
             Assert.NotNull(result);
@@ -236,8 +240,8 @@ namespace Spendly.Tests.UseCases
         {
             var repo = new Mock<IExpenseRepository>();
             repo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((Expense?)null);
-
-            var useCase = new GetExpenseByIdUseCase(repo.Object);
+            var tagRepo = new Mock<ITagRepository>();
+            var useCase = new GetExpenseByIdUseCase(repo.Object, tagRepo.Object);
             var result = await useCase.ExecuteAsync(userId: 1, id: 99);
 
             Assert.Null(result);
@@ -257,8 +261,9 @@ namespace Spendly.Tests.UseCases
             var repo = new Mock<IExpenseRepository>();
             repo.Setup(r => r.GetAllAsync(1, null, null, null, null, null, null, 1, 10)).ReturnsAsync(expenses);
             repo.Setup(r => r.CountAsync(1, null, null, null, null, null, null)).ReturnsAsync(15);
-
-            var useCase = new ListExpensesUseCase(repo.Object);
+            var tagRepo = new Mock<ITagRepository>();
+            tagRepo.Setup(r => r.GetTagsForExpensesAsync(It.IsAny<List<int>>())).ReturnsAsync(new Dictionary<int, List<Tag>>());
+            var useCase = new ListExpensesUseCase(repo.Object, tagRepo.Object);
             var result = await useCase.ExecuteAsync(userId: 1, category: null, search: null, dateFrom: null, dateTo: null, minAmount: null, maxAmount: null, page: 1, pageSize: 10);
 
             Assert.Equal(15, result.TotalCount);
