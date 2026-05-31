@@ -1075,3 +1075,23 @@ hr            { border-color: var(--clr-border); opacity: 1; }
   color: var(--clr-trend-down-text);
   border: 1px solid var(--clr-trend-down-border);
 }
+
+/* ── 30. NOTIFICATION DROPDOWN ITEMS ───────────────────────── */
+.notif-dropdown-item {
+  border-bottom: 1px solid var(--clr-border) !important;
+  background-color: transparent;
+  color: var(--clr-text) !important;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.notif-dropdown-item.is-unread {
+  background-color: var(--clr-surface-3) !important;
+}
+.notif-dropdown-item:hover {
+  background-color: var(--clr-border) !important;
+}
+.notif-dropdown-item .text-body {
+  color: var(--clr-text) !important;
+}
+.notif-dropdown-item .text-muted {
+  color: var(--clr-text-muted) !important;
+}
