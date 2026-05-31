@@ -60,7 +60,7 @@
                                     @foreach (var income in Model.Items)
                                     {
                                         <tr>
-                                            <td class="ps-4 fw-medium text-body">
+                                            <td class="ps-4 fw-medium" style="color: var(--clr-text) !important;">
                                                 <i class="bi bi-bank me-1 text-success opacity-50"></i>@income.Source
                                             </td>
                                             <td class="text-success fw-bold">+$@income.Amount.ToString("N2")</td>
@@ -81,19 +81,21 @@
                                                 }
                                             </td>
                                             <td class="text-center pe-4">
-                                                <a asp-action="Edit" asp-route-id="@income.Id"
-                                                   class="btn btn-sm btn-light text-primary me-1" title="@L["Common_Edit"]">
-                                                    <i class="bi bi-pencil"></i>
-                                                </a>
-                                                <form asp-action="Delete" asp-route-id="@income.Id"
-                                                      method="post" class="d-inline">
-                                                    @Html.AntiForgeryToken()
-                                                    <button type="submit" class="btn btn-sm btn-light text-danger"
-                                                            title="@L["Common_Delete"]"
-                                                            onclick="return confirm('@L["Inc_DeleteConfirm"].Value');">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </form>
+                                                <div class="d-inline-flex align-items-center gap-1">
+                                                    <a asp-action="Edit" asp-route-id="@income.Id"
+                                                       class="action-btn action-btn-edit" title="@L["Common_Edit"]">
+                                                        <i class="bi bi-pencil-fill"></i>
+                                                    </a>
+                                                    <form asp-action="Delete" asp-route-id="@income.Id"
+                                                          method="post" class="d-inline">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="action-btn action-btn-delete"
+                                                                title="@L["Common_Delete"]"
+                                                                onclick="return confirm('@L["Inc_DeleteConfirm"].Value');">
+                                                            <i class="bi bi-trash-fill"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                     }
