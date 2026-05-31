@@ -1096,3 +1096,32 @@ hr            { border-color: var(--clr-border); opacity: 1; }
 .notif-dropdown-item .text-muted {
   color: var(--clr-text-muted) !important;
 }
+
+/* ── 31. ACTION BUTTONS ────────────────────────────────────── */
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--dur-fast) var(--ease-out);
+  border: none;
+  text-decoration: none;
+}
+.action-btn-edit {
+  background: var(--clr-primary-semi) !important;
+  color: var(--clr-primary) !important;
+}
+.action-btn-edit:hover {
+  background: var(--clr-primary) !important;
+  color: #fff !important;
+}
+.action-btn-delete {
+  background: rgba(220, 38, 38, 0.1) !important;
+  color: #dc2626 !important;
+}
+.action-btn-delete:hover {
+  background: #dc2626 !important;
+  color: #fff !important;
+}
