@@ -1,4 +1,5 @@
 using Spendly.Web.Services;
+using Spendly.Web.Helpers;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.DataProtection;
@@ -129,6 +130,8 @@ if (!builder.Environment.IsDevelopment())
 
 var app = builder.Build();
 
+app.UseMiddleware<WarmupMiddleware>();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -152,6 +155,8 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 
 app.UseSession();
 app.UseAuthorization();
+
+app.MapGet("/ping", () => Results.Ok(new { status = "alive", timestamp = DateTime.UtcNow }));
 
 app.MapControllerRoute(
     name: "default",
