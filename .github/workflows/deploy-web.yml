@@ -36,3 +36,7 @@ jobs:
           app-name: 'spendly-web'
           publish-profile: ${{ secrets.AZURE_WEB_PUBLISH_PROFILE }}
           package: ./publish/web
+
+      - name: Warm up Web App
+        run: |
+          Invoke-RestMethod -Uri "https://spendly-web-cncja8b2edephcd6.westus2-01.azurewebsites.net/ping" -Method Get

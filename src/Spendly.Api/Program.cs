@@ -315,6 +315,7 @@ builder.Services.AddScoped<ToggleRecurringExpenseUseCase>();
 builder.Services.AddScoped<GetRecurringExpenseSummaryUseCase>();
 builder.Services.AddScoped<GetRecurringExpenseByIdUseCase>();
 builder.Services.AddHostedService<RecurringExpenseBackgroundService>();
+builder.Services.AddHostedService<DatabaseMigrationService>();
 
 // ────────────────────────────────────────────────────────────
 // Use Cases — Insights
@@ -352,31 +353,7 @@ builder.Services.AddScoped<ImportCsvUseCase>();
 // ════════════════════════════════════════════════════════════
 var app = builder.Build();
 
-// ────────────────────────────────────────────────────────────
-// Auto-apply pending migrations in Production (non-blocking)
-// ────────────────────────────────────────────────────────────
-if (!isDevelopment)
-{
-    _ = Task.Run(async () =>
-    {
-        try
-        {
-            using var scope = app.Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<SpendlyDbContext>();
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<SpendlyDbContext>>();
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-            logger.LogInformation("Starting database migration...");
-            await db.Database.MigrateAsync();
-            sw.Stop();
-            logger.LogInformation("Database migration completed in {Elapsed}ms", sw.ElapsedMilliseconds);
-        }
-        catch (Exception ex)
-        {
-            var logger = app.Services.GetRequiredService<ILogger<SpendlyDbContext>>();
-            logger.LogError(ex, "Failed to apply database migrations on startup.");
-        }
-    });
-}
+// Database migrations and startup fixes are handled asynchronously in the background by DatabaseMigrationService.
 
 if (isDevelopment)
 {
