@@ -40,6 +40,23 @@ jobs:
           publish-profile: ${{ secrets.AZURE_API_PUBLISH_PROFILE }}
           package: ./publish/api
 
-      - name: Warm up API App
+      - name: Post-deploy warmup ping
         run: |
-          Invoke-RestMethod -Uri "https://spendly-api-dsfseqatcnh0etb8.westus2-01.azurewebsites.net/api/ping" -Method Get
+          echo "Waiting 15 seconds for Azure to start the app..."
+          Start-Sleep -Seconds 15
+          $maxAttempts = 5
+          $attempt = 0
+          $success = $false
+          while ($attempt -lt $maxAttempts -and -not $success) {
+            $attempt++
+            try {
+              Write-Host "Warmup ping attempt $attempt/$maxAttempts..."
+              $response = Invoke-WebRequest -Uri "https://spendly-api-dsfseqatcnh0etb8.westus2-01.azurewebsites.net/api/ping" -TimeoutSec 60 -UseBasicParsing
+              Write-Host "Warmup ping succeeded with status $($response.StatusCode)"
+              $success = $true
+            } catch {
+              Write-Host "Warmup ping attempt $attempt failed: $_"
+              if ($attempt -lt $maxAttempts) { Start-Sleep -Seconds 10 }
+            }
+          }
+          if (-not $success) { Write-Host "WARNING: Warmup ping failed after $maxAttempts attempts" }
