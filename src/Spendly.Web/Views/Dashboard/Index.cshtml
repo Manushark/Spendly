@@ -290,7 +290,7 @@
                                             <h6 class="mb-2 fw-semibold">@exp.Description</h6>
                                             <div class="d-flex align-items-center gap-2 flex-wrap">
                                                 <span class="badge-category bg-secondary bg-opacity-10 text-dark" style="font-size:0.75rem;">
-                                                    <i class="bi bi-tag-fill me-1"></i>@exp.Category
+                                                    <i class="bi bi-tag-fill me-1"></i>@CategoryTranslator.Translate(exp.Category, L)
                                                 </span>
                                                 <small class="text-muted" style="font-size:0.75rem;">
                                                     <i class="bi bi-calendar3 me-1"></i>@exp.Date.ToString("dd MMM")
@@ -336,7 +336,7 @@
                                     <tr>
                                         <td class="ps-4">
                                             <span class="badge-category bg-secondary bg-opacity-10 text-dark">
-                                                <i class="bi bi-tag-fill me-1"></i>@cat.Category
+                                                <i class="bi bi-tag-fill me-1"></i>@CategoryTranslator.Translate(cat.Category, L)
                                             </span>
                                         </td>
                                         <td class="text-end fw-bold">@cat.Total.ToString("N2")</td>

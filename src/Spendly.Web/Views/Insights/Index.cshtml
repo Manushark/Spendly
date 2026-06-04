@@ -134,7 +134,7 @@
                                     @foreach (var cat in Model.CategoryBreakdown)
                                     {
                                         <tr>
-                                            <td class="fw-semibold">@cat.Category</td>
+                                            <td class="fw-semibold">@CategoryTranslator.Translate(cat.Category, L)</td>
                                             <td class="text-end">$@cat.Amount.ToString("N2")</td>
                                             <td class="text-end">
                                                 <div class="d-flex align-items-center justify-content-end gap-2">
