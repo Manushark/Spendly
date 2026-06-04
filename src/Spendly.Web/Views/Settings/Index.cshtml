@@ -158,7 +158,7 @@
                                             <i class="bi @cat.Icon"></i>
                                         </div>
                                         <div class="flex-grow-1 overflow-hidden" style="min-width: 0;">
-                                            <div class="fw-semibold text-truncate" style="font-size: 0.875rem;">@cat.Name</div>
+                                            <div class="fw-semibold text-truncate" style="font-size: 0.875rem;">@CategoryTranslator.Translate(cat.Name, L)</div>
                                             @if (cat.IsDefault)
                                             {
                                                 <small class="text-muted" style="font-size: 0.65rem;">@L["Cat_Default"]</small>

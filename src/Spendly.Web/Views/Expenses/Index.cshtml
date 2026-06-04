@@ -77,7 +77,7 @@
                                     @foreach (var cat in categories)
                                     {
                                         <option value="@cat.Name" selected="@(currentCategory == cat.Name)">
-                                            @cat.Name
+                                            @CategoryTranslator.Translate(cat.Name, L)
                                         </option>
                                     }
                                 </select>
@@ -150,7 +150,7 @@
                     @if (!string.IsNullOrEmpty(currentCategory))
                     {
                         <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill">
-                            <i class="bi bi-tag me-1"></i> @currentCategory
+                            <i class="bi bi-tag me-1"></i> @CategoryTranslator.Translate(currentCategory, L)
                         </span>
                     }
                     @if (dateFrom.HasValue || dateTo.HasValue)
@@ -206,13 +206,13 @@
                                                 @if (matchedCat != null)
                                                 {
                                                     <span class="badge px-2 py-1" style="background: @(matchedCat.Color)20; color: @matchedCat.Color; border: 1px solid @(matchedCat.Color)40;">
-                                                        <i class="bi @matchedCat.Icon me-1"></i>@e.Category
+                                                        <i class="bi @matchedCat.Icon me-1"></i>@CategoryTranslator.Translate(e.Category, L)
                                                     </span>
                                                 }
                                                 else
                                                 {
                                                     <span class="badge bg-secondary bg-opacity-10 text-dark px-2 py-1">
-                                                        <i class="bi bi-tag-fill me-1 opacity-50"></i>@e.Category
+                                                        <i class="bi bi-tag-fill me-1 opacity-50"></i>@CategoryTranslator.Translate(e.Category, L)
                                                     </span>
                                                 }
                                             </td>
@@ -356,7 +356,7 @@
                                     <option value="" disabled selected>Select a category</option>
                                     @foreach (var cat in categories)
                                     {
-                                        <option value="@cat.Name">@cat.Name</option>
+                                        <option value="@cat.Name">@CategoryTranslator.Translate(cat.Name, L)</option>
                                     }
                                 </select>
                             }

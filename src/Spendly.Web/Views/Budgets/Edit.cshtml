@@ -38,7 +38,7 @@
                                     <option value="" disabled>@L["Exp_SelectCategory"]</option>
                                     @foreach (var cat in categories)
                                     {
-                                        <option value="@cat.Name" selected="@(Model.Category == cat.Name)">@cat.Name</option>
+                                        <option value="@cat.Name" selected="@(Model.Category == cat.Name)">@CategoryTranslator.Translate(cat.Name, L)</option>
                                     }
                                 </select>
                             }

@@ -152,7 +152,7 @@
                                         <div class="flex-grow-1">
                                             <h5 class="mb-1 fw-semibold">@recurring.Description</h5>
                                             <div class="d-flex gap-2 align-items-center flex-wrap mt-2">
-                                                <span class="badge bg-secondary">@recurring.Category</span>
+                                                <span class="badge bg-secondary">@CategoryTranslator.Translate(recurring.Category, L)</span>
                                                 <span class="badge bg-info frequency-badge">
                                                     <i class="bi bi-@frequencyIcon me-1"></i>@L["Freq_" + recurring.Frequency]
                                                 </span>

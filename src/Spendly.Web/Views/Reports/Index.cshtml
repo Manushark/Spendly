@@ -9,7 +9,7 @@
     var expData   = string.Join(",", trend.Select(t => t.Expenses.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
     var incData   = string.Join(",", trend.Select(t => t.Incomes.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
 
-    var catLabels = string.Join(",", Model.CategoryBreakdown.Select(c => $"\"{c.Category}\""));
+    var catLabels = string.Join(",", Model.CategoryBreakdown.Select(c => $"\"{CategoryTranslator.Translate(c.Category, L)}\""));
     var catData   = string.Join(",", Model.CategoryBreakdown.Select(c => c.Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
 
     bool isProfit = Model.NetBalance >= 0;
@@ -350,8 +350,8 @@
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
                             <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_TopCategory"]</p>
-                            <h3 class="mb-0 fw-bold text-truncate" style="max-width: 150px;" title="@Model.TopCategory">
-                                @Model.TopCategory
+                            <h3 class="mb-0 fw-bold text-truncate" style="max-width: 150px;" title="@CategoryTranslator.Translate(Model.TopCategory, L)">
+                                @CategoryTranslator.Translate(Model.TopCategory, L)
                             </h3>
                         </div>
                         <div class="stat-icon bg-warning bg-opacity-10">
@@ -522,7 +522,7 @@
                                     title="Click to see transactions">
                                     <td class="ps-4">
                                         <span class="badge-category bg-secondary bg-opacity-10 text-dark">
-                                            <i class="bi bi-tag-fill me-1"></i>@cat.Category
+                                            <i class="bi bi-tag-fill me-1"></i>@CategoryTranslator.Translate(cat.Category, L)
                                         </span>
                                     </td>
                                     <td class="text-end fw-bold">@cat.Amount.ToString("N2")</td>

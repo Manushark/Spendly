@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -1541,5 +1541,30 @@
   </data>
   <data name="Ins_WeekendSpender">
     <value>El {0}% de tus gastos ocurre los fines de semana. ¡Cuidado con los gastos del fin de semana!</value>
+  </data>
+  <!-- ═══════ Nombres de Categorías Predeterminadas ═══════ -->
+  <data name="DefCat_FoodDining">
+    <value>Comida y Restaurantes</value>
+  </data>
+  <data name="DefCat_Transportation">
+    <value>Transporte</value>
+  </data>
+  <data name="DefCat_Entertainment">
+    <value>Entretenimiento</value>
+  </data>
+  <data name="DefCat_Shopping">
+    <value>Compras</value>
+  </data>
+  <data name="DefCat_Health">
+    <value>Salud</value>
+  </data>
+  <data name="DefCat_Education">
+    <value>Educación</value>
+  </data>
+  <data name="DefCat_BillsUtilities">
+    <value>Servicios y Facturas</value>
+  </data>
+  <data name="DefCat_Other">
+    <value>Otros</value>
   </data>
 </root>
