@@ -206,7 +206,7 @@
 
         // Data from server (camelCase)
         const dailyData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DailySpending, jsonOptions));
-        const catData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategoryBreakdown, jsonOptions));
+        const catData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategoryBreakdown.Select(c => new { Category = CategoryTranslator.Translate(c.Category, L), Amount = c.Amount }), jsonOptions));
         const weekData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.WeekdayAnalysis, jsonOptions));
         const dailyAvg = @Model.DailyAverage.ToString(System.Globalization.CultureInfo.InvariantCulture);
 

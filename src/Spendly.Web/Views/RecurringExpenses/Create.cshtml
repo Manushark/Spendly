@@ -67,7 +67,7 @@
                                         <option value="" disabled selected>@L["Exp_SelectCategory"]</option>
                                         @foreach (var cat in categories)
                                         {
-                                            <option value="@cat.Name">@cat.Name</option>
+                                            <option value="@cat.Name">@CategoryTranslator.Translate(cat.Name, L)</option>
                                         }
                                     </select>
                                 }

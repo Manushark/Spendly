@@ -91,7 +91,7 @@
                                     <td>@row.Date.ToString("yyyy-MM-dd")</td>
                                     <td>@(row.Description.Length > 40 ? row.Description[..40] + "..." : row.Description)</td>
                                     <td>
-                                        <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill">@row.Category</span>
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill">@CategoryTranslator.Translate(row.Category, L)</span>
                                         @if (!string.IsNullOrEmpty(row.CategoryWarning))
                                         {
                                             <i class="bi bi-exclamation-triangle text-warning ms-1" 

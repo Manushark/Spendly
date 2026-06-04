@@ -9,7 +9,7 @@
     var expData   = string.Join(",", trend.Select(t => t.Expenses.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
     var incData   = string.Join(",", trend.Select(t => t.Incomes.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
 
-    var catLabels = string.Join(",", Model.CategoryBreakdown.Select(c => $"\"{c.Category}\""));
+    var catLabels = string.Join(",", Model.CategoryBreakdown.Select(c => $"\"{CategoryTranslator.Translate(c.Category, L)}\""));
     var catData   = string.Join(",", Model.CategoryBreakdown.Select(c => c.Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)));
 
     bool isProfit = Model.NetBalance >= 0;

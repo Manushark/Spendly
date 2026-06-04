@@ -37,7 +37,7 @@
                                     <i class="bi @cat.Icon" style="color:@cat.Color; font-size:1.2rem;"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-0 fw-bold">@cat.Name</h6>
+                                    <h6 class="mb-0 fw-bold">@CategoryTranslator.Translate(cat.Name, L)</h6>
                                     @if (cat.IsDefault)
                                     {
                                         <small class="text-muted"><i class="bi bi-lock me-1"></i>@L["Common_Default"]</small>
