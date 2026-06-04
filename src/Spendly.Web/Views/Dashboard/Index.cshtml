@@ -390,7 +390,7 @@
         {
             <text>
                 const trendData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DailyTrend));
-                const categoryData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategoryBreakdown));
+                const categoryData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategoryBreakdown.Select(c => new { Category = CategoryTranslator.Translate(c.Category, L), Total = c.Total })));
 
                 // Enhanced color palette
                 const colors = [
