@@ -6,359 +6,348 @@
 }
 
 <style>
-    .stat-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        border: none;
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    }
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
-    }
-    .stat-icon {
-        width: 60px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-        font-size: 24px;
-    }
-    .chart-card {
-        border: none;
+    /* ── KPI CARDS ──────────────────────────────────────────── */
+    .kpi-card {
         border-radius: 16px;
+        border: 1px solid var(--clr-border);
+        background: var(--clr-surface);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+        overflow: hidden;
+        position: relative;
+    }
+    .kpi-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+    /* Coloured top border accent */
+    .kpi-card .kpi-accent {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        border-radius: 16px 16px 0 0;
+    }
+    .kpi-accent-green  { background: linear-gradient(90deg, #10b981, #34d399); }
+    .kpi-accent-red    { background: linear-gradient(90deg, #ef4444, #f87171); }
+    .kpi-accent-blue   { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .kpi-accent-violet { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+
+    .kpi-icon {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+    .kpi-icon-green  { background: rgba(16,185,129,.14); color: #10b981; }
+    .kpi-icon-red    { background: rgba(239,68,68,.14);  color: #ef4444; }
+    .kpi-icon-blue   { background: rgba(59,130,246,.14); color: #3b82f6; }
+    .kpi-icon-violet { background: rgba(139,92,246,.14); color: #8b5cf6; }
+
+    /* ── GLASS PANEL (chart/table cards) ────────────────────── */
+    .glass-card {
+        border-radius: 16px;
+        border: 1px solid var(--clr-border);
+        background: var(--clr-surface);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
         overflow: hidden;
     }
-    .progress-bar {
-        transition: width 0.6s ease;
+    .glass-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
     }
-    .empty-state {
-        padding: 60px 20px;
-        text-align: center;
+
+    /* ── PROGRESS TRACK ─────────────────────────────────────── */
+    .progress-track-premium {
+        height: 6px;
+        background: var(--clr-surface-3);
+        border-radius: 10px; overflow: hidden;
     }
-    .empty-state-icon {
-        font-size: 80px;
-        opacity: 0.3;
-        margin-bottom: 20px;
+    .progress-bar-premium {
+        height: 100%; border-radius: 10px;
+        transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .badge-category {
-        padding: 6px 12px;
-        font-weight: 500;
+
+    /* ── CATEGORY ROW HOVER ─────────────────────────────────── */
+    .category-row-premium {
+        transition: background 0.15s ease, transform 0.15s ease;
+        border-radius: 10px;
+    }
+    .category-row-premium:hover {
+        background: var(--clr-surface-3) !important;
+        transform: translateX(4px);
+    }
+
+    /* ── LAST-30-DAYS BADGE ─────────────────────────────────── */
+    .badge-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 2px 10px;
         border-radius: 20px;
+        background: var(--clr-secondary);
+        color: #fff;
+        letter-spacing: 0.3px;
+        opacity: 0.85;
     }
-    .list-expense-item {
-        border-left: 4px solid transparent;
-        transition: all 0.2s ease;
+
+    /* ── EMPTY STATE ────────────────────────────────────────── */
+    .empty-state { padding: 80px 20px; text-align: center; }
+
+    /* ── DARK-MODE OVERRIDES FOR TABLE ─────────────────────── */
+    /* Ensure count badge always has readable text */
+    .count-badge {
+        background: var(--clr-surface-3) !important;
+        color: var(--clr-text) !important;
+        border: 1px solid var(--clr-border);
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        padding: 3px 10px;
+        border-radius: 20px;
+        display: inline-block;
     }
-    .list-expense-item:hover {
-        border-left-color: #0d6efd;
-        background-color: #f8f9fa;
-        transform: translateX(5px);
+    /* Amount text in table always vivid */
+    .amount-cell {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        color: var(--clr-text) !important;
     }
 </style>
 
 <div class="container-fluid py-4">
-    @* Header *@
+
+    @* ─── Header ─────────────────────────────────────────────── *@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1">
-                <i class="bi bi-speedometer2 text-primary"></i> 
-                @L["Dash_Title"]
+            <h2 class="mb-1" style="font-family:'Calistoga',serif;letter-spacing:-0.5px;">
+                <i class="bi bi-speedometer2 text-primary me-2"></i>@L["Dash_Title"]
             </h2>
             <small class="text-muted">
-                <i class="bi bi-calendar3"></i> @DateTime.Now.ToString("MMMM yyyy")
+                <i class="bi bi-calendar3 me-1"></i>@DateTime.Now.ToString("MMMM yyyy")
             </small>
         </div>
         @if (hasData)
         {
-                <a asp-controller="Expenses" asp-action="Index" class="btn btn-outline-primary">
-                    <i class="bi bi-plus-circle"></i> @L["Dash_AddExpense"]
-                </a>
+            <a asp-controller="Expenses" asp-action="Index" class="btn btn-primary rounded-pill px-4 fw-semibold">
+                <i class="bi bi-plus-circle me-2"></i>@L["Dash_AddExpense"]
+            </a>
         }
     </div>
 
     @if (!hasData)
     {
-        @* Empty State *@
-            <div class="row">
-                <div class="col-12">
-                    <div class="card shadow-sm border-0 chart-card">
-                        <div class="card-body empty-state">
-                            <div class="empty-state-icon">
-                                <i class="bi bi-inbox"></i>
-                            </div>
-                            <h3 class="mb-3">@L["Dash_NoExpensesMonth"]</h3>
-                            <p class="text-muted mb-4">@L["Dash_StartTracking"]</p>
-                            <a asp-controller="Expenses" asp-action="Index" class="btn btn-primary btn-lg">
-                                <i class="bi bi-plus-circle me-2"></i>@L["Dash_AddFirstExpense"]
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    }
-    else
-    {
-        @* Stats Cards *@
-            <div class="row g-4 mb-4">
-                <div class="col-md-6 col-lg-3">
-                    <div class="card stat-card shadow-sm h-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_TotalThisMonth"]</p>
-                                    <h3 class="mb-0 fw-bold">@Model.CurrentMonthTotal.ToString("N2")</h3>
-                                </div>
-                                <div class="stat-icon bg-primary bg-opacity-10">
-                                    <i class="bi bi-wallet2 text-primary"></i>
-                                </div>
-                            </div>
-                        @if (Model.PreviousMonthTotal > 0)
-                        {
-                                    <div class="d-flex align-items-center">
-                                        <span class="badge @(Model.IsIncreaseFromLastMonth ? "bg-danger" : "bg-success") bg-opacity-10 @(Model.IsIncreaseFromLastMonth ? "text-danger" : "text-success") me-2">
-                                            <i class="bi bi-@(Model.IsIncreaseFromLastMonth ? "arrow-up" : "arrow-down") me-1"></i>
-                                    @Math.Abs(Model.MonthComparisonPercentage).ToString("N1")%
-                                        </span>
-                                        <small class="text-muted">@L["Dash_VsLastMonth"]</small>
-                                    </div>
-                        }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-3">
-                    <div class="card stat-card shadow-sm h-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_DailyAverage"]</p>
-                                    <h3 class="mb-0 fw-bold">@Model.DailyAverage.ToString("N2")</h3>
-                                </div>
-                                <div class="stat-icon bg-success bg-opacity-10">
-                                    <i class="bi bi-calendar-day text-success"></i>
-                                </div>
-                            </div>
-                            <small class="text-muted">
-                                <i class="bi bi-info-circle me-1"></i>@L["Dash_BasedOnDays"] @DateTime.Now.Day @L["Dash_Days"]
-                            </small>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-3">
-                    <div class="card stat-card shadow-sm h-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_HighestExpense"]</p>
-                                    <h3 class="mb-0 fw-bold">@Model.HighestExpense.ToString("N2")</h3>
-                                </div>
-                                <div class="stat-icon bg-warning bg-opacity-10">
-                                    <i class="bi bi-graph-up-arrow text-warning"></i>
-                                </div>
-                            </div>
-                            <small class="text-muted">
-                                <i class="bi bi-lightning-charge me-1"></i>@L["Dash_SingleTransaction"]
-                            </small>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-3">
-                    <div class="card stat-card shadow-sm h-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_TopCategory"]</p>
-                                    <h3 class="mb-0 fw-bold text-truncate" title="@Model.TopCategory" style="max-width: 120px;">
-                                    @Model.TopCategory
-                                    </h3>
-                                </div>
-                                <div class="stat-icon bg-info bg-opacity-10">
-                                    <i class="bi bi-tag text-info"></i>
-                                </div>
-                            </div>
-                            <small class="text-muted">
-                                <i class="bi bi-receipt me-1"></i>@Model.TotalExpensesCount @L["Dash_Transactions"]
-                            </small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        @* Income, Balance & Savings Rate Cards *@
-        <div class="row g-4 mb-4">
-            <div class="col-md-4">
-                <div class="card stat-card shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div>
-                                <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_MonthlyIncome"]</p>
-                                <h3 class="mb-0 fw-bold text-success">@Model.CurrentMonthIncome.ToString("N2")</h3>
-                            </div>
-                            <div class="stat-icon bg-success bg-opacity-10">
-                                <i class="bi bi-cash-stack text-success"></i>
-                            </div>
-                        </div>
-                        <small class="text-muted">
-                            <i class="bi bi-info-circle me-1"></i>@L["Dash_TotalEarnings"]
-                        </small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card stat-card shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div>
-                                <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_Balance"]</p>
-                                <h3 class="mb-0 fw-bold @(Model.MonthlyBalance >= 0 ? "text-success" : "text-danger")">
-                                    @(Model.MonthlyBalance >= 0 ? "+" : "")@Model.MonthlyBalance.ToString("N2")
-                                </h3>
-                            </div>
-                            <div class="stat-icon @(Model.MonthlyBalance >= 0 ? "bg-success" : "bg-danger") bg-opacity-10">
-                                <i class="bi bi-wallet-fill @(Model.MonthlyBalance >= 0 ? "text-success" : "text-danger")"></i>
-                            </div>
-                        </div>
-                        <small class="text-muted">
-                            <i class="bi bi-calculator me-1"></i>@L["Dash_IncomeMinusExpenses"]
-                        </small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card stat-card shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div>
-                                <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_SavingsRate"]</p>
-                                <h3 class="mb-0 fw-bold @(Model.SavingsRate >= 0 ? "text-primary" : "text-danger")">
-                                    @Model.SavingsRate.ToString("N1")%
-                                </h3>
-                            </div>
-                            <div class="stat-icon bg-primary bg-opacity-10">
-                                <i class="bi bi-piggy-bank text-primary"></i>
-                            </div>
-                        </div>
-                        <div class="progress mt-1" style="height: 6px; border-radius: 6px;">
-                            <div class="progress-bar @(Model.SavingsRate >= 20 ? "bg-success" : Model.SavingsRate >= 0 ? "bg-warning" : "bg-danger")"
-                                 role="progressbar"
-                                 style="width: @(Math.Max(0, Math.Min(100, Model.SavingsRate)).ToString(System.Globalization.CultureInfo.InvariantCulture))%"></div>
-                        </div>
-                    </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="kpi-card p-5 text-center">
+                    <i class="bi bi-wallet2 text-primary" style="font-size:5rem;opacity:.4;"></i>
+                    <h3 class="mt-3" style="font-family:'Calistoga',serif;">@L["Dash_NoExpensesMonth"]</h3>
+                    <p class="text-muted mb-4">@L["Dash_StartTracking"]</p>
+                    <a asp-controller="Expenses" asp-action="Index" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
+                        <i class="bi bi-plus-circle me-2"></i>@L["Dash_AddFirstExpense"]
+                    </a>
                 </div>
             </div>
         </div>
+    }
+    else
+    {
+        @* ─── KPI Cards ──────────────────────────────────────────── *@
+        <div class="row g-3 mb-4">
 
-        @* Row 2: Trend & Top 5 *@
-        <div class="row g-4 mb-4">
-            <div class="col-lg-8">
-                <div class="card chart-card shadow-sm h-100">
-                    <div class="card-header bg-white border-0 pt-4 pb-3">
-                        <h5 class="mb-0 fw-semibold">
-                            <i class="bi bi-graph-up text-primary me-2"></i>@L["Dash_SpendingTrend"]
-                            <span class="badge bg-light text-muted ms-2">@L["Dash_Last30Days"]</span>
-                        </h5>
+            @* Card: Income *@
+            <div class="col-sm-6 col-xl-3">
+                <div class="kpi-card h-100 p-4">
+                    <div class="kpi-accent kpi-accent-green"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
+                        <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Dash_MonthlyIncome"]</span>
+                        <div class="kpi-icon kpi-icon-green"><i class="bi bi-cash-stack"></i></div>
                     </div>
-                    <div class="card-body pt-2">
-                        <div style="position: relative; height: 250px; width: 100%;">
-                            <canvas id="trendChart"></canvas>
+                    <h2 class="fw-bold font-mono mb-1" style="color:#10b981;font-size:1.8rem;">
+                        $@Model.CurrentMonthIncome.ToString("N2")
+                    </h2>
+                    <small class="text-muted">@L["Dash_TotalEarnings"]</small>
+                </div>
+            </div>
+
+            @* Card: Expenses *@
+            <div class="col-sm-6 col-xl-3">
+                <div class="kpi-card h-100 p-4">
+                    <div class="kpi-accent kpi-accent-red"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
+                        <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Dash_TotalThisMonth"]</span>
+                        <div class="kpi-icon kpi-icon-red"><i class="bi bi-wallet2"></i></div>
+                    </div>
+                    <h2 class="fw-bold font-mono mb-1" style="color:#ef4444;font-size:1.8rem;">
+                        $@Model.CurrentMonthTotal.ToString("N2")
+                    </h2>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        @if (Model.PreviousMonthTotal > 0)
+                        {
+                            <span class="trend-indicator @(Model.IsIncreaseFromLastMonth ? "trend-up" : "trend-down")">
+                                <i class="bi bi-arrow-@(Model.IsIncreaseFromLastMonth ? "up" : "down") me-1"></i>
+                                @Math.Abs(Model.MonthComparisonPercentage).ToString("N1")%
+                            </span>
+                            <small class="text-muted">@L["Dash_VsLastMonth"]</small>
+                        }
+                        else
+                        {
+                            <small class="text-muted">@L["Dash_TotalEarnings"]</small>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @* Card: Balance *@
+            <div class="col-sm-6 col-xl-3">
+                <div class="kpi-card h-100 p-4">
+                    <div class="kpi-accent @(Model.MonthlyBalance >= 0 ? "kpi-accent-blue" : "kpi-accent-red")"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
+                        <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Dash_Balance"]</span>
+                        <div class="kpi-icon @(Model.MonthlyBalance >= 0 ? "kpi-icon-blue" : "kpi-icon-red")">
+                            <i class="bi bi-wallet-fill"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bold font-mono mb-1" style="color:@(Model.MonthlyBalance >= 0 ? "#3b82f6" : "#ef4444");font-size:1.8rem;">
+                        @(Model.MonthlyBalance >= 0 ? "+" : "")$@Math.Abs(Model.MonthlyBalance).ToString("N2")
+                    </h2>
+                    <small class="text-muted">@L["Dash_IncomeMinusExpenses"]</small>
+                </div>
+            </div>
+
+            @* Card: Savings Rate *@
+            <div class="col-sm-6 col-xl-3">
+                <div class="kpi-card h-100 p-4">
+                    <div class="kpi-accent kpi-accent-violet"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
+                        <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Dash_SavingsRate"]</span>
+                        <div class="kpi-icon kpi-icon-violet"><i class="bi bi-piggy-bank"></i></div>
+                    </div>
+                    <h2 class="fw-bold font-mono mb-2" style="color:#8b5cf6;font-size:1.8rem;">
+                        @Model.SavingsRate.ToString("N1")%
+                    </h2>
+                    <div class="progress-track-premium mb-2">
+                        <div class="progress-bar-premium"
+                             style="width:@(Math.Max(0,Math.Min(100,Model.SavingsRate)).ToString(System.Globalization.CultureInfo.InvariantCulture))%;
+                                    background:@(Model.SavingsRate >= 20 ? "linear-gradient(90deg,#10b981,#34d399)" : Model.SavingsRate >= 0 ? "linear-gradient(90deg,#f59e0b,#fbbf24)" : "linear-gradient(90deg,#ef4444,#f87171)");">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted text-truncate" style="max-width:110px;" title="@Model.TopCategory">
+                            <i class="bi bi-tag me-1"></i>@Model.TopCategory
+                        </small>
+                        <small class="text-muted font-mono">@Model.TotalExpensesCount txs</small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        @* ─── Row 2: Trend Chart + Top 5 ─────────────────────────── *@
+        <div class="row g-3 mb-4">
+            <div class="col-lg-8">
+                <div class="glass-card h-100">
+                    <div class="card-header border-0 bg-transparent pt-4 pb-2 px-4 d-flex align-items-center gap-2">
+                        <i class="bi bi-graph-up text-primary"></i>
+                        <h5 class="mb-0 fw-semibold">@L["Dash_SpendingTrend"]</h5>
+                        <span class="badge-label ms-1">@L["Dash_Last30Days"]</span>
+                    </div>
+                    <div class="card-body pt-2 px-3 pb-3">
+                        <div style="position:relative;height:300px;width:100%;">
+                            <canvas id="dailyTrendChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="col-lg-4">
-                <div class="card chart-card shadow-sm h-100">
-                    <div class="card-header bg-white border-0 pt-4 pb-3 d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-semibold">
-                            <i class="bi bi-star-fill text-warning me-2"></i>@L["Dash_Top5Expenses"]
-                        </h5>
+                <div class="glass-card h-100">
+                    <div class="card-header border-0 bg-transparent pt-4 pb-2 px-4 d-flex align-items-center gap-2">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <h5 class="mb-0 fw-semibold">@L["Dash_Top5Expenses"]</h5>
                     </div>
                     <div class="card-body p-0">
-                    @if (Model.TopExpenses.Any())
-                    {
-                        <div class="list-group list-group-flush">
-                            @foreach (var exp in Model.TopExpenses)
-                            {
-                                <div class="list-group-item list-expense-item border-0 py-3 px-4">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div class="flex-grow-1 me-3">
-                                            <h6 class="mb-2 fw-semibold">@exp.Description</h6>
-                                            <div class="d-flex align-items-center gap-2 flex-wrap">
-                                                <span class="badge-category bg-secondary bg-opacity-10 text-dark" style="font-size:0.75rem;">
-                                                    <i class="bi bi-tag-fill me-1"></i>@CategoryTranslator.Translate(exp.Category, L)
-                                                </span>
-                                                <small class="text-muted" style="font-size:0.75rem;">
-                                                    <i class="bi bi-calendar3 me-1"></i>@exp.Date.ToString("dd MMM")
-                                                </small>
+                        @if (Model.TopExpenses.Any())
+                        {
+                            <div class="d-flex flex-column px-3 pb-3 pt-1 gap-2">
+                                @foreach (var exp in Model.TopExpenses)
+                                {
+                                    var icon = GetCategoryIcon(exp.Category);
+                                    var color = GetCategoryColor(exp.Category, 0);
+                                    <div class="d-flex justify-content-between align-items-center px-3 py-2 rounded-3 category-row-premium" style="border:1px solid var(--clr-border);">
+                                        <div class="d-flex align-items-center gap-2 min-w-0">
+                                            <span class="flex-shrink-0" style="width:34px;height:34px;border-radius:9px;background:@(color)22;color:@color;border:1px solid @(color)44;display:inline-flex;align-items:center;justify-content:center;font-size:1rem;" title="@CategoryTranslator.Translate(exp.Category, L)">
+                                                <i class="bi @icon"></i>
+                                            </span>
+                                            <div class="min-w-0">
+                                                <div class="fw-semibold text-truncate" style="font-size:.85rem;max-width:110px;">@exp.Description</div>
+                                                <small class="text-muted" style="font-size:.72rem;">@exp.Date.ToString("MMM dd, yyyy")</small>
                                             </div>
                                         </div>
-                                        <span class="badge bg-danger px-2 py-1" style="border-radius: 8px; font-size:0.8rem;">
-                                            @exp.Amount.ToString("N2")
+                                        <span class="font-mono fw-bold flex-shrink-0 ms-2" style="color:#ef4444;font-size:.88rem;">
+                                            -$@exp.Amount.ToString("N2")
                                         </span>
                                     </div>
-                                </div>
-                            }
-                        </div>
-                    }
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
         </div>
 
-        @* Row 3: Category Breakdown & Pie Chart *@
-        <div class="row g-4">
+        @* ─── Row 3: Category Table + % Breakdown ────────────────── *@
+        <div class="row g-3">
             <div class="col-lg-8">
-                <div class="card chart-card shadow-sm h-100">
-                    <div class="card-header bg-white border-0 pt-4 pb-3">
-                        <h5 class="mb-0 fw-semibold">
-                            <i class="bi bi-list-ul text-primary me-2"></i>@L["Dash_CategoryBreakdown"]
-                        </h5>
+                <div class="glass-card h-100">
+                    <div class="card-header border-0 bg-transparent pt-4 pb-2 px-4 d-flex align-items-center gap-2">
+                        <i class="bi bi-list-ul text-primary"></i>
+                        <h5 class="mb-0 fw-semibold">@L["Dash_CategoryBreakdown"]</h5>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0 align-middle">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th class="border-0 py-3 ps-4">@L["Common_Category"]</th>
-                                        <th class="border-0 py-3 text-end">@L["Common_Amount"]</th>
-                                        <th class="border-0 py-3 text-center">@L["Dash_Count"]</th>
-                                        <th class="border-0 py-3 pe-4" style="width: 200px">@L["Dash_OfTotal"]</th>
+                            <table class="table table-hover mb-0 align-middle" style="background:transparent;">
+                                <thead>
+                                    <tr style="border-bottom:2px solid var(--clr-border);">
+                                        <th class="ps-4 py-3 text-muted fw-semibold" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;">@L["Common_Category"]</th>
+                                        <th class="py-3 text-end text-muted fw-semibold" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;">@L["Common_Amount"]</th>
+                                        <th class="py-3 text-center text-muted fw-semibold" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;">@L["Dash_Count"]</th>
+                                        <th class="py-3 pe-4 text-muted fw-semibold" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;width:220px;">@L["Dash_OfTotal"]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                @foreach (var cat in Model.CategoryBreakdown)
-                                {
-                                    <tr>
-                                        <td class="ps-4">
-                                            <span class="badge-category bg-secondary bg-opacity-10 text-dark">
-                                                <i class="bi bi-tag-fill me-1"></i>@CategoryTranslator.Translate(cat.Category, L)
-                                            </span>
-                                        </td>
-                                        <td class="text-end fw-bold">@cat.Total.ToString("N2")</td>
-                                        <td class="text-center">
-                                            <span class="badge bg-light text-dark">@cat.Count</span>
-                                        </td>
-                                        <td class="pe-4">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <div class="progress flex-grow-1" style="height: 10px; border-radius: 10px;">
-                                                    <div class="progress-bar bg-primary" 
-                                                         role="progressbar"
-                                                         style="width: @cat.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%"
-                                                         aria-valuenow="@cat.Percentage"
-                                                         aria-valuemin="0"
-                                                         aria-valuemax="100"></div>
+                                @{
+                                    int index = 0;
+                                    foreach (var cat in Model.CategoryBreakdown)
+                                    {
+                                        var color = GetCategoryColor(cat.Category, index++);
+                                        var icon  = GetCategoryIcon(cat.Category);
+                                        <tr class="category-row-premium" style="border-bottom:1px solid var(--clr-border);">
+                                            <td class="ps-4 py-3">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="flex-shrink-0" style="width:30px;height:30px;border-radius:8px;background:@(color)22;color:@color;border:1px solid @(color)44;display:inline-flex;align-items:center;justify-content:center;font-size:.9rem;" title="@CategoryTranslator.Translate(cat.Category, L)">
+                                                        <i class="bi @icon"></i>
+                                                    </span>
+                                                    <span class="fw-semibold" style="font-size:.88rem;">@CategoryTranslator.Translate(cat.Category, L)</span>
                                                 </div>
-                                                <span class="text-muted fw-semibold" style="min-width: 45px; font-size: 0.9rem;">
-                                                    @cat.Percentage.ToString("N0")%
-                                                </span>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                            </td>
+                                            <td class="text-end py-3">
+                                                <span class="amount-cell fw-bold" style="font-size:.9rem;">$@cat.Total.ToString("N2")</span>
+                                            </td>
+                                            <td class="text-center py-3">
+                                                <span class="count-badge">@cat.Count</span>
+                                            </td>
+                                            <td class="pe-4 py-3">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="progress-track-premium flex-grow-1" style="height:7px;">
+                                                        <div class="progress-bar-premium"
+                                                             style="width:@cat.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%;background:linear-gradient(90deg,@color,@(color)bb);">
+                                                        </div>
+                                                    </div>
+                                                    <span class="fw-bold font-mono text-muted" style="font-size:.78rem;min-width:34px;">@cat.Percentage.ToString("N0")%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
                                 }
                                 </tbody>
                             </table>
@@ -368,14 +357,47 @@
             </div>
 
             <div class="col-lg-4">
-                <div class="card chart-card shadow-sm h-100">
-                    <div class="card-header bg-white border-0 pt-4 pb-3">
-                        <h5 class="mb-0 fw-semibold">
-                            <i class="bi bi-pie-chart text-primary me-2"></i>@L["Ins_Percentage"]
-                        </h5>
+                <div class="glass-card h-100">
+                    <div class="card-header border-0 bg-transparent pt-4 pb-2 px-4 d-flex align-items-center gap-2">
+                        <i class="bi bi-pie-chart text-primary"></i>
+                        <h5 class="mb-0 fw-semibold">@L["Ins_Percentage"]</h5>
                     </div>
-                    <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 250px;">
-                        <canvas id="categoryChart"></canvas>
+                    <div class="card-body pt-2 px-4">
+                        @if (Model.CategoryBreakdown.Any())
+                        {
+                            <div class="d-flex flex-column gap-3">
+                                @for (int i = 0; i < Math.Min(5, Model.CategoryBreakdown.Count); i++)
+                                {
+                                    var cat   = Model.CategoryBreakdown[i];
+                                    var color = GetCategoryColor(cat.Category, i);
+                                    var icon  = GetCategoryIcon(cat.Category);
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="flex-shrink-0" style="width:22px;height:22px;border-radius:6px;background:@(color)22;color:@color;border:1px solid @(color)44;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;" title="@CategoryTranslator.Translate(cat.Category, L)">
+                                                    <i class="bi @icon"></i>
+                                                </span>
+                                                <span class="fw-semibold" style="font-size:.82rem;">@CategoryTranslator.Translate(cat.Category, L)</span>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="amount-cell fw-bold" style="font-size:.82rem;">$@cat.Total.ToString("N2")</span>
+                                                <span class="text-muted ms-1" style="font-size:.75rem;">(@cat.Percentage.ToString("N0")%)</span>
+                                            </div>
+                                        </div>
+                                        <div class="progress-track-premium">
+                                            <div class="progress-bar-premium" style="width:@cat.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%;background:linear-gradient(90deg,@color,@(color)bb);"></div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-1 d-block mb-2 opacity-40"></i>
+                                @L["Common_NoData"]
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -384,145 +406,132 @@
 </div>
 
 @section Scripts {
-        <script src="~/lib/chart.js/chart.umd.min.js"></script>
-        <script>
-        @if (hasData)
-        {
-            <text>
-                const trendData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DailyTrend));
-                const categoryData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategoryBreakdown.Select(c => new { Category = CategoryTranslator.Translate(c.Category, L), Total = c.Total })));
+    <script src="~/lib/chart.js/chart.umd.min.js"></script>
+    <script>
+    @if (hasData)
+    {
+        <text>
+        const trendData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DailyTrend));
 
-                // Enhanced color palette
-                const colors = [
-                    { bg: 'rgba(13, 110, 253, 0.8)', border: 'rgb(13, 110, 253)' },
-                    { bg: 'rgba(220, 53, 69, 0.8)', border: 'rgb(220, 53, 69)' },
-                    { bg: 'rgba(255, 193, 7, 0.8)', border: 'rgb(255, 193, 7)' },
-                    { bg: 'rgba(25, 135, 84, 0.8)', border: 'rgb(25, 135, 84)' },
-                    { bg: 'rgba(111, 66, 193, 0.8)', border: 'rgb(111, 66, 193)' },
-                    { bg: 'rgba(255, 99, 71, 0.8)', border: 'rgb(255, 99, 71)' },
-                    { bg: 'rgba(32, 201, 151, 0.8)', border: 'rgb(32, 201, 151)' },
-                    { bg: 'rgba(253, 126, 20, 0.8)', border: 'rgb(253, 126, 20)' }
-                ];
-
-                // ─── Trend Chart ──────────────────────────────────────────────
-                const trendCtx = document.getElementById('trendChart').getContext('2d');
-                const gradient = trendCtx.createLinearGradient(0, 0, 0, 300);
-                gradient.addColorStop(0, 'rgba(13, 110, 253, 0.3)');
-                gradient.addColorStop(1, 'rgba(13, 110, 253, 0.01)');
-
-                new Chart(trendCtx, {
-                    type: 'line',
-                    data: {
-                        labels: trendData.map(d => d.Date),      // ← PascalCase
-                        datasets: [{
-                            label: '@L["Dash_DailySpending"].Value',
-                            data: trendData.map(d => d.Amount),  // ← PascalCase
-                            borderColor: 'rgb(13, 110, 253)',
-                            backgroundColor: gradient,
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 3,
-                            pointRadius: 4,
-                            pointHoverRadius: 8,
-                            pointBackgroundColor: 'rgb(13, 110, 253)',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2,
-                            pointHoverBackgroundColor: 'rgb(13, 110, 253)',
-                            pointHoverBorderColor: '#fff',
-                            pointHoverBorderWidth: 3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            intersect: false,
-                            mode: 'index'
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                padding: 12,
-                                cornerRadius: 8,
-                                titleFont: { size: 14, weight: 'bold' },
-                                bodyFont: { size: 13 },
-                                callbacks: {
-                                    label: (ctx) => '@L["Dash_SpentLabel"].Value: ' + ctx.parsed.y.toFixed(2)
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(0, 0, 0, 0.05)',
-                                    drawBorder: false
-                                },
-                                ticks: {
-                                    font: { size: 12 },
-                                    callback: (val) => val
-                                }
-                            },
-                            x: {
-                                grid: { display: false },
-                                ticks: { font: { size: 11 } }
-                            }
-                        }
-                    }
-                });
-
-                // ─── Category Chart ───────────────────────────────────────────
-                const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-                new Chart(categoryCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: categoryData.map(c => c.Category),  // ← PascalCase
-                        datasets: [{
-                            data: categoryData.map(c => c.Total),   // ← PascalCase
-                            backgroundColor: colors.map(c => c.bg),
-                            borderColor: colors.map(c => c.border),
-                            borderWidth: 2,
-                            hoverOffset: 15
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        cutout: '65%',
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 15,
-                                    font: { size: 12, weight: '500' },
-                                    usePointStyle: true,
-                                    pointStyle: 'circle'
-                                }
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                padding: 12,
-                                cornerRadius: 8,
-                                titleFont: { size: 14, weight: 'bold' },
-                                bodyFont: { size: 13 },
-                                callbacks: {
-                                    label: (ctx) => {
-                                        const label = ctx.label || '';
-                                        const value = ctx.parsed.toFixed(2);
-                                        const pct = categoryData[ctx.dataIndex].Percentage.toFixed(1) + '%';  // ← PascalCase
-                                        return `${label}: ${value} (${pct})`;
-                                    }
-                                }
-                            }
-                        },
-                        animation: {
-                            animateRotate: true,
-                            animateScale: true
-                        }
-                    }
-                });
-            </text>
+        function getChartColors() {
+            const dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            return {
+                grid:         dark ? 'rgba(255,255,255,.06)' : 'rgba(15,23,42,.05)',
+                ticks:        dark ? 'rgba(255,255,255,.45)' : 'rgba(15,23,42,.45)',
+                tooltipBg:    dark ? 'rgba(15,23,42,.96)'  : 'rgba(255,255,255,.98)',
+                tooltipBorder:dark ? 'rgba(255,255,255,.1)' : 'rgba(15,23,42,.08)',
+                tooltipTitle: dark ? '#f1f5f9' : '#0f172a',
+                tooltipBody:  dark ? '#94a3b8' : '#475569',
+                pointBorder:  dark ? '#131f35' : '#ffffff'
+            };
         }
-        </script>
+
+        const ctx = document.getElementById('dailyTrendChart').getContext('2d');
+        const grad = ctx.createLinearGradient(0, 0, 0, 300);
+        grad.addColorStop(0, 'rgba(16,185,129,.35)');
+        grad.addColorStop(1, 'rgba(16,185,129,.02)');
+
+        let c = getChartColors();
+
+        const trendChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: trendData.map(d => d.Date),
+                datasets: [{
+                    label: '@L["Dash_SpentLabel"].Value',
+                    data: trendData.map(d => d.Amount),
+                    borderColor: '#10b981',
+                    backgroundColor: grad,
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 4, pointHoverRadius: 8,
+                    pointBackgroundColor: '#10b981',
+                    pointBorderColor: c.pointBorder,
+                    pointBorderWidth: 2,
+                    pointHoverBackgroundColor: '#10b981',
+                    pointHoverBorderColor: c.pointBorder,
+                    pointHoverBorderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                interaction: { intersect: false, mode: 'index' },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: c.tooltipBg,
+                        titleColor: c.tooltipTitle,
+                        bodyColor:  c.tooltipBody,
+                        borderColor: c.tooltipBorder,
+                        borderWidth: 1, padding: 12, cornerRadius: 12,
+                        displayColors: false,
+                        titleFont: { family: 'Inter', size: 13, weight: 'bold' },
+                        bodyFont:  { family: 'JetBrains Mono', size: 12 },
+                        callbacks: {
+                            label: ctx2 => '@L["Dash_SpentLabel"].Value: $' +
+                                ctx2.parsed.y.toLocaleString(undefined, {minimumFractionDigits:2,maximumFractionDigits:2})
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid:  { color: c.grid, drawBorder: false },
+                        ticks: { color: c.ticks, font: { family: 'JetBrains Mono', size: 11 } }
+                    },
+                    x: {
+                        grid:  { display: false },
+                        ticks: { color: c.ticks, font: { family: 'Inter', size: 11 } }
+                    }
+                }
+            }
+        });
+
+        window.addEventListener('themeChanged', () => {
+            c = getChartColors();
+            const s = trendChart.options.scales;
+            s.y.grid.color  = c.grid;
+            s.y.ticks.color = c.ticks;
+            s.x.ticks.color = c.ticks;
+            trendChart.options.plugins.tooltip.backgroundColor = c.tooltipBg;
+            trendChart.options.plugins.tooltip.titleColor      = c.tooltipTitle;
+            trendChart.options.plugins.tooltip.bodyColor       = c.tooltipBody;
+            trendChart.options.plugins.tooltip.borderColor     = c.tooltipBorder;
+            trendChart.data.datasets[0].pointBorderColor      = c.pointBorder;
+            trendChart.data.datasets[0].pointHoverBorderColor = c.pointBorder;
+            trendChart.update();
+        });
+        </text>
+    }
+    </script>
+}
+
+@functions {
+    public string GetCategoryColor(string categoryName, int index)
+    {
+        var colors = new[] { "#3b82f6","#ef4444","#f59e0b","#10b981","#8b5cf6","#ec4899","#14b8a6","#f97316" };
+        var name   = categoryName.ToLowerInvariant();
+        if (name.Contains("food")||name.Contains("comi")||name.Contains("rest")||name.Contains("alim")) return "#ef4444";
+        if (name.Contains("trans")||name.Contains("viaj")||name.Contains("auto")||name.Contains("car"))  return "#3b82f6";
+        if (name.Contains("util")||name.Contains("serv")||name.Contains("luz")||name.Contains("agua"))   return "#f59e0b";
+        if (name.Contains("health")||name.Contains("salu")||name.Contains("med"))                        return "#10b981";
+        if (name.Contains("enter")||name.Contains("diver")||name.Contains("cine")||name.Contains("ocio"))return "#8b5cf6";
+        if (name.Contains("house")||name.Contains("viv")||name.Contains("rent")||name.Contains("alqu"))  return "#ec4899";
+        if (name.Contains("educ")||name.Contains("curs")||name.Contains("estu"))                         return "#6366f1";
+        return colors[index % colors.Length];
+    }
+
+    public string GetCategoryIcon(string categoryName)
+    {
+        var name = categoryName.ToLowerInvariant();
+        if (name.Contains("food")||name.Contains("comi")||name.Contains("rest")||name.Contains("alim")) return "bi-egg-fried";
+        if (name.Contains("trans")||name.Contains("viaj")||name.Contains("auto")||name.Contains("car"))  return "bi-car-front";
+        if (name.Contains("util")||name.Contains("serv")||name.Contains("luz")||name.Contains("agua"))   return "bi-lightning-charge";
+        if (name.Contains("health")||name.Contains("salu")||name.Contains("med"))                        return "bi-heart-pulse";
+        if (name.Contains("enter")||name.Contains("diver")||name.Contains("cine")||name.Contains("ocio"))return "bi-controller";
+        if (name.Contains("house")||name.Contains("viv")||name.Contains("rent")||name.Contains("alqu"))  return "bi-house";
+        if (name.Contains("educ")||name.Contains("curs")||name.Contains("estu"))                         return "bi-book";
+        return "bi-tag";
+    }
 }
