@@ -121,6 +121,9 @@ builder.Services.AddHttpClient<ReportApiClient>(client =>
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 builder.Services.AddSingleton<Spendly.Web.Services.ReportExportService>();
 
+// Timezone-aware datetime provider
+builder.Services.AddSingleton<Spendly.Application.Interfaces.IDateTimeProvider, Spendly.Application.Services.UserDateTimeProvider>();
+
 
 // Keep the API warm in production (prevents Azure F1 cold start)
 if (!builder.Environment.IsDevelopment())

@@ -62,7 +62,10 @@ namespace Spendly.Domain.Entities
             if (source.Length > 100)
                 throw new InvalidDomainException("Source cannot exceed 100 characters.");
 
-            if (date > DateTime.UtcNow.AddDays(1))
+            // Allow a 14-hour buffer over UTC so users in any timezone are never
+            // falsely rejected when submitting "today". The Application layer
+            // enforces the real local-day boundary using the user's timezone.
+            if (date.Date > DateTime.UtcNow.AddHours(14).Date)
                 throw new InvalidDomainException("Date cannot be in the future.");
         }
 

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Spendly.Web.Contracts.Budgets;
 using Spendly.Web.Services;
+using Spendly.Application.Interfaces;
 
 namespace Spendly.Web.Controllers
 {
@@ -9,11 +10,13 @@ namespace Spendly.Web.Controllers
     {
         private readonly BudgetApiClient _api;
         private readonly CategoryApiClient _categoryApi;
+        private readonly IDateTimeProvider _dateTime;
 
-        public BudgetsController(BudgetApiClient api, CategoryApiClient categoryApi)
+        public BudgetsController(BudgetApiClient api, CategoryApiClient categoryApi, IDateTimeProvider dateTime)
         {
             _api = api;
             _categoryApi = categoryApi;
+            _dateTime = dateTime;
         }
 
         // Redirigir al login si no hay token
@@ -31,7 +34,8 @@ namespace Spendly.Web.Controllers
         // GET /Budgets
         public async Task<IActionResult> Index()
         {
-            var now = DateTime.UtcNow;
+            var userTimeZone = HttpContext.Session.GetString("userTimeZone");
+            var now = _dateTime.Now(userTimeZone);
             var summary = await _api.GetSummaryAsync(now.Year, now.Month);
 
             if (summary == null)
@@ -50,7 +54,8 @@ namespace Spendly.Web.Controllers
         // GET /Budgets/Create
         public async Task<IActionResult> Create()
         {
-            var now = DateTime.UtcNow;
+            var userTimeZone = HttpContext.Session.GetString("userTimeZone");
+            var now = _dateTime.Now(userTimeZone);
 
             var model = new CreateBudgetDto
             {

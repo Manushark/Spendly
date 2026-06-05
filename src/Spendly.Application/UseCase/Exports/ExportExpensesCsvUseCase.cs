@@ -7,18 +7,24 @@ namespace Spendly.Application.UseCases.Exports
     public class ExportExpensesCsvUseCase
     {
         private readonly IExpenseRepository _repo;
+        private readonly IDateTimeProvider _dateTime;
 
-        public ExportExpensesCsvUseCase(IExpenseRepository repo) => _repo = repo;
+        public ExportExpensesCsvUseCase(IExpenseRepository repo, IDateTimeProvider dateTime)
+        {
+            _repo = repo;
+            _dateTime = dateTime;
+        }
 
         public async Task<byte[]> ExecuteAsync(
             int userId,
             string? category = null,
             DateTime? dateFrom = null,
-            DateTime? dateTo = null)
+            DateTime? dateTo = null,
+            string? userTimeZone = null)
         {
             // Get all expenses matching filters (no pagination for export)
             var startDate = dateFrom ?? new DateTime(2000, 1, 1);
-            var endDate = dateTo ?? DateTime.UtcNow;
+            var endDate = dateTo ?? _dateTime.Now(userTimeZone);
 
             var expenses = (await _repo.GetByDateRangeAsync(userId, startDate, endDate)).ToList();
 

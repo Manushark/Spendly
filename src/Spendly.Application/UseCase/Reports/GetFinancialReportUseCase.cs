@@ -13,15 +13,18 @@ namespace Spendly.Application.UseCase.Reports
         private readonly IExpenseRepository  _expenseRepo;
         private readonly IIncomeRepository   _incomeRepo;
         private readonly IBudgetRepository   _budgetRepo;
+        private readonly IDateTimeProvider   _dateTime;
 
         public GetFinancialReportUseCase(
             IExpenseRepository  expenseRepo,
             IIncomeRepository   incomeRepo,
-            IBudgetRepository   budgetRepo)
+            IBudgetRepository   budgetRepo,
+            IDateTimeProvider   dateTime)
         {
             _expenseRepo = expenseRepo;
             _incomeRepo  = incomeRepo;
             _budgetRepo  = budgetRepo;
+            _dateTime    = dateTime;
         }
 
         /// <summary>
@@ -35,10 +38,11 @@ namespace Spendly.Application.UseCase.Reports
             int      userId,
             DateTime startDate,
             DateTime endDate,
-            string   periodLabel = "")
+            string   periodLabel = "",
+            string?  userTimeZone = null)
         {
             // Normalizar: nunca ir al futuro
-            var today = DateTime.UtcNow.Date;
+            var today = _dateTime.Today(userTimeZone);
             if (endDate.Date > today) endDate = today;
             startDate = startDate.Date;
 

@@ -23,17 +23,19 @@ namespace Spendly.Application.UseCases.Import
 
         private readonly IExpenseRepository _expenseRepo;
         private readonly ICategoryRepository _categoryRepo;
+        private readonly IDateTimeProvider _dateTime;
 
-        public ImportCsvUseCase(IExpenseRepository expenseRepo, ICategoryRepository categoryRepo)
+        public ImportCsvUseCase(IExpenseRepository expenseRepo, ICategoryRepository categoryRepo, IDateTimeProvider dateTime)
         {
             _expenseRepo = expenseRepo;
             _categoryRepo = categoryRepo;
+            _dateTime = dateTime;
         }
 
         /// <summary>
         /// Preview CSV data before importing — validates rows without persisting.
         /// </summary>
-        public CsvImportPreviewDto Preview(string csvContent, string defaultCurrency = "USD")
+        public CsvImportPreviewDto Preview(string csvContent, string defaultCurrency = "USD", string? userTimeZone = null)
         {
             var result = new CsvImportPreviewDto();
             var lines = csvContent.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
@@ -71,7 +73,7 @@ namespace Spendly.Application.UseCases.Import
                 return result;
             }
 
-            var preferredDateOrder = InferDateOrder(lines.Skip(1), dateIdx);
+            var preferredDateOrder = InferDateOrder(lines.Skip(1), dateIdx, userTimeZone);
 
             // Parse rows
             for (int i = 1; i < lines.Length; i++)
@@ -122,7 +124,7 @@ namespace Spendly.Application.UseCases.Import
                     var dateStr = cols[dateIdx].Trim('"', ' ');
                     if (TryParseExpenseDate(dateStr, preferredDateOrder, out var dt))
                     {
-                        if (dt > DateTime.UtcNow.Date)
+                        if (dt > _dateTime.Today(userTimeZone))
                         {
                             row.IsValid = false;
                             row.ValidationError = $"Future date not allowed: {dateStr} (row {row.RowNumber})";
@@ -188,7 +190,7 @@ namespace Spendly.Application.UseCases.Import
         /// <summary>
         /// Import validated CSV rows into the database.
         /// </summary>
-        public async Task<CsvImportResultDto> ImportAsync(int userId, List<CsvExpenseRow> rows)
+        public async Task<CsvImportResultDto> ImportAsync(int userId, List<CsvExpenseRow> rows, string? userTimeZone = null)
         {
             if (rows.Count > MaxRowsPerImport)
                 throw new InvalidDomainException($"A single import cannot exceed {MaxRowsPerImport} rows.");
@@ -204,7 +206,7 @@ namespace Spendly.Application.UseCases.Import
                         userId,
                         Money.Create(row.Amount, row.Currency),
                         row.Description,
-                        row.Date.Date > DateTime.UtcNow.Date ? DateTime.UtcNow.Date : row.Date.Date,
+                        row.Date.Date > _dateTime.Today(userTimeZone) ? _dateTime.Today(userTimeZone) : row.Date.Date,
                         row.Category
                     );
                     await _expenseRepo.AddAsync(expense);
@@ -242,13 +244,13 @@ namespace Spendly.Application.UseCases.Import
             return false;
         }
 
-        private static DateOrder InferDateOrder(IEnumerable<string> dataLines, int dateIdx)
+        private static DateOrder InferDateOrder(IEnumerable<string> dataLines, int dateIdx, string? userTimeZone = null)
         {
             var candidates = new[]
             {
-                EvaluateDateOrder(dataLines, dateIdx, DateOrder.YearMonthDay),
-                EvaluateDateOrder(dataLines, dateIdx, DateOrder.DayMonthYear),
-                EvaluateDateOrder(dataLines, dateIdx, DateOrder.MonthDayYear)
+                EvaluateDateOrder(dataLines, dateIdx, DateOrder.YearMonthDay, userTimeZone),
+                EvaluateDateOrder(dataLines, dateIdx, DateOrder.DayMonthYear, userTimeZone),
+                EvaluateDateOrder(dataLines, dateIdx, DateOrder.MonthDayYear, userTimeZone)
             };
 
             return candidates
@@ -261,7 +263,8 @@ namespace Spendly.Application.UseCases.Import
         private static (DateOrder DateOrder, int InvalidCount, int FutureCount) EvaluateDateOrder(
             IEnumerable<string> dataLines,
             int dateIdx,
-            DateOrder dateOrder)
+            DateOrder dateOrder,
+            string? userTimeZone = null)
         {
             int invalidCount = 0;
             int futureCount = 0;
@@ -287,7 +290,7 @@ namespace Spendly.Application.UseCases.Import
                     continue;
                 }
 
-                if (parsedDate.Date > DateTime.UtcNow.Date)
+                if (parsedDate.Date > DateTime.UtcNow.AddHours(14).Date)
                     futureCount++;
             }
 

@@ -51,7 +51,7 @@ namespace Spendly.Application.Interfaces
         /// <summary>
         /// Obtiene gastos agrupados por mes (últimos N meses).
         /// </summary>
-        Task<Dictionary<DateTime, decimal>> GetMonthlyTotalsAsync(int userId, int monthsBack);
+        Task<Dictionary<DateTime, decimal>> GetMonthlyTotalsAsync(int userId, int monthsBack, DateTime? referenceDate = null);
 
         /// <summary>
         /// Cuenta la cantidad de gastos de un usuario que pertenecen a una categoría específica.

@@ -6,12 +6,17 @@ namespace Spendly.Application.UseCases.Dashboard
     public class GetDashboardSummaryUseCase
     {
         private readonly IExpenseRepository _repo;
+        private readonly IDateTimeProvider _dateTime;
 
-        public GetDashboardSummaryUseCase(IExpenseRepository repo) => _repo = repo;
-
-        public async Task<DashboardSummaryDto> ExecuteAsync(int userId)
+        public GetDashboardSummaryUseCase(IExpenseRepository repo, IDateTimeProvider dateTime)
         {
-            var now = DateTime.UtcNow;
+            _repo = repo;
+            _dateTime = dateTime;
+        }
+
+        public async Task<DashboardSummaryDto> ExecuteAsync(int userId, string? userTimeZone = null)
+        {
+            var now = _dateTime.Now(userTimeZone);
             var currentMonthStart = new DateTime(now.Year, now.Month, 1);
             var currentMonthEnd = currentMonthStart.AddMonths(1).AddDays(-1);
             var lastMonthStart = currentMonthStart.AddMonths(-1);
@@ -45,7 +50,7 @@ namespace Spendly.Application.UseCases.Dashboard
             var topCategory = spendingByCategory.FirstOrDefault();
 
             // Tendencia mensual (últimos 6 meses)
-            var monthlyTotals = await _repo.GetMonthlyTotalsAsync(userId, 6);
+            var monthlyTotals = await _repo.GetMonthlyTotalsAsync(userId, 6, now);
             var monthlyTrend = new List<MonthlyTrendDto>();
             foreach (var kvp in monthlyTotals.OrderBy(k => k.Key))
             {

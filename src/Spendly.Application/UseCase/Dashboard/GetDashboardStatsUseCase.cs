@@ -7,16 +7,18 @@ namespace Spendly.Application.UseCase.Dashboard
     {
         private readonly IExpenseRepository _repo;
         private readonly IIncomeRepository _incomeRepo;
+        private readonly IDateTimeProvider _dateTime;
 
-        public GetDashboardStatsUseCase(IExpenseRepository repo, IIncomeRepository incomeRepo)
+        public GetDashboardStatsUseCase(IExpenseRepository repo, IIncomeRepository incomeRepo, IDateTimeProvider dateTime)
         {
             _repo = repo;
             _incomeRepo = incomeRepo;
+            _dateTime = dateTime;
         }
 
-        public async Task<DashboardStatsDto> ExecuteAsync(int userId)
+        public async Task<DashboardStatsDto> ExecuteAsync(int userId, string? userTimeZone = null)
         {
-            var now = DateTime.UtcNow;
+            var now = _dateTime.Now(userTimeZone);
             var currentMonthStart = new DateTime(now.Year, now.Month, 1);
             var currentMonthEnd = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month), 23, 59, 59);
 
