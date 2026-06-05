@@ -1585,4 +1585,13 @@
   <data name="DefCat_Other">
     <value>Otros</value>
   </data>
+  <data name="Ins_AccelerationTitle">
+    <value>Aceleración de Gastos</value>
+  </data>
+  <data name="Ins_PrevMonth">
+    <value>mes anterior</value>
+  </data>
+  <data name="Ins_NoAcceleration">
+    <value>Ninguna categoría ha acelerado sus gastos. ¡Buen trabajo!</value>
+  </data>
 </root>

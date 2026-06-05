@@ -1601,4 +1601,13 @@
   <data name="DefCat_Other">
     <value>Other</value>
   </data>
+  <data name="Ins_AccelerationTitle">
+    <value>Expense Acceleration</value>
+  </data>
+  <data name="Ins_PrevMonth">
+    <value>prev. month</value>
+  </data>
+  <data name="Ins_NoAcceleration">
+    <value>No categories have accelerated spending. Well done!</value>
+  </data>
 </root>

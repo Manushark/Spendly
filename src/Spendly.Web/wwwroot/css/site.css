@@ -37,6 +37,12 @@
   --clr-danger:   #DC2626;
   --clr-info:     #0EA5E9;
 
+  --clr-primary-rgb: 37, 99, 235;
+  --clr-success-rgb: 5, 150, 105;
+  --clr-warning-rgb: 217, 119, 6;
+  --clr-danger-rgb:  220, 38, 38;
+  --clr-info-rgb:    14, 165, 233;
+
   /* Trend Indicators (Light Mode default) */
   --clr-trend-up-bg:       rgba(220, 38, 38, 0.08);
   --clr-trend-up-border:   rgba(220, 38, 38, 0.16);
@@ -117,6 +123,7 @@
 
   /* Theme-specific custom variables */
   --clr-navbar-bg:         rgba(240, 244, 248, 0.92);
+  --clr-bg-card:           var(--clr-surface);
   --clr-logout-text:       #dc2626;
   --clr-logout-hover-text: #b91c1c;
 
@@ -180,6 +187,12 @@
   --clr-trend-down-border: rgba(16, 185, 129, 0.25);
   --clr-trend-down-text:   #34d399;
 
+  --clr-primary-rgb: 96, 165, 250;
+  --clr-success-rgb: 52, 211, 153;
+  --clr-warning-rgb: 251, 191, 36;
+  --clr-danger-rgb:  248, 113, 113;
+  --clr-info-rgb:    167, 139, 250;
+
   /* Glass Card overrides (Dark Mode overrides) */
   --clr-glass-card-bg:     rgba(16, 26, 52, 0.45);
   --clr-glass-card-border: rgba(255, 255, 255, 0.06);
@@ -207,6 +220,7 @@
 
   /* Theme-specific custom variables */
   --clr-navbar-bg:         rgba(11, 17, 32, 0.75);
+  --clr-bg-card:           var(--clr-surface-2);
   --clr-logout-text:       #FCA5A5;
   --clr-logout-hover-text: #FECACA;
 
@@ -240,6 +254,12 @@
   --bs-table-bg:             transparent;
   --bs-table-striped-bg:     rgba(255,255,255,.03);
   --bs-table-hover-bg:       rgba(255,255,255,.05);
+
+  /* Vivid text overrides for dark mode */
+  .text-success  { color: #10b981 !important; }
+  .text-danger   { color: #ff5252 !important; }
+  .text-warning  { color: #FBBF24 !important; }
+  .text-info     { color: #38bdf8 !important; }
 }
 
 /* ── 3. BASE RESET ────────────────────────────────────────── */
@@ -791,11 +811,11 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   letter-spacing: .04em;
 }
 
-.bg-primary { background: var(--clr-primary-light) !important; }
-.bg-success { background: var(--clr-accent)         !important; }
-.bg-warning { background: var(--clr-warning)         !important; }
-.bg-danger  { background: var(--clr-danger)          !important; }
-.bg-info    { background: var(--clr-info)            !important; }
+.bg-primary { background-color: rgba(var(--clr-primary-rgb), var(--bs-bg-opacity, 1)) !important; }
+.bg-success { background-color: rgba(var(--clr-success-rgb), var(--bs-bg-opacity, 1)) !important; }
+.bg-warning { background-color: rgba(var(--clr-warning-rgb), var(--bs-bg-opacity, 1)) !important; }
+.bg-danger  { background-color: rgba(var(--clr-danger-rgb), var(--bs-bg-opacity, 1)) !important; }
+.bg-info    { background-color: rgba(var(--clr-info-rgb), var(--bs-bg-opacity, 1)) !important; }
 
 /* ── 17. MODALS ───────────────────────────────────────────── */
 .modal-content {
@@ -952,10 +972,10 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
 .text-muted    { color: var(--clr-text-muted) !important; }
 .text-faint    { color: var(--clr-text-faint) !important; }
 .text-primary  { color: var(--clr-secondary)  !important; }
-.text-success  { color: var(--clr-accent-light) !important; }
-.text-danger   { color: #FCA5A5 !important; }
-.text-warning  { color: #FCD34D !important; }
-.text-info     { color: #7DD3FC !important; }
+.text-success  { color: #16a34a !important; } /* Vivid green in light mode */
+.text-danger   { color: #dc2626 !important; } /* Vivid red in light mode */
+.text-warning  { color: #d97706 !important; } /* Vivid warning gold in light mode */
+.text-info     { color: #0284c7 !important; } /* Vivid info blue in light mode */
 .text-white    { color: #fff    !important; }
 .text-white-50 { color: rgba(255,255,255,.5) !important; }
 
