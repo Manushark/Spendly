@@ -1397,6 +1397,12 @@
   <data name="Notif_Toast">
     <value>You have a new notification</value>
   </data>
+  <data name="Notif_ClearAll" xml:space="preserve">
+    <value>Clear All</value>
+  </data>
+  <data name="Notif_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
   <!-- ═══════ Reports ═══════ -->
   <data name="Rep_Title">
     <value>Financial Report</value>

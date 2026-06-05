@@ -10,11 +10,13 @@ namespace Spendly.Web.Controllers
     {
         private readonly ExpenseApiClient _api;
         private readonly CategoryApiClient _categoryApi;
+        private readonly TagApiClient _tagApi;
 
-        public ExpensesController(ExpenseApiClient api, CategoryApiClient categoryApi)
+        public ExpensesController(ExpenseApiClient api, CategoryApiClient categoryApi, TagApiClient tagApi)
         {
             _api = api;
             _categoryApi = categoryApi;
+            _tagApi = tagApi;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -39,6 +41,7 @@ namespace Spendly.Web.Controllers
         {
             var result = await _api.GetAllAsync(category, search, dateFrom, dateTo, minAmount, maxAmount, page, pageSize: 10);
             var categories = await _categoryApi.GetAllAsync();
+            var tags = await _tagApi.GetAllAsync();
 
             ViewBag.Category = category;
             ViewBag.Search = search;
@@ -48,6 +51,7 @@ namespace Spendly.Web.Controllers
             ViewBag.MaxAmount = maxAmount;
             ViewBag.CurrentPage = page;
             ViewBag.Categories = categories;
+            ViewBag.Tags = tags;
 
             return View(result);
         }
@@ -61,7 +65,15 @@ namespace Spendly.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
             var categories = await _categoryApi.GetAllAsync();
+            var tags = await _tagApi.GetAllAsync();
+
+            if (expense.Tags != null)
+            {
+                expense.TagIds = expense.Tags.Select(t => t.Id).ToList();
+            }
+
             ViewBag.CategoryList = new SelectList(categories, "Name", "Name", expense.Category);
+            ViewBag.Tags = tags;
             return View(expense);
         }
 
@@ -91,7 +103,9 @@ namespace Spendly.Web.Controllers
             if (!ModelState.IsValid)
             {
                 var categories = await _categoryApi.GetAllAsync();
+                var tags = await _tagApi.GetAllAsync();
                 ViewBag.CategoryList = new SelectList(categories, "Name", "Name", dto.Category);
+                ViewBag.Tags = tags;
                 return View(dto);
             }
 
@@ -100,7 +114,9 @@ namespace Spendly.Web.Controllers
             {
                 TempData["Error"] = error ?? "Failed to update expense.";
                 var categories = await _categoryApi.GetAllAsync();
+                var tags = await _tagApi.GetAllAsync();
                 ViewBag.CategoryList = new SelectList(categories, "Name", "Name", dto.Category);
+                ViewBag.Tags = tags;
                 return View(dto);
             }
 

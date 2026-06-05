@@ -26,5 +26,7 @@ namespace Spendly.Application.DTOs.Expense
 
         [MaxLength(10)]
         public string Currency { get; set; } = "USD";
+
+        public List<int> TagIds { get; set; } = [];
     }
 }

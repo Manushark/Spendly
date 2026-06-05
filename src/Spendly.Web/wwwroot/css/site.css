@@ -159,6 +159,12 @@
   --bs-success:              #10b981;
 }
 
+/* Vivid text overrides for light mode */
+.text-success { color: var(--clr-success) !important; }
+.text-danger  { color: var(--clr-danger) !important; }
+.text-warning { color: var(--clr-warning) !important; }
+.text-info    { color: var(--clr-info) !important; }
+
 /* ── 2. DUAL-THEME OVERRIDES ────────────────────────────── */
 [data-bs-theme="dark"] {
   /* Surfaces (Dark Mode overrides) */
