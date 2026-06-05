@@ -62,6 +62,18 @@
   <data name="Nav_LoggedInAs">
     <value>Conectado como</value>
   </data>
+  <data name="Nav_Finance">
+    <value>Finanzas</value>
+  </data>
+  <data name="Nav_Organize">
+    <value>Organizar</value>
+  </data>
+  <data name="Nav_Analytics">
+    <value>Analítica</value>
+  </data>
+  <data name="Nav_Tools">
+    <value>Herramientas</value>
+  </data>
   <data name="Nav_Logout">
     <value>Cerrar sesión</value>
   </data>

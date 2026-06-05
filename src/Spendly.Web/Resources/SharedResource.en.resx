@@ -62,6 +62,18 @@
   <data name="Nav_LoggedInAs">
     <value>Logged in as</value>
   </data>
+  <data name="Nav_Finance">
+    <value>Finance</value>
+  </data>
+  <data name="Nav_Organize">
+    <value>Organize</value>
+  </data>
+  <data name="Nav_Analytics">
+    <value>Analytics</value>
+  </data>
+  <data name="Nav_Tools">
+    <value>Tools</value>
+  </data>
   <data name="Nav_Logout">
     <value>Logout</value>
   </data>
