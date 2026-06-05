@@ -280,7 +280,7 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
 .app-wrapper {
   display: flex;
   height: 100vh;
-  overflow: hidden;
+  overflow: visible;
   background: var(--clr-bg);
   position: relative;
 }
@@ -530,7 +530,6 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
-  z-index: 1;
   min-width: 0;
 }
 
