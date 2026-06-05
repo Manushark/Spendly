@@ -49,6 +49,9 @@ self.addEventListener('fetch', (event) => {
     if (request.url.includes('/api/')) return;
     if (request.url.includes('/Auth/')) return;
 
+    // Only intercept http/https requests (prevents chrome-extension errors)
+    if (!request.url.startsWith('http:') && !request.url.startsWith('https:')) return;
+
     event.respondWith(
         fetch(request)
             .then(response => {

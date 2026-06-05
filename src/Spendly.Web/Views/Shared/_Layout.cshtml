@@ -175,7 +175,7 @@
 
                         <!-- Notification Bell -->
                         <div class="dropdown me-3">
-                        <button class="btn btn-link text-dark position-relative p-0 border-0" type="button"
+                        <button class="btn btn-link position-relative p-0 border-0" type="button"
                                 id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false"
                                 style="font-size: 1.3rem;">
                             <i class="bi bi-bell" id="bellIcon"></i>
@@ -403,8 +403,8 @@
                         list.innerHTML = notifications.map(n => {
                             var ni = getNotifIcon(n.type);
                             return `
-                            <div class="px-3 py-2 border-bottom ${n.isRead ? '' : 'bg-light'}"
-                                 style="cursor:pointer; transition: background 0.35s ease;"
+                            <div class="px-3 py-2 notif-dropdown-item ${n.isRead ? '' : 'is-unread'}"
+                                 style="cursor:pointer;"
                                  onclick="markRead(${n.id}, this)">
                                 <div class="d-flex align-items-start gap-2">
                                     <i class="bi ${ni.icon} ${ni.color} mt-1 flex-shrink-0"></i>
@@ -424,7 +424,7 @@
                 fetch(`/Notifications/MarkAsRead/${id}`, { method: 'POST' })
                     .then(() => {
                         if (el) {
-                            el.classList.remove('bg-light');
+                            el.classList.remove('is-unread');
                             const dot = el.querySelector('.rounded-circle.bg-primary');
                             if (dot) dot.remove();
                         }
