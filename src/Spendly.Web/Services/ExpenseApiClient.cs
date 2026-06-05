@@ -125,10 +125,13 @@ namespace Spendly.Web.Services
             return await response.Content.ReadAsByteArrayAsync();
         }
 
-        public async Task<string?> ExportReportAsync(int? month = null, int? year = null)
+        public async Task<string?> ExportReportAsync(int? month = null, int? year = null, string? userTimeZone = null)
         {
             SetAuthHeader();
-            var now = DateTime.UtcNow;
+            var now = string.IsNullOrEmpty(userTimeZone)
+                ? DateTime.UtcNow
+                : TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
+                    TimeZoneInfo.TryFindSystemTimeZoneById(userTimeZone, out var tz) ? tz : TimeZoneInfo.Utc);
             var m = month ?? now.Month;
             var y = year ?? now.Year;
 

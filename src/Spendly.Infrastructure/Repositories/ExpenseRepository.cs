@@ -193,9 +193,10 @@ namespace Spendly.Infrastructure.Repositories
             return expenses.Sum(e => e.Amount.Value);
         }
 
-        public async Task<Dictionary<DateTime, decimal>> GetMonthlyTotalsAsync(int userId, int monthsBack)
+        public async Task<Dictionary<DateTime, decimal>> GetMonthlyTotalsAsync(int userId, int monthsBack, DateTime? referenceDate = null)
         {
-            var startDate = DateTime.UtcNow.AddMonths(-monthsBack).Date;
+            var reference = referenceDate ?? DateTime.UtcNow;
+            var startDate = reference.AddMonths(-monthsBack).Date;
 
             var expenses = await _context.Expenses
                 .Where(e => !e.IsDeleted && e.UserId == userId && e.Date >= startDate)

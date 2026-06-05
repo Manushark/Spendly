@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Spendly.Api.Extensions;
 using Spendly.Api.Security;
 using Spendly.Application.DTOs.Budget;
+using Spendly.Application.Interfaces;
 using Spendly.Application.UseCases.Budgets;
 
 namespace Spendly.Api.Controllers
@@ -18,19 +19,25 @@ namespace Spendly.Api.Controllers
         private readonly DeleteBudgetUseCase _delete;
         private readonly GetBudgetByIdUseCase _getById;
         private readonly GetBudgetSummaryUseCase _getSummary;
+        private readonly IUserRepository _userRepo;
+        private readonly IDateTimeProvider _dateTime;
 
         public BudgetsController(
             CreateBudgetUseCase create,
             UpdateBudgetUseCase update,
             DeleteBudgetUseCase delete,
             GetBudgetByIdUseCase getById,
-            GetBudgetSummaryUseCase getSummary)
+            GetBudgetSummaryUseCase getSummary,
+            IUserRepository userRepo,
+            IDateTimeProvider dateTime)
         {
             _create = create;
             _update = update;
             _delete = delete;
             _getById = getById;
             _getSummary = getSummary;
+            _userRepo = userRepo;
+            _dateTime = dateTime;
         }
 
         /// <summary>
@@ -52,7 +59,9 @@ namespace Spendly.Api.Controllers
         [HttpGet("summary")]
         public async Task<IActionResult> GetSummary([FromQuery] int? year, [FromQuery] int? month)
         {
-            var now = DateTime.UtcNow;
+            var userId = User.GetUserId();
+            var user = await _userRepo.GetByIdAsync(userId);
+            var now = _dateTime.Now(user?.TimeZone);
             var targetYear = year ?? now.Year;
             var targetMonth = month ?? now.Month;
 

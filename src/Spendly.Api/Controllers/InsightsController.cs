@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Spendly.Api.Extensions;
+using Spendly.Application.Interfaces;
 using Spendly.Application.UseCases.Insights;
 
 namespace Spendly.Api.Controllers
@@ -11,10 +12,14 @@ namespace Spendly.Api.Controllers
     public class InsightsController : ControllerBase
     {
         private readonly GetMonthlyInsightsUseCase _getInsights;
+        private readonly IUserRepository _userRepo;
+        private readonly IDateTimeProvider _dateTime;
 
-        public InsightsController(GetMonthlyInsightsUseCase getInsights)
+        public InsightsController(GetMonthlyInsightsUseCase getInsights, IUserRepository userRepo, IDateTimeProvider dateTime)
         {
             _getInsights = getInsights;
+            _userRepo = userRepo;
+            _dateTime = dateTime;
         }
 
         /// <summary>
@@ -26,8 +31,9 @@ namespace Spendly.Api.Controllers
             [FromQuery] int? year = null)
         {
             var userId = User.GetUserId();
-            var now = DateTime.UtcNow;
-            var result = await _getInsights.ExecuteAsync(userId, year ?? now.Year, month ?? now.Month);
+            var user = await _userRepo.GetByIdAsync(userId);
+            var now = _dateTime.Now(user?.TimeZone);
+            var result = await _getInsights.ExecuteAsync(userId, year ?? now.Year, month ?? now.Month, user?.TimeZone);
             return Ok(result);
         }
     }

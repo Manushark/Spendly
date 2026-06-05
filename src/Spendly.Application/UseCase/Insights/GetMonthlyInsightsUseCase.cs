@@ -7,20 +7,22 @@ namespace Spendly.Application.UseCases.Insights
     {
         private readonly IExpenseRepository _expenseRepo;
         private readonly IIncomeRepository _incomeRepo;
+        private readonly IDateTimeProvider _dateTime;
 
-        public GetMonthlyInsightsUseCase(IExpenseRepository expenseRepo, IIncomeRepository incomeRepo)
+        public GetMonthlyInsightsUseCase(IExpenseRepository expenseRepo, IIncomeRepository incomeRepo, IDateTimeProvider dateTime)
         {
             _expenseRepo = expenseRepo;
             _incomeRepo = incomeRepo;
+            _dateTime = dateTime;
         }
 
-        public async Task<MonthlyInsightsDto> ExecuteAsync(int userId, int year, int month)
+        public async Task<MonthlyInsightsDto> ExecuteAsync(int userId, int year, int month, string? userTimeZone = null)
         {
             // Current month range
             var startDate = new DateTime(year, month, 1);
             var endDate = startDate.AddMonths(1).AddDays(-1);
             var daysInMonth = DateTime.DaysInMonth(year, month);
-            var today = DateTime.UtcNow;
+            var today = _dateTime.Now(userTimeZone);
             var daysElapsed = today.Year == year && today.Month == month
                 ? today.Day
                 : daysInMonth;

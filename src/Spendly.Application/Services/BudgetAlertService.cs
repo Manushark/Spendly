@@ -13,20 +13,28 @@ namespace Spendly.Application.Services
         private readonly IBudgetRepository _budgetRepo;
         private readonly IExpenseRepository _expenseRepo;
         private readonly INotificationRepository _notificationRepo;
+        private readonly IUserRepository _userRepo;
+        private readonly IDateTimeProvider _dateTime;
 
         public BudgetAlertService(
             IBudgetRepository budgetRepo,
             IExpenseRepository expenseRepo,
-            INotificationRepository notificationRepo)
+            INotificationRepository notificationRepo,
+            IUserRepository userRepo,
+            IDateTimeProvider dateTime)
         {
             _budgetRepo = budgetRepo;
             _expenseRepo = expenseRepo;
             _notificationRepo = notificationRepo;
+            _userRepo = userRepo;
+            _dateTime = dateTime;
         }
 
         public async Task CheckAndCreateAlertsAsync(int userId)
         {
-            var now = DateTime.UtcNow;
+            // Load user timezone to determine the correct local month
+            var user = await _userRepo.GetByIdAsync(userId);
+            var now = _dateTime.Now(user?.TimeZone);
             var budgets = await _budgetRepo.GetByUserAndMonthAsync(userId, now.Year, now.Month);
 
             Console.WriteLine($"[BudgetAlert] userId={userId} month={now.Year}/{now.Month} budgets found={budgets.Count}");

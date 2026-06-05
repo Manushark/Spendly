@@ -23,12 +23,17 @@ namespace Spendly.Web.Services
                 : new AuthenticationHeaderValue("Bearer", token);
         }
 
-        public async Task<MonthlyInsightsDto?> GetMonthlyInsightsAsync(int? month = null, int? year = null)
+        public async Task<MonthlyInsightsDto?> GetMonthlyInsightsAsync(int? month = null, int? year = null, string? userTimeZone = null)
         {
             SetAuthHeader();
             try
             {
-                var now = DateTime.UtcNow;
+                // If month/year not specified, compute using user's timezone client-side
+                // The API also resolves timezone but we pass explicit values to avoid double-resolution
+                var now = string.IsNullOrEmpty(userTimeZone)
+                    ? DateTime.UtcNow
+                    : TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
+                        TimeZoneInfo.TryFindSystemTimeZoneById(userTimeZone, out var tz) ? tz : TimeZoneInfo.Utc);
                 var m = month ?? now.Month;
                 var y = year ?? now.Year;
                 var response = await _http.GetAsync($"api/insights?month={m}&year={y}");

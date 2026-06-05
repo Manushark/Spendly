@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Spendly.Api.Extensions;
 using Spendly.Api.Security;
 using Spendly.Application.DTOs.Expense;
+using Spendly.Application.Interfaces;
 using Spendly.Application.UseCase.CreateExpense;
 using Spendly.Application.UseCase.DeleteExpense;
 using Spendly.Application.UseCase.GetExpenseById;
@@ -25,6 +26,8 @@ namespace Spendly.Api.Controllers
         private readonly UpdateExpenseUseCase _updateExpenseUseCase;
         private readonly ExportExpensesCsvUseCase _exportCsv;
         private readonly ExportMonthlyReportUseCase _exportReport;
+        private readonly IUserRepository _userRepo;
+        private readonly IDateTimeProvider _dateTime;
 
         public ExpensesController(
             CreateExpenseUseCase createExpenseUseCase,
@@ -33,7 +36,9 @@ namespace Spendly.Api.Controllers
             DeleteExpenseUseCase deleteExpenseUseCase,
             UpdateExpenseUseCase updateExpenseUseCase,
             ExportExpensesCsvUseCase exportCsv,
-            ExportMonthlyReportUseCase exportReport)
+            ExportMonthlyReportUseCase exportReport,
+            IUserRepository userRepo,
+            IDateTimeProvider dateTime)
         {
             _createExpenseUseCase = createExpenseUseCase;
             _listExpensesUseCase = listExpensesUseCase;
@@ -42,6 +47,8 @@ namespace Spendly.Api.Controllers
             _updateExpenseUseCase = updateExpenseUseCase;
             _exportCsv = exportCsv;
             _exportReport = exportReport;
+            _userRepo = userRepo;
+            _dateTime = dateTime;
         }
 
         [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
@@ -117,8 +124,9 @@ namespace Spendly.Api.Controllers
             [FromQuery] DateTime? dateTo = null)
         {
             var userId = User.GetUserId();
-            var csvBytes = await _exportCsv.ExecuteAsync(userId, category, dateFrom, dateTo);
-            return File(csvBytes, "text/csv", $"spendly-expenses-{DateTime.UtcNow:yyyyMMdd}.csv");
+            var user = await _userRepo.GetByIdAsync(userId);
+            var csvBytes = await _exportCsv.ExecuteAsync(userId, category, dateFrom, dateTo, user?.TimeZone);
+            return File(csvBytes, "text/csv", $"spendly-expenses-{_dateTime.Today(user?.TimeZone):yyyyMMdd}.csv");
         }
 
         /// <summary>
@@ -130,7 +138,8 @@ namespace Spendly.Api.Controllers
             [FromQuery] int? year = null)
         {
             var userId = User.GetUserId();
-            var now = DateTime.UtcNow;
+            var user = await _userRepo.GetByIdAsync(userId);
+            var now = _dateTime.Now(user?.TimeZone);
             var reportHtml = await _exportReport.ExecuteAsync(userId, year ?? now.Year, month ?? now.Month);
             return Content(reportHtml, "text/html");
         }

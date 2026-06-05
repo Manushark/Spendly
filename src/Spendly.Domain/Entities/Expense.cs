@@ -67,7 +67,10 @@ namespace Spendly.Domain.Entities
             if (string.IsNullOrWhiteSpace(category))
                 throw new InvalidDomainException("Category cannot be empty.");
 
-            if (date > DateTime.UtcNow)
+            // Allow a 14-hour buffer over UTC so users in UTC+14 (max world offset)
+            // or UTC-12 (min) are never falsely rejected when submitting "today".
+            // The Application layer enforces the real local-day boundary using the user's timezone.
+            if (date.Date > DateTime.UtcNow.AddHours(14).Date)
                 throw new InvalidDomainException("Date cannot be in the future.");
         }
 

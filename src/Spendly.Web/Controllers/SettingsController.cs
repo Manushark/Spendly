@@ -49,9 +49,11 @@ namespace Spendly.Web.Controllers
             else
             {
                 TempData["Success"] = "Profile updated successfully.";
-                // Update session name if changed
+                // Update session name and timezone if changed
                 if (!string.IsNullOrEmpty(request.FullName))
                     HttpContext.Session.SetString("userName", request.FullName);
+                if (!string.IsNullOrEmpty(request.TimeZone))
+                    HttpContext.Session.SetString("userTimeZone", request.TimeZone);
             }
             return RedirectToAction(nameof(Index));
         }

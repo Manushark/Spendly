@@ -8,11 +8,13 @@ namespace Spendly.Web.Controllers
     public class AuthController : Controller
     {
         private readonly AuthApiClient _authApi;
+        private readonly UserApiClient _userApi;
         private readonly string _apiBaseUrl;
 
-        public AuthController(AuthApiClient authApi, IConfiguration configuration)
+        public AuthController(AuthApiClient authApi, UserApiClient userApi, IConfiguration configuration)
         {
             _authApi = authApi;
+            _userApi = userApi;
             _apiBaseUrl = configuration["ApiBaseUrl"] ?? "";
         }
 
@@ -35,6 +37,10 @@ namespace Spendly.Web.Controllers
 
             TokenHelper.SetToken(HttpContext, result.Token);
             HttpContext.Session.SetString("userEmail", model.Email);
+            // Load and cache the user's timezone so Web controllers can use local dates
+            var profile = await _userApi.GetProfileAsync();
+            if (profile != null)
+                HttpContext.Session.SetString("userTimeZone", profile.TimeZone);
 
             return RedirectToAction("Index", "Expenses");
         }
@@ -64,6 +70,10 @@ namespace Spendly.Web.Controllers
 
             TokenHelper.SetToken(HttpContext, result.Token);
             HttpContext.Session.SetString("userEmail", model.Email);
+            // Load and cache the user's timezone so Web controllers can use local dates
+            var profile = await _userApi.GetProfileAsync();
+            if (profile != null)
+                HttpContext.Session.SetString("userTimeZone", profile.TimeZone);
 
             return RedirectToAction("Index", "Expenses");
         }

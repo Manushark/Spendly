@@ -17,11 +17,15 @@ namespace Spendly.Api.Controllers
     {
         private readonly GetFinancialReportUseCase _getReport;
         private readonly IExpenseRepository        _expenseRepo;
+        private readonly IUserRepository            _userRepo;
+        private readonly IDateTimeProvider          _dateTime;
 
-        public ReportsController(GetFinancialReportUseCase getReport, IExpenseRepository expenseRepo)
+        public ReportsController(GetFinancialReportUseCase getReport, IExpenseRepository expenseRepo, IUserRepository userRepo, IDateTimeProvider dateTime)
         {
             _getReport   = getReport;
             _expenseRepo = expenseRepo;
+            _userRepo    = userRepo;
+            _dateTime    = dateTime;
         }
 
         /// <summary>
@@ -37,7 +41,9 @@ namespace Spendly.Api.Controllers
             [FromQuery] int?    year,
             [FromQuery] int?    month)
         {
-            var (start, end, label) = ResolveDateRange(dateFrom, dateTo, periodLabel, year, month);
+            var userId = User.GetUserId();
+            var user = await _userRepo.GetByIdAsync(userId);
+            var (start, end, label) = ResolveDateRange(dateFrom, dateTo, periodLabel, year, month, _dateTime, user?.TimeZone);
 
             if (start > end)
                 return BadRequest("dateFrom must be before dateTo.");
@@ -45,7 +51,7 @@ namespace Spendly.Api.Controllers
             if ((end - start).Days > 730)
                 return BadRequest("El rango no puede superar 2 años.");
 
-            var report = await _getReport.ExecuteAsync(User.GetUserId(), start, end, label);
+            var report = await _getReport.ExecuteAsync(User.GetUserId(), start, end, label, user?.TimeZone);
             return Ok(report);
         }
 
@@ -65,7 +71,7 @@ namespace Spendly.Api.Controllers
             if (string.IsNullOrWhiteSpace(category))
                 return BadRequest("La categoría es requerida.");
 
-            var (start, end, _) = ResolveDateRange(dateFrom, dateTo, null, year, month);
+            var (start, end, _) = ResolveDateRange(dateFrom, dateTo, null, year, month, _dateTime, null);
 
             var expenses = await _expenseRepo.GetByDateRangeAsync(User.GetUserId(), start, end);
 
@@ -90,9 +96,10 @@ namespace Spendly.Api.Controllers
 
         private static (DateTime start, DateTime end, string label) ResolveDateRange(
             string? dateFrom, string? dateTo, string? periodLabel,
-            int? year, int? month)
+            int? year, int? month,
+            IDateTimeProvider dateTime, string? userTimeZone)
         {
-            var now = DateTime.UtcNow;
+            var now = dateTime.Now(userTimeZone);
 
             // Try dateFrom / dateTo first
             if (!string.IsNullOrWhiteSpace(dateFrom) && !string.IsNullOrWhiteSpace(dateTo)
