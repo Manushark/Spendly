@@ -43,9 +43,18 @@ namespace Spendly.Tests.UseCases
             var budgetRepo = new Mock<IBudgetRepository>();
             var expenseRepo = new Mock<IExpenseRepository>();
             var notificationRepo = new Mock<INotificationRepository>();
+            var userRepo = new Mock<IUserRepository>();
+            var dateTimeProvider = new Mock<IDateTimeProvider>();
+
             budgetRepo.Setup(r => r.GetByUserAndMonthAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                       .ReturnsAsync(new List<Budget>());
-            return new BudgetAlertService(budgetRepo.Object, expenseRepo.Object, notificationRepo.Object);
+
+            return new BudgetAlertService(
+                budgetRepo.Object,
+                expenseRepo.Object,
+                notificationRepo.Object,
+                userRepo.Object,
+                dateTimeProvider.Object);
         }
 
         // ──────────────────────────────────────────
