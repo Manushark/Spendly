@@ -327,9 +327,9 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
 /* ── 6. SIDEBAR ───────────────────────────────────────────── */
 .sidebar {
   width: var(--sidebar-width);
-  background: var(--clr-sidebar);
-  border-right: 1px solid var(--clr-border);
-  color: var(--clr-text-muted);
+  background: linear-gradient(180deg, #4f46e5 0%, #1e1b4b 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.65);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -344,7 +344,7 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(59,130,246,.45), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent);
 }
 
 .sidebar-header {
@@ -435,9 +435,10 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
 .sidebar-link:hover i { opacity: 1; }
 
 .sidebar-link.active {
-  background: linear-gradient(135deg, #1E40AF, #2563EB);
+  background: rgba(255, 255, 255, 0.12);
   color: #fff;
-  box-shadow: 0 4px 18px rgba(30,64,175,.4), inset 0 1px 0 rgba(255,255,255,.1);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255,255,255,.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   transform: none;
 }
 
@@ -450,16 +451,16 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   left: -12px;
   top: 50%;
   transform: translateY(-50%);
-  width: 3px;
-  height: 55%;
-  background: var(--clr-secondary);
-  border-radius: 0 3px 3px 0;
+  width: 4px;
+  height: 50%;
+  background: #38bdf8;
+  border-radius: 0 4px 4px 0;
 }
 
 /* ── 7. SIDEBAR FOOTER ────────────────────────────────────── */
 .sidebar-footer {
   padding: var(--sp-4);
-  border-top: 1px solid var(--clr-border);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
 }
 
