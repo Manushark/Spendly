@@ -21,6 +21,7 @@
   --clr-surface-3:     #EEF2F7;
   --clr-sidebar:       #1E293B;
   --clr-sidebar-hover: #334155;
+  --clr-sidebar-gradient: linear-gradient(180deg, #2e2a72 0%, #0c0a1a 100%);
 
   /* Text (Light Mode) */
   --clr-text:          #0F172A;
@@ -175,6 +176,7 @@
   --clr-surface-3:     #1A2845;
   --clr-sidebar:       #090E1A;
   --clr-sidebar-hover: #111827;
+  --clr-sidebar-gradient: linear-gradient(180deg, #4f46e5 0%, #1e1b4b 100%);
 
   /* Text (Dark Mode overrides) */
   --clr-text:          #F1F5F9;
@@ -327,7 +329,7 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
 /* ── 6. SIDEBAR ───────────────────────────────────────────── */
 .sidebar {
   width: var(--sidebar-width);
-  background: linear-gradient(180deg, #4f46e5 0%, #1e1b4b 100%);
+  background: var(--clr-sidebar-gradient);
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.65);
   display: flex;
@@ -473,11 +475,11 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
 
 .lang-btn {
   flex: 1;
-  padding: 4px 0;
-  background: transparent;
-  border: 1px solid var(--clr-border);
+  padding: 6px 0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-full);
-  color: var(--clr-text-faint);
+  color: rgba(255, 255, 255, 0.65);
   font-size: .68rem;
   font-weight: 700;
   cursor: pointer;
@@ -488,8 +490,8 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
 
 .lang-btn.is-active,
 .lang-btn:hover {
-  background: var(--clr-primary-light);
-  border-color: var(--clr-primary-light);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
   color: #fff;
 }
 
@@ -518,8 +520,8 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
 
 .user-profile-name {
   font-size: .82rem;
-  color: var(--clr-text);
-  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -532,21 +534,21 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   gap: var(--sp-2);
   width: 100%;
   padding: var(--sp-2) var(--sp-4);
-  background: rgba(220,38,38,.08);
-  color: var(--clr-logout-text);
-  border: 1px solid rgba(220,38,38,.18);
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: var(--radius-md);
   font-size: .82rem;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
   transition: all var(--dur-fast) var(--ease-out);
 }
 
 .btn-logout:hover {
-  background: rgba(220,38,38,.18);
-  color: var(--clr-logout-hover-text);
-  border-color: rgba(220,38,38,.32);
+  background: rgba(239, 68, 68, 0.25);
+  color: #fecaca;
+  border-color: rgba(239, 68, 68, 0.40);
   transform: translateY(-1px);
 }
 
