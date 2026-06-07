@@ -552,6 +552,34 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   transform: translateY(-1px);
 }
 
+/* Contextual help button trigger */
+.help-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--clr-primary-semi);
+  color: var(--clr-primary-light);
+  border: none;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease-out);
+  margin-left: 8px;
+  vertical-align: middle;
+  position: relative;
+  top: -2px;
+}
+
+.help-trigger:hover {
+  background: var(--clr-primary-light);
+  color: #fff;
+  transform: scale(1.12);
+  box-shadow: 0 4px 10px rgba(var(--clr-primary-rgb), 0.2);
+}
+
 /* ── 8. MAIN CONTENT ──────────────────────────────────────── */
 .main-content {
   flex: 1;

@@ -478,6 +478,58 @@
         </script>
     }
 
+    @if (isAuth)
+    {
+        <!-- Reusable Contextual Help Modal -->
+        <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-lg); background: var(--clr-bg-card);">
+                    <div class="modal-header border-bottom-0 pb-0">
+                        <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="helpModalLabel" style="font-family: var(--font-heading); color: var(--clr-text); font-size: 1.25rem;">
+                            <i class="bi text-primary" id="helpModalIcon" style="font-size: 1.4rem;"></i>
+                            <span id="helpModalTitle"></span>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body pt-3" style="color: var(--clr-text-muted); font-size: 0.92rem; line-height: 1.6;">
+                        <p id="helpModalBody" class="mb-0"></p>
+                    </div>
+                    <div class="modal-footer border-top-0 pt-0">
+                        <button type="button" class="btn btn-primary rounded-pill px-4 fw-semibold" data-bs-dismiss="modal" style="font-size: 0.82rem;">
+                            @L["Help_BtnClose"]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const modalEl = document.getElementById('helpModal');
+                if (modalEl) {
+                    const helpModal = new bootstrap.Modal(modalEl);
+                    document.body.addEventListener('click', (e) => {
+                        const trigger = e.target.closest('[data-help-trigger]');
+                        if (trigger) {
+                            e.preventDefault();
+                            const title = trigger.getAttribute('data-help-title') || '';
+                            const body = trigger.getAttribute('data-help-body') || '';
+                            const icon = trigger.getAttribute('data-help-icon') || 'bi-info-circle-fill';
+                            
+                            document.getElementById('helpModalTitle').textContent = title;
+                            document.getElementById('helpModalBody').textContent = body;
+                            
+                            const iconEl = document.getElementById('helpModalIcon');
+                            iconEl.className = 'bi text-primary ' + icon;
+                            
+                            helpModal.show();
+                        }
+                    });
+                }
+            });
+        </script>
+    }
+
     @await RenderSectionAsync("Scripts", required: false)
 
     <!-- Service Worker Registration -->

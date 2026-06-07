@@ -1600,4 +1600,55 @@
   <data name="Ins_NoAcceleration">
     <value>Ninguna categoría ha acelerado sus gastos. ¡Buen trabajo!</value>
   </data>
+  <data name="Help_BtnClose">
+    <value>Entendido</value>
+  </data>
+  <data name="Help_Dash_Title">
+    <value>Ayuda: Panel de Control</value>
+  </data>
+  <data name="Help_Dash_Body">
+    <value>El Panel de Control te ofrece un resumen en tiempo real de tu salud financiera este mes. Aquí puedes ver tu total de ingresos, total de gastos, saldo neto actual y tu tasa de ahorro. Abajo encontrarás un historial con tus transacciones más recientes y gráficos que desglosan tus gastos por categorías.</value>
+  </data>
+  <data name="Help_Exp_Title">
+    <value>Ayuda: Gestión de Gastos</value>
+  </data>
+  <data name="Help_Exp_Body">
+    <value>Esta sección te permite ver, filtrar y registrar todos tus gastos. Puedes añadir nuevos gastos usando el panel lateral de creación rápida. Utiliza los filtros avanzados por categoría, fechas o montos para analizar tus hábitos de consumo y mantén tus registros siempre al día.</value>
+  </data>
+  <data name="Help_Inc_Title">
+    <value>Ayuda: Gestión de Ingresos</value>
+  </data>
+  <data name="Help_Inc_Body">
+    <value>Aquí puedes registrar todas tus fuentes de dinero, tales como salarios, inversiones o freelancing. Mantener tus ingresos actualizados es fundamental para que el sistema calcule correctamente tu saldo disponible y tu tasa de ahorro del mes.</value>
+  </data>
+  <data name="Help_Budg_Title">
+    <value>Ayuda: Presupuestos Mensuales</value>
+  </data>
+  <data name="Help_Budg_Body">
+    <value>Los presupuestos te ayudan a poner límites de gasto para cada categoría (por ejemplo, límite en Comida o Entretenimiento). El sistema te avisará con notificaciones visuales si estás cerca de alcanzar tu límite (80%) o si lo has excedido por completo.</value>
+  </data>
+  <data name="Help_Rec_Title">
+    <value>Ayuda: Gastos Recurrentes</value>
+  </data>
+  <data name="Help_Rec_Body">
+    <value>Configura facturas, suscripciones o pagos repetitivos (como alquiler, Netflix o internet). Spendly creará automáticamente el gasto en la fecha indicada de cada mes, evitándote tener que ingresarlos manualmente uno por uno.</value>
+  </data>
+  <data name="Help_Goals_Title">
+    <value>Ayuda: Metas de Ahorro</value>
+  </data>
+  <data name="Help_Goals_Body">
+    <value>Define objetivos financieros concretos (por ejemplo, comprar un auto o fondo de emergencia). Puedes asignar dinero de tus ahorros directamente a cada meta y ver el progreso porcentual hasta completarla.</value>
+  </data>
+  <data name="Help_Rep_Title">
+    <value>Ayuda: Reportes y Exportación</value>
+  </data>
+  <data name="Help_Rep_Body">
+    <value>Visualiza el comportamiento de tus finanzas en periodos específicos. Puedes generar el 'Reporte Mensual' detallado en HTML/PDF diseñado para impresión directamente desde tu navegador para archivar tu resumen mensual.</value>
+  </data>
+  <data name="Help_Ins_Title">
+    <value>Ayuda: Análisis y Recomendaciones</value>
+  </data>
+  <data name="Help_Ins_Body">
+    <value>Spendly analiza automáticamente tus patrones de consumo para darte recomendaciones personalizadas (Insights). Te avisará si estás gastando de más el fin de semana, cuál fue tu gasto más alto o si tus gastos en una categoría se están acelerando.</value>
+  </data>
 </root>

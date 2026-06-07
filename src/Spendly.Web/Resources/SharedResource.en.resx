@@ -1616,4 +1616,55 @@
   <data name="Ins_NoAcceleration">
     <value>No categories have accelerated spending. Well done!</value>
   </data>
+  <data name="Help_BtnClose">
+    <value>Got it</value>
+  </data>
+  <data name="Help_Dash_Title">
+    <value>Help: Dashboard</value>
+  </data>
+  <data name="Help_Dash_Body">
+    <value>The Dashboard provides a real-time summary of your financial health this month. Here you can see your total income, total expenses, net balance, and savings rate. Below you will find your recent transaction history and charts breaking down your expenditures by category.</value>
+  </data>
+  <data name="Help_Exp_Title">
+    <value>Help: Expense Tracker</value>
+  </data>
+  <data name="Help_Exp_Body">
+    <value>This section allows you to view, filter, and log all your expenses. You can add new transactions using the quick creation sidebar. Use advanced filters by category, date range, or amount to analyze your spending habits and keep your logs up to date.</value>
+  </data>
+  <data name="Help_Inc_Title">
+    <value>Help: Income Tracker</value>
+  </data>
+  <data name="Help_Inc_Body">
+    <value>Register all your sources of cash here, such as salary, investments, or freelance work. Keeping your income records updated is essential for the system to calculate your correct net balance and savings rate.</value>
+  </data>
+  <data name="Help_Budg_Title">
+    <value>Help: Monthly Budgets</value>
+  </data>
+  <data name="Help_Budg_Body">
+    <value>Budgets help you set spending limits for each category (e.g., food or entertainment). The system will notify you if you are close to reaching your budget (80%) or if you have exceeded it.</value>
+  </data>
+  <data name="Help_Rec_Title">
+    <value>Help: Recurring Expenses</value>
+  </data>
+  <data name="Help_Rec_Body">
+    <value>Set up recurring bills, subscriptions, or repetitive payments (like rent, Netflix, or utilities). Spendly will automatically generate these expenses on their designated dates, saving you from entering them manually every month.</value>
+  </data>
+  <data name="Help_Goals_Title">
+    <value>Help: Savings Goals</value>
+  </data>
+  <data name="Help_Goals_Body">
+    <value>Set specific financial goals (e.g., buying a car, emergency fund). You can allocate funds directly from your savings to each goal and monitor your progress towards achieving them.</value>
+  </data>
+  <data name="Help_Rep_Title">
+    <value>Help: Reports &amp; Export</value>
+  </data>
+  <data name="Help_Rep_Body">
+    <value>Visualize your financial patterns over specific periods. You can generate a premium monthly summary report designed to be printed directly as PDF from your browser for archiving.</value>
+  </data>
+  <data name="Help_Ins_Title">
+    <value>Help: Insights &amp; Analytics</value>
+  </data>
+  <data name="Help_Ins_Body">
+    <value>Spendly automatically analyzes your spending habits to provide personalized insights and recommendations. It will flag if you are spending heavily on weekends, show your single largest transaction, or alert you if spending in a category is accelerating.</value>
+  </data>
 </root>
