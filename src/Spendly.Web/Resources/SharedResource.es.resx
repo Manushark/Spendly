@@ -1657,4 +1657,10 @@
   <data name="Help_Cat_Body">
     <value>Las categorías organizan tus ingresos y gastos para darte un análisis financiero claro. Spendly incluye 8 categorías predeterminadas (\"Comida y Restaurantes\", \"Transporte\", etc.). Aquí puedes añadir categorías personalizadas o editarlas. Modificar una categoría actualizará automáticamente todas tus transacciones vinculadas.</value>
   </data>
+  <data name="Help_Tags_Title">
+    <value>Ayuda: Etiquetas</value>
+  </data>
+  <data name="Help_Tags_Body">
+    <value>Las etiquetas son marcadores personalizados (Tags) con colores que puedes asignar a tus gastos para clasificarlos de manera más granular (por ejemplo, 'Vacaciones', 'Oficina', 'Regalo'). A diferencia de las categorías, las etiquetas son totalmente opcionales y te permiten hacer búsquedas y agrupaciones más específicas en tus transacciones.</value>
+  </data>
 </root>

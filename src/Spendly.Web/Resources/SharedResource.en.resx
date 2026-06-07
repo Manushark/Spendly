@@ -1673,4 +1673,10 @@
   <data name="Help_Cat_Body">
     <value>Categories organize your income and expenses to provide a clear financial analysis. Spendly includes 8 default categories (\"Food &amp; Dining\", \"Transportation\", etc.). You can add custom categories here. Modifying a category automatically updates all associated transactions.</value>
   </data>
+  <data name="Help_Tags_Title">
+    <value>Help: Tags</value>
+  </data>
+  <data name="Help_Tags_Body">
+    <value>Tags are custom colored labels that you can assign to your expenses to classify them more granularly (e.g., 'Vacation', 'Office', 'Gift'). Unlike categories, tags are completely optional and help you filter and organize transactions more specifically.</value>
+  </data>
 </root>
