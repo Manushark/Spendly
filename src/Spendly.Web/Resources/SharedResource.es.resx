@@ -1651,4 +1651,10 @@
   <data name="Help_Ins_Body">
     <value>Spendly analiza automáticamente tus patrones de consumo para darte recomendaciones personalizadas (Insights). Te avisará si estás gastando de más el fin de semana, cuál fue tu gasto más alto o si tus gastos en una categoría se están acelerando.</value>
   </data>
+  <data name="Help_Cat_Title">
+    <value>Ayuda: Categorías</value>
+  </data>
+  <data name="Help_Cat_Body">
+    <value>Las categorías organizan tus ingresos y gastos para darte un análisis financiero claro. Spendly incluye 8 categorías predeterminadas (\"Comida y Restaurantes\", \"Transporte\", etc.). Aquí puedes añadir categorías personalizadas o editarlas. Modificar una categoría actualizará automáticamente todas tus transacciones vinculadas.</value>
+  </data>
 </root>

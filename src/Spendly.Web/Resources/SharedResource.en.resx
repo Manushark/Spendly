@@ -1667,4 +1667,10 @@
   <data name="Help_Ins_Body">
     <value>Spendly automatically analyzes your spending habits to provide personalized insights and recommendations. It will flag if you are spending heavily on weekends, show your single largest transaction, or alert you if spending in a category is accelerating.</value>
   </data>
+  <data name="Help_Cat_Title">
+    <value>Help: Categories</value>
+  </data>
+  <data name="Help_Cat_Body">
+    <value>Categories organize your income and expenses to provide a clear financial analysis. Spendly includes 8 default categories (\"Food &amp; Dining\", \"Transportation\", etc.). You can add custom categories here. Modifying a category automatically updates all associated transactions.</value>
+  </data>
 </root>
