@@ -11,8 +11,11 @@
     var maxAmount       = ViewBag.MaxAmount as decimal?;
     var currentPage     = (int)(ViewBag.CurrentPage ?? 1);
     var categories      = ViewBag.Categories as List<CategoryViewModel> ?? new List<CategoryViewModel>();
+    var selectedTags    = ViewBag.SelectedTags as List<int> ?? new List<int>();
+    var tags            = ViewBag.Tags as List<TagDto> ?? new List<TagDto>();
     var hasActiveFilters = !string.IsNullOrEmpty(currentCategory) || !string.IsNullOrEmpty(currentSearch)
-                       || dateFrom.HasValue || dateTo.HasValue || minAmount.HasValue || maxAmount.HasValue;
+                       || dateFrom.HasValue || dateTo.HasValue || minAmount.HasValue || maxAmount.HasValue
+                       || selectedTags.Any();
 }
 
 <style>
@@ -225,7 +228,7 @@
                     </div>
 
                     @* Advanced filters *@
-                    <div class="collapse @(dateFrom.HasValue || dateTo.HasValue || minAmount.HasValue || maxAmount.HasValue ? "show" : "")"
+                    <div class="collapse @(dateFrom.HasValue || dateTo.HasValue || minAmount.HasValue || maxAmount.HasValue || selectedTags.Any() ? "show" : "")"
                          id="advancedFilters">
                         <hr class="my-2 opacity-25" />
                         <div class="row g-2">
@@ -247,6 +250,26 @@
                                 <input type="number" name="maxAmount" step="0.01" min="0" class="form-control"
                                        placeholder="9999.00" value="@maxAmount" />
                             </div>
+                            @if (tags.Any())
+                            {
+                                <div class="col-12 mt-2">
+                                    <label class="form-label text-muted small fw-semibold mb-1"><i class="bi bi-tags me-1"></i>@L["Tags_FilterByTags"]</label>
+                                    <div class="d-flex flex-wrap gap-1.5" style="max-height: 90px; overflow-y: auto; padding: 2px;">
+                                        @foreach (var tag in tags)
+                                        {
+                                            var isChecked = selectedTags.Contains(tag.Id);
+                                            <div class="tag-selector-item">
+                                                <input type="checkbox" name="tagIds" value="@tag.Id" id="filter-tag-@tag.Id" class="btn-check filter-tag-checkbox" @(isChecked ? "checked" : "") />
+                                                <label class="btn btn-sm rounded-pill tag-selector-pill" for="filter-tag-@tag.Id" 
+                                                       style="--tag-color: @tag.Color; --tag-bg: @(tag.Color)18; border: 1px solid var(--clr-border); color: var(--clr-text-muted); background: transparent; transition: all 0.2s; font-size: 0.76rem; padding: 3px 10px;">
+                                                    <span class="rounded-circle d-inline-block me-1" style="width: 6px; height: 6px; background-color: @tag.Color; vertical-align: middle;"></span>
+                                                    @tag.Name
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
 
@@ -294,6 +317,20 @@
                             $@(minAmount?.ToString("N0") ?? "0") – $@(maxAmount?.ToString("N0") ?? "...")
                         </span>
                     }
+                    @if (selectedTags.Any())
+                    {
+                        @foreach (var tagId in selectedTags)
+                        {
+                            var matchedTag = tags.FirstOrDefault(t => t.Id == tagId);
+                            if (matchedTag != null)
+                            {
+                                <span class="badge rounded-pill fw-semibold px-3 py-2"
+                                      style="background: @(matchedTag.Color)15; color: @matchedTag.Color; border: 1px solid @(matchedTag.Color)30;">
+                                    <i class="bi bi-tag-fill me-1"></i>@matchedTag.Name
+                                </span>
+                            }
+                        }
+                    }
                 </div>
             }
 
@@ -335,9 +372,11 @@
                                                 <div class="d-flex flex-wrap gap-1 mt-1.5">
                                                     @foreach (var tag in e.Tags)
                                                     {
-                                                        <span class="badge rounded-pill" style="font-size:0.68rem; padding: 2px 8px; background: @(tag.Color)18; color: @tag.Color; border: 1px solid @(tag.Color)35;">
+                                                        <a href="@Url.Action("Index", new { tagIds = new List<int> { tag.Id } })" class="badge rounded-pill text-decoration-none" 
+                                                           style="font-size:0.68rem; padding: 2px 8px; background: @(tag.Color)18; color: @tag.Color; border: 1px solid @(tag.Color)35; transition: transform 0.15s;"
+                                                           title="Filtrar por @tag.Name" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='none'">
                                                             @tag.Name
-                                                        </span>
+                                                        </a>
                                                     }
                                                 </div>
                                             }
@@ -398,11 +437,7 @@
                                 <ul class="pagination pagination-sm mb-0 justify-content-center gap-1">
                                     <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
                                         <a class="page-link"
-                                           asp-action="Index" asp-route-page="@(currentPage-1)"
-                                           asp-route-category="@currentCategory" asp-route-search="@currentSearch"
-                                           asp-route-dateFrom="@(dateFrom?.ToString("yyyy-MM-dd"))"
-                                           asp-route-dateTo="@(dateTo?.ToString("yyyy-MM-dd"))"
-                                           asp-route-minAmount="@minAmount" asp-route-maxAmount="@maxAmount">
+                                           href="@Url.Action("Index", new { page = currentPage - 1, category = currentCategory, search = currentSearch, dateFrom = dateFrom?.ToString("yyyy-MM-dd"), dateTo = dateTo?.ToString("yyyy-MM-dd"), minAmount, maxAmount, tagIds = selectedTags })">
                                             <i class="bi bi-chevron-left"></i>
                                         </a>
                                     </li>
@@ -415,22 +450,14 @@
                                         <li class="page-item @(p == currentPage ? "active" : "")">
                                             <a class="page-link"
                                                style="@(p == currentPage ? "background:var(--clr-primary);color:#fff;" : "")"
-                                               asp-action="Index" asp-route-page="@p"
-                                               asp-route-category="@currentCategory" asp-route-search="@currentSearch"
-                                               asp-route-dateFrom="@(dateFrom?.ToString("yyyy-MM-dd"))"
-                                               asp-route-dateTo="@(dateTo?.ToString("yyyy-MM-dd"))"
-                                               asp-route-minAmount="@minAmount" asp-route-maxAmount="@maxAmount">
+                                               href="@Url.Action("Index", new { page = p, category = currentCategory, search = currentSearch, dateFrom = dateFrom?.ToString("yyyy-MM-dd"), dateTo = dateTo?.ToString("yyyy-MM-dd"), minAmount, maxAmount, tagIds = selectedTags })">
                                                 @p
                                             </a>
                                         </li>
                                     }
                                     <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
                                         <a class="page-link"
-                                           asp-action="Index" asp-route-page="@(currentPage+1)"
-                                           asp-route-category="@currentCategory" asp-route-search="@currentSearch"
-                                           asp-route-dateFrom="@(dateFrom?.ToString("yyyy-MM-dd"))"
-                                           asp-route-dateTo="@(dateTo?.ToString("yyyy-MM-dd"))"
-                                           asp-route-minAmount="@minAmount" asp-route-maxAmount="@maxAmount">
+                                           href="@Url.Action("Index", new { page = currentPage + 1, category = currentCategory, search = currentSearch, dateFrom = dateFrom?.ToString("yyyy-MM-dd"), dateTo = dateTo?.ToString("yyyy-MM-dd"), minAmount, maxAmount, tagIds = selectedTags })">
                                             <i class="bi bi-chevron-right"></i>
                                         </a>
                                     </li>
