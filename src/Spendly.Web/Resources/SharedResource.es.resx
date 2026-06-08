@@ -1663,4 +1663,34 @@
   <data name="Help_Tags_Body">
     <value>Las etiquetas son marcadores personalizados (Tags) con colores que puedes asignar a tus gastos para clasificarlos de manera más granular (por ejemplo, 'Vacaciones', 'Oficina', 'Regalo'). A diferencia de las categorías, las etiquetas son totalmente opcionales y te permiten hacer búsquedas y agrupaciones más específicas en tus transacciones.</value>
   </data>
+  <data name="Tags_YourTags">
+    <value>Tus Etiquetas</value>
+  </data>
+  <data name="Tags_Transactions">
+    <value>transacciones</value>
+  </data>
+  <data name="Tags_Spent">
+    <value>gastado</value>
+  </data>
+  <data name="Tags_DistributionAnalysis">
+    <value>Análisis de Distribución</value>
+  </data>
+  <data name="Tags_TotalAmount">
+    <value>Monto Total</value>
+  </data>
+  <data name="Tags_Percentage">
+    <value>Porcentaje</value>
+  </data>
+  <data name="Tags_NoStats">
+    <value>Sin estadísticas de gastos</value>
+  </data>
+  <data name="Tags_NoStatsDesc">
+    <value>Asocia tus etiquetas a los gastos en el panel de transacciones para ver análisis en tiempo real aquí.</value>
+  </data>
+  <data name="Tags_TotalSpent">
+    <value>Total Gastado</value>
+  </data>
+  <data name="Tags_FilterByTags">
+    <value>Filtrar por Etiquetas</value>
+  </data>
 </root>

@@ -1679,4 +1679,34 @@
   <data name="Help_Tags_Body">
     <value>Tags are custom colored labels that you can assign to your expenses to classify them more granularly (e.g., 'Vacation', 'Office', 'Gift'). Unlike categories, tags are completely optional and help you filter and organize transactions more specifically.</value>
   </data>
+  <data name="Tags_YourTags">
+    <value>Your Tags</value>
+  </data>
+  <data name="Tags_Transactions">
+    <value>transactions</value>
+  </data>
+  <data name="Tags_Spent">
+    <value>spent</value>
+  </data>
+  <data name="Tags_DistributionAnalysis">
+    <value>Distribution Analysis</value>
+  </data>
+  <data name="Tags_TotalAmount">
+    <value>Total Amount</value>
+  </data>
+  <data name="Tags_Percentage">
+    <value>Percentage</value>
+  </data>
+  <data name="Tags_NoStats">
+    <value>No expense statistics</value>
+  </data>
+  <data name="Tags_NoStatsDesc">
+    <value>Associate your tags with expenses in the transactions panel to see real-time analysis here.</value>
+  </data>
+  <data name="Tags_TotalSpent">
+    <value>Total Spent</value>
+  </data>
+  <data name="Tags_FilterByTags">
+    <value>Filter by Tags</value>
+  </data>
 </root>
