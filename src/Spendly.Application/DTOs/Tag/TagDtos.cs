@@ -18,6 +18,7 @@ namespace Spendly.Application.DTOs.Tag
         public string Name { get; set; } = string.Empty;
         public string Color { get; set; } = string.Empty;
         public int ExpenseCount { get; set; }
+        public decimal TotalSpent { get; set; }
     }
 
     public class TagExpenseDto
