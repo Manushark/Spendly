@@ -35,10 +35,11 @@ namespace Spendly.Application.UseCase.ListExpenses
             decimal? minAmount,
             decimal? maxAmount,
             int page,
-            int pageSize)
+            int pageSize,
+            List<int>? tagIds = null)
         {
-            var expenses = await _expenseRepository.GetAllAsync(userId, category, search, dateFrom, dateTo, minAmount, maxAmount, page, pageSize);
-            var total = await _expenseRepository.CountAsync(userId, category, search, dateFrom, dateTo, minAmount, maxAmount);
+            var expenses = await _expenseRepository.GetAllAsync(userId, category, search, dateFrom, dateTo, minAmount, maxAmount, page, pageSize, tagIds);
+            var total = await _expenseRepository.CountAsync(userId, category, search, dateFrom, dateTo, minAmount, maxAmount, tagIds);
 
             var expensesList = expenses.ToList();
             var expenseIds = expensesList.Select(e => e.Id).ToList();
