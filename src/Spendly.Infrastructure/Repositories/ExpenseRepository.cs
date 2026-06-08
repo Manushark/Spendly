@@ -55,7 +55,8 @@ namespace Spendly.Infrastructure.Repositories
             string? category,
             string? search,
             DateTime? dateFrom,
-            DateTime? dateTo)
+            DateTime? dateTo,
+            List<int>? tagIds)
         {
             var query = _context.Expenses
                 .Where(e => e.UserId == userId)
@@ -72,6 +73,14 @@ namespace Spendly.Infrastructure.Repositories
 
             if (dateTo.HasValue)
                 query = query.Where(e => e.Date <= dateTo.Value);
+
+            if (tagIds != null && tagIds.Any())
+            {
+                var expenseIdsWithTags = _context.ExpenseTags
+                    .Where(et => tagIds.Contains(et.TagId))
+                    .Select(et => et.ExpenseId);
+                query = query.Where(e => expenseIdsWithTags.Contains(e.Id));
+            }
 
             return query;
         }
@@ -101,9 +110,10 @@ namespace Spendly.Infrastructure.Repositories
             decimal? minAmount,
             decimal? maxAmount,
             int page,
-            int pageSize)
+            int pageSize,
+            List<int>? tagIds = null)
         {
-            var query = BuildFilteredQuery(userId, category, search, dateFrom, dateTo);
+            var query = BuildFilteredQuery(userId, category, search, dateFrom, dateTo, tagIds);
 
             // If no amount filter, let SQL handle ordering + pagination entirely
             if (!minAmount.HasValue && !maxAmount.HasValue)
@@ -135,9 +145,10 @@ namespace Spendly.Infrastructure.Repositories
             DateTime? dateFrom,
             DateTime? dateTo,
             decimal? minAmount,
-            decimal? maxAmount)
+            decimal? maxAmount,
+            List<int>? tagIds = null)
         {
-            var query = BuildFilteredQuery(userId, category, search, dateFrom, dateTo);
+            var query = BuildFilteredQuery(userId, category, search, dateFrom, dateTo, tagIds);
 
             // If no amount filter, count directly in SQL
             if (!minAmount.HasValue && !maxAmount.HasValue)

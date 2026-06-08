@@ -8,22 +8,78 @@
     var totalTarget = Model.Sum(g => g.TargetAmount);
 }
 
-<div class="container-fluid">
+<style>
+    .goals-progress-card {
+        border-radius: 16px;
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-card);
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        overflow: hidden;
+    }
+    .goals-progress-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #10b981, #34d399);
+    }
+    
+    .goal-card-premium {
+        border-radius: 16px;
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-card);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+        overflow: hidden;
+    }
+    .goal-card-premium:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .form-control-custom-sm {
+        border-radius: 8px;
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border: 1px solid var(--clr-border);
+        background-color: var(--clr-surface-3);
+        color: var(--clr-text);
+        transition: all 0.2s ease;
+    }
+    .form-control-custom-sm:focus {
+        background-color: var(--clr-surface);
+        border-color: var(--clr-secondary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(var(--clr-primary-rgb), 0.15);
+    }
+    
+    .modal-content-premium {
+        background: var(--clr-surface);
+        border-radius: 20px;
+        border: 1px solid var(--clr-border);
+    }
+</style>
+
+<div class="container-fluid py-4">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1"><i class="bi bi-trophy text-warning"></i> @L["Goals_Title"]</h2>
+            <h2 class="mb-1" style="font-family:'Calistoga',serif; letter-spacing:-0.5px;">
+                <i class="bi bi-trophy text-warning me-2"></i>@L["Goals_Title"]
+                <button class="help-trigger" data-help-trigger data-help-title="@L["Help_Goals_Title"]" data-help-body="@L["Help_Goals_Body"]" data-help-icon="bi-trophy" title="Ayuda / Help">?</button>
+            </h2>
             <small class="text-muted">@L["Goals_ManageSubtitle"]</small>
         </div>
-        <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createGoalModal">
+        <button class="btn btn-primary rounded-pill px-4 fw-semibold" data-bs-toggle="modal" data-bs-target="#createGoalModal">
             <i class="bi bi-plus-lg me-1"></i> @L["Goals_NewGoal"]
         </button>
     </div>
 
     @if (TempData["Error"] is string errorMsg)
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle me-1"></i> @errorMsg
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius:12px;">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @errorMsg
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
@@ -31,19 +87,26 @@
     <!-- Overall Progress -->
     @if (Model.Any())
     {
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-body">
+        <div class="card goals-progress-card border-0 mb-4">
+            <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-semibold">@L["Goals_OverallProgress"]</span>
-                    <span class="text-muted">$@totalSaved.ToString("N2") / $@totalTarget.ToString("N2")</span>
+                    <span class="fw-bold" style="font-family:'Calistoga',serif; font-size:1.1rem;">
+                        <i class="bi bi-graph-up-arrow text-success me-2"></i>@L["Goals_OverallProgress"]
+                    </span>
+                    <span class="font-mono fw-bold text-muted" style="font-size:0.95rem;">
+                        $@totalSaved.ToString("N2") / $@totalTarget.ToString("N2")
+                    </span>
                 </div>
-                <div class="progress" style="height: 10px; border-radius: 10px;">
+                <div class="progress" style="height: 10px; border-radius: 10px; background: var(--clr-surface-3);">
                     @{
                         var overallPct = totalTarget > 0 ? Math.Min(100, (totalSaved / totalTarget) * 100) : 0;
                     }
-                    <div class="progress-bar bg-success" style="width: @overallPct.ToString(System.Globalization.CultureInfo.InvariantCulture)%"></div>
+                    <div class="progress-bar bg-success" style="width: @overallPct.ToString(System.Globalization.CultureInfo.InvariantCulture)%; background: linear-gradient(90deg, #10b981, #34d399);"></div>
                 </div>
-                <small class="text-muted mt-1 d-block">@active.Count @L["Goals_ActiveLower"] · @completed.Count @L["Goals_CompletedLower"]</small>
+                <small class="text-muted mt-2 d-block">
+                    <i class="bi bi-info-circle me-1"></i>
+                    @active.Count @L["Goals_ActiveLower"] · @completed.Count @L["Goals_CompletedLower"]
+                </small>
             </div>
         </div>
     }
@@ -51,70 +114,95 @@
     <!-- Active Goals -->
     @if (active.Any())
     {
-        <h5 class="fw-bold mb-3"><i class="bi bi-bullseye text-primary me-1"></i> @L["Goals_ActiveGoals"]</h5>
-        <div class="row g-3 mb-4">
+        <h5 class="fw-bold mb-3" style="font-family:'Calistoga',serif; letter-spacing:-0.2px;">
+            <i class="bi bi-bullseye text-primary me-2"></i>@L["Goals_ActiveGoals"]
+        </h5>
+        <div class="row g-4 mb-4">
             @foreach (var goal in active)
             {
                 <div class="col-md-6 col-lg-4">
-                    <div class="card shadow-sm border-0 h-100" style="border-left: 4px solid @goal.Color !important;">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center"
-                                         style="width:36px; height:36px; background:@(goal.Color)20;">
-                                        <i class="bi @goal.Icon" style="color:@goal.Color; font-size:1.1rem;"></i>
+                    <div class="card goal-card-premium h-100" style="border-left: 4px solid @goal.Color !important;">
+                        <div class="card-body p-4 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                             style="width:40px; height:40px; background:@(goal.Color)20; flex-shrink: 0;">
+                                            <i class="bi @goal.Icon" style="color:@goal.Color; font-size:1.2rem;"></i>
+                                        </div>
+                                        <div class="overflow-hidden">
+                                            <h6 class="mb-0 fw-bold text-truncate" style="font-family:'Calistoga',serif;">@goal.Name</h6>
+                                            @if (goal.Deadline.HasValue)
+                                            {
+                                                var daysLeft = (goal.Deadline.Value - DateTime.UtcNow).Days;
+                                                <small class="text-muted text-truncate d-block mt-0.5" style="font-size:0.75rem;">
+                                                    <i class="bi bi-clock me-1"></i>
+                                                    @if (daysLeft > 0)
+                                                    {
+                                                        <span>@daysLeft @L["Goals_DaysLeft"]</span>
+                                                    }
+                                                    else if (daysLeft == 0)
+                                                    {
+                                                        <span class="text-warning fw-semibold">@L["Time_JustNow"]</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-danger fw-semibold">@L["Bud_OverBudgetAmount"]</span>
+                                                    }
+                                                </small>
+                                            }
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h6 class="mb-0 fw-bold">@goal.Name</h6>
-                                        @if (goal.Deadline.HasValue)
-                                        {
-                                            var daysLeft = (goal.Deadline.Value - DateTime.UtcNow).Days;
-                                            <small class="text-muted">
-                                                <i class="bi bi-clock me-1"></i>@daysLeft @L["Goals_DaysLeft"]
-                                            </small>
-                                        }
+                                    <div class="dropdown">
+                                        <button class="btn btn-link btn-sm text-muted p-0" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li>
+                                                <a class="dropdown-item" asp-action="Edit" asp-route-id="@goal.Id">
+                                                    <i class="bi bi-pencil me-2"></i>@L["Common_Edit"]
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <form asp-action="Delete" asp-route-id="@goal.Id" method="post"
+                                                      onsubmit="return confirm('@L["Goal_DeleteConfirm"].Value');">
+                                                    @Html.AntiForgeryToken()
+                                                    <button class="dropdown-item text-danger" type="submit">
+                                                        <i class="bi bi-trash me-2"></i>@L["Common_Delete"]
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
-                                <div class="dropdown">
-                                    <button class="btn btn-link btn-sm text-muted p-0" data-bs-toggle="dropdown">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                        <li>
-                                            <a class="dropdown-item" asp-action="Edit" asp-route-id="@goal.Id">
-                                                <i class="bi bi-pencil me-2"></i>@L["Common_Edit"]
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <form asp-action="Delete" asp-route-id="@goal.Id" method="post"
-                                                  onsubmit="return confirm('@L["Goal_DeleteConfirm"].Value');">
-                                                @Html.AntiForgeryToken()
-                                                <button class="dropdown-item text-danger" type="submit">
-                                                    <i class="bi bi-trash me-2"></i>@L["Common_Delete"]
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
 
-                            <div class="mb-2">
-                                <div class="d-flex justify-content-between mb-1">
-                                    <span class="fw-semibold" style="color:@goal.Color;">$@goal.CurrentAmount.ToString("N2")</span>
-                                    <span class="text-muted">$@goal.TargetAmount.ToString("N2")</span>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="fw-bold font-mono" style="color:@goal.Color; font-size:1.05rem;">
+                                            $@goal.CurrentAmount.ToString("N2")
+                                        </span>
+                                        <span class="text-muted font-mono" style="font-size:0.95rem;">
+                                            $@goal.TargetAmount.ToString("N2")
+                                        </span>
+                                    </div>
+                                    <div class="progress mb-1" style="height: 8px; border-radius: 8px; background: var(--clr-surface-3);">
+                                        <div class="progress-bar" style="width: @goal.ProgressPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%; background:@goal.Color; border-radius:8px;"></div>
+                                    </div>
+                                    <small class="text-muted font-mono" style="font-size:0.75rem;">
+                                        @goal.ProgressPercentage.ToString("N1")% @L["Goals_Complete"]
+                                    </small>
                                 </div>
-                                <div class="progress" style="height: 8px; border-radius: 8px;">
-                                    <div class="progress-bar" style="width: @goal.ProgressPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%; background:@goal.Color;"></div>
-                                </div>
-                                <small class="text-muted">@goal.ProgressPercentage.ToString("N1")% @L["Goals_Complete"]</small>
                             </div>
 
                             <!-- Add Funds Form -->
-                            <form asp-action="AddFunds" asp-route-id="@goal.Id" method="post" class="d-flex gap-2 mt-2">
+                            <form asp-action="AddFunds" asp-route-id="@goal.Id" method="post" class="d-flex gap-2 mt-2 pt-2 border-top">
                                 @Html.AntiForgeryToken()
-                                <input type="number" name="amount" step="0.01" min="0.01" placeholder="@L["Ph_Amount"]"
-                                       class="form-control form-control-sm" required style="max-width: 120px;">
-                                <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                                <div class="input-group input-group-sm flex-grow-1" style="max-width: 140px;">
+                                    <span class="input-group-text bg-transparent border-end-0 px-2 text-muted" style="border-color:var(--clr-border);">$</span>
+                                    <input type="number" name="amount" step="0.01" min="0.01" placeholder="@L["Ph_Amount"]"
+                                           class="form-control form-control-custom-sm font-mono border-start-0 ps-0" required>
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold">
                                     <i class="bi bi-plus-circle me-1"></i>@L["Goal_AddFunds"]
                                 </button>
                             </form>
@@ -128,28 +216,32 @@
     <!-- Completed Goals -->
     @if (completed.Any())
     {
-        <h5 class="fw-bold mb-3"><i class="bi bi-check-circle text-success me-1"></i> @L["Goals_Completed"]</h5>
-        <div class="row g-3 mb-4">
+        <h5 class="fw-bold mb-3 mt-4" style="font-family:'Calistoga',serif; letter-spacing:-0.2px;">
+            <i class="bi bi-check-circle text-success me-2"></i>@L["Goals_Completed"]
+        </h5>
+        <div class="row g-4 mb-4">
             @foreach (var goal in completed)
             {
                 <div class="col-md-6 col-lg-4">
-                    <div class="card shadow-sm border-0 h-100 opacity-75">
-                        <div class="card-body">
+                    <div class="card goal-card-premium h-100 opacity-75" style="border-left: 4px solid #10b981 !important;">
+                        <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center gap-2">
+                                <div class="d-flex align-items-center gap-3">
                                     <div class="rounded-circle d-flex align-items-center justify-content-center bg-success bg-opacity-10"
-                                         style="width:36px; height:36px;">
-                                        <i class="bi bi-check-lg text-success fs-5"></i>
+                                         style="width:40px; height:40px; flex-shrink: 0;">
+                                        <i class="bi bi-trophy-fill text-success fs-5"></i>
                                     </div>
-                                    <div>
-                                        <h6 class="mb-0 fw-bold text-decoration-line-through">@goal.Name</h6>
-                                        <small class="text-success fw-semibold">$@goal.TargetAmount.ToString("N2") @L["Goals_Achieved"]</small>
+                                    <div class="overflow-hidden">
+                                        <h6 class="mb-0 fw-bold text-decoration-line-through text-truncate" style="font-family:'Calistoga',serif;">@goal.Name</h6>
+                                        <small class="text-success fw-semibold font-mono d-block mt-0.5">
+                                            $@goal.TargetAmount.ToString("N2") @L["Goals_Achieved"]
+                                        </small>
                                     </div>
                                 </div>
                                 <form asp-action="Delete" asp-route-id="@goal.Id" method="post"
                                       onsubmit="return confirm('@L["Goal_DeleteConfirm"].Value');">
                                     @Html.AntiForgeryToken()
-                                    <button class="btn btn-link btn-sm text-muted p-0" type="submit">
+                                    <button class="btn btn-link btn-sm text-danger p-0 rounded-circle" type="submit" style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.05);">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -164,75 +256,79 @@
     <!-- Empty State -->
     @if (!Model.Any())
     {
-        <div class="text-center py-5">
-            <i class="bi bi-trophy fs-1 text-muted d-block mb-3 opacity-50"></i>
-            <h5 class="text-muted">@L["Goals_NoGoals"]</h5>
-            <p class="text-muted">@L["Goals_StartPlanning"]</p>
-            <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createGoalModal">
-                <i class="bi bi-plus-lg me-1"></i> @L["Goals_NewGoal"]
-            </button>
+        <div class="card goal-card-premium border-0 py-5 mt-4">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-trophy display-1 text-muted d-block mb-3 opacity-30"></i>
+                <h3 class="mb-3" style="font-family:'Calistoga',serif;">@L["Goals_NoGoals"]</h3>
+                <p class="text-muted mb-4">@L["Goals_StartPlanning"]</p>
+                <button class="btn btn-primary rounded-pill px-5 btn-lg fw-semibold" data-bs-toggle="modal" data-bs-target="#createGoalModal">
+                    <i class="bi bi-plus-lg me-1"></i> @L["Goals_NewGoal"]
+                </button>
+            </div>
         </div>
     }
 </div>
 
 <!-- Create Goal Modal -->
 <div class="modal fade" id="createGoalModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content border-0 shadow-lg">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-premium border-0 shadow-lg">
             <form asp-action="Create" method="post">
                 @Html.AntiForgeryToken()
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-trophy me-2 text-warning"></i>@L["Goals_NewGoal"]</h5>
+                <div class="modal-header border-0 pb-0 px-4 pt-4">
+                    <h5 class="modal-title fw-bold" style="font-family:'Calistoga',serif;">
+                        <i class="bi bi-trophy me-2 text-warning"></i>@L["Goals_NewGoal"]
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">@L["Common_Name"]</label>
-                        <input type="text" name="Name" class="form-control" placeholder="@L["Ph_GoalName"]" required maxlength="100">
+                <div class="modal-body px-4 py-3">
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-semibold text-uppercase" style="letter-spacing:0.5px;">@L["Common_Name"]</label>
+                        <input type="text" name="Name" class="form-control rounded-3" placeholder="@L["Ph_GoalName"]" required maxlength="100" style="padding: 10px 14px;">
                     </div>
-                    <div class="row g-3 mb-3">
+                    <div class="row g-3 mb-4">
                         <div class="col-6">
-                            <label class="form-label fw-semibold">@L["Goal_TargetAmount"]</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase" style="letter-spacing:0.5px;">@L["Goal_TargetAmount"]</label>
                             <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" name="TargetAmount" class="form-control" step="0.01" min="1" required>
+                                <span class="input-group-text" style="background:var(--clr-surface-3); border-color:var(--clr-border);">$</span>
+                                <input type="number" name="TargetAmount" class="form-control rounded-end-3 font-mono" step="0.01" min="1" required style="padding: 10px 14px;">
                             </div>
                         </div>
                         <div class="col-6">
-                            <label class="form-label fw-semibold">@L["Goal_AlreadySaved"]</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase" style="letter-spacing:0.5px;">@L["Goal_AlreadySaved"]</label>
                             <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" name="CurrentAmount" class="form-control" step="0.01" min="0" value="0">
+                                <span class="input-group-text" style="background:var(--clr-surface-3); border-color:var(--clr-border);">$</span>
+                                <input type="number" name="CurrentAmount" class="form-control rounded-end-3 font-mono" step="0.01" min="0" value="0" style="padding: 10px 14px;">
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">@L["Goal_Deadline"] (@L["Common_Optional"])</label>
-                        <input type="date" name="Deadline" class="form-control">
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-semibold text-uppercase" style="letter-spacing:0.5px;">@L["Goal_Deadline"] (@L["Common_Optional"])</label>
+                        <input type="date" name="Deadline" class="form-control rounded-3" style="padding: 10px 14px;">
                     </div>
                     <div class="row g-3">
                         <div class="col-6">
-                            <label class="form-label fw-semibold">@L["Common_Icon"]</label>
-                            <select name="Icon" class="form-select">
-                                <option value="bi-bullseye">@L["Goal_IconTarget"]</option>
-                                <option value="bi-airplane">@L["Goal_IconTravel"]</option>
-                                <option value="bi-house">@L["Goal_IconHome"]</option>
-                                <option value="bi-car-front">@L["Goal_IconCar"]</option>
-                                <option value="bi-mortarboard">@L["Goal_IconEducation"]</option>
-                                <option value="bi-heart">@L["Goal_IconHealth"]</option>
-                                <option value="bi-gift">@L["Goal_IconGift"]</option>
-                                <option value="bi-laptop">@L["Goal_IconTech"]</option>
-                                <option value="bi-piggy-bank">@L["Goal_IconSavings"]</option>
-                                <option value="bi-shield-check">@L["Goal_IconEmergency"]</option>
+                            <label class="form-label text-muted small fw-semibold text-uppercase" style="letter-spacing:0.5px;">@L["Common_Icon"]</label>
+                            <select name="Icon" class="form-select rounded-3" style="padding: 10px 14px;">
+                                <option value="bi-bullseye">🎯 @L["Goal_IconTarget"]</option>
+                                <option value="bi-airplane">✈️ @L["Goal_IconTravel"]</option>
+                                <option value="bi-house">🏠 @L["Goal_IconHome"]</option>
+                                <option value="bi-car-front">🚗 @L["Goal_IconCar"]</option>
+                                <option value="bi-mortarboard">🎓 @L["Goal_IconEducation"]</option>
+                                <option value="bi-heart">❤️ @L["Goal_IconHealth"]</option>
+                                <option value="bi-gift">🎁 @L["Goal_IconGift"]</option>
+                                <option value="bi-laptop">💻 @L["Goal_IconTech"]</option>
+                                <option value="bi-piggy-bank">🐷 @L["Goal_IconSavings"]</option>
+                                <option value="bi-shield-check">🛡️ @L["Goal_IconEmergency"]</option>
                             </select>
                         </div>
                         <div class="col-6">
-                            <label class="form-label fw-semibold">@L["Common_Color"]</label>
-                            <input type="color" name="Color" class="form-control form-control-color w-100" value="#6366f1">
+                            <label class="form-label text-muted small fw-semibold text-uppercase" style="letter-spacing:0.5px;">@L["Common_Color"]</label>
+                            <input type="color" name="Color" class="form-control form-control-color w-100 rounded-3" value="#6366f1" style="height: 43px; padding: 6px;">
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-0 pt-0">
+                <div class="modal-footer border-0 px-4 pb-4 pt-2">
                     <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">@L["Common_Cancel"]</button>
                     <button type="submit" class="btn btn-primary rounded-pill px-4">
                         <i class="bi bi-check-lg me-1"></i>@L["Common_Create"]

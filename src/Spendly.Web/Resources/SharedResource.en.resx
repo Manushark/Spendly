@@ -62,6 +62,18 @@
   <data name="Nav_LoggedInAs">
     <value>Logged in as</value>
   </data>
+  <data name="Nav_Finance">
+    <value>Finance</value>
+  </data>
+  <data name="Nav_Organize">
+    <value>Organize</value>
+  </data>
+  <data name="Nav_Analytics">
+    <value>Analytics</value>
+  </data>
+  <data name="Nav_Tools">
+    <value>Tools</value>
+  </data>
   <data name="Nav_Logout">
     <value>Logout</value>
   </data>
@@ -303,6 +315,12 @@
   </data>
   <data name="Dash_SpentLabel">
     <value>Spent</value>
+  </data>
+  <data name="Dash_CashFlowSummary">
+    <value>Cash Flow Summary</value>
+  </data>
+  <data name="Dash_IncomeVsExpenses">
+    <value>Income vs. Expenses</value>
   </data>
   <!-- ═══════ Expenses ═══════ -->
   <data name="Exp_Title">
@@ -1379,6 +1397,12 @@
   <data name="Notif_Toast">
     <value>You have a new notification</value>
   </data>
+  <data name="Notif_ClearAll" xml:space="preserve">
+    <value>Clear All</value>
+  </data>
+  <data name="Notif_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
   <!-- ═══════ Reports ═══════ -->
   <data name="Rep_Title">
     <value>Financial Report</value>
@@ -1582,5 +1606,107 @@
   </data>
   <data name="DefCat_Other">
     <value>Other</value>
+  </data>
+  <data name="Ins_AccelerationTitle">
+    <value>Expense Acceleration</value>
+  </data>
+  <data name="Ins_PrevMonth">
+    <value>prev. month</value>
+  </data>
+  <data name="Ins_NoAcceleration">
+    <value>No categories have accelerated spending. Well done!</value>
+  </data>
+  <data name="Help_BtnClose">
+    <value>Got it</value>
+  </data>
+  <data name="Help_Dash_Title">
+    <value>Help: Dashboard</value>
+  </data>
+  <data name="Help_Dash_Body">
+    <value>The Dashboard provides a real-time summary of your financial health this month. Here you can see your total income, total expenses, net balance, and savings rate. Below you will find your recent transaction history and charts breaking down your expenditures by category.</value>
+  </data>
+  <data name="Help_Exp_Title">
+    <value>Help: Expense Tracker</value>
+  </data>
+  <data name="Help_Exp_Body">
+    <value>This section allows you to view, filter, and log all your expenses. You can add new transactions using the quick creation sidebar. Use advanced filters by category, date range, or amount to analyze your spending habits and keep your logs up to date.</value>
+  </data>
+  <data name="Help_Inc_Title">
+    <value>Help: Income Tracker</value>
+  </data>
+  <data name="Help_Inc_Body">
+    <value>Register all your sources of cash here, such as salary, investments, or freelance work. Keeping your income records updated is essential for the system to calculate your correct net balance and savings rate.</value>
+  </data>
+  <data name="Help_Budg_Title">
+    <value>Help: Monthly Budgets</value>
+  </data>
+  <data name="Help_Budg_Body">
+    <value>Budgets help you set spending limits for each category (e.g., food or entertainment). The system will notify you if you are close to reaching your budget (80%) or if you have exceeded it.</value>
+  </data>
+  <data name="Help_Rec_Title">
+    <value>Help: Recurring Expenses</value>
+  </data>
+  <data name="Help_Rec_Body">
+    <value>Set up recurring bills, subscriptions, or repetitive payments (like rent, Netflix, or utilities). Spendly will automatically generate these expenses on their designated dates, saving you from entering them manually every month.</value>
+  </data>
+  <data name="Help_Goals_Title">
+    <value>Help: Savings Goals</value>
+  </data>
+  <data name="Help_Goals_Body">
+    <value>Set specific financial goals (e.g., buying a car, emergency fund). You can allocate funds directly from your savings to each goal and monitor your progress towards achieving them.</value>
+  </data>
+  <data name="Help_Rep_Title">
+    <value>Help: Reports &amp; Export</value>
+  </data>
+  <data name="Help_Rep_Body">
+    <value>Visualize your financial patterns over specific periods. You can generate a premium monthly summary report designed to be printed directly as PDF from your browser for archiving.</value>
+  </data>
+  <data name="Help_Ins_Title">
+    <value>Help: Insights &amp; Analytics</value>
+  </data>
+  <data name="Help_Ins_Body">
+    <value>Spendly automatically analyzes your spending habits to provide personalized insights and recommendations. It will flag if you are spending heavily on weekends, show your single largest transaction, or alert you if spending in a category is accelerating.</value>
+  </data>
+  <data name="Help_Cat_Title">
+    <value>Help: Categories</value>
+  </data>
+  <data name="Help_Cat_Body">
+    <value>Categories organize your income and expenses to provide a clear financial analysis. Spendly includes 8 default categories (\"Food &amp; Dining\", \"Transportation\", etc.). You can add custom categories here. Modifying a category automatically updates all associated transactions.</value>
+  </data>
+  <data name="Help_Tags_Title">
+    <value>Help: Tags</value>
+  </data>
+  <data name="Help_Tags_Body">
+    <value>Tags are custom colored labels that you can assign to your expenses to classify them more granularly (e.g., 'Vacation', 'Office', 'Gift'). Unlike categories, tags are completely optional and help you filter and organize transactions more specifically.</value>
+  </data>
+  <data name="Tags_YourTags">
+    <value>Your Tags</value>
+  </data>
+  <data name="Tags_Transactions">
+    <value>transactions</value>
+  </data>
+  <data name="Tags_Spent">
+    <value>spent</value>
+  </data>
+  <data name="Tags_DistributionAnalysis">
+    <value>Distribution Analysis</value>
+  </data>
+  <data name="Tags_TotalAmount">
+    <value>Total Amount</value>
+  </data>
+  <data name="Tags_Percentage">
+    <value>Percentage</value>
+  </data>
+  <data name="Tags_NoStats">
+    <value>No expense statistics</value>
+  </data>
+  <data name="Tags_NoStatsDesc">
+    <value>Associate your tags with expenses in the transactions panel to see real-time analysis here.</value>
+  </data>
+  <data name="Tags_TotalSpent">
+    <value>Total Spent</value>
+  </data>
+  <data name="Tags_FilterByTags">
+    <value>Filter by Tags</value>
   </data>
 </root>

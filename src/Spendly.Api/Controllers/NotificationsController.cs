@@ -16,17 +16,23 @@ namespace Spendly.Api.Controllers
         private readonly MarkNotificationReadUseCase _markRead;
         private readonly MarkAllNotificationsReadUseCase _markAllRead;
         private readonly GetUnreadCountUseCase _getUnreadCount;
+        private readonly DeleteNotificationUseCase _delete;
+        private readonly DeleteAllNotificationsUseCase _deleteAll;
 
         public NotificationsController(
             GetNotificationsUseCase getAll,
             MarkNotificationReadUseCase markRead,
             MarkAllNotificationsReadUseCase markAllRead,
-            GetUnreadCountUseCase getUnreadCount)
+            GetUnreadCountUseCase getUnreadCount,
+            DeleteNotificationUseCase delete,
+            DeleteAllNotificationsUseCase deleteAll)
         {
             _getAll = getAll;
             _markRead = markRead;
             _markAllRead = markAllRead;
             _getUnreadCount = getUnreadCount;
+            _delete = delete;
+            _deleteAll = deleteAll;
         }
 
         /// <summary>
@@ -69,6 +75,28 @@ namespace Spendly.Api.Controllers
         {
             await _markAllRead.ExecuteAsync(User.GetUserId());
             return Ok(new { message = "All notifications marked as read" });
+        }
+
+        /// <summary>
+        /// DELETE /api/notifications/{id}
+        /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _delete.ExecuteAsync(User.GetUserId(), id);
+            return Ok(new { message = "Notification deleted" });
+        }
+
+        /// <summary>
+        /// DELETE /api/notifications/clear-all
+        /// </summary>
+        [EnableRateLimiting(RateLimitPolicies.WriteOperations)]
+        [HttpDelete("clear-all")]
+        public async Task<IActionResult> DeleteAll()
+        {
+            await _deleteAll.ExecuteAsync(User.GetUserId());
+            return Ok(new { message = "All notifications cleared" });
         }
     }
 }

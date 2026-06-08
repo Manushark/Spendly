@@ -59,4 +59,28 @@ namespace Spendly.Application.UseCases.Notifications
             return await _repo.CountUnreadAsync(userId);
         }
     }
+
+    public class DeleteNotificationUseCase
+    {
+        private readonly INotificationRepository _repo;
+
+        public DeleteNotificationUseCase(INotificationRepository repo) => _repo = repo;
+
+        public async Task ExecuteAsync(int userId, int id)
+        {
+            await _repo.DeleteAsync(userId, id);
+        }
+    }
+
+    public class DeleteAllNotificationsUseCase
+    {
+        private readonly INotificationRepository _repo;
+
+        public DeleteAllNotificationsUseCase(INotificationRepository repo) => _repo = repo;
+
+        public async Task ExecuteAsync(int userId)
+        {
+            await _repo.DeleteAllAsync(userId);
+        }
+    }
 }

@@ -20,10 +20,11 @@ namespace Spendly.Application.Interfaces
             decimal? minAmount,
             decimal? maxAmount,
             int page,
-            int pageSize
+            int pageSize,
+            List<int>? tagIds = null
             );
 
-        Task<int> CountAsync(int userId, string? category, string? search, DateTime? dateFrom, DateTime? dateTo, decimal? minAmount, decimal? maxAmount);
+        Task<int> CountAsync(int userId, string? category, string? search, DateTime? dateFrom, DateTime? dateTo, decimal? minAmount, decimal? maxAmount, List<int>? tagIds = null);
 
 
         // ─── Métodos para Dashboard ───

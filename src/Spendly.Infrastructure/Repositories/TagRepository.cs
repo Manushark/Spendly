@@ -48,6 +48,7 @@ namespace Spendly.Infrastructure.Repositories
         {
             return await _context.Tags
                 .Include(t => t.ExpenseTags)
+                    .ThenInclude(et => et.Expense)
                 .Where(t => t.UserId == userId)
                 .OrderBy(t => t.Name)
                 .ToListAsync();

@@ -40,5 +40,16 @@ namespace Spendly.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, string name, string color)
+        {
+            var success = await _api.UpdateAsync(id, name, color ?? "#6366f1");
+            if (!success)
+                TempData["Error"] = "Failed to update tag. It may already exist.";
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

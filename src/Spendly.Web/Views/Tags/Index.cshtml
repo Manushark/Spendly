@@ -4,76 +4,429 @@
     ViewData["Title"] = L["Tags_Title"].Value;
 }
 
-<div class="container-fluid">
+<style>
+    /* ── Action buttons ── */
+    .action-btn {
+        width: 32px; height: 32px;
+        border-radius: 8px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        transition: all 0.18s ease;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .action-btn-edit {
+        background: rgba(59,130,246,.12);
+        color: #3b82f6;
+        border: 1px solid rgba(59,130,246,.22);
+    }
+    .action-btn-edit:hover {
+        background: #3b82f6;
+        color: #fff;
+        transform: scale(1.1);
+    }
+    .action-btn-delete {
+        background: rgba(239,68,68,.12);
+        color: #ef4444;
+        border: 1px solid rgba(239,68,68,.22);
+    }
+    .action-btn-delete:hover {
+        background: #ef4444;
+        color: #fff;
+        transform: scale(1.1);
+    }
+
+    /* ── Preset Colors ── */
+    .color-preset-btn {
+        width: 24px;
+        height: 24px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .color-preset-btn:hover {
+        transform: scale(1.2);
+    }
+    .color-preset-btn.active {
+        border-color: var(--clr-text) !important;
+        transform: scale(1.2);
+    }
+
+    /* ── Tag Row items ── */
+    .tag-row-item {
+        transition: all 0.2s ease;
+    }
+    .tag-row-item:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+</style>
+
+<div class="container-fluid py-4">
+    @* ─── Header ─────────────────────────────────────────────── *@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1"><i class="bi bi-tags text-primary"></i> @L["Tags_Title"]</h2>
+            <h2 class="mb-1" style="font-family:'Calistoga',serif;letter-spacing:-0.5px;">
+                <i class="bi bi-tags text-primary me-2"></i>@L["Tags_Title"]
+                <button class="help-trigger" data-help-trigger data-help-title="@L["Help_Tags_Title"]" data-help-body="@L["Help_Tags_Body"]" data-help-icon="bi-tags" title="Ayuda / Help">?</button>
+            </h2>
             <small class="text-muted">@L["Tags_ManageSubtitle"]</small>
         </div>
     </div>
 
+    @* Alerts *@
     @if (TempData["Error"] is string errorMsg)
     {
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle me-1"></i> @errorMsg
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMsg
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    <!-- Create Tag Form -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-            <h6 class="fw-bold mb-3"><i class="bi bi-plus-circle me-1 text-primary"></i>@L["Tags_CreateTag"]</h6>
-            <form asp-action="Create" method="post" class="d-flex gap-3 align-items-end">
-                @Html.AntiForgeryToken()
-                <div class="flex-grow-1">
-                    <label class="form-label fw-semibold small">@L["Tag_TagName"]</label>
-                    <input type="text" name="name" class="form-control" placeholder="@L["Ph_Tags"]" required maxlength="30">
-                </div>
-                <div>
-                    <label class="form-label fw-semibold small">@L["Common_Color"]</label>
-                    <input type="color" name="color" class="form-control form-control-color" value="#6366f1" style="width:50px;">
-                </div>
-                <button type="submit" class="btn btn-primary rounded-pill px-4">
-                    <i class="bi bi-plus-lg me-1"></i>@L["Common_Create"]
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Tags List -->
-    @if (Model.Any())
-    {
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h6 class="fw-bold mb-3">Your Tags (@Model.Count)</h6>
-                <div class="d-flex flex-wrap gap-3">
-                    @foreach (var tag in Model)
-                    {
-                        <div class="d-flex align-items-center gap-2 border rounded-pill px-3 py-2"
-                             style="border-color: @(tag.Color)40 !important; background: @(tag.Color)08;">
-                            <span class="rounded-circle" style="width:12px; height:12px; background:@tag.Color; display:inline-block;"></span>
-                            <span class="fw-semibold">@tag.Name</span>
-                            <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill">@tag.ExpenseCount</span>
-                            <form asp-action="Delete" asp-route-id="@tag.Id" method="post" class="d-inline"
-                                  onsubmit="return confirm('@L["Tag_DeleteConfirm"].Value');">
-                                @Html.AntiForgeryToken()
-                                <button class="btn btn-link btn-sm text-danger p-0 ms-1" type="submit">
-                                    <i class="bi bi-x-circle"></i>
+    <div class="row g-4">
+        @* ─── LEFT COLUMN: Create and List Tags ──────────────────── *@
+        <div class="col-lg-6">
+            <!-- Create Tag Card -->
+            <div class="card shadow-sm border-0 mb-4" style="background:var(--clr-surface); border: 1px solid var(--clr-border) !important; border-radius:14px;">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3 d-flex align-items-center"><i class="bi bi-plus-circle me-2 text-primary"></i>@L["Tags_CreateTag"]</h6>
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3 align-items-end">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold small text-muted text-uppercase">@L["Tag_TagName"]</label>
+                                <input type="text" name="name" class="form-control" placeholder="@L["Ph_Tags"]" required maxlength="30">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold small text-muted text-uppercase">@L["Common_Color"]</label>
+                                <div class="d-flex align-items-center gap-2">
+                                    <input type="color" name="color" id="createTagColorInput" class="form-control form-control-color border-0 shadow-sm" value="#6366f1" style="width:48px; height:38px; border-radius:8px; padding:4px; cursor:pointer;">
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        @foreach (var color in new[] { "#6366f1", "#10b981", "#f43f5e", "#f59e0b", "#0ea5e9", "#8b5cf6", "#64748b" })
+                                        {
+                                            <button type="button" class="color-preset-btn rounded-circle" data-preset-color="@color" 
+                                                    style="width: 22px; height: 22px; background-color: @color;" title="@color"></button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 text-end mt-3">
+                                <button type="submit" class="btn btn-primary rounded-pill px-4 w-100 w-md-auto fw-semibold">
+                                    <i class="bi bi-plus-lg me-1"></i>@L["Common_Create"]
                                 </button>
-                            </form>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tags List Card -->
+            <div class="card shadow-sm border-0" style="background:var(--clr-surface); border: 1px solid var(--clr-border) !important; border-radius:14px;">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3 d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-list-stars me-2 text-primary"></i>@L["Tags_YourTags"]</span>
+                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill fw-bold px-3 py-1.5" style="font-size:0.75rem;">@Model.Count</span>
+                    </h6>
+
+                    @if (Model.Any())
+                    {
+                        <div class="d-flex flex-column gap-2" style="max-height: 480px; overflow-y: auto; padding-right: 5px;">
+                            @foreach (var tag in Model)
+                            {
+                                <div class="d-flex align-items-center justify-content-between border rounded-3 p-3 tag-row-item"
+                                     style="border-color: @(tag.Color)25 !important; background: @(tag.Color)05;">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="rounded-circle shadow-sm" style="width:16px; height:16px; background:@tag.Color; border: 2px solid var(--clr-surface); display:inline-block;"></span>
+                                        <div>
+                                            <span class="fw-bold text-uppercase" style="font-size:0.88rem; letter-spacing: 0.5px;">@tag.Name</span>
+                                            <div class="d-flex gap-2 align-items-center mt-1">
+                                                <span class="text-muted small" style="font-size: 0.76rem;">
+                                                    <i class="bi bi-receipt me-1"></i>@tag.ExpenseCount @L["Tags_Transactions"]
+                                                </span>
+                                                <span class="rounded-circle bg-secondary bg-opacity-30" style="width: 3px; height: 3px;"></span>
+                                                <span class="fw-semibold text-danger small" style="font-size: 0.76rem;">
+                                                    $@tag.TotalSpent.ToString("N2") @L["Tags_Spent"]
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button class="action-btn action-btn-edit me-1" type="button" title="Editar"
+                                                onclick="openEditTagModal(@tag.Id, '@tag.Name', '@tag.Color')">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </button>
+                                        <form asp-action="Delete" asp-route-id="@tag.Id" method="post" class="d-inline m-0 p-0"
+                                              onsubmit="return confirm('@L["Tag_DeleteConfirm"].Value');">
+                                            @Html.AntiForgeryToken()
+                                            <button class="action-btn action-btn-delete" type="submit" title="@L["Common_Delete"]">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-tags fs-1 text-muted d-block mb-3 opacity-50"></i>
+                            <h5 class="text-muted">@L["Tags_NoTags"]</h5>
+                            <p class="text-muted small">@L["Tag_CreateFirst"]</p>
                         </div>
                     }
                 </div>
             </div>
         </div>
-    }
-    else
-    {
-        <div class="text-center py-5">
-            <i class="bi bi-tags fs-1 text-muted d-block mb-3 opacity-50"></i>
-            <h5 class="text-muted">@L["Tags_NoTags"]</h5>
-            <p class="text-muted">@L["Tag_CreateFirst"]</p>
+
+        @* ─── RIGHT COLUMN: Analytics ────────────────────────────── *@
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100" style="background:var(--clr-surface); border: 1px solid var(--clr-border) !important; border-radius:14px;">
+                <div class="card-body p-4 d-flex flex-column h-100">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2 text-primary"></i>@L["Tags_DistributionAnalysis"]</h6>
+
+                    @if (Model.Any(t => t.ExpenseCount > 0))
+                    {
+                        <div id="tagsDonutChart" class="my-auto"></div>
+
+                        <div class="table-responsive mt-4">
+                            <table class="table table-sm table-borderless align-middle mb-0" style="font-size: 0.85rem;">
+                                <thead>
+                                    <tr class="text-muted border-bottom" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        <th>@L["Tags_Title"]</th>
+                                        <th class="text-center">@L["Tags_Transactions"]</th>
+                                        <th class="text-end">@L["Tags_TotalAmount"]</th>
+                                        <th class="text-end">@L["Tags_Percentage"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var grandTotal = Model.Sum(t => t.TotalSpent);
+                                        if (grandTotal == 0) grandTotal = 1; // Prevent division by zero
+                                    }
+                                    @foreach (var tag in Model.OrderByDescending(t => t.TotalSpent))
+                                    {
+                                        var pct = (tag.TotalSpent / grandTotal) * 100;
+                                        <tr class="align-middle">
+                                            <td class="py-2.5">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="rounded-circle" style="width: 8px; height: 8px; background-color: @tag.Color;"></span>
+                                                    <span class="fw-bold text-uppercase" style="font-size:0.8rem;">@tag.Name</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-center text-muted">@tag.ExpenseCount</td>
+                                            <td class="text-end fw-semibold text-danger">-$@tag.TotalSpent.ToString("N2")</td>
+                                            <td class="text-end text-muted fw-bold">@pct.ToString("F1")%</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="my-auto text-center py-5">
+                            <i class="bi bi-graph-up-arrow fs-1 text-muted d-block mb-3 opacity-30"></i>
+                            <h6 class="text-muted fw-semibold">@L["Tags_NoStats"]</h6>
+                            <p class="text-muted small px-4">@L["Tags_NoStatsDesc"]</p>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
-    }
+    </div>
 </div>
+
+<!-- Edit Tag Modal -->
+<div class="modal fade" id="editTagModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form asp-action="Edit" method="post" id="editTagForm" class="w-100">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" id="editTagId" />
+            <div class="modal-content border-0 shadow-lg" style="border-radius:16px; background:var(--clr-surface);">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-pencil-square text-primary me-2"></i>@L["Common_Edit"]
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold small text-muted text-uppercase">@L["Tag_TagName"]</label>
+                        <input type="text" name="name" id="editTagName" class="form-control" placeholder="@L["Ph_Tags"]" required maxlength="30">
+                    </div>
+                    <div>
+                        <label class="form-label fw-semibold small text-muted text-uppercase">@L["Common_Color"]</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="color" name="color" id="editTagColor" class="form-control form-control-color border-0 shadow-sm" style="width:48px; height:38px; border-radius:8px; padding:4px; cursor:pointer;">
+                            <div class="d-flex flex-wrap gap-1" id="editCuratedColors">
+                                <!-- Curated presets will be inserted here via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+                        @L["Common_Cancel"]
+                    </button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                        @L["Common_Save"]
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        // Preset colors handling in creation form
+        document.querySelectorAll('.color-preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const color = btn.getAttribute('data-preset-color');
+                document.getElementById('createTagColorInput').value = color;
+                btn.closest('.d-flex').querySelectorAll('.color-preset-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Edit Modal opening and presets binding
+        function openEditTagModal(id, name, color) {
+            document.getElementById('editTagId').value = id;
+            document.getElementById('editTagName').value = name;
+            document.getElementById('editTagColor').value = color;
+
+            const presetContainer = document.getElementById('editCuratedColors');
+            presetContainer.innerHTML = '';
+            const curatedColors = ['#6366f1', '#10b981', '#f43f5e', '#f59e0b', '#0ea5e9', '#8b5cf6', '#64748b'];
+
+            curatedColors.forEach(cc => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'color-preset-btn rounded-circle';
+                btn.style.width = '22px';
+                btn.style.height = '22px';
+                btn.style.backgroundColor = cc;
+                if (cc.toLowerCase() === color.toLowerCase()) {
+                    btn.classList.add('active');
+                }
+                btn.addEventListener('click', () => {
+                    document.getElementById('editTagColor').value = cc;
+                    presetContainer.querySelectorAll('.color-preset-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+                presetContainer.appendChild(btn);
+            });
+
+            const editModal = new bootstrap.Modal(document.getElementById('editTagModal'));
+            editModal.show();
+        }
+
+        // ApexCharts Donut Chart loading
+        document.addEventListener("DOMContentLoaded", function () {
+            const chartDom = document.getElementById('tagsDonutChart');
+            if (chartDom) {
+                const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+                
+                const labels = [];
+                const series = [];
+                const colors = [];
+
+                @foreach (var tag in Model.Where(t => t.TotalSpent > 0).OrderByDescending(t => t.TotalSpent))
+                {
+                    <text>
+                    labels.push('@Html.Raw(tag.Name.ToUpper())');
+                    series.push(@tag.TotalSpent.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                    colors.push('@tag.Color');
+                    </text>
+                }
+
+                const options = {
+                    series: series,
+                    labels: labels,
+                    chart: {
+                        type: 'donut',
+                        height: 290,
+                        background: 'transparent',
+                        foreColor: 'var(--clr-text-muted)',
+                        fontFamily: 'Inter, sans-serif',
+                    },
+                    colors: colors,
+                    stroke: {
+                        show: true,
+                        width: 2,
+                        colors: [isDark ? 'var(--clr-bg-card)' : '#fff']
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '72%',
+                                labels: {
+                                    show: true,
+                                    name: {
+                                        show: true,
+                                        fontSize: '13px',
+                                        fontFamily: 'Inter, sans-serif',
+                                        fontWeight: 600,
+                                        color: 'var(--clr-text-muted)',
+                                        offsetY: -8
+                                    },
+                                    value: {
+                                        show: true,
+                                        fontSize: '18px',
+                                        fontFamily: 'Inter, sans-serif',
+                                        fontWeight: 700,
+                                        color: 'var(--clr-text)',
+                                        offsetY: 4,
+                                        formatter: function (val) {
+                                            return "$" + Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                        }
+                                    },
+                                    total: {
+                                        show: true,
+                                        label: '@Html.Raw(L["Tags_TotalSpent"].Value)',
+                                        fontFamily: 'Inter, sans-serif',
+                                        fontWeight: 600,
+                                        color: 'var(--clr-text-muted)',
+                                        formatter: function (w) {
+                                            return "$" + w.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontFamily: 'Inter, sans-serif',
+                        labels: {
+                            colors: 'var(--clr-text)'
+                        },
+                        markers: {
+                            radius: 12
+                        }
+                    },
+                    tooltip: {
+                        theme: isDark ? 'dark' : 'light',
+                        y: {
+                            formatter: function (val) {
+                                return "$" + Number(val).toLocaleString(undefined, {minimumFractionDigits: 2});
+                            }
+                        }
+                    }
+                };
+
+                const chart = new ApexCharts(chartDom, options);
+                chart.render();
+            }
+        });
+    </script>
+}

@@ -10,23 +10,63 @@
     var isCurrentMonth = Model.Year == now.Year && Model.Month == now.Month;
 }
 
-<div class="container-fluid">
+@section Styles {
+    <style>
+        /* ── Stat cards ── */
+        .stat-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            border: 1px solid var(--clr-border) !important;
+            background: var(--clr-bg-card);
+            backdrop-filter: blur(10px);
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg) !important;
+            border-color: var(--clr-primary-semi) !important;
+        }
+        .chart-card {
+            border: 1px solid var(--clr-border) !important;
+            background: var(--clr-bg-card);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .cat-row { transition: background-color 0.15s; }
+        .cat-row:hover { background-color: var(--clr-bg-hover) !important; }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    @* ── Unified Tabs ── *@
+    <div class="d-flex mb-4">
+        <div class="nav nav-pills gap-1 p-1 rounded-pill shadow-sm border" style="background-color: var(--clr-bg-card); border-color: var(--clr-border) !important;">
+            <a href="@Url.Action("Index", "Reports")" class="nav-link rounded-pill px-4 py-2 fw-semibold text-secondary" style="color: var(--clr-text-muted) !important;">
+                <i class="bi bi-bar-chart-fill me-2"></i>@L["Nav_Reports"]
+            </a>
+            <a href="@Url.Action("Index", "Insights")" class="nav-link rounded-pill px-4 py-2 fw-semibold active shadow-sm" style="background-color: var(--clr-primary) !important; color: #fff !important;">
+                <i class="bi bi-lightbulb-fill me-2"></i>@L["Nav_Insights"]
+            </a>
+        </div>
+    </div>
+
     <!-- Header with Month Navigation -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1"><i class="bi bi-lightbulb text-warning"></i> @L["Ins_Title"]</h2>
+            <h2 class="mb-1">
+                <i class="bi bi-lightbulb text-warning"></i> @L["Ins_Title"]
+                <button class="help-trigger" data-help-trigger data-help-title="@L["Help_Ins_Title"]" data-help-body="@L["Help_Ins_Body"]" data-help-icon="bi-lightbulb" title="Ayuda / Help">?</button>
+            </h2>
             <small class="text-muted">@L["Ins_ManageSubtitle"]</small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a asp-action="Index" asp-route-month="@prevMonth" asp-route-year="@prevYear"
-               class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+               class="btn btn-outline-secondary btn-sm rounded-pill px-3 border" style="background-color: var(--clr-bg-card); color: var(--clr-text); border-color: var(--clr-border) !important;">
                 <i class="bi bi-chevron-left"></i>
             </a>
             <span class="fw-bold px-3 py-1 bg-dark text-white rounded-pill">@Model.MonthName</span>
             @if (!isCurrentMonth)
             {
                 <a asp-action="Index" asp-route-month="@nextMonth" asp-route-year="@nextYear"
-                   class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                   class="btn btn-outline-secondary btn-sm rounded-pill px-3 border" style="background-color: var(--clr-bg-card); color: var(--clr-text); border-color: var(--clr-border) !important;">
                     <i class="bi bi-chevron-right"></i>
                 </a>
             }
@@ -36,7 +76,7 @@
     <!-- Summary Cards Row -->
     <div class="row g-3 mb-4">
         <div class="col-md-3">
-            <div class="card stat-card shadow-sm h-100 border-0">
+            <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Ins_TotalExpenses"]</p>
                     <h3 class="mb-1 fw-bold text-danger">$@Model.TotalExpenses.ToString("N2")</h3>
@@ -48,7 +88,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card stat-card shadow-sm h-100 border-0">
+            <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Ins_TotalIncome"]</p>
                     <h3 class="mb-1 fw-bold text-success">$@Model.TotalIncome.ToString("N2")</h3>
@@ -60,25 +100,25 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card stat-card shadow-sm h-100 border-0">
+            <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_Balance"]</p>
                     <h3 class="mb-1 fw-bold @(Model.Balance >= 0 ? "text-success" : "text-danger")">
                         @(Model.Balance >= 0 ? "+" : "")$@Model.Balance.ToString("N2")
                     </h3>
                     <small class="text-muted">
-                        <i class="bi bi-piggy-bank me-1"></i>@L["Ins_SavingsRate"]: @Model.SavingsRate.ToString("N1")%
+                        <i class="bi bi-piggy-bank me-1 text-primary"></i>@L["Ins_SavingsRate"]: @Model.SavingsRate.ToString("N1")%
                     </small>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card stat-card shadow-sm h-100 border-0">
+            <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Ins_ProjectedMonthEnd"]</p>
                     <h3 class="mb-1 fw-bold text-primary">$@Model.ProjectedMonthEnd.ToString("N2")</h3>
                     <small class="text-muted">
-                        <i class="bi bi-calendar3 me-1"></i>@Model.DaysElapsed/@Model.DaysInMonth @L["Ins_Days"] · $@Model.DailyAverage.ToString("N2")/@L["Ins_Day"]
+                        <i class="bi bi-calendar3 me-1 text-primary"></i>@Model.DaysElapsed/@Model.DaysInMonth @L["Ins_Days"] · $@Model.DailyAverage.ToString("N2")/@L["Ins_Day"]
                     </small>
                 </div>
             </div>
@@ -89,23 +129,56 @@
     <div class="row g-4 mb-4">
         <!-- Daily Spending Chart -->
         <div class="col-lg-8">
-            <div class="card shadow-sm border-0 h-100">
+            <div class="card chart-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="fw-bold mb-3"><i class="bi bi-graph-up me-2 text-primary"></i>@L["Dash_DailySpending"]</h6>
-                    <div style="position:relative; height:280px;">
-                        <canvas id="dailySpendingChart"></canvas>
-                    </div>
+                    <div id="dailySpendingChart" style="height: 280px; width: 100%;"></div>
                 </div>
             </div>
         </div>
-        <!-- Category Donut -->
+        <!-- Expense Acceleration Card -->
         <div class="col-lg-4">
-            <div class="card shadow-sm border-0 h-100">
+            @{
+                var acceleratedCategories = Model.CategoryBreakdown
+                    .Where(c => c.ChangePercent > 0 && c.PreviousMonthAmount > 0)
+                    .OrderByDescending(c => c.ChangePercent)
+                    .Take(4)
+                    .ToList();
+            }
+            <div class="card chart-card shadow-sm h-100">
                 <div class="card-body">
-                    <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2 text-primary"></i>@L["Ins_ByCategory"]</h6>
-                    <div style="position:relative; height:280px;">
-                        <canvas id="categoryChart"></canvas>
-                    </div>
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-speedometer2 me-2 text-danger"></i>@L["Ins_AccelerationTitle"]
+                    </h6>
+                    @if (acceleratedCategories.Any())
+                    {
+                        <div class="d-flex flex-column gap-3">
+                            @foreach (var cat in acceleratedCategories)
+                            {
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-semibold text-body">@cat.Category</span>
+                                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill fw-bold" style="font-size: 0.78rem;">
+                                            <i class="bi bi-graph-up me-1"></i>+@cat.ChangePercent.ToString("N0")%
+                                        </span>
+                                    </div>
+                                    <div class="progress" style="height: 6px; border-radius: 3px;">
+                                        <div class="progress-bar bg-danger" style="width: @(Math.Min(100, cat.Percentage).ToString(System.Globalization.CultureInfo.InvariantCulture))%"></div>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">
+                                        $@cat.Amount.ToString("N2") vs $@cat.PreviousMonthAmount.ToString("N2") (@L["Ins_PrevMonth"])
+                                    </small>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-shield-check text-success fs-1 d-block mb-2 opacity-50"></i>
+                            <p class="small mb-0">@L["Ins_NoAcceleration"]</p>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -114,51 +187,55 @@
     <!-- Category Breakdown Table + Weekday Analysis -->
     <div class="row g-4 mb-4">
         <div class="col-lg-7">
-            <div class="card shadow-sm border-0">
+            <div class="card chart-card shadow-sm">
                 <div class="card-body">
                     <h6 class="fw-bold mb-3"><i class="bi bi-list-ul me-2 text-primary"></i>@L["Dash_CategoryBreakdown"]</h6>
                     @if (Model.CategoryBreakdown.Any())
                     {
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light">
+                                <thead style="background-color: var(--clr-bg-hover); color: var(--clr-text);">
                                     <tr>
-                                        <th>@L["Common_Category"]</th>
-                                        <th class="text-end">@L["Common_Amount"]</th>
-                                        <th class="text-end">%</th>
-                                        <th class="text-center">Txns</th>
-                                        <th class="text-end">@L["Dash_VsLastMonth"]</th>
+                                        <th class="ps-3 py-2">@L["Common_Category"]</th>
+                                        <th class="text-end py-2">@L["Common_Amount"]</th>
+                                        <th class="text-end py-2">%</th>
+                                        <th class="text-center py-2">Txns</th>
+                                        <th class="text-end pe-3 py-2">@L["Dash_VsLastMonth"]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @{ int catIdx = 0; }
                                     @foreach (var cat in Model.CategoryBreakdown)
                                     {
-                                        <tr>
-                                            <td class="fw-semibold">@CategoryTranslator.Translate(cat.Category, L)</td>
-                                            <td class="text-end">$@cat.Amount.ToString("N2")</td>
+                                        <tr class="cat-row" data-index="@catIdx">
+                                            <td class="fw-semibold ps-3">@CategoryTranslator.Translate(cat.Category, L)</td>
+                                            <td class="text-end font-monospace fw-bold">$@cat.Amount.ToString("N2")</td>
                                             <td class="text-end">
                                                 <div class="d-flex align-items-center justify-content-end gap-2">
                                                     <div class="progress flex-grow-1" style="height: 6px; max-width: 60px;">
-                                                        <div class="progress-bar bg-primary" style="width: @cat.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%"></div>
+                                                        <div class="progress-bar" style="width: @cat.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%"></div>
                                                     </div>
                                                     <span>@cat.Percentage.ToString("N1")%</span>
                                                 </div>
                                             </td>
-                                            <td class="text-center">@cat.TransactionCount</td>
-                                            <td class="text-end">
+                                            <td class="text-center">
+                                                <span class="badge border" style="background-color: var(--clr-bg-hover); color: var(--clr-text); border-color: var(--clr-border) !important;">@cat.TransactionCount</span>
+                                            </td>
+                                            <td class="text-end pe-3">
                                                 @if (cat.PreviousMonthAmount > 0)
                                                 {
-                                                    <span class="badge rounded-pill @(cat.ChangePercent <= 0 ? "bg-success" : "bg-danger") bg-opacity-10 @(cat.ChangePercent <= 0 ? "text-success" : "text-danger")">
+                                                    <span class="badge rounded-pill @(cat.ChangePercent <= 0 ? "bg-success" : "bg-danger") bg-opacity-10 @(cat.ChangePercent <= 0 ? "text-success" : "text-danger")" style="font-size: 0.78rem;">
                                                         <i class="bi bi-@(cat.ChangePercent <= 0 ? "arrow-down" : "arrow-up")"></i>
                                                         @Math.Abs(cat.ChangePercent).ToString("N0")%
                                                     </span>
                                                 }
                                                 else
                                                 {
-                                                    <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary">New</span>
+                                                    <span class="badge rounded-pill border text-muted" style="background-color: var(--clr-bg-hover); border-color: var(--clr-border) !important; font-size: 0.78rem;">New</span>
                                                 }
                                             </td>
                                         </tr>
+                                        catIdx++;
                                     }
                                 </tbody>
                             </table>
@@ -175,12 +252,10 @@
             </div>
         </div>
         <div class="col-lg-5">
-            <div class="card shadow-sm border-0 h-100">
+            <div class="card chart-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="fw-bold mb-3"><i class="bi bi-calendar-week me-2 text-primary"></i>@L["Ins_SpendingByDay"]</h6>
-                    <div style="position:relative; height:250px;">
-                        <canvas id="weekdayChart"></canvas>
-                    </div>
+                    <div id="weekdayChart" style="height: 250px; width: 100%;"></div>
                 </div>
             </div>
         </div>
@@ -188,14 +263,20 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
-        // Color palette
-        const colors = [
+        const categoryColors = [
             '#6366f1', '#f43f5e', '#10b981', '#f59e0b', '#3b82f6',
             '#8b5cf6', '#ec4899', '#14b8a6', '#ef4444', '#06b6d4',
             '#84cc16', '#e879f9'
         ];
+
+        // Paint progress bars and row color dots with category colors
+        document.querySelectorAll('.cat-row').forEach((row, i) => {
+            const color = categoryColors[i % categoryColors.length];
+            const bar = row.querySelector('.progress-bar');
+            if (bar) bar.style.backgroundColor = color;
+        });
 
         @{
             var jsonOptions = new System.Text.Json.JsonSerializerOptions
@@ -209,119 +290,221 @@
         const catData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategoryBreakdown.Select(c => new { Category = CategoryTranslator.Translate(c.Category, L), Amount = c.Amount }), jsonOptions));
         const weekData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.WeekdayAnalysis, jsonOptions));
         const dailyAvg = @Model.DailyAverage.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        const daysElapsed = @Model.DaysElapsed;
+        const daysInMonth = @Model.DaysInMonth;
 
-        // Daily Spending Chart
+        // Daily Spending Cumulative & Projection Chart
         if (dailyData && dailyData.length > 0) {
-            const dailyCtx = document.getElementById('dailySpendingChart').getContext('2d');
-            new Chart(dailyCtx, {
-                type: 'bar',
-                data: {
-                    labels: dailyData.map(d => new Date(d.date).getDate()),
-                    datasets: [{
-                        label: '@L["Ins_Spent"]',
-                        data: dailyData.map(d => d.amount),
-                        backgroundColor: dailyData.map(d => d.amount > dailyAvg ? 'rgba(244,63,94,0.7)' : 'rgba(99,102,241,0.7)'),
-                        borderRadius: 4,
-                        borderSkipped: false
-                    }]
+            let accum = 0;
+            let actualSeries = [];
+            let projectedSeries = [];
+
+            for (let i = 0; i < dailyData.length; i++) {
+                const dayNum = i + 1;
+                accum += dailyData[i].amount;
+
+                if (dayNum <= daysElapsed) {
+                    actualSeries.push(Number(accum.toFixed(2)));
+                    if (dayNum === daysElapsed) {
+                        projectedSeries.push(Number(accum.toFixed(2)));
+                    } else {
+                        projectedSeries.push(null);
+                    }
+                } else {
+                    actualSeries.push(null);
+                    const projectVal = accum + dailyAvg * (dayNum - daysElapsed);
+                    projectedSeries.push(Number(projectVal.toFixed(2)));
+                }
+            }
+
+            var isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            var dailyOptions = {
+                series: [{
+                    name: '@L["Ins_Spent"].Value',
+                    data: actualSeries
+                }, {
+                    name: '@L["Ins_ProjectedMonthEnd"].Value',
+                    data: projectedSeries
+                }],
+                chart: {
+                    type: 'area',
+                    height: 280,
+                    toolbar: { show: false },
+                    zoom: { enabled: false },
+                    background: 'transparent',
+                    foreColor: 'var(--clr-text-muted)',
+                    fontFamily: 'Inter, sans-serif'
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                title: ctx => `@L["Ins_Day"] ${ctx[0].label}`,
-                                label: ctx => `$${ctx.raw.toFixed(2)}`
-                            }
+                stroke: {
+                    curve: 'smooth',
+                    width: [3, 2],
+                    dashArray: [0, 5]
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: [0.35, 0.02],
+                        opacityTo: [0.02, 0.01],
+                        stops: [0, 100]
+                    }
+                },
+                colors: ['#6366f1', '#a855f7'],
+                markers: {
+                    size: [0, 4],
+                    hover: { size: 6 }
+                },
+                xaxis: {
+                    categories: dailyData.map(d => new Date(d.date).getDate()),
+                    axisBorder: { show: false },
+                    axisTicks: { show: false },
+                    crosshairs: {
+                        show: true,
+                        width: 1,
+                        position: 'back',
+                        opacity: 0.9,
+                        stroke: {
+                            color: '#6366f1',
+                            width: 1,
+                            dashArray: 3
                         }
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { callback: v => '$' + v },
-                            grid: { color: 'rgba(0,0,0,0.05)' }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { font: { size: 10 } }
+                    labels: {
+                        style: {
+                            colors: 'var(--clr-text-muted)',
+                            fontSize: '11px'
                         }
                     }
-                }
-            });
-        }
-
-        // Category Donut Chart
-        if (catData && catData.length > 0) {
-            const catCtx = document.getElementById('categoryChart').getContext('2d');
-            new Chart(catCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: catData.map(c => c.category),
-                    datasets: [{
-                        data: catData.map(c => c.amount),
-                        backgroundColor: colors.slice(0, catData.length),
-                        borderWidth: 2,
-                        borderColor: '#fff',
-                        hoverOffset: 8
-                    }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '60%',
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { boxWidth: 12, padding: 12, font: { size: 11 } }
+                yaxis: {
+                    labels: {
+                        style: {
+                            colors: 'var(--clr-text-muted)',
+                            fontSize: '11px'
                         },
-                        tooltip: {
-                            callbacks: {
-                                label: ctx => ` ${ctx.label}: $${ctx.raw.toFixed(2)} (${catData[ctx.dataIndex].percentage.toFixed(1)}%)`
-                            }
+                        formatter: function (val) {
+                            return "$" + Number(val).toLocaleString(undefined, { maximumFractionDigits: 0 });
+                        }
+                    }
+                },
+                grid: {
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
+                    strokeDashArray: 4
+                },
+                legend: {
+                    position: 'top',
+                    horizontalAlign: 'right',
+                    fontFamily: 'Inter, sans-serif',
+                    labels: {
+                        colors: 'var(--clr-text)'
+                    }
+                },
+                tooltip: {
+                    shared: true,
+                    intersect: false,
+                    theme: isDark ? 'dark' : 'light',
+                    x: {
+                        show: true,
+                        formatter: function(val) {
+                            return "@L["Ins_Day"].Value " + val;
+                        }
+                    },
+                    y: {
+                        formatter: function (val) {
+                            return "$ " + Number(val).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
                         }
                     }
                 }
-            });
+            };
+
+            var dailySpendingChart = new ApexCharts(document.querySelector("#dailySpendingChart"), dailyOptions);
+            dailySpendingChart.render();
         }
 
-        // Weekday Bar Chart
+        // Weekday Analysis Bar Chart
         if (weekData && weekData.length > 0) {
-            const weekCtx = document.getElementById('weekdayChart').getContext('2d');
-            new Chart(weekCtx, {
-                type: 'bar',
-                data: {
-                    labels: weekData.map(w => w.dayName.substring(0, 3)),
-                    datasets: [{
-                        label: '@L["Ins_Average"]',
-                        data: weekData.map(w => w.average),
-                        backgroundColor: 'rgba(99,102,241,0.7)',
-                        borderRadius: 6,
-                        borderSkipped: false
-                    }]
+            var isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            var weekOptions = {
+                series: [{
+                    name: '@L["Ins_Average"].Value',
+                    data: weekData.map(w => Number(w.average.toFixed(2)))
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 250,
+                    toolbar: { show: false },
+                    zoom: { enabled: false },
+                    background: 'transparent',
+                    foreColor: 'var(--clr-text-muted)',
+                    fontFamily: 'Inter, sans-serif'
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: ctx => `@L["Ins_Average"]: $${ctx.raw.toFixed(2)} · @L["Ins_Total"]: $${weekData[ctx.dataIndex].totalSpent.toFixed(2)} · ${weekData[ctx.dataIndex].transactionCount} @L["Ins_Txns"]`
-                            }
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '50%',
+                        borderRadius: 6
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                xaxis: {
+                    categories: weekData.map(w => w.dayName.substring(0, 3)),
+                    axisBorder: { show: false },
+                    axisTicks: { show: false },
+                    labels: {
+                        style: {
+                            colors: 'var(--clr-text-muted)',
+                            fontSize: '11px'
                         }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { callback: v => '$' + v },
-                            grid: { color: 'rgba(0,0,0,0.05)' }
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        style: {
+                            colors: 'var(--clr-text-muted)',
+                            fontSize: '11px'
                         },
-                        x: { grid: { display: false } }
+                        formatter: function (val) {
+                            return "$" + Number(val).toLocaleString(undefined, { maximumFractionDigits: 0 });
+                        }
+                    }
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shade: 'light',
+                        type: "vertical",
+                        shadeIntensity: 0.25,
+                        gradientToColors: undefined,
+                        inverseColors: true,
+                        opacityFrom: 0.85,
+                        opacityTo: 0.85,
+                        stops: [50, 0, 100]
+                    }
+                },
+                colors: ['#6366f1'],
+                grid: {
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
+                    strokeDashArray: 4
+                },
+                tooltip: {
+                    theme: isDark ? 'dark' : 'light',
+                    y: {
+                        formatter: function (val, opt) {
+                            const index = opt.dataPointIndex;
+                            const total = weekData[index].totalSpent;
+                            const count = weekData[index].transactionCount;
+                            return "$" + val.toLocaleString(undefined, {minimumFractionDigits: 2}) + 
+                                " (Total: $" + total.toLocaleString(undefined, {minimumFractionDigits: 2}) + 
+                                " · " + count + " txns)";
+                        }
                     }
                 }
-            });
+            };
+
+            var weekdayChart = new ApexCharts(document.querySelector("#weekdayChart"), weekOptions);
+            weekdayChart.render();
         }
     </script>
 }

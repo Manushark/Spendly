@@ -4,64 +4,88 @@
     ViewData["Title"] = "Edit Savings Goal";
 }
 
-<div class="container-fluid" style="max-width: 600px;">
+<style>
+    .form-card-premium {
+        border-radius: 16px;
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-card);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+    .form-label-custom {
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--clr-text-muted);
+        font-weight: 600;
+    }
+</style>
+
+<div class="container-fluid py-4" style="max-width: 650px;">
     <div class="d-flex align-items-center mb-4">
-        <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill me-3">
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-circle me-3" style="width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;">
             <i class="bi bi-arrow-left"></i>
         </a>
-        <h2 class="mb-0"><i class="bi bi-pencil text-primary me-2"></i>@L["Goal_EditGoal"]</h2>
+        <h2 class="mb-0" style="font-family:'Calistoga',serif; letter-spacing:-0.5px;">
+            <i class="bi bi-pencil text-primary me-2"></i>@L["Goal_EditGoal"]
+        </h2>
     </div>
 
-    <div class="card shadow-sm border-0">
+    <div class="card form-card-premium border-0">
         <div class="card-body p-4">
             <form asp-action="Update" asp-route-id="@Model.Id" method="post">
                 @Html.AntiForgeryToken()
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">@L["Common_Name"]</label>
-                    <input type="text" name="Name" class="form-control" value="@Model.Name" required maxlength="100">
+                
+                <div class="mb-4">
+                    <label class="form-label form-label-custom mb-2">@L["Common_Name"]</label>
+                    <input type="text" name="Name" class="form-control rounded-3" value="@Model.Name" required maxlength="100" style="padding: 10px 14px;">
                 </div>
-                <div class="row g-3 mb-3">
-                    <div class="col-6">
-                        <label class="form-label fw-semibold">@L["Goal_TargetAmount"]</label>
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="number" name="TargetAmount" class="form-control" step="0.01" min="1" value="@Model.TargetAmount" required>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label fw-semibold">@L["Goal_CurrentAmount"]</label>
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="number" name="CurrentAmount" class="form-control" step="0.01" min="0" value="@Model.CurrentAmount">
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">@L["Goal_Deadline"]</label>
-                    <input type="date" name="Deadline" class="form-control"
-                           value="@(Model.Deadline?.ToString("yyyy-MM-dd"))">
-                </div>
+                
                 <div class="row g-3 mb-4">
                     <div class="col-6">
-                        <label class="form-label fw-semibold">@L["Common_Icon"]</label>
-                        <select name="Icon" class="form-select">
-                            <option value="bi-bullseye" selected="@(Model.Icon == "bi-bullseye")">@L["Goal_IconTarget"]</option>
-                            <option value="bi-airplane" selected="@(Model.Icon == "bi-airplane")">@L["Goal_IconTravel"]</option>
-                            <option value="bi-house" selected="@(Model.Icon == "bi-house")">@L["Goal_IconHome"]</option>
-                            <option value="bi-car-front" selected="@(Model.Icon == "bi-car-front")">@L["Goal_IconCar"]</option>
-                            <option value="bi-mortarboard" selected="@(Model.Icon == "bi-mortarboard")">@L["Goal_IconEducation"]</option>
-                            <option value="bi-heart" selected="@(Model.Icon == "bi-heart")">@L["Goal_IconHealth"]</option>
-                            <option value="bi-gift" selected="@(Model.Icon == "bi-gift")">@L["Goal_IconGift"]</option>
-                            <option value="bi-laptop" selected="@(Model.Icon == "bi-laptop")">@L["Goal_IconTech"]</option>
-                            <option value="bi-piggy-bank" selected="@(Model.Icon == "bi-piggy-bank")">@L["Goal_IconSavings"]</option>
-                            <option value="bi-shield-check" selected="@(Model.Icon == "bi-shield-check")">@L["Goal_IconEmergency"]</option>
+                        <label class="form-label form-label-custom mb-2">@L["Goal_TargetAmount"]</label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:var(--clr-surface-3); border-color:var(--clr-border);">$</span>
+                            <input type="number" name="TargetAmount" class="form-control rounded-end-3 font-mono fw-bold" step="0.01" min="1" value="@Model.TargetAmount" required style="padding: 10px 14px;">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label form-label-custom mb-2">@L["Goal_CurrentAmount"]</label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:var(--clr-surface-3); border-color:var(--clr-border);">$</span>
+                            <input type="number" name="CurrentAmount" class="form-control rounded-end-3 font-mono fw-bold" step="0.01" min="0" value="@Model.CurrentAmount" style="padding: 10px 14px;">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label form-label-custom mb-2">@L["Goal_Deadline"]</label>
+                    <input type="date" name="Deadline" class="form-control rounded-3"
+                           value="@(Model.Deadline?.ToString("yyyy-MM-dd"))" style="padding: 10px 14px;">
+                </div>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <label class="form-label form-label-custom mb-2">@L["Common_Icon"]</label>
+                        <select name="Icon" class="form-select rounded-3" style="padding: 10px 14px;">
+                            <option value="bi-bullseye" selected="@(Model.Icon == "bi-bullseye")">🎯 @L["Goal_IconTarget"]</option>
+                            <option value="bi-airplane" selected="@(Model.Icon == "bi-airplane")">✈️ @L["Goal_IconTravel"]</option>
+                            <option value="bi-house" selected="@(Model.Icon == "bi-house")">🏠 @L["Goal_IconHome"]</option>
+                            <option value="bi-car-front" selected="@(Model.Icon == "bi-car-front")">🚗 @L["Goal_IconCar"]</option>
+                            <option value="bi-mortarboard" selected="@(Model.Icon == "bi-mortarboard")">🎓 @L["Goal_IconEducation"]</option>
+                            <option value="bi-heart" selected="@(Model.Icon == "bi-heart")">❤️ @L["Goal_IconHealth"]</option>
+                            <option value="bi-gift" selected="@(Model.Icon == "bi-gift")">🎁 @L["Goal_IconGift"]</option>
+                            <option value="bi-laptop" selected="@(Model.Icon == "bi-laptop")">💻 @L["Goal_IconTech"]</option>
+                            <option value="bi-piggy-bank" selected="@(Model.Icon == "bi-piggy-bank")">🐷 @L["Goal_IconSavings"]</option>
+                            <option value="bi-shield-check" selected="@(Model.Icon == "bi-shield-check")">🛡️ @L["Goal_IconEmergency"]</option>
                         </select>
                     </div>
                     <div class="col-6">
-                        <label class="form-label fw-semibold">@L["Common_Color"]</label>
-                        <input type="color" name="Color" class="form-control form-control-color w-100" value="@Model.Color">
+                        <label class="form-label form-label-custom mb-2">@L["Common_Color"]</label>
+                        <input type="color" name="Color" class="form-control form-control-color w-100 rounded-3" value="@Model.Color" style="height: 43px; padding: 6px;">
                     </div>
                 </div>
+                
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-primary rounded-pill px-4">
                         <i class="bi bi-check-lg me-1"></i>@L["Common_Save"]

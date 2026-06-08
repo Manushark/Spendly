@@ -62,6 +62,18 @@
   <data name="Nav_LoggedInAs">
     <value>Conectado como</value>
   </data>
+  <data name="Nav_Finance">
+    <value>Finanzas</value>
+  </data>
+  <data name="Nav_Organize">
+    <value>Organizar</value>
+  </data>
+  <data name="Nav_Analytics">
+    <value>Analítica</value>
+  </data>
+  <data name="Nav_Tools">
+    <value>Herramientas</value>
+  </data>
   <data name="Nav_Logout">
     <value>Cerrar sesión</value>
   </data>
@@ -303,6 +315,12 @@
   </data>
   <data name="Dash_SpentLabel">
     <value>Gastado</value>
+  </data>
+  <data name="Dash_CashFlowSummary">
+    <value>Resumen de Flujo de Caja</value>
+  </data>
+  <data name="Dash_IncomeVsExpenses">
+    <value>Ingresos vs. Gastos</value>
   </data>
   <!-- ═══════ Gastos ═══════ -->
   <data name="Exp_Title">
@@ -1370,6 +1388,12 @@
   <data name="Notif_Toast">
     <value>Tienes una nueva notificación</value>
   </data>
+  <data name="Notif_ClearAll" xml:space="preserve">
+    <value>Borrar todas</value>
+  </data>
+  <data name="Notif_Delete" xml:space="preserve">
+    <value>Borrar</value>
+  </data>
   <!-- ═══════ Reports ═══════ -->
   <data name="Rep_Title">
     <value>Reporte Financiero</value>
@@ -1566,5 +1590,107 @@
   </data>
   <data name="DefCat_Other">
     <value>Otros</value>
+  </data>
+  <data name="Ins_AccelerationTitle">
+    <value>Aceleración de Gastos</value>
+  </data>
+  <data name="Ins_PrevMonth">
+    <value>mes anterior</value>
+  </data>
+  <data name="Ins_NoAcceleration">
+    <value>Ninguna categoría ha acelerado sus gastos. ¡Buen trabajo!</value>
+  </data>
+  <data name="Help_BtnClose">
+    <value>Entendido</value>
+  </data>
+  <data name="Help_Dash_Title">
+    <value>Ayuda: Panel de Control</value>
+  </data>
+  <data name="Help_Dash_Body">
+    <value>El Panel de Control te ofrece un resumen en tiempo real de tu salud financiera este mes. Aquí puedes ver tu total de ingresos, total de gastos, saldo neto actual y tu tasa de ahorro. Abajo encontrarás un historial con tus transacciones más recientes y gráficos que desglosan tus gastos por categorías.</value>
+  </data>
+  <data name="Help_Exp_Title">
+    <value>Ayuda: Gestión de Gastos</value>
+  </data>
+  <data name="Help_Exp_Body">
+    <value>Esta sección te permite ver, filtrar y registrar todos tus gastos. Puedes añadir nuevos gastos usando el panel lateral de creación rápida. Utiliza los filtros avanzados por categoría, fechas o montos para analizar tus hábitos de consumo y mantén tus registros siempre al día.</value>
+  </data>
+  <data name="Help_Inc_Title">
+    <value>Ayuda: Gestión de Ingresos</value>
+  </data>
+  <data name="Help_Inc_Body">
+    <value>Aquí puedes registrar todas tus fuentes de dinero, tales como salarios, inversiones o freelancing. Mantener tus ingresos actualizados es fundamental para que el sistema calcule correctamente tu saldo disponible y tu tasa de ahorro del mes.</value>
+  </data>
+  <data name="Help_Budg_Title">
+    <value>Ayuda: Presupuestos Mensuales</value>
+  </data>
+  <data name="Help_Budg_Body">
+    <value>Los presupuestos te ayudan a poner límites de gasto para cada categoría (por ejemplo, límite en Comida o Entretenimiento). El sistema te avisará con notificaciones visuales si estás cerca de alcanzar tu límite (80%) o si lo has excedido por completo.</value>
+  </data>
+  <data name="Help_Rec_Title">
+    <value>Ayuda: Gastos Recurrentes</value>
+  </data>
+  <data name="Help_Rec_Body">
+    <value>Configura facturas, suscripciones o pagos repetitivos (como alquiler, Netflix o internet). Spendly creará automáticamente el gasto en la fecha indicada de cada mes, evitándote tener que ingresarlos manualmente uno por uno.</value>
+  </data>
+  <data name="Help_Goals_Title">
+    <value>Ayuda: Metas de Ahorro</value>
+  </data>
+  <data name="Help_Goals_Body">
+    <value>Define objetivos financieros concretos (por ejemplo, comprar un auto o fondo de emergencia). Puedes asignar dinero de tus ahorros directamente a cada meta y ver el progreso porcentual hasta completarla.</value>
+  </data>
+  <data name="Help_Rep_Title">
+    <value>Ayuda: Reportes y Exportación</value>
+  </data>
+  <data name="Help_Rep_Body">
+    <value>Visualiza el comportamiento de tus finanzas en periodos específicos. Puedes generar el 'Reporte Mensual' detallado en HTML/PDF diseñado para impresión directamente desde tu navegador para archivar tu resumen mensual.</value>
+  </data>
+  <data name="Help_Ins_Title">
+    <value>Ayuda: Análisis y Recomendaciones</value>
+  </data>
+  <data name="Help_Ins_Body">
+    <value>Spendly analiza automáticamente tus patrones de consumo para darte recomendaciones personalizadas (Insights). Te avisará si estás gastando de más el fin de semana, cuál fue tu gasto más alto o si tus gastos en una categoría se están acelerando.</value>
+  </data>
+  <data name="Help_Cat_Title">
+    <value>Ayuda: Categorías</value>
+  </data>
+  <data name="Help_Cat_Body">
+    <value>Las categorías organizan tus ingresos y gastos para darte un análisis financiero claro. Spendly incluye 8 categorías predeterminadas (\"Comida y Restaurantes\", \"Transporte\", etc.). Aquí puedes añadir categorías personalizadas o editarlas. Modificar una categoría actualizará automáticamente todas tus transacciones vinculadas.</value>
+  </data>
+  <data name="Help_Tags_Title">
+    <value>Ayuda: Etiquetas</value>
+  </data>
+  <data name="Help_Tags_Body">
+    <value>Las etiquetas son marcadores personalizados (Tags) con colores que puedes asignar a tus gastos para clasificarlos de manera más granular (por ejemplo, 'Vacaciones', 'Oficina', 'Regalo'). A diferencia de las categorías, las etiquetas son totalmente opcionales y te permiten hacer búsquedas y agrupaciones más específicas en tus transacciones.</value>
+  </data>
+  <data name="Tags_YourTags">
+    <value>Tus Etiquetas</value>
+  </data>
+  <data name="Tags_Transactions">
+    <value>transacciones</value>
+  </data>
+  <data name="Tags_Spent">
+    <value>gastado</value>
+  </data>
+  <data name="Tags_DistributionAnalysis">
+    <value>Análisis de Distribución</value>
+  </data>
+  <data name="Tags_TotalAmount">
+    <value>Monto Total</value>
+  </data>
+  <data name="Tags_Percentage">
+    <value>Porcentaje</value>
+  </data>
+  <data name="Tags_NoStats">
+    <value>Sin estadísticas de gastos</value>
+  </data>
+  <data name="Tags_NoStatsDesc">
+    <value>Asocia tus etiquetas a los gastos en el panel de transacciones para ver análisis en tiempo real aquí.</value>
+  </data>
+  <data name="Tags_TotalSpent">
+    <value>Total Gastado</value>
+  </data>
+  <data name="Tags_FilterByTags">
+    <value>Filtrar por Etiquetas</value>
   </data>
 </root>

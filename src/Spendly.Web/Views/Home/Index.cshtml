@@ -4,17 +4,17 @@
 }
 
 <style>
-    /* Dark Theme Base */
+    /* Dark Theme Base for Landing Page */
     body {
-        background-color: #0d0a1a !important; /* Force override for home */
+        background-color: #0B1120 !important; /* Rich Dark Background matching our theme */
         color: #ffffff;
-        font-family: 'Inter', sans-serif;
+        font-family: var(--font-body);
     }
 
-    /* Navbar override (makes it dark on the home page if it acts up, though _Layout handles it) */
+    /* Navbar override */
     .navbar {
         background-color: transparent !important;
-        border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
     }
     .navbar-brand, .nav-link {
         color: #fff !important;
@@ -25,8 +25,8 @@
         position: relative;
         padding: 140px 0 100px;
         overflow: hidden;
-        background: radial-gradient(circle at top right, #38246a 0%, #0d0a1a 40%),
-                    radial-gradient(circle at bottom left, #291a4c 0%, #0d0a1a 40%);
+        background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15) 0%, #0B1120 50%),
+                    radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.12) 0%, #0B1120 50%);
     }
 
     .hero-content {
@@ -35,18 +35,20 @@
     }
 
     .hero-title {
+        font-family: var(--font-heading);
         font-size: 4rem;
         font-weight: 800;
         line-height: 1.2;
         margin-bottom: 24px;
-        background: linear-gradient(135deg, #ffffff 0%, #a695d6 100%);
+        background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        letter-spacing: -1px;
     }
 
     .hero-subtitle {
         font-size: 1.25rem;
-        color: #b3a5d8;
+        color: #94a3b8;
         margin-bottom: 40px;
         font-weight: 400;
         line-height: 1.6;
@@ -54,9 +56,9 @@
 
     /* Floating Image Animation */
     @@keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-        100% { transform: translateY(0px); }
+        0% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-15px) rotate(0.5deg); }
+        100% { transform: translateY(0px) rotate(0deg); }
     }
 
     .hero-mockup-wrapper {
@@ -64,12 +66,12 @@
         z-index: 2;
         animation: float 6s ease-in-out infinite;
         border-radius: 24px;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 100px rgba(108, 92, 231, 0.2);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 80px rgba(99, 102, 241, 0.2);
     }
     
     .hero-mockup-wrapper img {
         border-radius: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         width: 100%;
         display: block;
     }
@@ -78,46 +80,48 @@
     .glow-circle {
         position: absolute;
         border-radius: 50%;
-        filter: blur(100px);
-        opacity: 0.5;
+        filter: blur(120px);
+        opacity: 0.4;
         z-index: 1;
     }
-    .glow-1 { top: 10%; right: 10%; width: 400px; height: 400px; background: #6c5ce7; }
-    .glow-2 { bottom: 10%; left: 0; width: 300px; height: 300px;background: #a29bfe; }
+    .glow-1 { top: 10%; right: 10%; width: 400px; height: 400px; background: var(--clr-primary); }
+    .glow-2 { bottom: 10%; left: 0; width: 300px; height: 300px; background: var(--clr-secondary); }
 
     /* Custom Buttons */
     .btn-glow {
-        background: linear-gradient(135deg, #6c5ce7 0%, #4834d4 100%);
+        background: linear-gradient(135deg, var(--clr-primary-light) 0%, var(--clr-primary) 100%);
         color: white;
         border: none;
         border-radius: 50px;
         padding: 14px 36px;
         font-size: 1.1rem;
         font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+        transition: all 0.3s var(--ease-out);
+        box-shadow: 0 10px 20px rgba(var(--clr-primary-rgb), 0.25);
     }
 
     .btn-glow:hover {
         transform: translateY(-3px);
-        box-shadow: 0 15px 25px rgba(108, 92, 231, 0.5);
+        box-shadow: 0 15px 25px rgba(var(--clr-primary-rgb), 0.45);
         color: white;
     }
 
     .btn-glass {
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.04);
         backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         color: white;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 50px;
         padding: 14px 36px;
         font-size: 1.1rem;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.3s var(--ease-out);
     }
     
     .btn-glass:hover {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
         color: white;
         transform: translateY(-3px);
     }
@@ -125,46 +129,46 @@
     /* Benefits Section Glassmorphism */
     .features-section {
         padding: 100px 0;
-        background-color: #0d0a1a;
+        background-color: #0B1120;
         position: relative;
     }
 
-    .glass-card {
-        background: rgba(255, 255, 255, 0.03);
+    .glass-card-landing {
+        background: rgba(255, 255, 255, 0.02);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.04);
         border-radius: 20px;
         padding: 40px 30px;
         height: 100%;
-        transition: all 0.3s ease;
+        transition: all 0.3s var(--ease-out);
         text-align: left;
     }
 
-    .glass-card:hover {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(108, 92, 231, 0.4);
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 0 20px rgba(108, 92, 231, 0.1);
+    .glass-card-landing:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(99, 102, 241, 0.3);
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(99, 102, 241, 0.05);
     }
 
     .feature-icon {
         width: 60px;
         height: 60px;
-        background: rgba(108, 92, 231, 0.15);
-        color: #a29bfe;
+        background: rgba(var(--clr-primary-rgb), 0.15);
+        color: var(--clr-primary-light);
         border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 28px;
         margin-bottom: 24px;
-        border: 1px solid rgba(108, 92, 231, 0.2);
+        border: 1px solid rgba(var(--clr-primary-rgb), 0.2);
     }
 
     /* Footer styling */
     .dark-footer {
-        background-color: #080612;
+        background-color: #070a14;
         border-top: 1px solid rgba(255, 255, 255, 0.05);
         padding: 40px 0;
     }
@@ -193,7 +197,7 @@
                     }
                     else
                     {
-                        <a asp-controller="Expenses" asp-action="Index" class="btn btn-glow">
+                        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-glow">
                             @L["Home_OpenDashboard"] <i class="bi bi-arrow-right ms-2"></i>
                         </a>
                     }
@@ -207,14 +211,13 @@
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
                     </div>
-                    <span class="small">@L["Home_Trusted"]</span>
+                    <span class="small text-muted">@L["Home_Trusted"]</span>
                 </div>
             </div>
 
-            <!-- 3D MOCKUP -->
+            <!-- MOCKUP -->
             <div class="col-lg-6">
                 <div class="hero-mockup-wrapper">
-                    <!-- The mockup image was automatically generated and copied to this path -->
                     <img src="~/images/mockup.png" alt="Spendly Platform Dashboard" class="img-fluid" />
                 </div>
             </div>
@@ -226,7 +229,7 @@
 <section class="features-section">
     <div class="container text-center">
         <div class="mb-5 pb-3">
-            <h2 class="fw-bold" style="font-size: 2.5rem; color: #fff;">@L["Home_SmarterWealth"]</h2>
+            <h2 class="fw-bold" style="font-family: var(--font-heading); font-size: 2.5rem; color: #fff;">@L["Home_SmarterWealth"]</h2>
             <p class="text-muted" style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
                 @L["Home_SmarterDesc"]
             </p>
@@ -234,11 +237,11 @@
 
         <div class="row g-4">
             <div class="col-lg-4">
-                <div class="glass-card">
+                <div class="glass-card-landing">
                     <div class="feature-icon">
                         <i class="bi bi-bar-chart-fill"></i>
                     </div>
-                    <h4 class="mb-3 fw-bold text-white">@L["Home_VisualAnalytics"]</h4>
+                    <h4 class="mb-3 fw-bold text-white" style="font-family: var(--font-heading);">@L["Home_VisualAnalytics"]</h4>
                     <p class="text-muted mb-0">
                         @L["Home_VisualDesc"]
                     </p>
@@ -246,11 +249,11 @@
             </div>
 
             <div class="col-lg-4">
-                <div class="glass-card">
+                <div class="glass-card-landing">
                     <div class="feature-icon">
                         <i class="bi bi-bullseye"></i>
                     </div>
-                    <h4 class="mb-3 fw-bold text-white">@L["Home_PrecisionBudgets"]</h4>
+                    <h4 class="mb-3 fw-bold text-white" style="font-family: var(--font-heading);">@L["Home_PrecisionBudgets"]</h4>
                     <p class="text-muted mb-0">
                         @L["Home_PrecisionDesc"]
                     </p>
@@ -258,11 +261,11 @@
             </div>
 
             <div class="col-lg-4">
-                <div class="glass-card">
+                <div class="glass-card-landing">
                     <div class="feature-icon">
                         <i class="bi bi-arrow-repeat"></i>
                     </div>
-                    <h4 class="mb-3 fw-bold text-white">@L["Home_Automation"]</h4>
+                    <h4 class="mb-3 fw-bold text-white" style="font-family: var(--font-heading);">@L["Home_Automation"]</h4>
                     <p class="text-muted mb-0">
                         @L["Home_AutomationDesc"]
                     </p>
@@ -273,11 +276,11 @@
 </section>
 
 <!-- CALL TO ACTION -->
-<section class="py-5" style="background: linear-gradient(0deg, #080612 0%, #0d0a1a 100%);">
+<section class="py-5" style="background: linear-gradient(0deg, #070a14 0%, #0B1120 100%);">
     <div class="container">
-        <div class="glass-card text-center" style="padding: 60px 20px; background: rgba(108, 92, 231, 0.05); border-color: rgba(108, 92, 231, 0.2);">
-            <h2 class="fw-bold text-white mb-3">@L["Home_CTA"]</h2>
-            <p class="text-muted mb-4 fs-5" style="color: #b3a5d8 !important;">
+        <div class="glass-card-landing text-center" style="padding: 60px 20px; background: rgba(99, 102, 241, 0.03); border-color: rgba(99, 102, 241, 0.15);">
+            <h2 class="fw-bold text-white mb-3" style="font-family: var(--font-heading); font-size: 2.2rem;">@L["Home_CTA"]</h2>
+            <p class="text-muted mb-4 fs-5">
                 @L["Home_CTADesc"]
             </p>
             @if (string.IsNullOrEmpty(token))
@@ -295,7 +298,7 @@
     <div class="container">
         <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
             <i class="bi bi-wallet2 text-primary fs-4"></i>
-            <h5 class="mb-0 fw-bold text-white tracking-widest">Spendly</h5>
+            <h5 class="mb-0 fw-bold text-white tracking-widest" style="font-family: var(--font-heading);">Spendly</h5>
         </div>
         <small class="text-muted">
             © @DateTime.Now.Year Spendly Inc. @L["Home_Footer"]

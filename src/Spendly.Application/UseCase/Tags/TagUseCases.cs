@@ -62,7 +62,8 @@ namespace Spendly.Application.UseCases.Tags
                 Id = t.Id,
                 Name = t.Name,
                 Color = t.Color,
-                ExpenseCount = t.ExpenseTags.Count
+                ExpenseCount = t.ExpenseTags.Count(et => et.Expense != null && !et.Expense.IsDeleted),
+                TotalSpent = t.ExpenseTags.Where(et => et.Expense != null && !et.Expense.IsDeleted).Sum(et => et.Expense.Amount.Value)
             }).ToList();
         }
     }

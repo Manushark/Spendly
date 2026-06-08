@@ -302,6 +302,8 @@ builder.Services.AddScoped<GetNotificationsUseCase>();
 builder.Services.AddScoped<MarkNotificationReadUseCase>();
 builder.Services.AddScoped<MarkAllNotificationsReadUseCase>();
 builder.Services.AddScoped<GetUnreadCountUseCase>();
+builder.Services.AddScoped<DeleteNotificationUseCase>();
+builder.Services.AddScoped<DeleteAllNotificationsUseCase>();
 builder.Services.AddSingleton<IDateTimeProvider, UserDateTimeProvider>();
 builder.Services.AddScoped<BudgetAlertService>();
 
