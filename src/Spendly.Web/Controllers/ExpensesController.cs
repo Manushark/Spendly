@@ -37,9 +37,10 @@ namespace Spendly.Web.Controllers
             [FromQuery] DateTime? dateTo = null,
             [FromQuery] decimal? minAmount = null,
             [FromQuery] decimal? maxAmount = null,
+            [FromQuery] List<int>? tagIds = null,
             [FromQuery] int page = 1)
         {
-            var result = await _api.GetAllAsync(category, search, dateFrom, dateTo, minAmount, maxAmount, page, pageSize: 10);
+            var result = await _api.GetAllAsync(category, search, dateFrom, dateTo, minAmount, maxAmount, tagIds, page, pageSize: 10);
             var categories = await _categoryApi.GetAllAsync();
             var tags = await _tagApi.GetAllAsync();
 
@@ -49,6 +50,7 @@ namespace Spendly.Web.Controllers
             ViewBag.DateTo = dateTo;
             ViewBag.MinAmount = minAmount;
             ViewBag.MaxAmount = maxAmount;
+            ViewBag.SelectedTags = tagIds ?? [];
             ViewBag.CurrentPage = page;
             ViewBag.Categories = categories;
             ViewBag.Tags = tags;
