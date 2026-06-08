@@ -34,6 +34,7 @@ namespace Spendly.Web.Services
             DateTime? dateTo = null,
             decimal? minAmount = null,
             decimal? maxAmount = null,
+            List<int>? tagIds = null,
             int page = 1,
             int pageSize = 10)
         {
@@ -52,6 +53,13 @@ namespace Spendly.Web.Services
                 url += $"&minAmount={minAmount.Value}";
             if (maxAmount.HasValue)
                 url += $"&maxAmount={maxAmount.Value}";
+            if (tagIds != null && tagIds.Any())
+            {
+                foreach (var tagId in tagIds)
+                {
+                    url += $"&tagIds={tagId}";
+                }
+            }
 
             var response = await _http.GetAsync(url);
 
