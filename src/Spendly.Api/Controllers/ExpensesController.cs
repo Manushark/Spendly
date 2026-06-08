@@ -68,6 +68,7 @@ namespace Spendly.Api.Controllers
             [FromQuery] DateTime? dateTo,
             [FromQuery] decimal? minAmount,
             [FromQuery] decimal? maxAmount,
+            [FromQuery] List<int>? tagIds,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
@@ -78,7 +79,7 @@ namespace Spendly.Api.Controllers
                 return BadRequest("pageSize cannot exceed 100.");
 
             var userId = User.GetUserId();
-            var result = await _listExpensesUseCase.ExecuteAsync(userId, category, search, dateFrom, dateTo, minAmount, maxAmount, page, pageSize);
+            var result = await _listExpensesUseCase.ExecuteAsync(userId, category, search, dateFrom, dateTo, minAmount, maxAmount, page, pageSize, tagIds);
             return Ok(result);
         }
 
