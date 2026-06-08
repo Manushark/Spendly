@@ -7,6 +7,18 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.21.0] - 2026-06-08
+*(Rediseño visual del módulo de etiquetas, análisis de participación con ApexCharts, CRUD de edición y filtrado avanzado multi-etiqueta)*
+
+### Añadido
+- Dashboard premium para el módulo de etiquetas (Tags) con vista de dos columnas.
+- Gráfico circular (Donut chart) interactivo de ApexCharts que visualiza la participación del gasto por cada etiqueta.
+- Modal interactivo para edición de nombre y color de etiquetas existentes con paleta curada de colores premium.
+- Filtro avanzado multi-check por etiquetas en el listado de transacciones de gastos.
+- Filtro rápido al hacer clic sobre el badge de una etiqueta en la tabla de gastos.
+- Localización y traducción completa al español y al inglés de todo el módulo de etiquetas (`SharedResource`).
+- Pruebas unitarias de casos de uso y repositorios actualizadas para soportar filtrado de gastos por múltiples etiquetas de forma opcional.
+
 ## [1.20.0] - 2026-05-23
 *(Implementación del sistema de reportes avanzados, exportación, heatmap de gastos y sugerencias financieras)*
 
