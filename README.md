@@ -35,12 +35,12 @@ The project is currently under active development and is being built with scalab
 * Responsive UI and modern dashboard layouts
 * Pagination and filtering support
 * Improved validation and error handling
+* Financial reports and analytics
+* Notifications and reminders
 
 ### Planned Features
 * Mobile application support (.NET MAUI / Flutter)
 * Premium subscription system
-* Financial reports and analytics
-* Notifications and reminders
 * AI-powered spending insights
 
 ## 🏗️ Architecture & Tech Stack
