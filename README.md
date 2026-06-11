@@ -117,7 +117,7 @@ To get a local copy up and running, follow these steps.
 * [ ] Implement Mobile Application
 * [ ] Integrate Subscription-based premium features (Stripe/RevenueCat)
 * [x] Cloud deployment & CI/CD pipeline
-* [ ] Advanced reporting system
+* [x] Advanced reporting system
 
 ## ⚖️ License
 
