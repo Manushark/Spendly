@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 <claude-mem-context>
 # claude-mem: Cross-Session Memory
 
