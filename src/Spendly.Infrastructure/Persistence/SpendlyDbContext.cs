@@ -21,6 +21,7 @@ namespace Spendly.Infrastructure.Persistence
         public DbSet<SavingsGoal> SavingsGoals { get; set; } = null!;
         public DbSet<Tag> Tags { get; set; } = null!;
         public DbSet<ExpenseTag> ExpenseTags { get; set; } = null!;
+        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; } = null!;
 
         public SpendlyDbContext(DbContextOptions<SpendlyDbContext> options)
             : base(options)
@@ -38,6 +39,7 @@ namespace Spendly.Infrastructure.Persistence
             modelBuilder.ApplyConfiguration(new SavingsGoalConfiguration());
             modelBuilder.ApplyConfiguration(new TagConfiguration());
             modelBuilder.ApplyConfiguration(new ExpenseTagConfiguration());
+            modelBuilder.ApplyConfiguration(new PasswordResetTokenConfiguration());
         }
 
     }

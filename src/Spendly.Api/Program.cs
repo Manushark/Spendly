@@ -33,6 +33,7 @@ using Spendly.Application.UseCases.Tags;
 using Spendly.Application.UseCases.Import;
 using Spendly.Application.UseCase.Reports;
 using Spendly.Api.Security;
+using Spendly.Infrastructure.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -263,11 +264,16 @@ builder.Services.AddScoped<GetDashboardStatsUseCase>();
 builder.Services.AddScoped<GetFinancialReportUseCase>();
 
 
-// ────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────
 // Use Cases — Auth
-// ────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────
 builder.Services.AddScoped<LoginUseCase>();
 builder.Services.AddScoped<RegisterUseCase>();
+builder.Services.AddScoped<ForgotPasswordUseCase>();
+builder.Services.AddScoped<ResetPasswordUseCase>();
+builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+builder.Services.AddScoped<IEmailService, ConsoleEmailService>();
+
 
 // ────────────────────────────────────────────────────────────
 // Use Cases — User Profile

@@ -61,6 +61,20 @@ namespace Spendly.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Reemplaza la contraseña directamente, sin verificar la actual.
+        /// Solo debe llamarse desde el flujo de Reset Password,
+        /// donde el usuario ya se identificó con el token de email.
+        /// </summary>
+        public void SetPasswordHash(string newPasswordHash)
+        {
+            if (string.IsNullOrWhiteSpace(newPasswordHash))
+                throw new InvalidDomainException("Password hash cannot be empty.");
+
+            PasswordHash = newPasswordHash;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
         public static User Create(string email, string passwordHash)
         {
             return new User(email, passwordHash);
