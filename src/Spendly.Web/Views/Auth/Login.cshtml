@@ -105,11 +105,15 @@
             <div class="mb-4">
                 <label class="form-label text-muted fw-bold" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px;">@L["Auth_Password"]</label>
                 <input type="password" name="Password" class="form-control form-control-custom" placeholder="@L["Ph_PasswordHidden"]" required />
+                <div class="text-end mt-1">
+                    <a asp-action="ForgotPassword" class="text-primary text-decoration-none" style="font-size: 0.82rem;">Forgot password?</a>
+                </div>
             </div>
             <button type="submit" class="btn btn-auth w-100">
                 @L["Auth_SignIn"]
             </button>
         </form>
+
 
         <div class="text-center mt-4 pt-4 border-top" style="border-color: var(--clr-border) !important;">
             <p class="text-muted mb-0" style="font-size: 0.95rem;">
