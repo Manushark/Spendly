@@ -344,10 +344,29 @@
                     type: 'gradient',
                     gradient: {
                         shadeIntensity: 1,
-                        opacityFrom: [0.35, 0.02],
-                        opacityTo: [0.02, 0.01],
+                        opacityFrom: [0.5, 0.08],
+                        opacityTo:   [0.05, 0.01],
                         stops: [0, 100]
                     }
+                },
+                annotations: {
+                    yaxis: [{
+                        y: Number(@Model.ProjectedMonthEnd.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+                        borderColor: '#f59e0b',
+                        strokeDashArray: 5,
+                        borderWidth: 2,
+                        label: {
+                            borderColor: '#f59e0b',
+                            style: {
+                                color: '#fff',
+                                background: '#f59e0b',
+                                fontFamily: 'JetBrains Mono, monospace',
+                                fontSize: '11px',
+                                padding: { left: 8, right: 8, top: 3, bottom: 3 }
+                            },
+                            text: 'Projected: $' + Number(@Model.ProjectedMonthEnd.ToString(System.Globalization.CultureInfo.InvariantCulture)).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0})
+                        }
+                    }]
                 },
                 colors: ['#6366f1', '#a855f7'],
                 markers: {
@@ -483,7 +502,14 @@
                         stops: [50, 0, 100]
                     }
                 },
-                colors: ['#6366f1'],
+                colors: weekData.map(w => {
+                    const maxAvg = Math.max(...weekData.map(x => x.average));
+                    const ratio  = maxAvg > 0 ? w.average / maxAvg : 0;
+                    // Heat: low=green, mid=amber, high=red
+                    if (ratio < 0.4)  return '#10b981';
+                    if (ratio < 0.7)  return '#f59e0b';
+                    return '#ef4444';
+                }),
                 grid: {
                     borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
                     strokeDashArray: 4
