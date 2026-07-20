@@ -15,19 +15,22 @@ namespace Spendly.Application.Services
         private readonly INotificationRepository _notificationRepo;
         private readonly IUserRepository _userRepo;
         private readonly IDateTimeProvider _dateTime;
+        private readonly IEmailService _emailService;
 
         public BudgetAlertService(
             IBudgetRepository budgetRepo,
             IExpenseRepository expenseRepo,
             INotificationRepository notificationRepo,
             IUserRepository userRepo,
-            IDateTimeProvider dateTime)
+            IDateTimeProvider dateTime,
+            IEmailService emailService)
         {
             _budgetRepo = budgetRepo;
             _expenseRepo = expenseRepo;
             _notificationRepo = notificationRepo;
             _userRepo = userRepo;
             _dateTime = dateTime;
+            _emailService = emailService;
         }
 
         public async Task CheckAndCreateAlertsAsync(int userId)
@@ -78,6 +81,17 @@ namespace Spendly.Application.Services
                         );
                         await _notificationRepo.AddAsync(notification);
                         Console.WriteLine($"[BudgetAlert] Created BudgetExceeded notification.");
+
+                        // Send email if user has opted in
+                        if (user != null
+                            && user.EmailNotificationsEnabled
+                            && user.BudgetAlertEmailEnabled)
+                        {
+                            await _emailService.SendBudgetAlertEmailAsync(
+                                user.Email, budget.Category,
+                                spent, budget.MonthlyLimit, percentageUsed,
+                                isExceeded: true);
+                        }
                     }
                 }
                 else if (percentageUsed >= 80)
@@ -99,6 +113,17 @@ namespace Spendly.Application.Services
                         );
                         await _notificationRepo.AddAsync(notification);
                         Console.WriteLine($"[BudgetAlert] Created BudgetWarning notification.");
+
+                        // Send email if user has opted in
+                        if (user != null
+                            && user.EmailNotificationsEnabled
+                            && user.BudgetAlertEmailEnabled)
+                        {
+                            await _emailService.SendBudgetAlertEmailAsync(
+                                user.Email, budget.Category,
+                                spent, budget.MonthlyLimit, percentageUsed,
+                                isExceeded: false);
+                        }
                     }
                 }
                 else
