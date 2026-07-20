@@ -34,7 +34,7 @@ using Spendly.Application.UseCases.Import;
 using Spendly.Application.UseCase.Reports;
 using Spendly.Api.Security;
 using Spendly.Infrastructure.Services;
-
+using Spendly.Infrastructure.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
@@ -272,8 +272,22 @@ builder.Services.AddScoped<RegisterUseCase>();
 builder.Services.AddScoped<ForgotPasswordUseCase>();
 builder.Services.AddScoped<ResetPasswordUseCase>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
-builder.Services.AddScoped<IEmailService, ConsoleEmailService>();
 
+// ── Email service: SMTP when configured, otherwise Console (dev) ──────────
+var smtpSettings = builder.Configuration.GetSection("Smtp").Get<SmtpSettings>() ?? new SmtpSettings();
+var smtpReady    = !string.IsNullOrWhiteSpace(smtpSettings.Host)
+                && !string.IsNullOrWhiteSpace(smtpSettings.Username)
+                && !string.IsNullOrWhiteSpace(smtpSettings.Password);
+
+if (smtpReady)
+{
+    builder.Services.AddSingleton(smtpSettings);
+    builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+}
+else
+{
+    builder.Services.AddScoped<IEmailService, ConsoleEmailService>();
+}
 
 // ────────────────────────────────────────────────────────────
 // Use Cases — User Profile
@@ -314,6 +328,8 @@ builder.Services.AddScoped<DeleteNotificationUseCase>();
 builder.Services.AddScoped<DeleteAllNotificationsUseCase>();
 builder.Services.AddSingleton<IDateTimeProvider, UserDateTimeProvider>();
 builder.Services.AddScoped<BudgetAlertService>();
+builder.Services.AddScoped<SendWeeklySummaryUseCase>();
+builder.Services.AddHostedService<WeeklySummaryBackgroundService>();
 
 // ────────────────────────────────────────────────────────────
 // Use Cases — Recurring Expenses
