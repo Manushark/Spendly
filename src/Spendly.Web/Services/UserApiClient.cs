@@ -53,6 +53,27 @@ namespace Spendly.Web.Services
             }
             return (true, null);
         }
+
+        public async Task<NotificationPreferencesResponse?> GetNotificationPreferencesAsync()
+        {
+            SetAuth();
+            var response = await _http.GetAsync("api/user/notification-preferences");
+            if (!response.IsSuccessStatusCode) return null;
+            return await response.Content.ReadFromJsonAsync<NotificationPreferencesResponse>();
+        }
+
+        public async Task<(bool Success, string? Error)> UpdateNotificationPreferencesAsync(
+            UpdateNotificationPreferencesRequest request)
+        {
+            SetAuth();
+            var response = await _http.PutAsJsonAsync("api/user/notification-preferences", request);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                return (false, body);
+            }
+            return (true, null);
+        }
     }
 
     public class UserProfileResponse
@@ -77,5 +98,19 @@ namespace Spendly.Web.Services
         public string CurrentPassword { get; set; } = string.Empty;
         public string NewPassword { get; set; } = string.Empty;
         public string ConfirmNewPassword { get; set; } = string.Empty;
+    }
+
+    public class NotificationPreferencesResponse
+    {
+        public bool EmailNotificationsEnabled { get; set; }
+        public bool BudgetAlertEmailEnabled { get; set; }
+        public bool WeeklySummaryEmailEnabled { get; set; }
+    }
+
+    public class UpdateNotificationPreferencesRequest
+    {
+        public bool EmailNotificationsEnabled { get; set; }
+        public bool BudgetAlertEmailEnabled { get; set; }
+        public bool WeeklySummaryEmailEnabled { get; set; }
     }
 }
