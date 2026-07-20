@@ -281,6 +281,8 @@ builder.Services.AddScoped<IEmailService, ConsoleEmailService>();
 builder.Services.AddScoped<GetUserProfileUseCase>();
 builder.Services.AddScoped<UpdateUserProfileUseCase>();
 builder.Services.AddScoped<ChangePasswordUseCase>();
+builder.Services.AddScoped<GetNotificationPreferencesUseCase>();
+builder.Services.AddScoped<UpdateNotificationPreferencesUseCase>();
 
 // ────────────────────────────────────────────────────────────
 // Use Cases — Categories

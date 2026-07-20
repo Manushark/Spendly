@@ -15,6 +15,15 @@ namespace Spendly.Domain.Entities
         public DateTime CreatedAt { get; private set; }
         public DateTime? UpdatedAt { get; private set; }
 
+        // ── Email notification preferences ──────────────────────────
+        /// <summary>Master toggle: disabling this suppresses ALL email notifications.</summary>
+        public bool EmailNotificationsEnabled { get; private set; } = true;
+        /// <summary>Receive an email when a budget reaches 80% or 100%.</summary>
+        public bool BudgetAlertEmailEnabled { get; private set; } = true;
+        /// <summary>Receive a weekly spending digest every Monday.</summary>
+        public bool WeeklySummaryEmailEnabled { get; private set; } = true;
+
+
         protected User() { }
 
         private User(string email, string passwordHash)
@@ -72,6 +81,17 @@ namespace Spendly.Domain.Entities
                 throw new InvalidDomainException("Password hash cannot be empty.");
 
             PasswordHash = newPasswordHash;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void UpdateNotificationPreferences(
+            bool emailNotificationsEnabled,
+            bool budgetAlertEmailEnabled,
+            bool weeklySummaryEmailEnabled)
+        {
+            EmailNotificationsEnabled = emailNotificationsEnabled;
+            BudgetAlertEmailEnabled = budgetAlertEmailEnabled;
+            WeeklySummaryEmailEnabled = weeklySummaryEmailEnabled;
             UpdatedAt = DateTime.UtcNow;
         }
 
