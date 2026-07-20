@@ -30,9 +30,11 @@ namespace Spendly.Web.Controllers
         {
             var profile = await _userApi.GetProfileAsync();
             var categories = await _categoryApi.GetAllAsync();
+            var notifPrefs = await _userApi.GetNotificationPreferencesAsync();
 
             ViewBag.Profile = profile;
             ViewBag.Categories = categories;
+            ViewBag.NotifPrefs = notifPrefs;
 
             return View();
         }
@@ -115,6 +117,19 @@ namespace Spendly.Web.Controllers
                 TempData["Error"] = error ?? "Failed to delete category.";
             else
                 TempData["Success"] = "Category deleted successfully.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateNotificationPreferences(UpdateNotificationPreferencesRequest request)
+        {
+            var (success, error) = await _userApi.UpdateNotificationPreferencesAsync(request);
+            if (!success)
+                TempData["Error"] = error ?? "Failed to update notification preferences.";
+            else
+                TempData["Success"] = "Notification preferences saved.";
 
             return RedirectToAction(nameof(Index));
         }
