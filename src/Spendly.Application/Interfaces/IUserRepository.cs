@@ -8,6 +8,9 @@ namespace Spendly.Application.Interfaces
         Task<User?> GetByIdAsync(int id);
         Task AddAsync(User user);
         Task UpdateAsync(User user);
+
+        /// <summary>Returns all users (used by background services like weekly digest).</summary>
+        Task<IEnumerable<User>> GetAllAsync();
     }
 }
 
