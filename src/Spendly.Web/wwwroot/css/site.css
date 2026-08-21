@@ -1156,3 +1156,28 @@ hr            { border-color: var(--clr-border); opacity: 1; }
   background: #dc2626 !important;
   color: #fff !important;
 }
+
+/* ── 32. PUBLIC NAVBAR HIGH-CONTRAST OVERRIDES ──────────────── */
+.public-navbar {
+  position: relative;
+  z-index: 10;
+}
+.public-navbar .navbar-brand {
+  color: #ffffff !important;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+.public-navbar .nav-link {
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+.public-navbar .nav-link:hover {
+  color: #ffffff !important;
+}
+.public-navbar .btn-primary {
+  box-shadow: 0 4px 14px rgba(var(--clr-primary-rgb), 0.25);
+  font-weight: 600;
+}
+
