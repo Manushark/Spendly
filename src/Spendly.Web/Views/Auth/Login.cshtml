@@ -46,8 +46,8 @@
         content: "";
         position: absolute;
         inset: 0;
-        background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-                          linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+        background-image: linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
         background-size: 40px 40px;
         z-index: 2;
     }
@@ -56,11 +56,11 @@
     .auth-card {
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 28px;
-        background: rgba(255, 255, 255, 0.02);
+        background: rgba(15, 22, 36, 0.75);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 
-                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 
+                    inset 0 1px 0 rgba(255, 255, 255, 0.08);
         padding: 48px 40px;
         width: 100%;
         max-width: 460px;
@@ -76,7 +76,7 @@
     .auth-icon {
         width: 68px;
         height: 68px;
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(162, 155, 254, 0.05) 100%);
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%);
         color: var(--clr-primary-light);
         border-radius: 20px;
         display: flex;
@@ -97,16 +97,16 @@
         width: 100%;
         border-radius: 14px;
         padding: 15px 20px 15px 46px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(255, 255, 255, 0.03);
-        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
         font-size: 0.95rem;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .form-control-custom:focus {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: var(--clr-primary-light);
-        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        background-color: #ffffff !important;
+        border-color: var(--clr-primary-light) !important;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
         outline: none;
     }
     .input-icon-custom {
@@ -114,14 +114,17 @@
         left: 18px;
         top: 50%;
         transform: translateY(-50%);
-        color: rgba(255, 255, 255, 0.4);
+        color: #0f172a !important;
         font-size: 1.1rem;
         pointer-events: none;
         transition: color 0.3s ease;
+        z-index: 5;
     }
     .form-control-custom:focus + .input-icon-custom {
-        color: var(--clr-primary-light);
+        color: var(--clr-primary-light) !important;
     }
+
+
 
     /* Label Styling */
     .form-label-custom {
