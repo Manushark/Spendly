@@ -5,117 +5,204 @@
 }
 
 <style>
+    /* Premium Tech-SaaS Background */
     .auth-bg {
-        background-color: var(--clr-bg);
-        min-height: calc(100vh - 150px);
+        background-color: #080b11;
+        min-height: calc(100vh - 100px);
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 40px 20px;
-        margin-top: -48px; /* Offset bootstrap mt-5 in layout */
+        padding: 60px 20px;
+        margin-top: -48px; /* Offset bootstrap layout mt */
+        position: relative;
+        overflow: hidden;
     }
+
+    /* Ambient Glow Circles */
+    .auth-glow-circle {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(140px);
+        opacity: 0.25;
+        z-index: 1;
+    }
+    .auth-glow-1 {
+        top: 20%;
+        left: 15%;
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, var(--clr-primary) 0%, rgba(99, 102, 241, 0) 70%);
+    }
+    .auth-glow-2 {
+        bottom: 15%;
+        right: 15%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, var(--clr-secondary) 0%, rgba(162, 155, 254, 0) 70%);
+    }
+
+    /* Interactive Mesh Grid Pattern */
+    .auth-bg::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+        background-size: 40px 40px;
+        z-index: 2;
+    }
+
+    /* Premium Glassmorphic Card */
     .auth-card {
-        border: 1px solid var(--clr-border);
-        border-radius: 24px;
-        box-shadow: var(--shadow-xl);
-        background: var(--clr-bg-card);
-        padding: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        padding: 48px 40px;
         width: 100%;
-        max-width: 450px;
-        transition: transform 0.3s ease;
+        max-width: 460px;
+        position: relative;
+        z-index: 3;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
+    .auth-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(99, 102, 241, 0.25);
+    }
+
     .auth-icon {
-        width: 64px;
-        height: 64px;
-        background: rgba(var(--clr-primary-rgb), 0.1);
-        color: var(--clr-primary);
-        border-radius: 18px;
+        width: 68px;
+        height: 68px;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(162, 155, 254, 0.05) 100%);
+        color: var(--clr-primary-light);
+        border-radius: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 28px;
-        margin: 0 auto 24px;
-        border: 1px solid rgba(var(--clr-primary-rgb), 0.2);
-        box-shadow: var(--glow-secondary);
+        font-size: 30px;
+        margin: 0 auto 28px;
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+    }
+
+    /* Input Styling */
+    .input-group-custom {
+        position: relative;
+        margin-bottom: 24px;
     }
     .form-control-custom {
-        border-radius: 12px;
-        padding: 14px 20px;
-        border: 1px solid var(--clr-border);
-        background-color: var(--clr-surface-3);
-        color: var(--clr-text);
+        width: 100%;
+        border-radius: 14px;
+        padding: 15px 20px 15px 46px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+        color: #ffffff;
         font-size: 0.95rem;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .form-control-custom:focus {
-        background-color: var(--clr-surface);
-        border-color: var(--clr-secondary);
-        box-shadow: 0 0 0 4px rgba(var(--clr-primary-rgb), 0.15);
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--clr-primary-light);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
         outline: none;
-        color: var(--clr-text);
     }
-    .btn-auth {
-        background: linear-gradient(135deg, var(--clr-primary-light) 0%, var(--clr-primary) 100%);
-        color: white;
+    .input-icon-custom {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 1.1rem;
+        pointer-events: none;
+        transition: color 0.3s ease;
+    }
+    .form-control-custom:focus + .input-icon-custom {
+        color: var(--clr-primary-light);
+    }
+
+    /* Label Styling */
+    .form-label-custom {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* Buttons */
+    .btn-auth-premium {
+        background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+        color: #ffffff;
         border: none;
-        border-radius: 12px;
-        padding: 14px;
+        border-radius: 14px;
+        padding: 15px;
         font-weight: 600;
         font-size: 1rem;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         margin-top: 10px;
-        box-shadow: 0 4px 14px rgba(var(--clr-primary-rgb), 0.2);
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25);
     }
-    .btn-auth:hover {
+    .btn-auth-premium:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(var(--clr-primary-rgb), 0.4);
-        color: white;
+        box-shadow: 0 12px 30px rgba(99, 102, 241, 0.45);
+        color: #ffffff;
     }
-    .btn-auth:disabled {
-        opacity: 0.7;
-        transform: none;
-        box-shadow: none;
+    .btn-auth-premium:active {
+        transform: translateY(0);
     }
 </style>
 
 <div class="auth-bg">
+    <div class="auth-glow-circle auth-glow-1"></div>
+    <div class="auth-glow-circle auth-glow-2"></div>
+
     <div class="auth-card">
         <div class="text-center mb-4">
             <div class="auth-icon">
                 <i class="bi bi-wallet2"></i>
             </div>
-            <h3 class="fw-bold mb-2" style="font-family:'Calistoga',serif; color: var(--clr-text); letter-spacing:-0.5px;">
+            <h3 class="fw-bold mb-2" style="font-family:'Calistoga',serif; color: #ffffff; letter-spacing:-0.5px; font-size: 1.75rem;">
                 @L["Auth_WelcomeBack"]
             </h3>
-            <p class="text-muted small">@L["Auth_WelcomeBack"]</p>
+            <p class="text-muted small">Sign in to manage your money with clarity</p>
         </div>
 
         @if (ViewBag.Error != null)
         {
-            <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger" style="border-radius: 12px; font-size: 0.9rem;">
+            <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4" style="border-radius: 12px; font-size: 0.9rem;">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
             </div>
         }
 
         <form asp-action="Login" method="post">
             <div class="mb-4">
-                <label class="form-label text-muted fw-bold" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px;">@L["Auth_Email"]</label>
-                <input type="email" name="Email" class="form-control form-control-custom" placeholder="@L["Ph_Email"]" required />
-            </div>
-            <div class="mb-4">
-                <label class="form-label text-muted fw-bold" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px;">@L["Auth_Password"]</label>
-                <input type="password" name="Password" class="form-control form-control-custom" placeholder="@L["Ph_PasswordHidden"]" required />
-                <div class="text-end mt-1">
-                    <a asp-action="ForgotPassword" class="text-primary text-decoration-none" style="font-size: 0.82rem;">Forgot password?</a>
+                <label class="form-label-custom">@L["Auth_Email"]</label>
+                <div class="position-relative">
+                    <input type="email" name="Email" class="form-control-custom" placeholder="@L["Ph_Email"]" required />
+                    <i class="bi bi-envelope input-icon-custom"></i>
                 </div>
             </div>
-            <button type="submit" class="btn btn-auth w-100">
+            <div class="mb-4">
+                <label class="form-label-custom">@L["Auth_Password"]</label>
+                <div class="position-relative">
+                    <input type="password" name="Password" class="form-control-custom" placeholder="@L["Ph_PasswordHidden"]" required />
+                    <i class="bi bi-lock input-icon-custom"></i>
+                </div>
+                <div class="text-end mt-2">
+                    <a asp-action="ForgotPassword" class="text-primary text-decoration-none" style="font-size: 0.85rem; font-weight: 500;">Forgot password?</a>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-auth-premium w-100">
                 @L["Auth_SignIn"]
             </button>
         </form>
 
-
-        <div class="text-center mt-4 pt-4 border-top" style="border-color: var(--clr-border) !important;">
+        <div class="text-center mt-4 pt-4 border-top" style="border-color: rgba(255, 255, 255, 0.08) !important;">
             <p class="text-muted mb-0" style="font-size: 0.95rem;">
                 @L["Auth_NoAccount"] <a asp-action="Register" class="text-primary fw-semibold text-decoration-none">@L["Auth_SignUp"]</a>
             </p>
@@ -124,13 +211,13 @@
 </div>
 
 <!-- Loading Overlay -->
-<div id="authLoadingOverlay" style="display:none; position:fixed; inset:0; background:rgba(var(--clr-primary-rgb),0.05); backdrop-filter:blur(8px); z-index:9999; 
-     display:none; flex-direction:column; align-items:center; justify-content:center;">
-    <div class="p-5 rounded-4 text-center border shadow-lg" style="background: var(--clr-bg-card); border-color: var(--clr-border) !important; max-width: 320px;">
+<div id="authLoadingOverlay" style="display:none; position:fixed; inset:0; background:rgba(8, 11, 17, 0.8); backdrop-filter:blur(10px); z-index:9999; 
+     align-items:center; justify-content:center;">
+    <div class="p-5 rounded-4 text-center border shadow-lg" style="background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.08) !important; max-width: 320px; backdrop-filter: blur(20px);">
         <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
             <span class="visually-hidden">Loading...</span>
         </div>
-        <h5 class="fw-bold mb-2" style="font-family:'Calistoga',serif; color: var(--clr-text);">@L["Auth_Connecting"]</h5>
+        <h5 class="fw-bold mb-2" style="font-family:'Calistoga',serif; color: #ffffff;">@L["Auth_Connecting"]</h5>
         <p class="text-muted small mb-0">@L["Auth_FirstVisit"]</p>
     </div>
 </div>
@@ -140,7 +227,7 @@
 }
 
 <script>
-    // Pre-warm: wake up the API + Database while the user types their credentials
+    // Pre-warm the API while user types
     (function () {
         var api = "@Html.Raw(apiUrl)";
         if (api) {
@@ -148,13 +235,10 @@
         }
     })();
 
-    // Show loading overlay on form submit
-    document.querySelector('form[action*="Login"]').addEventListener('submit', function (e) {
-        var overlay = document.getElementById('authLoadingOverlay');
-        overlay.style.display = 'flex';
-
-        // Disable button to prevent double-submit
+    // Show loading overlay
+    document.querySelector('form').addEventListener('submit', function (e) {
+        document.getElementById('authLoadingOverlay').style.display = 'flex';
         var btn = this.querySelector('button[type="submit"]');
         if (btn) btn.disabled = true;
     });
-</script>
+</script>
