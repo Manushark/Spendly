@@ -10,7 +10,7 @@ namespace Spendly.Tests.UseCases.Services;
 /// Pruebas unitarias para BudgetAlertService.
 ///
 /// Este es el servicio MÁS COMPLEJO del proyecto porque:
-///   1. Tiene 5 dependencias inyectadas (4 repositorios + 1 proveedor de fecha)
+///   1. Tiene 6 dependencias inyectadas (4 repositorios + 1 proveedor de fecha + 1 email service)
 ///   2. Tiene lógica de escalación entre dos umbrales: 80% (warning) → 100% (exceeded)
 ///   3. Previene duplicados consultando si la notificación ya existe
 ///   4. Respeta la timezone del usuario para calcular el mes actual
@@ -36,17 +36,18 @@ public class BudgetAlertServiceTests
     private readonly Mock<INotificationRepository> _notifRepo    = new();
     private readonly Mock<IUserRepository>         _userRepo     = new();
     private readonly Mock<IDateTimeProvider>       _dateTime     = new();
+    private readonly Mock<IEmailService>           _emailService = new();
 
     // Fecha fija para todos los tests: julio 2026
     private static readonly DateTime FixedNow = new(2026, 7, 15);
 
     /// <summary>
-    /// Crea el servicio conectando los 5 mocks.
+    /// Crea el servicio conectando los 6 mocks.
     /// Así no repetimos el constructor en cada test.
     /// </summary>
     private BudgetAlertService BuildService() =>
         new(_budgetRepo.Object, _expenseRepo.Object, _notifRepo.Object,
-            _userRepo.Object, _dateTime.Object);
+            _userRepo.Object, _dateTime.Object, _emailService.Object);
 
     /// <summary>
     /// Configura los mocks compartidos que TODOS los tests necesitan:
