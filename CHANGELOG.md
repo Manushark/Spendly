@@ -7,6 +7,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Arreglado
+- Bug donde traductores de navegador (como Google Translate) causaban errores al intentar traducir campos de entrada de correo electrónico y contraseña en las vistas de autenticación, agregando el atributo `translate="no"` a los inputs correspondientes.
+- Bug en las pantallas de inicio de sesión y registro donde el overlay de carga se vinculaba incorrectamente al formulario de cambio de idioma en el navbar público en lugar del formulario de autenticación correspondiente.
+
 ## [1.21.0] - 2026-06-08
 *(Rediseño visual del módulo de etiquetas, análisis de participación con ApexCharts, CRUD de edición y filtrado avanzado multi-etiqueta)*
 
