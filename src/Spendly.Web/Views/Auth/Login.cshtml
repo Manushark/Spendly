@@ -182,18 +182,18 @@
             </div>
         }
 
-        <form asp-action="Login" method="post">
+        <form asp-action="Login" method="post" id="loginForm">
             <div class="mb-4">
                 <label class="form-label-custom">@L["Auth_Email"]</label>
                 <div class="position-relative">
-                    <input type="email" name="Email" class="form-control-custom" placeholder="@L["Ph_Email"]" required />
+                    <input type="email" name="Email" class="form-control-custom" placeholder="@L["Ph_Email"]" required translate="no" />
                     <i class="bi bi-envelope input-icon-custom"></i>
                 </div>
             </div>
             <div class="mb-4">
                 <label class="form-label-custom">@L["Auth_Password"]</label>
                 <div class="position-relative">
-                    <input type="password" name="Password" class="form-control-custom" placeholder="@L["Ph_PasswordHidden"]" required />
+                    <input type="password" name="Password" class="form-control-custom" placeholder="@L["Ph_PasswordHidden"]" required translate="no" />
                     <i class="bi bi-lock input-icon-custom"></i>
                 </div>
                 <div class="text-end mt-2">
@@ -239,9 +239,12 @@
     })();
 
     // Show loading overlay
-    document.querySelector('form').addEventListener('submit', function (e) {
-        document.getElementById('authLoadingOverlay').style.display = 'flex';
-        var btn = this.querySelector('button[type="submit"]');
-        if (btn) btn.disabled = true;
-    });
+    var form = document.getElementById('loginForm');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            document.getElementById('authLoadingOverlay').style.display = 'flex';
+            var btn = this.querySelector('button[type="submit"]');
+            if (btn) btn.disabled = true;
+        });
+    }
 </script>
