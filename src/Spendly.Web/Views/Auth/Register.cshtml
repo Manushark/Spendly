@@ -97,18 +97,18 @@
             </div>
         }
 
-        <form asp-action="Register" method="post">
+        <form asp-action="Register" method="post" id="registerForm">
             <div class="mb-4">
                 <label class="form-label text-muted fw-bold" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px;">@L["Auth_Email"]</label>
-                <input type="email" name="Email" class="form-control form-control-custom" placeholder="@L["Ph_Email"]" required />
+                <input type="email" name="Email" class="form-control form-control-custom" placeholder="@L["Ph_Email"]" required translate="no" />
             </div>
             <div class="mb-4">
                 <label class="form-label text-muted fw-bold" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px;">@L["Auth_Password"]</label>
-                <input type="password" name="Password" class="form-control form-control-custom" placeholder="@L["Ph_Min6Chars"]" required minlength="6" />
+                <input type="password" name="Password" class="form-control form-control-custom" placeholder="@L["Ph_Min6Chars"]" required minlength="6" translate="no" />
             </div>
             <div class="mb-4">
                 <label class="form-label text-muted fw-bold" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px;">@L["Auth_ConfirmPassword"]</label>
-                <input type="password" name="ConfirmPassword" class="form-control form-control-custom" placeholder="@L["Ph_RepeatPassword"]" required />
+                <input type="password" name="ConfirmPassword" class="form-control form-control-custom" placeholder="@L["Ph_RepeatPassword"]" required translate="no" />
             </div>
             <button type="submit" class="btn btn-auth w-100">
                 @L["Auth_SignUp"]
@@ -147,13 +147,13 @@
         }
     })();
 
-    // Show loading overlay on form submit
-    document.querySelector('form[action*="Register"]').addEventListener('submit', function (e) {
-        var overlay = document.getElementById('authLoadingOverlay');
-        overlay.style.display = 'flex';
-
-        // Disable button to prevent double-submit
-        var btn = this.querySelector('button[type="submit"]');
-        if (btn) btn.disabled = true;
-    });
+    // Show loading overlay
+    var form = document.getElementById('registerForm');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            document.getElementById('authLoadingOverlay').style.display = 'flex';
+            var btn = this.querySelector('button[type="submit"]');
+            if (btn) btn.disabled = true;
+        });
+    }
 </script>
