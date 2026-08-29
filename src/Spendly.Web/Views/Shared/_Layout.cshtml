@@ -5,6 +5,8 @@
         (function () {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            const savedAccent = localStorage.getItem('spendly-accent') || 'indigo';
+            document.documentElement.setAttribute('data-accent', savedAccent);
         })();
     </script>
     <meta charset="utf-8" />
@@ -168,6 +170,74 @@
                     </button>
 
                     <div class="d-flex align-items-center gap-3">
+                        <!-- Theme Palette Customizer Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-link p-0 border-0 d-flex align-items-center justify-content-center"
+                                    id="paletteDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false"
+                                    title="Personalizar color de tema / Theme Colors"
+                                    style="font-size: 1.25rem; color: var(--clr-text-muted); transition: color 0.2s, transform 0.2s;">
+                                <i class="bi bi-palette2"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-3" style="width: 270px; border-radius: 18px; background: var(--clr-surface); border: 1px solid var(--clr-border) !important;">
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="border-color: var(--clr-border) !important;">
+                                    <span class="fw-bold small" style="font-size: 0.82rem; letter-spacing: 0.2px;">
+                                        <i class="bi bi-paint-bucket me-1 text-primary"></i> Estilo de Color
+                                    </span>
+                                    <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold" style="font-size: 0.65rem;">Crystal Themes</span>
+                                </div>
+                                <div class="row g-2 py-1">
+                                    <div class="col-3">
+                                        <button type="button" class="palette-swatch-btn" data-accent="indigo" onclick="setAccentPalette('indigo')" title="Índigo Clásico">
+                                            <span class="palette-swatch-circle" style="background: linear-gradient(135deg, #6366f1, #312e81);"></span>
+                                            <span class="palette-swatch-label">Índigo</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="palette-swatch-btn" data-accent="emerald" onclick="setAccentPalette('emerald')" title="Verde Esmeralda">
+                                            <span class="palette-swatch-circle" style="background: linear-gradient(135deg, #10b981, #064e3b);"></span>
+                                            <span class="palette-swatch-label">Esmeralda</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="palette-swatch-btn" data-accent="sapphire" onclick="setAccentPalette('sapphire')" title="Azul Zafiro">
+                                            <span class="palette-swatch-circle" style="background: linear-gradient(135deg, #3b82f6, #1e3a8a);"></span>
+                                            <span class="palette-swatch-label">Zafiro</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="palette-swatch-btn" data-accent="amethyst" onclick="setAccentPalette('amethyst')" title="Púrpura Real">
+                                            <span class="palette-swatch-circle" style="background: linear-gradient(135deg, #8b5cf6, #581c87);"></span>
+                                            <span class="palette-swatch-label">Púrpura</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="palette-swatch-btn" data-accent="ruby" onclick="setAccentPalette('ruby')" title="Rosa Rubí">
+                                            <span class="palette-swatch-circle" style="background: linear-gradient(135deg, #f43f5e, #881337);"></span>
+                                            <span class="palette-swatch-label">Rubí</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="palette-swatch-btn" data-accent="cyber" onclick="setAccentPalette('cyber')" title="Cristal Cian">
+                                            <span class="palette-swatch-circle" style="background: linear-gradient(135deg, #06b6d4, #164e63);"></span>
+                                            <span class="palette-swatch-label">Cian</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="palette-swatch-btn" data-accent="amber" onclick="setAccentPalette('amber')" title="Oro Ámbar">
+                                            <span class="palette-swatch-circle" style="background: linear-gradient(135deg, #f59e0b, #78350f);"></span>
+                                            <span class="palette-swatch-label">Ámbar</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="palette-swatch-btn" data-accent="obsidian" onclick="setAccentPalette('obsidian')" title="Obsidiana Minimal">
+                                            <span class="palette-swatch-circle" style="background: linear-gradient(135deg, #64748b, #0f172a);"></span>
+                                            <span class="palette-swatch-label">Obsidiana</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Theme Switcher Button -->
                         <button class="btn btn-link p-0 border-0" id="themeToggleBtn" type="button" style="font-size: 1.25rem; color: var(--clr-text-muted); transition: color 0.2s;">
                             <i class="bi bi-sun" id="themeToggleIcon"></i>
@@ -474,7 +544,23 @@
                         window.dispatchEvent(new Event('themeChanged'));
                     });
                 }
+
+                // Initialize Accent Palette Swatches
+                const currentAccent = localStorage.getItem('spendly-accent') || 'indigo';
+                document.querySelectorAll('.palette-swatch-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.accent === currentAccent);
+                });
             });
+
+            // Accent Palette Switcher function
+            window.setAccentPalette = function(accent) {
+                document.documentElement.setAttribute('data-accent', accent);
+                localStorage.setItem('spendly-accent', accent);
+                document.querySelectorAll('.palette-swatch-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.accent === accent);
+                });
+                window.dispatchEvent(new Event('themeChanged'));
+            };
         </script>
     }
 
