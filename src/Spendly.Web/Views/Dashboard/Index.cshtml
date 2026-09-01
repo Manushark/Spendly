@@ -12,14 +12,38 @@
         border: 1px solid var(--clr-border);
         background: var(--clr-surface);
         box-shadow: var(--shadow-sm);
-        transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+        transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1),
+                    box-shadow 0.25s ease;
         overflow: hidden;
         position: relative;
+        animation: kpiEntry 0.6s ease both;
     }
     .kpi-card:hover {
-        transform: translateY(-3px);
+        transform: translateY(-5px) scale(1.02);
         box-shadow: var(--shadow-md);
     }
+    .kpi-card:hover .kpi-icon {
+        transform: scale(1.12) rotate(-5deg);
+    }
+    .kpi-icon {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    /* Staggered entry for KPI row */
+    @@keyframes kpiEntry {
+        from { opacity:0; transform: translateY(20px); }
+        to   { opacity:1; transform: translateY(0); }
+    }
+    .kpi-col:nth-child(1) .kpi-card { animation-delay: 0.05s; }
+    .kpi-col:nth-child(2) .kpi-card { animation-delay: 0.12s; }
+    .kpi-col:nth-child(3) .kpi-card { animation-delay: 0.19s; }
+    .kpi-col:nth-child(4) .kpi-card { animation-delay: 0.26s; }
+
     /* Coloured top border accent */
     .kpi-card .kpi-accent {
         position: absolute;
@@ -32,17 +56,18 @@
     .kpi-accent-blue   { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
     .kpi-accent-violet { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
 
-    .kpi-icon {
-        width: 44px; height: 44px;
-        border-radius: 12px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.25rem;
-        flex-shrink: 0;
-    }
     .kpi-icon-green  { background: rgba(16,185,129,.14); color: #10b981; }
     .kpi-icon-red    { background: rgba(239,68,68,.14);  color: #ef4444; }
     .kpi-icon-blue   { background: rgba(59,130,246,.14); color: #3b82f6; }
     .kpi-icon-violet { background: rgba(139,92,246,.14); color: #8b5cf6; }
+
+    /* Count-up value */
+    .kpi-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+        transition: color 0.3s ease;
+    }
 
     /* ── GLASS PANEL (chart/table cards) ────────────────────── */
     .glass-card {
@@ -58,7 +83,7 @@
         box-shadow: var(--shadow-md);
     }
 
-    /* ── PROGRESS TRACK ─────────────────────────────────────── */
+    /* ── CATEGORY PROGRESS BARS (shimmer gradient) ───────────── */
     .progress-track-premium {
         height: 6px;
         background: var(--clr-surface-3);
@@ -66,7 +91,18 @@
     }
     .progress-bar-premium {
         height: 100%; border-radius: 10px;
-        transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        background-size: 200% 100%;
+        animation: barShimmer 2.5s ease-in-out infinite,
+                   barGrow 0.9s cubic-bezier(0.34,1.56,0.64,1) both;
+        transform-origin: left center;
+    }
+    @@keyframes barShimmer {
+        0%   { background-position: 200% center; }
+        100% { background-position: -200% center; }
+    }
+    @@keyframes barGrow {
+        from { transform: scaleX(0); }
+        to   { transform: scaleX(1); }
     }
 
     /* ── CATEGORY ROW HOVER ─────────────────────────────────── */
@@ -95,7 +131,6 @@
     .empty-state { padding: 80px 20px; text-align: center; }
 
     /* ── DARK-MODE OVERRIDES FOR TABLE ─────────────────────── */
-    /* Ensure count badge always has readable text */
     .count-badge {
         background: var(--clr-surface-3) !important;
         color: var(--clr-text) !important;
@@ -106,7 +141,6 @@
         border-radius: 20px;
         display: inline-block;
     }
-    /* Amount text in table always vivid */
     .amount-cell {
         font-family: var(--font-mono);
         font-weight: 700;
@@ -156,14 +190,15 @@
         <div class="row g-3 mb-4">
 
             @* Card: Income *@
-            <div class="col-sm-6 col-xl-3">
+            <div class="col-sm-6 col-xl-3 kpi-col">
                 <div class="kpi-card h-100 p-4">
                     <div class="kpi-accent kpi-accent-green"></div>
                     <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Dash_MonthlyIncome"]</span>
                         <div class="kpi-icon kpi-icon-green"><i class="bi bi-cash-stack"></i></div>
                     </div>
-                    <h2 class="fw-bold font-mono mb-1" style="color:#10b981;font-size:1.8rem;">
+                    <h2 class="kpi-value mb-1" style="color:#10b981;"
+                        data-count-up data-value="@Model.CurrentMonthIncome.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-prefix="$">
                         $@Model.CurrentMonthIncome.ToString("N2")
                     </h2>
                     <small class="text-muted">@L["Dash_TotalEarnings"]</small>
@@ -171,14 +206,15 @@
             </div>
 
             @* Card: Expenses *@
-            <div class="col-sm-6 col-xl-3">
+            <div class="col-sm-6 col-xl-3 kpi-col">
                 <div class="kpi-card h-100 p-4">
                     <div class="kpi-accent kpi-accent-red"></div>
                     <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Dash_TotalThisMonth"]</span>
                         <div class="kpi-icon kpi-icon-red"><i class="bi bi-wallet2"></i></div>
                     </div>
-                    <h2 class="fw-bold font-mono mb-1" style="color:#ef4444;font-size:1.8rem;">
+                    <h2 class="kpi-value mb-1" style="color:#ef4444;"
+                        data-count-up data-value="@Model.CurrentMonthTotal.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-prefix="$">
                         $@Model.CurrentMonthTotal.ToString("N2")
                     </h2>
                     <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -199,7 +235,7 @@
             </div>
 
             @* Card: Balance *@
-            <div class="col-sm-6 col-xl-3">
+            <div class="col-sm-6 col-xl-3 kpi-col">
                 <div class="kpi-card h-100 p-4">
                     <div class="kpi-accent @(Model.MonthlyBalance >= 0 ? "kpi-accent-blue" : "kpi-accent-red")"></div>
                     <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
@@ -208,7 +244,10 @@
                             <i class="bi bi-wallet-fill"></i>
                         </div>
                     </div>
-                    <h2 class="fw-bold font-mono mb-1" style="color:@(Model.MonthlyBalance >= 0 ? "#3b82f6" : "#ef4444");font-size:1.8rem;">
+                    <h2 class="kpi-value mb-1"
+                        style="color:@(Model.MonthlyBalance >= 0 ? "#3b82f6" : "#ef4444");"
+                        data-count-up data-value="@Math.Abs(Model.MonthlyBalance).ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                        data-prefix="@(Model.MonthlyBalance >= 0 ? "+$" : "-$")">
                         @(Model.MonthlyBalance >= 0 ? "+" : "")$@Math.Abs(Model.MonthlyBalance).ToString("N2")
                     </h2>
                     <small class="text-muted">@L["Dash_IncomeMinusExpenses"]</small>
@@ -216,20 +255,22 @@
             </div>
 
             @* Card: Savings Rate *@
-            <div class="col-sm-6 col-xl-3">
+            <div class="col-sm-6 col-xl-3 kpi-col">
                 <div class="kpi-card h-100 p-4">
                     <div class="kpi-accent kpi-accent-violet"></div>
                     <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Dash_SavingsRate"]</span>
                         <div class="kpi-icon kpi-icon-violet"><i class="bi bi-piggy-bank"></i></div>
                     </div>
-                    <h2 class="fw-bold font-mono mb-2" style="color:#8b5cf6;font-size:1.8rem;">
+                    <h2 class="kpi-value mb-2" style="color:#8b5cf6;"
+                        data-count-up data-value="@Model.SavingsRate.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-suffix="%" data-decimals="1">
                         @Model.SavingsRate.ToString("N1")%
                     </h2>
                     <div class="progress-track-premium mb-2">
                         <div class="progress-bar-premium"
                              style="width:@(Math.Max(0,Math.Min(100,Model.SavingsRate)).ToString(System.Globalization.CultureInfo.InvariantCulture))%;
-                                    background:@(Model.SavingsRate >= 20 ? "linear-gradient(90deg,#10b981,#34d399)" : Model.SavingsRate >= 0 ? "linear-gradient(90deg,#f59e0b,#fbbf24)" : "linear-gradient(90deg,#ef4444,#f87171)");">
+                                    background:@(Model.SavingsRate >= 20 ? "linear-gradient(90deg,#10b981,#34d399,#10b981)" : Model.SavingsRate >= 0 ? "linear-gradient(90deg,#f59e0b,#fbbf24,#f59e0b)" : "linear-gradient(90deg,#ef4444,#f87171,#ef4444)");
+                                    background-size: 200% 100%;">
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
@@ -247,10 +288,16 @@
         <div class="row g-3 mb-4">
             <div class="col-lg-8">
                 <div class="glass-card h-100">
-                    <div class="card-header border-0 bg-transparent pt-4 pb-2 px-4 d-flex align-items-center gap-2">
-                        <i class="bi bi-graph-up text-primary"></i>
-                        <h5 class="mb-0 fw-semibold">@L["Dash_SpendingTrend"]</h5>
-                        <span class="badge-label ms-1">@L["Dash_Last30Days"]</span>
+                    <div class="card-header border-0 bg-transparent pt-4 pb-2 px-4 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-bar-chart-line text-primary"></i>
+                            <h5 class="mb-0 fw-semibold">Income vs Expenses</h5>
+                        </div>
+                        <div class="d-flex align-items-center gap-3" style="font-size:.78rem;">
+                            <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#10b981;display:inline-block;"></span><span class="text-muted">Income</span></span>
+                            <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#ef4444;display:inline-block;"></span><span class="text-muted">This month</span></span>
+                            <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#94a3b8;display:inline-block;"></span><span class="text-muted">Last month</span></span>
+                        </div>
                     </div>
                     <div class="card-body pt-2 px-3 pb-3">
                         <div style="position:relative;height:300px;width:100%;">
@@ -360,7 +407,7 @@
             <div class="col-lg-4">
                 <div class="glass-card h-100">
                     <div class="card-header border-0 bg-transparent pt-4 pb-2 px-4 d-flex align-items-center gap-2">
-                        <i class="bi bi-pie-chart text-primary"></i>
+                        <i class="bi bi-list-stars text-primary"></i>
                         <h5 class="mb-0 fw-semibold">@L["Ins_Percentage"]</h5>
                     </div>
                     <div class="card-body pt-2 px-4">
@@ -372,21 +419,27 @@
                                     var cat   = Model.CategoryBreakdown[i];
                                     var color = GetCategoryColor(cat.Category, i);
                                     var icon  = GetCategoryIcon(cat.Category);
-                                    <div>
+                                    <div style="animation: kpiEntry 0.5s ease both; animation-delay: @((i * 0.08).ToString(System.Globalization.CultureInfo.InvariantCulture))s;">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
                                             <div class="d-flex align-items-center gap-2">
-                                                <span class="flex-shrink-0" style="width:22px;height:22px;border-radius:6px;background:@(color)22;color:@color;border:1px solid @(color)44;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;" title="@CategoryTranslator.Translate(cat.Category, L)">
+                                                <span class="flex-shrink-0"
+                                                      style="width:26px;height:26px;border-radius:8px;background:@(color)22;color:@color;border:1px solid @(color)44;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;"
+                                                      title="@CategoryTranslator.Translate(cat.Category, L)">
                                                     <i class="bi @icon"></i>
                                                 </span>
-                                                <span class="fw-semibold" style="font-size:.82rem;">@CategoryTranslator.Translate(cat.Category, L)</span>
+                                                <span class="fw-semibold" style="font-size:.83rem;">@CategoryTranslator.Translate(cat.Category, L)</span>
                                             </div>
                                             <div class="text-end">
-                                                <span class="amount-cell fw-bold" style="font-size:.82rem;">$@cat.Total.ToString("N2")</span>
-                                                <span class="text-muted ms-1" style="font-size:.75rem;">(@cat.Percentage.ToString("N0")%)</span>
+                                                <span class="amount-cell fw-bold" style="font-size:.83rem; color:@color !important;">$@cat.Total.ToString("N2")</span>
+                                                <span class="text-muted ms-1" style="font-size:.74rem;">(@cat.Percentage.ToString("N0")%)</span>
                                             </div>
                                         </div>
                                         <div class="progress-track-premium">
-                                            <div class="progress-bar-premium" style="width:@cat.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%;background:linear-gradient(90deg,@color,@(color)bb);"></div>
+                                            <div class="progress-bar-premium"
+                                                 style="width:@cat.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%;
+                                                        background: linear-gradient(90deg, @color, color-mix(in srgb, @color 65%, #ffffff), @color);
+                                                        background-size: 200% 100%;
+                                                        animation-delay: @((i * 0.12).ToString(System.Globalization.CultureInfo.InvariantCulture))s;"></div>
                                         </div>
                                     </div>
                                 }
@@ -409,54 +462,87 @@
 @section Scripts {
     <script src="~/lib/chart.js/chart.umd.min.js"></script>
     <script>
+    // ── KPI Count-Up Animation ────────────────────────────────────────
+    document.querySelectorAll('[data-count-up]').forEach(el => {
+        const target   = parseFloat(el.dataset.value) || 0;
+        const prefix   = el.dataset.prefix  || '';
+        const suffix   = el.dataset.suffix  || '';
+        const decimals = parseInt(el.dataset.decimals ?? '2');
+        const duration = 1200;
+        const start    = performance.now();
+        el.textContent = prefix + (0).toFixed(decimals) + suffix;
+        function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+        function tick(now) {
+            const pct = Math.min((now - start) / duration, 1);
+            const val = target * easeOut(pct);
+            el.textContent = prefix + val.toLocaleString(undefined, {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            }) + suffix;
+            if (pct < 1) requestAnimationFrame(tick);
+        }
+        // Delay per card stagger
+        const delay = parseFloat(el.closest('.kpi-col')?.style.getPropertyValue('--delay') ?? '0') * 1000;
+        setTimeout(() => requestAnimationFrame(tick), delay + 100);
+    });
+
     @if (hasData)
     {
         <text>
-        const trendData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DailyTrend));
+        // ── Income vs Expenses grouped bar chart ──────────────────────
+        const incomeVal   = @Model.CurrentMonthIncome.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        const expenseCurr = @Model.CurrentMonthTotal.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        const expensePrev = @Model.PreviousMonthTotal.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        // Month labels
+        const now       = new Date();
+        const thisMonth = now.toLocaleString('default', { month: 'long' });
+        const prevDate  = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const prevMonth = prevDate.toLocaleString('default', { month: 'long' });
 
         function getChartColors() {
             const dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
             return {
-                grid:         dark ? 'rgba(255,255,255,.06)' : 'rgba(15,23,42,.05)',
-                ticks:        dark ? 'rgba(255,255,255,.45)' : 'rgba(15,23,42,.45)',
-                tooltipBg:    dark ? 'rgba(15,23,42,.96)'  : 'rgba(255,255,255,.98)',
-                tooltipBorder:dark ? 'rgba(255,255,255,.1)' : 'rgba(15,23,42,.08)',
-                tooltipTitle: dark ? '#f1f5f9' : '#0f172a',
-                tooltipBody:  dark ? '#94a3b8' : '#475569',
-                pointBorder:  dark ? '#131f35' : '#ffffff'
+                grid:          dark ? 'rgba(255,255,255,.06)' : 'rgba(15,23,42,.05)',
+                ticks:         dark ? 'rgba(255,255,255,.45)' : 'rgba(15,23,42,.45)',
+                tooltipBg:     dark ? 'rgba(15,23,42,.96)'   : 'rgba(255,255,255,.98)',
+                tooltipBorder: dark ? 'rgba(255,255,255,.1)' : 'rgba(15,23,42,.08)',
+                tooltipTitle:  dark ? '#f1f5f9' : '#0f172a',
+                tooltipBody:   dark ? '#94a3b8' : '#475569'
             };
         }
 
-        const ctx = document.getElementById('dailyTrendChart').getContext('2d');
-        const grad = ctx.createLinearGradient(0, 0, 0, 300);
-        grad.addColorStop(0, 'rgba(16,185,129,.35)');
-        grad.addColorStop(1, 'rgba(16,185,129,.02)');
-
         let c = getChartColors();
+        const ctx = document.getElementById('dailyTrendChart').getContext('2d');
 
         const trendChart = new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
-                labels: trendData.map(d => d.Date),
-                datasets: [{
-                    label: '@L["Dash_SpentLabel"].Value',
-                    data: trendData.map(d => d.Amount),
-                    borderColor: '#10b981',
-                    backgroundColor: grad,
-                    fill: true,
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 4, pointHoverRadius: 8,
-                    pointBackgroundColor: '#10b981',
-                    pointBorderColor: c.pointBorder,
-                    pointBorderWidth: 2,
-                    pointHoverBackgroundColor: '#10b981',
-                    pointHoverBorderColor: c.pointBorder,
-                    pointHoverBorderWidth: 3
-                }]
+                labels: [prevMonth, thisMonth],
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: [0, incomeVal],
+                        backgroundColor: 'rgba(16,185,129,.75)',
+                        borderColor: '#10b981',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false
+                    },
+                    {
+                        label: 'Expenses',
+                        data: [expensePrev, expenseCurr],
+                        backgroundColor: ['rgba(148,163,184,.55)', 'rgba(239,68,68,.75)'],
+                        borderColor: ['#94a3b8', '#ef4444'],
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }
+                ]
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
+                responsive: true,
+                maintainAspectRatio: false,
                 interaction: { intersect: false, mode: 'index' },
                 plugins: {
                     legend: { display: false },
@@ -466,12 +552,10 @@
                         bodyColor:  c.tooltipBody,
                         borderColor: c.tooltipBorder,
                         borderWidth: 1, padding: 12, cornerRadius: 12,
-                        displayColors: false,
                         titleFont: { family: 'Inter', size: 13, weight: 'bold' },
                         bodyFont:  { family: 'JetBrains Mono', size: 12 },
                         callbacks: {
-                            label: ctx2 => '@L["Dash_SpentLabel"].Value: $' +
-                                ctx2.parsed.y.toLocaleString(undefined, {minimumFractionDigits:2,maximumFractionDigits:2})
+                            label: ctx2 => ` ${ctx2.dataset.label}: $${ctx2.parsed.y.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`
                         }
                     }
                 },
@@ -479,11 +563,15 @@
                     y: {
                         beginAtZero: true,
                         grid:  { color: c.grid, drawBorder: false },
-                        ticks: { color: c.ticks, font: { family: 'JetBrains Mono', size: 11 } }
+                        ticks: {
+                            color: c.ticks,
+                            font: { family: 'JetBrains Mono', size: 11 },
+                            callback: v => '$' + v.toLocaleString()
+                        }
                     },
                     x: {
                         grid:  { display: false },
-                        ticks: { color: c.ticks, font: { family: 'Inter', size: 11 } }
+                        ticks: { color: c.ticks, font: { family: 'Inter', size: 12, weight: '600' } }
                     }
                 }
             }
@@ -499,8 +587,6 @@
             trendChart.options.plugins.tooltip.titleColor      = c.tooltipTitle;
             trendChart.options.plugins.tooltip.bodyColor       = c.tooltipBody;
             trendChart.options.plugins.tooltip.borderColor     = c.tooltipBorder;
-            trendChart.data.datasets[0].pointBorderColor      = c.pointBorder;
-            trendChart.data.datasets[0].pointHoverBorderColor = c.pointBorder;
             trendChart.update();
         });
         </text>

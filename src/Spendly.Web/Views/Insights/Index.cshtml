@@ -14,16 +14,36 @@
     <style>
         /* ── Stat cards ── */
         .stat-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1),
+                        box-shadow 0.25s ease, border-color 0.2s ease;
             border: 1px solid var(--clr-border) !important;
             background: var(--clr-bg-card);
             backdrop-filter: blur(10px);
+            animation: insCardIn 0.55s ease both;
         }
         .stat-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-5px) scale(1.01);
             box-shadow: var(--shadow-lg) !important;
             border-color: var(--clr-primary-semi) !important;
         }
+        .stat-card:hover .ins-icon { transform: scale(1.12) rotate(-5deg); }
+        .ins-icon { transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+
+        .ins-card-col:nth-child(1) .stat-card { animation-delay: 0.04s; }
+        .ins-card-col:nth-child(2) .stat-card { animation-delay: 0.10s; }
+        .ins-card-col:nth-child(3) .stat-card { animation-delay: 0.16s; }
+        .ins-card-col:nth-child(4) .stat-card { animation-delay: 0.22s; }
+
+        @@keyframes insCardIn {
+            from { opacity:0; transform: translateY(18px); }
+            to   { opacity:1; transform: translateY(0); }
+        }
+
+        .ins-kpi-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+
         .chart-card {
             border: 1px solid var(--clr-border) !important;
             background: var(--clr-bg-card);
@@ -32,6 +52,46 @@
         }
         .cat-row { transition: background-color 0.15s; }
         .cat-row:hover { background-color: var(--clr-bg-hover) !important; }
+
+        /* Budget vs Actual bar */
+        .budget-track {
+            height: 14px;
+            border-radius: 10px;
+            background: var(--clr-surface-3);
+            overflow: hidden;
+            position: relative;
+        }
+        .budget-fill {
+            height: 100%;
+            border-radius: 10px;
+            background-size: 200% 100%;
+            animation: budgetShimmer 3s ease-in-out infinite, barGrow 1s cubic-bezier(0.34,1.56,0.64,1) both;
+            transform-origin: left center;
+        }
+        @@keyframes budgetShimmer {
+            0%   { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
+        @@keyframes barGrow {
+            from { transform: scaleX(0); }
+            to   { transform: scaleX(1); }
+        }
+
+        /* Acceleration bars */
+        .accel-bar {
+            height: 6px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--clr-surface-3);
+        }
+        .accel-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #ef4444, #f87171, #ef4444);
+            background-size: 200% 100%;
+            animation: budgetShimmer 2s ease-in-out infinite, barGrow 0.8s cubic-bezier(0.34,1.56,0.64,1) both;
+            transform-origin: left center;
+        }
     </style>
 }
 
@@ -75,11 +135,19 @@
 
     <!-- Summary Cards Row -->
     <div class="row g-3 mb-4">
-        <div class="col-md-3">
+        @{
+            var budgetCeilingPct = Model.TotalIncome > 0
+                ? Math.Min(100, (Model.ProjectedMonthEnd / Model.TotalIncome) * 100)
+                : 0m;
+        }
+        <div class="col-md-3 ins-card-col">
             <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Ins_TotalExpenses"]</p>
-                    <h3 class="mb-1 fw-bold text-danger">$@Model.TotalExpenses.ToString("N2")</h3>
+                    <h3 class="mb-1 fw-bold text-danger ins-kpi-value"
+                        data-ins-count data-value="@Model.TotalExpenses.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-prefix="$">
+                        $@Model.TotalExpenses.ToString("N2")
+                    </h3>
                     <small class="@(Model.ExpenseChangePercent <= 0 ? "text-success" : "text-danger")">
                         <i class="bi bi-@(Model.ExpenseChangePercent <= 0 ? "arrow-down" : "arrow-up")-circle-fill me-1"></i>
                         @Math.Abs(Model.ExpenseChangePercent).ToString("N1")% @L["Dash_VsLastMonth"]
@@ -87,11 +155,14 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 ins-card-col">
             <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Ins_TotalIncome"]</p>
-                    <h3 class="mb-1 fw-bold text-success">$@Model.TotalIncome.ToString("N2")</h3>
+                    <h3 class="mb-1 fw-bold text-success ins-kpi-value"
+                        data-ins-count data-value="@Model.TotalIncome.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-prefix="$">
+                        $@Model.TotalIncome.ToString("N2")
+                    </h3>
                     <small class="@(Model.IncomeChangePercent >= 0 ? "text-success" : "text-danger")">
                         <i class="bi bi-@(Model.IncomeChangePercent >= 0 ? "arrow-up" : "arrow-down")-circle-fill me-1"></i>
                         @Math.Abs(Model.IncomeChangePercent).ToString("N1")% @L["Dash_VsLastMonth"]
@@ -99,11 +170,13 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 ins-card-col">
             <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Dash_Balance"]</p>
-                    <h3 class="mb-1 fw-bold @(Model.Balance >= 0 ? "text-success" : "text-danger")">
+                    <h3 class="mb-1 fw-bold @(Model.Balance >= 0 ? "text-success" : "text-danger") ins-kpi-value"
+                        data-ins-count data-value="@Math.Abs(Model.Balance).ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                        data-prefix="@(Model.Balance >= 0 ? "+$" : "-$")">
                         @(Model.Balance >= 0 ? "+" : "")$@Model.Balance.ToString("N2")
                     </h3>
                     <small class="text-muted">
@@ -112,11 +185,14 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 ins-card-col">
             <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Ins_ProjectedMonthEnd"]</p>
-                    <h3 class="mb-1 fw-bold text-primary">$@Model.ProjectedMonthEnd.ToString("N2")</h3>
+                    <h3 class="mb-1 fw-bold text-primary ins-kpi-value"
+                        data-ins-count data-value="@Model.ProjectedMonthEnd.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-prefix="$">
+                        $@Model.ProjectedMonthEnd.ToString("N2")
+                    </h3>
                     <small class="text-muted">
                         <i class="bi bi-calendar3 me-1 text-primary"></i>@Model.DaysElapsed/@Model.DaysInMonth @L["Ins_Days"] · $@Model.DailyAverage.ToString("N2")/@L["Ins_Day"]
                     </small>
@@ -125,6 +201,7 @@
         </div>
     </div>
 
+
     <!-- Charts Row -->
     <div class="row g-4 mb-4">
         <!-- Daily Spending Chart -->
@@ -132,10 +209,47 @@
             <div class="card chart-card shadow-sm h-100">
                 <div class="card-body">
                     <h6 class="fw-bold mb-3"><i class="bi bi-graph-up me-2 text-primary"></i>@L["Dash_DailySpending"]</h6>
-                    <div id="dailySpendingChart" style="height: 280px; width: 100%;"></div>
+                    <div id="dailySpendingChart" style="height: 260px; width: 100%;"></div>
+                    @if (Model.TotalIncome > 0)
+                    {
+                        var pctUsed     = Math.Min(100m, (Model.ProjectedMonthEnd / Model.TotalIncome) * 100m);
+                        var statusColor = pctUsed <= 80 ? "#10b981" : pctUsed <= 100 ? "#f59e0b" : "#ef4444";
+                        var statusLabel = pctUsed <= 80 ? "✅ On Track" : pctUsed <= 100 ? "⚠️ Watch Out" : "🚨 Over Budget";
+                        var barGrad     = pctUsed <= 80
+                            ? "linear-gradient(90deg,#10b981,#34d399,#10b981)"
+                            : pctUsed <= 100
+                            ? "linear-gradient(90deg,#f59e0b,#fbbf24,#f59e0b)"
+                            : "linear-gradient(90deg,#ef4444,#f87171,#ef4444)";
+                        <div class="mt-4 pt-3" style="border-top: 1px solid var(--clr-border);">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-semibold" style="font-size:.82rem;">
+                                    <i class="bi bi-bar-chart-steps me-1 text-primary"></i>
+                                    Projected vs Income (Budget Ceiling)
+                                </span>
+                                <span class="fw-bold rounded-pill px-3 py-1"
+                                      style="font-size:.75rem; background: color-mix(in srgb, @statusColor 15%, transparent); color: @statusColor; border: 1px solid color-mix(in srgb, @statusColor 40%, transparent);">
+                                    @statusLabel
+                                </span>
+                            </div>
+                            <div class="budget-track mb-1">
+                                <div class="budget-fill"
+                                     style="width: @pctUsed.ToString(System.Globalization.CultureInfo.InvariantCulture)%;
+                                            background: @barGrad; background-size: 200% 100%;"></div>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted font-mono" style="font-size:.73rem;">
+                                    Projected: <strong style="color:@statusColor;">$@Model.ProjectedMonthEnd.ToString("N0")</strong>
+                                </small>
+                                <small class="text-muted font-mono" style="font-size:.73rem;">
+                                    Income: $@Model.TotalIncome.ToString("N0") · @pctUsed.ToString("N0")% used
+                                </small>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
+
         <!-- Expense Acceleration Card -->
         <div class="col-lg-4">
             @{
@@ -162,8 +276,8 @@
                                             <i class="bi bi-graph-up me-1"></i>+@cat.ChangePercent.ToString("N0")%
                                         </span>
                                     </div>
-                                    <div class="progress" style="height: 6px; border-radius: 3px;">
-                                        <div class="progress-bar bg-danger" style="width: @(Math.Min(100, cat.Percentage).ToString(System.Globalization.CultureInfo.InvariantCulture))%"></div>
+                                    <div class="accel-bar">
+                                        <div class="accel-fill" style="width: @(Math.Min(100, cat.Percentage).ToString(System.Globalization.CultureInfo.InvariantCulture))%"></div>
                                     </div>
                                     <small class="text-muted d-block mt-1">
                                         $@cat.Amount.ToString("N2") vs $@cat.PreviousMonthAmount.ToString("N2") (@L["Ins_PrevMonth"])
@@ -265,6 +379,30 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
+        // ── Insights stat card count-up ─────────────────────────────────
+        document.querySelectorAll('[data-ins-count]').forEach((el, i) => {
+            const target   = parseFloat(el.dataset.value) || 0;
+            const prefix   = el.dataset.prefix || '';
+            const suffix   = el.dataset.suffix || '';
+            const decimals = 2;
+            const duration = 1100;
+            el.textContent = prefix + (0).toFixed(decimals) + suffix;
+            function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+            setTimeout(() => {
+                const start = performance.now();
+                function tick(now) {
+                    const pct = Math.min((now - start) / duration, 1);
+                    const val = target * easeOut(pct);
+                    el.textContent = prefix + val.toLocaleString(undefined, {
+                        minimumFractionDigits: decimals,
+                        maximumFractionDigits: decimals
+                    }) + suffix;
+                    if (pct < 1) requestAnimationFrame(tick);
+                }
+                requestAnimationFrame(tick);
+            }, i * 80 + 80);
+        });
+
         const categoryColors = [
             '#6366f1', '#f43f5e', '#10b981', '#f59e0b', '#3b82f6',
             '#8b5cf6', '#ec4899', '#14b8a6', '#ef4444', '#06b6d4',
@@ -344,10 +482,29 @@
                     type: 'gradient',
                     gradient: {
                         shadeIntensity: 1,
-                        opacityFrom: [0.35, 0.02],
-                        opacityTo: [0.02, 0.01],
+                        opacityFrom: [0.5, 0.08],
+                        opacityTo:   [0.05, 0.01],
                         stops: [0, 100]
                     }
+                },
+                annotations: {
+                    yaxis: [{
+                        y: Number(@Model.ProjectedMonthEnd.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+                        borderColor: '#f59e0b',
+                        strokeDashArray: 5,
+                        borderWidth: 2,
+                        label: {
+                            borderColor: '#f59e0b',
+                            style: {
+                                color: '#fff',
+                                background: '#f59e0b',
+                                fontFamily: 'JetBrains Mono, monospace',
+                                fontSize: '11px',
+                                padding: { left: 8, right: 8, top: 3, bottom: 3 }
+                            },
+                            text: 'Projected: $' + Number(@Model.ProjectedMonthEnd.ToString(System.Globalization.CultureInfo.InvariantCulture)).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0})
+                        }
+                    }]
                 },
                 colors: ['#6366f1', '#a855f7'],
                 markers: {
@@ -483,7 +640,14 @@
                         stops: [50, 0, 100]
                     }
                 },
-                colors: ['#6366f1'],
+                colors: weekData.map(w => {
+                    const maxAvg = Math.max(...weekData.map(x => x.average));
+                    const ratio  = maxAvg > 0 ? w.average / maxAvg : 0;
+                    // Heat: low=green, mid=amber, high=red
+                    if (ratio < 0.4)  return '#10b981';
+                    if (ratio < 0.7)  return '#f59e0b';
+                    return '#ef4444';
+                }),
                 grid: {
                     borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
                     strokeDashArray: 4

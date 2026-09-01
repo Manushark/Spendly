@@ -4,180 +4,189 @@
 }
 
 <style>
-    /* Dark Theme Base for Landing Page */
+    /* Premium Dark Theme Base */
     body {
-        background-color: #0B1120 !important; /* Rich Dark Background matching our theme */
+        background-color: #080b11 !important;
         color: #ffffff;
         font-family: var(--font-body);
+        overflow-x: hidden;
     }
 
-    /* Navbar override */
+    /* Navbar styling override */
     .navbar {
         background-color: transparent !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
     }
     .navbar-brand, .nav-link {
-        color: #fff !important;
+        color: #ffffff !important;
     }
 
     /* Hero Section */
     .hero-section {
         position: relative;
-        padding: 140px 0 100px;
+        padding: 160px 0 120px;
         overflow: hidden;
-        background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15) 0%, #0B1120 50%),
-                    radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.12) 0%, #0B1120 50%);
+        background: radial-gradient(circle at 90% 10%, rgba(99, 102, 241, 0.12) 0%, rgba(8, 11, 17, 0) 60%),
+                    radial-gradient(circle at 10% 90%, rgba(162, 155, 254, 0.08) 0%, rgba(8, 11, 17, 0) 60%);
     }
+
+    /* Ambient Glow Effects */
+    .glow-bg {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(150px);
+        opacity: 0.3;
+        z-index: 1;
+    }
+    .glow-1 { top: 15%; right: 5%; width: 450px; height: 450px; background: var(--clr-primary); }
+    .glow-2 { bottom: 10%; left: -5%; width: 350px; height: 350px; background: var(--clr-secondary); }
 
     .hero-content {
         position: relative;
-        z-index: 2;
+        z-index: 3;
     }
 
+    /* Animated text gradient */
     .hero-title {
         font-family: var(--font-heading);
-        font-size: 4rem;
+        font-size: 4.25rem;
         font-weight: 800;
-        line-height: 1.2;
+        line-height: 1.15;
         margin-bottom: 24px;
-        background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
+        background: linear-gradient(135deg, #ffffff 10%, #a5b4fc 50%, #818cf8 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        letter-spacing: -1px;
+        letter-spacing: -1.5px;
     }
 
     .hero-subtitle {
         font-size: 1.25rem;
-        color: #94a3b8;
-        margin-bottom: 40px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 44px;
         font-weight: 400;
-        line-height: 1.6;
+        line-height: 1.65;
+        max-width: 540px;
     }
 
-    /* Floating Image Animation */
-    @@keyframes float {
+    /* Smooth Floating Animation */
+    @@keyframes floatingMockup {
         0% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-15px) rotate(0.5deg); }
+        50% { transform: translateY(-12px) rotate(0.3deg); }
         100% { transform: translateY(0px) rotate(0deg); }
     }
 
-    .hero-mockup-wrapper {
+    .hero-mockup-container {
         position: relative;
-        z-index: 2;
-        animation: float 6s ease-in-out infinite;
-        border-radius: 24px;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 80px rgba(99, 102, 241, 0.2);
+        z-index: 3;
+        animation: floatingMockup 6s ease-in-out infinite;
     }
     
-    .hero-mockup-wrapper img {
+    .hero-mockup-shadow {
+        position: relative;
         border-radius: 24px;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.65), 
+                    0 0 100px rgba(99, 102, 241, 0.25);
         border: 1px solid rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+    }
+    .hero-mockup-shadow img {
         width: 100%;
         display: block;
+        transition: transform 0.5s ease;
     }
 
-    /* Glow Elements in background */
-    .glow-circle {
-        position: absolute;
-        border-radius: 50%;
-        filter: blur(120px);
-        opacity: 0.4;
-        z-index: 1;
-    }
-    .glow-1 { top: 10%; right: 10%; width: 400px; height: 400px; background: var(--clr-primary); }
-    .glow-2 { bottom: 10%; left: 0; width: 300px; height: 300px; background: var(--clr-secondary); }
-
-    /* Custom Buttons */
-    .btn-glow {
-        background: linear-gradient(135deg, var(--clr-primary-light) 0%, var(--clr-primary) 100%);
-        color: white;
+    /* Premium Neon-Glow Buttons */
+    .btn-glow-premium {
+        background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+        color: #ffffff;
         border: none;
         border-radius: 50px;
-        padding: 14px 36px;
+        padding: 16px 40px;
         font-size: 1.1rem;
         font-weight: 600;
-        transition: all 0.3s var(--ease-out);
-        box-shadow: 0 10px 20px rgba(var(--clr-primary-rgb), 0.25);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 10px 24px rgba(99, 102, 241, 0.3);
     }
-
-    .btn-glow:hover {
+    .btn-glow-premium:hover {
         transform: translateY(-3px);
-        box-shadow: 0 15px 25px rgba(var(--clr-primary-rgb), 0.45);
-        color: white;
+        box-shadow: 0 15px 30px rgba(99, 102, 241, 0.5);
+        color: #ffffff;
     }
 
-    .btn-glass {
-        background: rgba(255, 255, 255, 0.04);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        color: white;
+    .btn-glass-premium {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        color: #ffffff;
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 50px;
-        padding: 14px 36px;
+        padding: 16px 40px;
         font-size: 1.1rem;
         font-weight: 600;
-        transition: all 0.3s var(--ease-out);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    
-    .btn-glass:hover {
-        background: rgba(255, 255, 255, 0.08);
+    .btn-glass-premium:hover {
+        background: rgba(255, 255, 255, 0.06);
         border-color: rgba(255, 255, 255, 0.2);
-        color: white;
+        color: #ffffff;
         transform: translateY(-3px);
     }
 
     /* Benefits Section Glassmorphism */
     .features-section {
-        padding: 100px 0;
-        background-color: #0B1120;
+        padding: 120px 0;
+        background-color: #080b11;
         position: relative;
     }
 
-    .glass-card-landing {
-        background: rgba(255, 255, 255, 0.02);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
+    .glass-card-premium {
+        background: rgba(255, 255, 255, 0.01);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.04);
-        border-radius: 20px;
-        padding: 40px 30px;
+        border-radius: 24px;
+        padding: 48px 36px;
         height: 100%;
-        transition: all 0.3s var(--ease-out);
-        text-align: left;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
-
-    .glass-card-landing:hover {
-        background: rgba(255, 255, 255, 0.04);
+    .glass-card-premium:hover {
+        background: rgba(255, 255, 255, 0.03);
         border-color: rgba(99, 102, 241, 0.3);
-        transform: translateY(-6px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(99, 102, 241, 0.05);
+        transform: translateY(-8px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 
+                    inset 0 0 20px rgba(99, 102, 241, 0.05);
     }
 
-    .feature-icon {
-        width: 60px;
-        height: 60px;
-        background: rgba(var(--clr-primary-rgb), 0.15);
+    .feature-icon-premium {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%);
         color: var(--clr-primary-light);
-        border-radius: 16px;
+        border-radius: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 28px;
-        margin-bottom: 24px;
-        border: 1px solid rgba(var(--clr-primary-rgb), 0.2);
+        margin-bottom: 28px;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.1);
     }
 
     /* Footer styling */
     .dark-footer {
-        background-color: #070a14;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 40px 0;
+        background-color: #05070a;
+        border-top: 1px solid rgba(255, 255, 255, 0.03);
+        padding: 48px 0;
     }
 </style>
 
 <!-- HERO SECTION -->
 <section class="hero-section">
-    <div class="glow-circle glow-1"></div>
-    <div class="glow-circle glow-2"></div>
+    <div class="glow-bg glow-1"></div>
+    <div class="glow-bg glow-2"></div>
     <div class="container">
         <div class="row align-items-center g-5">
             <div class="col-lg-6 hero-content text-center text-lg-start">
@@ -188,36 +197,36 @@
                 <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
                     @if (string.IsNullOrEmpty(token))
                     {
-                        <a asp-controller="Auth" asp-action="Register" class="btn btn-glow">
+                        <a asp-controller="Auth" asp-action="Register" class="btn btn-glow-premium">
                             @L["Home_CreateAccount"] <i class="bi bi-arrow-right ms-2"></i>
                         </a>
-                        <a asp-controller="Auth" asp-action="Login" class="btn btn-glass">
+                        <a asp-controller="Auth" asp-action="Login" class="btn btn-glass-premium">
                             @L["Auth_SignIn"]
                         </a>
                     }
                     else
                     {
-                        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-glow">
+                        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-glow-premium">
                             @L["Home_OpenDashboard"] <i class="bi bi-arrow-right ms-2"></i>
                         </a>
                     }
                 </div>
                 
                 <div class="mt-5 d-flex align-items-center justify-content-center justify-content-lg-start gap-3 opacity-75">
-                    <div class="d-flex">
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
+                    <div class="d-flex text-warning">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
                     </div>
                     <span class="small text-muted">@L["Home_Trusted"]</span>
                 </div>
             </div>
 
             <!-- MOCKUP -->
-            <div class="col-lg-6">
-                <div class="hero-mockup-wrapper">
+            <div class="col-lg-6 hero-mockup-container">
+                <div class="hero-mockup-shadow">
                     <img src="~/images/mockup.png" alt="Spendly Platform Dashboard" class="img-fluid" />
                 </div>
             </div>
@@ -229,44 +238,44 @@
 <section class="features-section">
     <div class="container text-center">
         <div class="mb-5 pb-3">
-            <h2 class="fw-bold" style="font-family: var(--font-heading); font-size: 2.5rem; color: #fff;">@L["Home_SmarterWealth"]</h2>
-            <p class="text-muted" style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+            <h2 class="fw-bold" style="font-family: var(--font-heading); font-size: 2.75rem; color: #ffffff; letter-spacing: -0.5px;">@L["Home_SmarterWealth"]</h2>
+            <p class="text-muted" style="font-size: 1.15rem; max-width: 600px; margin: 0 auto;">
                 @L["Home_SmarterDesc"]
             </p>
         </div>
 
         <div class="row g-4">
             <div class="col-lg-4">
-                <div class="glass-card-landing">
-                    <div class="feature-icon">
+                <div class="glass-card-premium">
+                    <div class="feature-icon-premium">
                         <i class="bi bi-bar-chart-fill"></i>
                     </div>
                     <h4 class="mb-3 fw-bold text-white" style="font-family: var(--font-heading);">@L["Home_VisualAnalytics"]</h4>
-                    <p class="text-muted mb-0">
+                    <p class="text-muted mb-0" style="font-size: 0.95rem; line-height: 1.6;">
                         @L["Home_VisualDesc"]
                     </p>
                 </div>
             </div>
 
             <div class="col-lg-4">
-                <div class="glass-card-landing">
-                    <div class="feature-icon">
+                <div class="glass-card-premium">
+                    <div class="feature-icon-premium">
                         <i class="bi bi-bullseye"></i>
                     </div>
                     <h4 class="mb-3 fw-bold text-white" style="font-family: var(--font-heading);">@L["Home_PrecisionBudgets"]</h4>
-                    <p class="text-muted mb-0">
+                    <p class="text-muted mb-0" style="font-size: 0.95rem; line-height: 1.6;">
                         @L["Home_PrecisionDesc"]
                     </p>
                 </div>
             </div>
 
             <div class="col-lg-4">
-                <div class="glass-card-landing">
-                    <div class="feature-icon">
+                <div class="glass-card-premium">
+                    <div class="feature-icon-premium">
                         <i class="bi bi-arrow-repeat"></i>
                     </div>
                     <h4 class="mb-3 fw-bold text-white" style="font-family: var(--font-heading);">@L["Home_Automation"]</h4>
-                    <p class="text-muted mb-0">
+                    <p class="text-muted mb-0" style="font-size: 0.95rem; line-height: 1.6;">
                         @L["Home_AutomationDesc"]
                     </p>
                 </div>
@@ -276,16 +285,16 @@
 </section>
 
 <!-- CALL TO ACTION -->
-<section class="py-5" style="background: linear-gradient(0deg, #070a14 0%, #0B1120 100%);">
+<section class="py-5" style="background: linear-gradient(0deg, #05070a 0%, #080b11 100%);">
     <div class="container">
-        <div class="glass-card-landing text-center" style="padding: 60px 20px; background: rgba(99, 102, 241, 0.03); border-color: rgba(99, 102, 241, 0.15);">
-            <h2 class="fw-bold text-white mb-3" style="font-family: var(--font-heading); font-size: 2.2rem;">@L["Home_CTA"]</h2>
-            <p class="text-muted mb-4 fs-5">
+        <div class="glass-card-premium text-center" style="padding: 80px 20px; background: rgba(99, 102, 241, 0.02); border-color: rgba(99, 102, 241, 0.15);">
+            <h2 class="fw-bold text-white mb-3" style="font-family: var(--font-heading); font-size: 2.5rem; letter-spacing: -0.5px;">@L["Home_CTA"]</h2>
+            <p class="text-muted mb-4 fs-5" style="max-width: 600px; margin: 0 auto 32px;">
                 @L["Home_CTADesc"]
             </p>
             @if (string.IsNullOrEmpty(token))
             {
-                <a asp-controller="Auth" asp-action="Register" class="btn btn-glow btn-lg px-5">
+                <a asp-controller="Auth" asp-action="Register" class="btn btn-glow-premium btn-lg px-5">
                     @L["Home_StartJourney"]
                 </a>
             }

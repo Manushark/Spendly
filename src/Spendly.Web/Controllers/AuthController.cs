@@ -83,6 +83,49 @@ namespace Spendly.Web.Controllers
             TokenHelper.ClearToken(HttpContext);
             return RedirectToAction("Login");
         }
+
+        public IActionResult ForgotPassword() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                ViewBag.Error = "Please enter your email address.";
+                return View();
+            }
+
+            await _authApi.ForgotPasswordAsync(email);
+
+            // Siempre mostramos el mismo mensaje — no revelamos si el email existe
+            ViewBag.Success = "If that email is registered, you will receive a reset link shortly. Check your inbox (and spam folder).";
+            return View();
+        }
+
+        public IActionResult ResetPassword(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                return RedirectToAction("Login");
+
+            ViewBag.Token = token;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(string token, string newPassword, string confirmPassword)
+        {
+            var (success, error) = await _authApi.ResetPasswordAsync(token, newPassword, confirmPassword);
+
+            if (!success)
+            {
+                ViewBag.Token = token;
+                ViewBag.Error = error ?? "Could not reset password. Please try again.";
+                return View();
+            }
+
+            TempData["Success"] = "Password reset successfully. You can now log in with your new password.";
+            return RedirectToAction("Login");
+        }
     }
 }
 

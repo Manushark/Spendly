@@ -35,12 +35,12 @@ The project is currently under active development and is being built with scalab
 * Responsive UI and modern dashboard layouts
 * Pagination and filtering support
 * Improved validation and error handling
+* Financial reports and analytics
+* Notifications and reminders
 
 ### Planned Features
 * Mobile application support (.NET MAUI / Flutter)
 * Premium subscription system
-* Financial reports and analytics
-* Notifications and reminders
 * AI-powered spending insights
 
 ## 🏗️ Architecture & Tech Stack
@@ -117,7 +117,7 @@ To get a local copy up and running, follow these steps.
 * [ ] Implement Mobile Application
 * [ ] Integrate Subscription-based premium features (Stripe/RevenueCat)
 * [x] Cloud deployment & CI/CD pipeline
-* [ ] Advanced reporting system
+* [x] Advanced reporting system
 
 ## ⚖️ License
 

@@ -7,6 +7,42 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.22.0] - 2026-09-01
+*(Flujo de recuperación de contraseña, sistema de notificaciones por email SMTP, suite completa de pruebas unitarias al 100%, personalización de temas cristalinos, modernización analítica de Dashboard, Reports, Insights y Savings Goals, y documentación técnica completa)*
+
+### Añadido
+- **Flujo Completo de Recuperación de Contraseña**:
+  - Entidad `PasswordResetToken` con expiración segura de 1 hora.
+  - Casos de uso `ForgotPasswordUseCase` y `ResetPasswordUseCase`.
+  - Vistas dedicadas `ForgotPassword.cshtml` y `ResetPassword.cshtml` con validación de seguridad y diseño glassmorphic.
+  - Endpoints en `AuthController` (API y Web) con protección anti-enumeración de usuarios.
+- **Sistema de Notificaciones por Correo Electrónico (SMTP)**:
+  - Servicio `SmtpEmailService` con plantillas HTML responsivas y fallback automático a `ConsoleEmailService`.
+  - Alertas automáticas de presupuesto por correo electrónico al alcanzar el 80% y 100% de uso mensual.
+  - Servicio en segundo plano `WeeklySummaryBackgroundService` para envío del resumen semanal de gastos cada lunes a las 08:00 UTC.
+  - Pestaña de Notificaciones en la vista de Ajustes (Settings) con toggles configurables por usuario para alertas de presupuesto y digest semanal.
+- **Personalización de Temas y Paletas Cristalinas (Theme & Accent Customizer)**:
+  - Selector interactivo en el navbar superior con 8 temas (*Verde Esmeralda, Azul Zafiro, Púrpura Real, Rosa Rubí, Cristal Cian, Oro Ámbar, Índigo Clásico y Obsidiana*).
+  - Cambio en caliente instantáneo y persistencia en `localStorage`.
+  - Gradientes dinámicos para el sidebar, enlaces activos y halos de luz ambiental (*ambient glow blobs*) adaptados a Modo Claro y Modo Oscuro.
+- **Modernización Analítica y Micro-animaciones en Vistas**:
+  - **Dashboard**: Barras comparativas Ingresos vs Gastos por mes, lista vertical de categorías con barras de progreso gradiente y shimmer animado, y contadores animados (*count-up*) en tarjetas KPI.
+  - **Reportes**: Selector interactivo de Columnas Agrupadas vs Apiladas (*Grouped / Stacked*), líneas de separación visual de períodos con `crosshairs` de selección, y tooltip enriquecido con cálculo de balance neto mensual.
+  - **Insights**: Gráfico de área acumulativo con proyección punteada a fin de mes y barra de comparación vs Techo Presupuestario con badges de estado (*On Track / Watch Out / Over Budget*).
+  - **Metas de Ahorro**: Efectos de resplandor de neón reactivos al color de cada meta, barras de progreso con gradiente y shimmer, animación de icono y badge dinámico *"¡Casi listo!"*.
+- **Suite de Pruebas Unitarias Completa (117 Tests)**:
+  - 117 pruebas unitarias con 100% de éxito cubriendo todos los casos de uso (*Auth, User, Budgets, Expenses, Incomes, Categories, SavingsGoals, Tags, RecurringExpenses, Notifications, Dashboard, BudgetAlertService*).
+- **Documentación Técnica del Proyecto**:
+  - `docs/API_REFERENCE.md` con especificación completa de los 14 controladores y sus endpoints.
+  - `docs/ARCHITECTURE.md` con arquitectura limpia por capas y decisiones de diseño.
+  - `docs/SETUP.md` con guía paso a paso para despliegue y desarrollo local.
+  - `docs/CONTRIBUTING.md` con guía de GitFlow y estándares de código.
+
+### Arreglado
+- Bug donde traductores de navegador (como Google Translate) causaban errores al intentar traducir campos de entrada de correo electrónico y contraseña en las vistas de autenticación, agregando el atributo `translate="no"` a los inputs correspondientes.
+- Bug en las pantallas de inicio de sesión y registro donde el overlay de carga se vinculaba incorrectamente al formulario de cambio de idioma en el navbar público en lugar del formulario de autenticación correspondiente.
+- Inconsistencia visual en los formularios de autenticación, actualizados con cajas de texto de alto contraste y fondo grid interactivo.
+
 ## [1.21.0] - 2026-06-08
 *(Rediseño visual del módulo de etiquetas, análisis de participación con ApexCharts, CRUD de edición y filtrado avanzado multi-etiqueta)*
 

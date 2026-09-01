@@ -24,19 +24,6 @@
         height: 3px;
         background: linear-gradient(90deg, #10b981, #34d399);
     }
-    
-    .goal-card-premium {
-        border-radius: 16px;
-        border: 1px solid var(--clr-border);
-        background: var(--clr-bg-card);
-        box-shadow: var(--shadow-sm);
-        transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
-        overflow: hidden;
-    }
-    .goal-card-premium:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--shadow-md);
-    }
 
     .form-control-custom-sm {
         border-radius: 8px;
@@ -53,11 +40,138 @@
         outline: none;
         box-shadow: 0 0 0 3px rgba(var(--clr-primary-rgb), 0.15);
     }
-    
+
     .modal-content-premium {
         background: var(--clr-surface);
         border-radius: 20px;
         border: 1px solid var(--clr-border);
+    }
+
+    /* ── Premium goal card ─────────────────────────────────────────── */
+    .goal-card-active {
+        border-radius: 18px;
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-card);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+                    box-shadow 0.28s ease,
+                    border-color 0.28s ease;
+    }
+    .goal-card-active:hover {
+        transform: translateY(-6px) scale(1.01);
+        border-color: color-mix(in srgb, var(--goal-color, #6366f1) 60%, transparent);
+        box-shadow: 0 20px 40px -8px color-mix(in srgb, var(--goal-color, #6366f1) 25%, transparent),
+                    0 4px 16px -4px rgba(0,0,0,0.3);
+    }
+
+    /* Gradient animated progress bar */
+    .goal-progress-track {
+        height: 10px;
+        border-radius: 10px;
+        background: var(--clr-surface-3);
+        overflow: hidden;
+    }
+    .goal-progress-fill {
+        height: 100%;
+        border-radius: 10px;
+        background: linear-gradient(90deg,
+            color-mix(in srgb, var(--goal-color, #6366f1) 70%, #ffffff),
+            var(--goal-color, #6366f1),
+            color-mix(in srgb, var(--goal-color, #6366f1) 70%, #ffffff));
+        background-size: 200% 100%;
+        animation: progressShimmer 2.5s ease-in-out infinite,
+                   progressGrow 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        transform-origin: left center;
+    }
+    @@keyframes progressShimmer {
+        0%   { background-position: 200% center; }
+        100% { background-position: -200% center; }
+    }
+    @@keyframes progressGrow {
+        from { transform: scaleX(0); }
+        to   { transform: scaleX(1); }
+    }
+
+    /* Overall progress */
+    .overall-progress-fill {
+        height: 100%;
+        border-radius: 10px;
+        background: linear-gradient(90deg, #10b981, #34d399, #10b981);
+        background-size: 200% 100%;
+        animation: progressShimmer 3s ease-in-out infinite,
+                   progressGrow 1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        transform-origin: left center;
+    }
+
+    /* Amount counter */
+    .goal-amount-main {
+        font-size: 1.2rem;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
+        animation: fadeUp 0.6s ease both;
+    }
+    @@keyframes fadeUp {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Icon bubble */
+    .goal-icon-bubble {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1.3rem;
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .goal-card-active:hover .goal-icon-bubble {
+        transform: scale(1.15) rotate(-5deg);
+    }
+
+    /* Add funds button */
+    .btn-add-funds {
+        border-radius: 10px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 7px 16px;
+        border: 1.5px solid;
+        background: transparent;
+        transition: all 0.22s ease;
+        letter-spacing: 0.2px;
+        cursor: pointer;
+    }
+    .btn-add-funds:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px color-mix(in srgb, var(--goal-color, #6366f1) 30%, transparent);
+    }
+
+    /* Staggered card animation */
+    .goal-card-wrapper {
+        animation: fadeUp 0.5s ease both;
+    }
+    .goal-card-wrapper:nth-child(1) { animation-delay: 0.05s; }
+    .goal-card-wrapper:nth-child(2) { animation-delay: 0.10s; }
+    .goal-card-wrapper:nth-child(3) { animation-delay: 0.15s; }
+    .goal-card-wrapper:nth-child(4) { animation-delay: 0.20s; }
+    .goal-card-wrapper:nth-child(5) { animation-delay: 0.25s; }
+    .goal-card-wrapper:nth-child(6) { animation-delay: 0.30s; }
+
+    /* Completed card */
+    .goal-card-premium {
+        border-radius: 16px;
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-card);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        overflow: hidden;
+    }
+    .goal-card-premium:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
     }
 </style>
 
@@ -97,11 +211,11 @@
                         $@totalSaved.ToString("N2") / $@totalTarget.ToString("N2")
                     </span>
                 </div>
-                <div class="progress" style="height: 10px; border-radius: 10px; background: var(--clr-surface-3);">
+                <div class="goal-progress-track">
                     @{
                         var overallPct = totalTarget > 0 ? Math.Min(100, (totalSaved / totalTarget) * 100) : 0;
                     }
-                    <div class="progress-bar bg-success" style="width: @overallPct.ToString(System.Globalization.CultureInfo.InvariantCulture)%; background: linear-gradient(90deg, #10b981, #34d399);"></div>
+                    <div class="overall-progress-fill" style="width: @overallPct.ToString(System.Globalization.CultureInfo.InvariantCulture)%;"></div>
                 </div>
                 <small class="text-muted mt-2 d-block">
                     <i class="bi bi-info-circle me-1"></i>
@@ -120,15 +234,15 @@
         <div class="row g-4 mb-4">
             @foreach (var goal in active)
             {
-                <div class="col-md-6 col-lg-4">
-                    <div class="card goal-card-premium h-100" style="border-left: 4px solid @goal.Color !important;">
+                <div class="col-md-6 col-lg-4 goal-card-wrapper">
+                    <div class="goal-card-active h-100" style="--goal-color: @goal.Color; border-left: 4px solid @goal.Color !important;">
                         <div class="card-body p-4 d-flex flex-column justify-content-between">
                             <div>
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div class="d-flex align-items-center gap-3">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center"
-                                             style="width:40px; height:40px; background:@(goal.Color)20; flex-shrink: 0;">
-                                            <i class="bi @goal.Icon" style="color:@goal.Color; font-size:1.2rem;"></i>
+                                        <div class="goal-icon-bubble"
+                                             style="background: color-mix(in srgb, @goal.Color 15%, transparent); border: 1px solid color-mix(in srgb, @goal.Color 30%, transparent);">
+                                            <i class="bi @goal.Icon" style="color:@goal.Color;"></i>
                                         </div>
                                         <div class="overflow-hidden">
                                             <h6 class="mb-0 fw-bold text-truncate" style="font-family:'Calistoga',serif;">@goal.Name</h6>
@@ -176,33 +290,55 @@
                                     </div>
                                 </div>
 
+                                <!-- Amounts + Gradient Progress Bar -->
                                 <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="fw-bold font-mono" style="color:@goal.Color; font-size:1.05rem;">
+                                    <div class="d-flex justify-content-between align-items-baseline mb-2">
+                                        <span class="goal-amount-main" style="color:@goal.Color;">
                                             $@goal.CurrentAmount.ToString("N2")
                                         </span>
-                                        <span class="text-muted font-mono" style="font-size:0.95rem;">
-                                            $@goal.TargetAmount.ToString("N2")
+                                        <span class="text-muted font-mono" style="font-size:0.88rem;">
+                                            of $@goal.TargetAmount.ToString("N2")
                                         </span>
                                     </div>
-                                    <div class="progress mb-1" style="height: 8px; border-radius: 8px; background: var(--clr-surface-3);">
-                                        <div class="progress-bar" style="width: @goal.ProgressPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%; background:@goal.Color; border-radius:8px;"></div>
+                                    <div class="goal-progress-track mb-1">
+                                        <div class="goal-progress-fill"
+                                             style="width: @goal.ProgressPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%;
+                                                    --goal-color: @goal.Color;">
+                                        </div>
                                     </div>
-                                    <small class="text-muted font-mono" style="font-size:0.75rem;">
-                                        @goal.ProgressPercentage.ToString("N1")% @L["Goals_Complete"]
-                                    </small>
+                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                        <small class="text-muted font-mono" style="font-size:0.75rem;">
+                                            @goal.ProgressPercentage.ToString("N1")% @L["Goals_Complete"]
+                                        </small>
+                                        @if (goal.ProgressPercentage >= 75)
+                                        {
+                                            <small class="fw-semibold" style="font-size:0.72rem; color: @goal.Color;">
+                                                <i class="bi bi-fire me-1"></i>Almost there!
+                                            </small>
+                                        }
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Add Funds Form -->
-                            <form asp-action="AddFunds" asp-route-id="@goal.Id" method="post" class="d-flex gap-2 mt-2 pt-2 border-top">
+                            <form asp-action="AddFunds" asp-route-id="@goal.Id" method="post"
+                                  class="d-flex gap-2 mt-2 pt-3"
+                                  style="border-top: 1px solid color-mix(in srgb, @goal.Color 20%, var(--clr-border));">
                                 @Html.AntiForgeryToken()
-                                <div class="input-group input-group-sm flex-grow-1" style="max-width: 140px;">
-                                    <span class="input-group-text bg-transparent border-end-0 px-2 text-muted" style="border-color:var(--clr-border);">$</span>
-                                    <input type="number" name="amount" step="0.01" min="0.01" placeholder="@L["Ph_Amount"]"
-                                           class="form-control form-control-custom-sm font-mono border-start-0 ps-0" required>
+                                <div class="input-group input-group-sm flex-grow-1">
+                                    <span class="input-group-text bg-transparent px-2 text-muted"
+                                          style="border-color: color-mix(in srgb, @goal.Color 40%, var(--clr-border)); border-right: none;">$</span>
+                                    <input type="number" name="amount" step="0.01" min="0.01"
+                                           placeholder="@L["Ph_Amount"]"
+                                           class="form-control form-control-custom-sm font-mono"
+                                           style="border-color: color-mix(in srgb, @goal.Color 40%, var(--clr-border)); border-left: none; border-radius: 0 8px 8px 0;"
+                                           required>
                                 </div>
-                                <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold">
+                                <button type="submit" class="btn-add-funds"
+                                        style="background: color-mix(in srgb, @goal.Color 12%, transparent);
+                                               border-color: color-mix(in srgb, @goal.Color 50%, transparent);
+                                               color: @goal.Color;
+                                               --goal-color: @goal.Color;">
                                     <i class="bi bi-plus-circle me-1"></i>@L["Goal_AddFunds"]
                                 </button>
                             </form>

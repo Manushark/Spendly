@@ -37,26 +37,63 @@
     <style>
         /* ── Stat cards ── */
         .stat-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1),
+                        box-shadow 0.25s ease, border-color 0.2s ease;
             border: 1px solid var(--clr-border) !important;
             background: var(--clr-bg-card);
             backdrop-filter: blur(10px);
+            animation: repCardIn 0.55s ease both;
         }
         .stat-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-5px) scale(1.01);
             box-shadow: var(--shadow-lg) !important;
             border-color: var(--clr-primary-semi) !important;
         }
-        .stat-icon {
-            width: 60px; height: 60px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 12px; font-size: 24px;
+        .stat-card:hover .stat-icon {
+            transform: scale(1.12) rotate(-5deg);
         }
+        .stat-icon {
+            width: 54px; height: 54px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 14px; font-size: 22px;
+            transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+        .rep-card-col:nth-child(1) .stat-card { animation-delay: 0.04s; }
+        .rep-card-col:nth-child(2) .stat-card { animation-delay: 0.09s; }
+        .rep-card-col:nth-child(3) .stat-card { animation-delay: 0.14s; }
+        .rep-card-col:nth-child(4) .stat-card { animation-delay: 0.19s; }
+        .rep-card-col:nth-child(5) .stat-card { animation-delay: 0.24s; }
+        .rep-card-col:nth-child(6) .stat-card { animation-delay: 0.29s; }
+
+        @@keyframes repCardIn {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .rep-kpi-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+
         .chart-card {
             border: 1px solid var(--clr-border) !important;
             background: var(--clr-bg-card);
             border-radius: 20px;
             overflow: hidden;
+        }
+
+        /* ── Chart Mode Switcher ── */
+        .btn-chart-mode {
+            border: none;
+            background: transparent;
+            color: var(--clr-text-muted);
+            transition: all 0.2s ease;
+        }
+        .btn-chart-mode.active {
+            background: var(--clr-primary) !important;
+            color: #fff !important;
+            box-shadow: 0 2px 8px var(--clr-primary-semi);
         }
         .badge-category { padding: 6px 12px; font-weight: 500; border-radius: 20px; }
         /* ── Comparison badges ── */
@@ -321,13 +358,16 @@
 
     @* Stats Cards *@
     <div class="row g-4 mb-4">
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-4 rep-card-col">
             <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
                             <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_TotalExpenses"]</p>
-                            <h3 class="mb-0 fw-bold text-danger">@Model.TotalExpenses.ToString("N2")</h3>
+                            <h3 class="mb-0 fw-bold text-danger rep-kpi-value"
+                                data-rep-count data-value="@Model.TotalExpenses.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-prefix="$">
+                                $@Model.TotalExpenses.ToString("N2")
+                            </h3>
                         </div>
                         <div class="stat-icon bg-danger bg-opacity-10">
                             <i class="bi bi-graph-down-arrow text-danger"></i>
@@ -349,13 +389,16 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-4 rep-card-col">
             <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
                             <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_TotalIncome"]</p>
-                            <h3 class="mb-0 fw-bold text-success">@Model.TotalIncomes.ToString("N2")</h3>
+                            <h3 class="mb-0 fw-bold text-success rep-kpi-value"
+                                data-rep-count data-value="@Model.TotalIncomes.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-prefix="$">
+                                $@Model.TotalIncomes.ToString("N2")
+                            </h3>
                         </div>
                         <div class="stat-icon bg-success bg-opacity-10">
                             <i class="bi bi-graph-up-arrow text-success"></i>
@@ -377,13 +420,15 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-4 rep-card-col">
             <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
                             <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_NetBalance"]</p>
-                            <h3 class="mb-0 fw-bold @(isProfit ? "text-success" : "text-danger")">
+                            <h3 class="mb-0 fw-bold @(isProfit ? "text-success" : "text-danger") rep-kpi-value"
+                                data-rep-count data-value="@Math.Abs(Model.NetBalance).ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                data-prefix="@(isProfit ? "+$" : "-$")">
                                 @(isProfit ? "+" : "")@Model.NetBalance.ToString("N2")
                             </h3>
                         </div>
@@ -395,13 +440,16 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-4 rep-card-col">
             <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
                             <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_DailyAverage"]</p>
-                            <h3 class="mb-0 fw-bold text-info">@Model.AverageDailyExpense.ToString("N2")</h3>
+                            <h3 class="mb-0 fw-bold text-info rep-kpi-value"
+                                data-rep-count data-value="@Model.AverageDailyExpense.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-prefix="$">
+                                $@Model.AverageDailyExpense.ToString("N2")
+                            </h3>
                         </div>
                         <div class="stat-icon bg-info bg-opacity-10">
                             <i class="bi bi-calendar-day text-info"></i>
@@ -411,7 +459,7 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-4 rep-card-col">
             <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
@@ -429,13 +477,14 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-4 rep-card-col">
             <div class="card stat-card shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
                             <p class="text-muted mb-1 fw-semibold small text-uppercase">@L["Rep_ExpenseRatio"]</p>
-                            <h3 class="mb-0 fw-bold @(Model.ExpenseToIncomeRatio > 100 ? "text-danger" : "text-primary")">
+                            <h3 class="mb-0 fw-bold @(Model.ExpenseToIncomeRatio > 100 ? "text-danger" : "text-primary") rep-kpi-value"
+                                data-rep-count data-value="@Model.ExpenseToIncomeRatio.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-suffix="%" data-decimals="1">
                                 @Model.ExpenseToIncomeRatio.ToString("N1")%
                             </h3>
                         </div>
@@ -457,10 +506,24 @@
     <div class="row g-4 mb-4">
         <div class="col-lg-8">
             <div class="card chart-card shadow-sm h-100">
-                <div class="card-header bg-transparent border-0 pt-4 pb-3">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="bi bi-graph-up text-primary me-2"></i> @L["Rep_TrendTitle"]
-                    </h5>
+                <div class="card-header bg-transparent border-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-bar-chart-line-fill text-primary me-2"></i> @L["Rep_TrendTitle"]
+                        </h5>
+                        <small class="text-muted">Income vs Expenses comparison</small>
+                    </div>
+                    @if (trend.Any())
+                    {
+                        <div class="btn-group btn-group-sm p-1 rounded-pill border" style="background: var(--clr-bg-card); border-color: var(--clr-border) !important;">
+                            <button type="button" class="btn btn-sm btn-chart-mode rounded-pill px-3 fw-semibold active" id="btnModeGrouped" onclick="setTrendChartMode(false)">
+                                <i class="bi bi-bar-chart-fill me-1"></i> Grouped
+                            </button>
+                            <button type="button" class="btn btn-sm btn-chart-mode rounded-pill px-3 fw-semibold" id="btnModeStacked" onclick="setTrendChartMode(true)">
+                                <i class="bi bi-distribute-vertical me-1"></i> Stacked
+                            </button>
+                        </div>
+                    }
                 </div>
                 <div class="card-body pt-2">
                     @if (trend.Any())
@@ -778,31 +841,44 @@
 
         // ── Trend Column Chart (ApexCharts) ──────────────────────────────
         const trendCtx = document.getElementById('trendChart');
+        let trendChart = null;
+
         if (trendCtx) {
             var isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            const incomeData = [@Html.Raw(incData)];
+            const expenseData = [@Html.Raw(expData)];
+            const periodLabels = [@Html.Raw(labels)];
+
             var trendOptions = {
                 series: [{
                     name: '@L["Rep_TotalIncome"].Value',
-                    data: [@Html.Raw(incData)]
+                    data: incomeData
                 }, {
                     name: '@L["Rep_TotalExpenses"].Value',
-                    data: [@Html.Raw(expData)]
+                    data: expenseData
                 }],
                 chart: {
                     type: 'bar',
-                    height: 280,
+                    height: 290,
+                    stacked: false,
                     toolbar: { show: false },
                     zoom: { enabled: false },
                     background: 'transparent',
                     foreColor: 'var(--clr-text-muted)',
-                    fontFamily: 'Inter, sans-serif'
+                    fontFamily: 'Inter, sans-serif',
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 400,
+                        animateGradually: { enabled: true, delay: 100 }
+                    }
                 },
                 plotOptions: {
                     bar: {
                         horizontal: false,
-                        columnWidth: '45%',
+                        columnWidth: '50%',
                         borderRadius: 6,
-                        borderRadiusApplication: 'around'
+                        borderRadiusApplication: 'end'
                     },
                 },
                 dataLabels: {
@@ -810,17 +886,34 @@
                 },
                 stroke: {
                     show: true,
-                    width: 3,
-                    colors: ['transparent']
+                    width: 2,
+                    colors: [isDark ? 'var(--clr-bg-card)' : '#ffffff']
                 },
                 xaxis: {
-                    categories: [@Html.Raw(labels)],
+                    categories: periodLabels,
                     axisBorder: { show: false },
                     axisTicks: { show: false },
+                    crosshairs: {
+                        show: true,
+                        width: '100%',
+                        position: 'back',
+                        opacity: 0.15,
+                        stroke: {
+                            color: 'var(--clr-primary)',
+                            width: 0,
+                            dashArray: 0
+                        },
+                        fill: {
+                            type: 'solid',
+                            color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(99,102,241,0.08)'
+                        }
+                    },
                     labels: {
                         style: {
                             colors: 'var(--clr-text-muted)',
-                            fontSize: '11px'
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            fontFamily: 'Inter, sans-serif'
                         }
                     }
                 },
@@ -828,46 +921,145 @@
                     labels: {
                         style: {
                             colors: 'var(--clr-text-muted)',
-                            fontSize: '11px'
+                            fontSize: '11px',
+                            fontFamily: 'JetBrains Mono, monospace'
                         },
                         formatter: function (value) {
-                            return Number(value).toLocaleString();
+                            return "$" + Number(value).toLocaleString();
                         }
                     }
                 },
                 fill: {
-                    opacity: 1,
-                    colors: ['#10b981', '#f43f5e']
+                    type: 'gradient',
+                    gradient: {
+                        shade: 'light',
+                        type: 'vertical',
+                        shadeIntensity: 0.15,
+                        inverseColors: false,
+                        opacityFrom: 0.95,
+                        opacityTo: 0.85,
+                        stops: [0, 100]
+                    }
                 },
+                colors: ['#10b981', '#f43f5e'],
                 legend: {
                     position: 'top',
                     horizontalAlign: 'right',
                     fontFamily: 'Inter, sans-serif',
+                    fontWeight: 500,
                     labels: {
                         colors: 'var(--clr-text)'
                     },
                     markers: {
-                        fillColors: ['#10b981', '#f43f5e'],
-                        radius: 12
+                        radius: 6
                     }
                 },
                 grid: {
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
-                    strokeDashArray: 4
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.07)' : 'rgba(0, 0, 0, 0.05)',
+                    strokeDashArray: 4,
+                    xaxis: {
+                        lines: {
+                            show: true
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    }
                 },
                 tooltip: {
                     theme: isDark ? 'dark' : 'light',
+                    shared: true,
+                    intersect: false,
                     y: {
                         formatter: function (val) {
-                            return "$ " + Number(val).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                            return "$" + Number(val).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
                         }
+                    },
+                    custom: function({ series, seriesIndex, dataPointIndex, w }) {
+                        const month = w.globals.categoryLabels[dataPointIndex] || periodLabels[dataPointIndex];
+                        const inc = series[0][dataPointIndex] || 0;
+                        const exp = series[1][dataPointIndex] || 0;
+                        const net = inc - exp;
+                        const isProfit = net >= 0;
+                        const netColor = isProfit ? '#10b981' : '#f43f5e';
+                        const netSign = isProfit ? '+' : '-';
+                        const dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+                        const bg = dark ? 'rgba(15,23,42,0.96)' : 'rgba(255,255,255,0.98)';
+                        const border = dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)';
+                        const textMain = dark ? '#f1f5f9' : '#0f172a';
+                        const textSub = dark ? '#94a3b8' : '#64748b';
+
+                        return `
+                            <div style="background:${bg}; border:1px solid ${border}; border-radius:12px; padding:10px 14px; box-shadow:0 8px 24px rgba(0,0,0,0.25); min-width:180px; font-family:Inter, sans-serif;">
+                                <div style="font-weight:700; font-size:13px; color:${textMain}; margin-bottom:8px; border-bottom:1px solid ${border}; padding-bottom:4px;">
+                                    📅 ${month}
+                                </div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; font-size:12px;">
+                                    <span style="color:#10b981; font-weight:600;">● @L["Rep_TotalIncome"].Value:</span>
+                                    <span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:${textMain};">$${Number(inc).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:12px;">
+                                    <span style="color:#f43f5e; font-weight:600;">● @L["Rep_TotalExpenses"].Value:</span>
+                                    <span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:${textMain};">$${Number(exp).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed ${border}; padding-top:6px; font-size:12px;">
+                                    <span style="color:${textSub}; font-weight:600;">⚖️ Net:</span>
+                                    <span style="font-family:'JetBrains Mono',monospace; font-weight:800; color:${netColor};">${netSign}$${Number(Math.Abs(net)).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                </div>
+                            </div>
+                        `;
                     }
                 }
             };
 
-            var trendChart = new ApexCharts(trendCtx, trendOptions);
+            trendChart = new ApexCharts(trendCtx, trendOptions);
             trendChart.render();
         }
+
+        // Mode switcher function (Grouped vs Stacked)
+        window.setTrendChartMode = function(isStacked) {
+            if (!trendChart) return;
+            document.getElementById('btnModeGrouped')?.classList.toggle('active', !isStacked);
+            document.getElementById('btnModeStacked')?.classList.toggle('active', isStacked);
+
+            trendChart.updateOptions({
+                chart: {
+                    stacked: isStacked
+                },
+                plotOptions: {
+                    bar: {
+                        columnWidth: isStacked ? '40%' : '52%',
+                        borderRadius: isStacked ? 4 : 6
+                    }
+                }
+            });
+        };
+
+        // ── Reports Stat Cards Count-Up ─────────────────────────────────
+        document.querySelectorAll('[data-rep-count]').forEach((el, i) => {
+            const target   = parseFloat(el.dataset.value) || 0;
+            const prefix   = el.dataset.prefix || '';
+            const suffix   = el.dataset.suffix || '';
+            const decimals = parseInt(el.dataset.decimals ?? '2');
+            const duration = 1100;
+            el.textContent = prefix + (0).toFixed(decimals) + suffix;
+            function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+            setTimeout(() => {
+                const start = performance.now();
+                function tick(now) {
+                    const pct = Math.min((now - start) / duration, 1);
+                    const val = target * easeOut(pct);
+                    el.textContent = prefix + val.toLocaleString(undefined, {
+                        minimumFractionDigits: decimals,
+                        maximumFractionDigits: decimals
+                    }) + suffix;
+                    if (pct < 1) requestAnimationFrame(tick);
+                }
+                requestAnimationFrame(tick);
+            }, i * 60 + 60);
+        });
 
         // ── Category Doughnut Chart (ApexCharts) ──────────────────────────
         const catCtx = document.getElementById('categoryChart');

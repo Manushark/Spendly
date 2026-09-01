@@ -52,6 +52,43 @@ namespace Spendly.Web.Services
                 return (null, "Could not connect to the server. Please try again in a moment.");
             }
         }
+        public async Task<(bool Success, string? ErrorMessage)> ForgotPasswordAsync(string email)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/auth/forgot-password", new { email });
+                return response.IsSuccessStatusCode
+                    ? (true, null)
+                    : (false, "Something went wrong. Please try again.");
+            }
+            catch (Exception)
+            {
+                return (false, "Could not connect to the server. Please try again in a moment.");
+            }
+        }
+
+        public async Task<(bool Success, string? ErrorMessage)> ResetPasswordAsync(string token, string newPassword, string confirmPassword)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/auth/reset-password", new
+                {
+                    token,
+                    newPassword,
+                    confirmPassword
+                });
+
+                if (response.IsSuccessStatusCode) return (true, null);
+
+                var body = await response.Content.ReadAsStringAsync();
+                return (false, body.Contains("expired") ? "This link has expired. Please request a new one."
+                    : "Invalid or already used link.");
+            }
+            catch (Exception)
+            {
+                return (false, "Could not connect to the server. Please try again in a moment.");
+            }
+        }
     }
 }
 
