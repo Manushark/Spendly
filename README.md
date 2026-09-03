@@ -1,6 +1,6 @@
 <div align="center">
   <!-- Puedes agregar un logo aquí más adelante -->
-  <h1>💸 Spendly</h1>
+  <h1>🪢💸 Spendly</h1>
   <p><strong>A Modern & Secure Personal Finance Management Platform</strong></p>
 
   <p>
