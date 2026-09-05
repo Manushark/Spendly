@@ -35,6 +35,14 @@ document.addEventListener("DOMContentLoaded", () => {
             overlay.classList.add("d-none");
             overlay.style.pointerEvents = "none";
         });
+
+        window.addEventListener("resize", () => {
+            if (window.innerWidth >= 992 && sidebar.classList.contains("show")) {
+                sidebar.classList.remove("show");
+                overlay.classList.add("d-none");
+                overlay.style.pointerEvents = "none";
+            }
+        });
     }
 
     // ── Auto-scroll sidebar to active link ────────────────────────────────────

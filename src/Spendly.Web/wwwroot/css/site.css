@@ -500,6 +500,7 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
 .app-wrapper {
   display: flex;
   height: 100vh;
+  height: 100dvh;
   overflow: visible;
   background: var(--clr-bg);
   position: relative;
@@ -1254,12 +1255,21 @@ hr            { border-color: var(--clr-border); opacity: 1; }
 @media (max-width: 991.98px) {
   .sidebar {
     position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
     height: 100%;
+    height: 100dvh;
     transform: translateX(-100%);
     box-shadow: 6px 0 40px rgba(0,0,0,.55);
+    z-index: 1050;
   }
 
   .sidebar.show { transform: translateX(0); }
+
+  .sidebar-footer {
+    padding-bottom: calc(var(--sp-4) + env(safe-area-inset-bottom, 0px));
+  }
 
   .sidebar-toggler {
     display: inline-flex;
