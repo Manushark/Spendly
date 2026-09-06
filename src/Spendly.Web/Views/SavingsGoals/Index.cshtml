@@ -198,11 +198,70 @@
         </div>
     }
 
-    <!-- Overall Progress -->
+    <!-- Overall Progress & KPI Summary -->
     @if (Model.Any())
     {
+        @* ─── KPI Summary Cards (2x2 on Mobile, 4-col on Desktop) ──────── *@
+        <div class="row g-2 g-md-3 mb-4">
+            <div class="col-6 col-xl-3">
+                <div class="kpi-card h-100 p-3 p-md-4">
+                    <div class="kpi-accent kpi-accent-green"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
+                        <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Goals_OverallProgress"]</span>
+                        <div class="kpi-icon kpi-icon-green"><i class="bi bi-wallet2"></i></div>
+                    </div>
+                    <h2 class="kpi-value fw-bold font-mono mb-1 text-success">
+                        $@totalSaved.ToString("N2")
+                    </h2>
+                    <small class="text-muted">@L["Goals_ActiveLower"]</small>
+                </div>
+            </div>
+
+            <div class="col-6 col-xl-3">
+                <div class="kpi-card h-100 p-3 p-md-4">
+                    <div class="kpi-accent kpi-accent-blue"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
+                        <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Goals_Title"]</span>
+                        <div class="kpi-icon kpi-icon-blue"><i class="bi bi-bullseye"></i></div>
+                    </div>
+                    <h2 class="kpi-value fw-bold font-mono mb-1 text-primary">
+                        $@totalTarget.ToString("N2")
+                    </h2>
+                    <small class="text-muted">@Model.Count @L["Goals_Title"]</small>
+                </div>
+            </div>
+
+            <div class="col-6 col-xl-3">
+                <div class="kpi-card h-100 p-3 p-md-4">
+                    <div class="kpi-accent kpi-accent-violet"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
+                        <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Goals_ActiveGoals"]</span>
+                        <div class="kpi-icon kpi-icon-violet"><i class="bi bi-hourglass-split"></i></div>
+                    </div>
+                    <h2 class="kpi-value fw-bold font-mono mb-1 text-primary">
+                        @active.Count
+                    </h2>
+                    <small class="text-muted">@active.Count @L["Goals_ActiveLower"]</small>
+                </div>
+            </div>
+
+            <div class="col-6 col-xl-3">
+                <div class="kpi-card h-100 p-3 p-md-4">
+                    <div class="kpi-accent kpi-accent-green"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
+                        <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Goals_Completed"]</span>
+                        <div class="kpi-icon kpi-icon-green"><i class="bi bi-check-circle"></i></div>
+                    </div>
+                    <h2 class="kpi-value fw-bold font-mono mb-1 text-success">
+                        @completed.Count
+                    </h2>
+                    <small class="text-muted">@L["Goals_Achieved"]</small>
+                </div>
+            </div>
+        </div>
+
         <div class="card goals-progress-card border-0 mb-4">
-            <div class="card-body p-4">
+            <div class="card-body p-3 p-md-4">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <span class="fw-bold" style="font-family:'Calistoga',serif; font-size:1.1rem;">
                         <i class="bi bi-graph-up-arrow text-success me-2"></i>@L["Goals_OverallProgress"]
@@ -231,12 +290,12 @@
         <h5 class="fw-bold mb-3" style="font-family:'Calistoga',serif; letter-spacing:-0.2px;">
             <i class="bi bi-bullseye text-primary me-2"></i>@L["Goals_ActiveGoals"]
         </h5>
-        <div class="row g-4 mb-4">
+        <div class="row g-2 g-md-3 mb-4">
             @foreach (var goal in active)
             {
                 <div class="col-md-6 col-lg-4 goal-card-wrapper">
                     <div class="goal-card-active h-100" style="--goal-color: @goal.Color; border-left: 4px solid @goal.Color !important;">
-                        <div class="card-body p-4 d-flex flex-column justify-content-between">
+                        <div class="card-body p-3 p-md-4 d-flex flex-column justify-content-between">
                             <div>
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div class="d-flex align-items-center gap-3">
@@ -355,12 +414,12 @@
         <h5 class="fw-bold mb-3 mt-4" style="font-family:'Calistoga',serif; letter-spacing:-0.2px;">
             <i class="bi bi-check-circle text-success me-2"></i>@L["Goals_Completed"]
         </h5>
-        <div class="row g-4 mb-4">
+        <div class="row g-2 g-md-3 mb-4">
             @foreach (var goal in completed)
             {
                 <div class="col-md-6 col-lg-4">
                     <div class="card goal-card-premium h-100 opacity-75" style="border-left: 4px solid #10b981 !important;">
-                        <div class="card-body p-4">
+                        <div class="card-body p-3 p-md-4">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="rounded-circle d-flex align-items-center justify-content-center bg-success bg-opacity-10"
