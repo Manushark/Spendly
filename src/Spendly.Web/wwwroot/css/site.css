@@ -1286,6 +1286,9 @@ hr            { border-color: var(--clr-border); opacity: 1; }
 
 @media (max-width: 575.98px) {
   .content-wrapper { padding: var(--sp-3); }
+  .dropdown-menu-end {
+    max-width: calc(100vw - 1.5rem) !important;
+  }
 }
 
 /* ── 29. TREND INDICATORS ─────────────────────────────────── */
