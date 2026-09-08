@@ -7,6 +7,26 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.22.1] - 2026-09-07
+*(Optimizaciones de diseño responsivo móvil, fijación de sidebar móvil con soporte de viewport dinámico, adaptación de menús dropdown para pantallas angostas, soporte de flex-wrap en encabezados y refinamiento de tarjetas de autenticación y landing page)*
+
+### Arreglado
+- **Fijación y dimensionamiento del Sidebar Móvil**:
+  - Coordenadas explícitas `top: 0; left: 0; bottom: 0;` y altura dinámica `100dvh` con soporte de `safe-area-inset-bottom` en dispositivos móviles.
+  - Cierre automático del overlay y menú lateral al redimensionar la ventana a pantallas de escritorio (`resize` event listener).
+  - Overlay de navegación móvil con `inset: 0` y `backdrop-filter: blur(3px)` para cubrir de forma consistente todo el viewport.
+- **Desbordamiento de Dropdowns en pantallas angostas (< 380px)**:
+  - Ancho responsivo `max-width: calc(100vw - 1.5rem)` en el menú de notificaciones y selector de temas en `_Layout.cshtml`.
+  - Regla `@media (max-width: 575.98px)` para `.dropdown-menu-end` garantizando que los menús desplegables nunca desborden hacia la izquierda.
+- **Ajuste de Cabeceras en Vistas Principales (Flex-Wrap)**:
+  - Soporte de `flex-wrap gap-3` en encabezados de páginas para evitar solapamiento entre títulos y botones de acción en Dashboard, Incomes, Budgets, Categories, SavingsGoals, Insights y Tags.
+- **Landing Page Responsiva**:
+  - Tipografía escalable en el título Hero (`hero-title` de 4.25rem a 1.95rem en móviles).
+  - Botones de llamada a la acción (*Call to Action*) adaptados a 100% de ancho con `flex-direction: column` en pantallas pequeñas.
+  - Espaciados y espaciado de secciones fluidos en la vista de presentación.
+- **Tarjetas de Autenticación en Dispositivos Móviles**:
+  - Relleno ergonómico (`padding: 32px 20px` y `border-radius: 20px`) para `.auth-card` en las vistas de Login, Registro, Recuperación de Contraseña y Reseteo de Contraseña.
+
 ## [1.22.0] - 2026-09-01
 *(Flujo de recuperación de contraseña, sistema de notificaciones por email SMTP, suite completa de pruebas unitarias al 100%, personalización de temas cristalinos, modernización analítica de Dashboard, Reports, Insights y Savings Goals, y documentación técnica completa)*
 
