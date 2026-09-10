@@ -187,11 +187,11 @@
     else
     {
         @* ─── KPI Cards ──────────────────────────────────────────── *@
-        <div class="row g-3 mb-4">
+        <div class="row g-2 g-md-3 mb-4">
 
             @* Card: Income *@
-            <div class="col-sm-6 col-xl-3 kpi-col">
-                <div class="kpi-card h-100 p-4">
+            <div class="col-6 col-xl-3 kpi-col">
+                <div class="kpi-card h-100 p-3 p-md-4">
                     <div class="kpi-accent kpi-accent-green"></div>
                     <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Dash_MonthlyIncome"]</span>
@@ -206,8 +206,8 @@
             </div>
 
             @* Card: Expenses *@
-            <div class="col-sm-6 col-xl-3 kpi-col">
-                <div class="kpi-card h-100 p-4">
+            <div class="col-6 col-xl-3 kpi-col">
+                <div class="kpi-card h-100 p-3 p-md-4">
                     <div class="kpi-accent kpi-accent-red"></div>
                     <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Dash_TotalThisMonth"]</span>
@@ -217,7 +217,7 @@
                         data-count-up data-value="@Model.CurrentMonthTotal.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-prefix="$">
                         $@Model.CurrentMonthTotal.ToString("N2")
                     </h2>
-                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <div class="d-flex align-items-center gap-1 gap-md-2 flex-wrap">
                         @if (Model.PreviousMonthTotal > 0)
                         {
                             <span class="trend-indicator @(Model.IsIncreaseFromLastMonth ? "trend-up" : "trend-down")">
@@ -235,8 +235,8 @@
             </div>
 
             @* Card: Balance *@
-            <div class="col-sm-6 col-xl-3 kpi-col">
-                <div class="kpi-card h-100 p-4">
+            <div class="col-6 col-xl-3 kpi-col">
+                <div class="kpi-card h-100 p-3 p-md-4">
                     <div class="kpi-accent @(Model.MonthlyBalance >= 0 ? "kpi-accent-blue" : "kpi-accent-red")"></div>
                     <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Dash_Balance"]</span>
@@ -255,18 +255,18 @@
             </div>
 
             @* Card: Savings Rate *@
-            <div class="col-sm-6 col-xl-3 kpi-col">
-                <div class="kpi-card h-100 p-4">
+            <div class="col-6 col-xl-3 kpi-col">
+                <div class="kpi-card h-100 p-3 p-md-4">
                     <div class="kpi-accent kpi-accent-violet"></div>
                     <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Dash_SavingsRate"]</span>
                         <div class="kpi-icon kpi-icon-violet"><i class="bi bi-piggy-bank"></i></div>
                     </div>
-                    <h2 class="kpi-value mb-2" style="color:#8b5cf6;"
+                    <h2 class="kpi-value mb-1 mb-md-2" style="color:#8b5cf6;"
                         data-count-up data-value="@Model.SavingsRate.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-suffix="%" data-decimals="1">
                         @Model.SavingsRate.ToString("N1")%
                     </h2>
-                    <div class="progress-track-premium mb-2">
+                    <div class="progress-track-premium mb-1 mb-md-2">
                         <div class="progress-bar-premium"
                              style="width:@(Math.Max(0,Math.Min(100,Model.SavingsRate)).ToString(System.Globalization.CultureInfo.InvariantCulture))%;
                                     background:@(Model.SavingsRate >= 20 ? "linear-gradient(90deg,#10b981,#34d399,#10b981)" : Model.SavingsRate >= 0 ? "linear-gradient(90deg,#f59e0b,#fbbf24,#f59e0b)" : "linear-gradient(90deg,#ef4444,#f87171,#ef4444)");
@@ -274,7 +274,7 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <small class="text-muted text-truncate" style="max-width:110px;" title="@Model.TopCategory">
+                        <small class="text-muted text-truncate" style="max-width:85px;" title="@Model.TopCategory">
                             <i class="bi bi-tag me-1"></i>@Model.TopCategory
                         </small>
                         <small class="text-muted font-mono">@Model.TotalExpensesCount txs</small>
