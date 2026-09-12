@@ -7,8 +7,8 @@ namespace Spendly.Domain.Entities
     public class User
     {
         public int Id { get; private set; }
-        public string Email { get; private set; }
-        public string PasswordHash { get; private set; }
+        public string Email { get; private set; } = null!;
+        public string PasswordHash { get; private set; } = null!;
         public string? FullName { get; private set; }
         public string PreferredCurrency { get; private set; } = "USD";
         public string TimeZone { get; private set; } = "UTC";
