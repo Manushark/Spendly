@@ -7,6 +7,25 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.22.2] - 2026-09-10
+*(Optimización ejecutiva de tarjetas de resumen financiero en móviles: Grids compactos 2x2 para Dashboard, Presupuestos, Análisis y Metas de Ahorro, Grid 2x3 en Reportes, visualización balanceada en Gastos Recurrentes y 2 columnas para Categorías)*
+
+### Añadido
+- **Métricas Resumen en Metas de Ahorro**:
+  - Incorporación de 4 tarjetas KPI en cabecera (*Total Ahorrado, Meta Total, Metas Activas y Metas Cumplidas*) con distribución responsiva 2x2 en móviles y 4 columnas en escritorio.
+
+### Arreglado
+- **Distribución de Tarjetas KPI en Dispositivos Móviles (Grid 2x2)**:
+  - En Dashboard, Presupuestos (*Budgets*) y Análisis (*Insights*), las tarjetas de métricas financieras ahora se muestran en una cuadrícula compacta de 2x2 (`col-6`) con espaciado fluido `row g-2 g-md-3`, eliminando el desplazamiento vertical excesivo.
+  - Tipografía y elementos ergonómicos optimizados para móviles: valores numéricos a `1.15rem`, iconos a `28px` y rellenos adaptados a `12px 10px`.
+- **Reestructuración Responsiva de Reportes**:
+  - Las 6 tarjetas analíticas (*Gastos, Ingresos, Balance Neto, Promedio Diario, Categoría Principal y Ratio de Gasto*) adaptadas a una cuadrícula compacta de 2x3 (`col-6 col-md-6 col-lg-4`).
+  - Reducción de escala de los iconos analíticos (`.stat-icon`) y badges comparativos en pantallas pequeñas.
+- **Visualización Balanceada de Gastos Recurrentes**:
+  - Organización en móvil con 2 tarjetas de conteo en la primera fila (`col-6`) y la proyección mensual destacada a ancho completo en la segunda fila (`col-12`).
+- **Cuadrícula de 2 Columnas para Categorías**:
+  - Listado de categorías distribuido en 2 columnas (`col-6 col-md-6 col-lg-4`) en móviles con truncado de texto y círculos de icono compactos (32px), reduciendo la altura total requerida a la mitad.
+
 ## [1.22.1] - 2026-09-07
 *(Optimizaciones de diseño responsivo móvil, fijación de sidebar móvil con soporte de viewport dinámico, adaptación de menús dropdown para pantallas angostas, soporte de flex-wrap en encabezados y refinamiento de tarjetas de autenticación y landing page)*
 

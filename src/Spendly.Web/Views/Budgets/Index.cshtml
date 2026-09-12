@@ -42,6 +42,7 @@
     .kpi-icon-red    { background: rgba(239,68,68,.14);  color: #ef4444; }
     .kpi-icon-blue   { background: rgba(59,130,246,.14); color: #3b82f6; }
     .kpi-icon-violet { background: rgba(139,92,246,.14); color: #8b5cf6; }
+    .kpi-value { font-size: 1.8rem; }
 
     /* Budget Card Style */
     .budget-card-premium {
@@ -120,16 +121,16 @@
     else
     {
         @* Summary Cards *@
-        <div class="row g-3 mb-4">
+        <div class="row g-2 g-md-3 mb-4">
             <!-- KPI: Total Budget -->
-            <div class="col-sm-6 col-xl-3">
-                <div class="kpi-card h-100 p-4">
+            <div class="col-6 col-xl-3">
+                <div class="kpi-card h-100 p-3 p-md-4">
                     <div class="kpi-accent kpi-accent-blue"></div>
                     <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Bud_TotalBudget"]</span>
                         <div class="kpi-icon kpi-icon-blue"><i class="bi bi-cash-stack"></i></div>
                     </div>
-                    <h2 class="fw-bold font-mono mb-1 text-primary" style="font-size:1.8rem;">
+                    <h2 class="kpi-value fw-bold font-mono mb-1 text-primary">
                         $@Model.TotalLimit.ToString("N2")
                     </h2>
                     <small class="text-muted">@Model.TotalBudgets @L["Bud_BudgetsSet"]</small>
@@ -137,14 +138,14 @@
             </div>
 
             <!-- KPI: Total Spent -->
-            <div class="col-sm-6 col-xl-3">
-                <div class="kpi-card h-100 p-4">
+            <div class="col-6 col-xl-3">
+                <div class="kpi-card h-100 p-3 p-md-4">
                     <div class="kpi-accent kpi-accent-violet"></div>
                     <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Bud_TotalSpent"]</span>
                         <div class="kpi-icon kpi-icon-violet"><i class="bi bi-receipt"></i></div>
                     </div>
-                    <h2 class="fw-bold font-mono mb-1 text-danger" style="font-size:1.8rem;">
+                    <h2 class="kpi-value fw-bold font-mono mb-1 text-danger">
                         $@Model.TotalSpent.ToString("N2")
                     </h2>
                     @{
@@ -155,14 +156,14 @@
             </div>
 
             <!-- KPI: Remaining -->
-            <div class="col-sm-6 col-xl-3">
-                <div class="kpi-card h-100 p-4">
+            <div class="col-6 col-xl-3">
+                <div class="kpi-card h-100 p-3 p-md-4">
                     <div class="kpi-accent kpi-accent-green"></div>
                     <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Bud_Remaining"]</span>
                         <div class="kpi-icon kpi-icon-green"><i class="bi bi-wallet2"></i></div>
                     </div>
-                    <h2 class="fw-bold font-mono mb-1 text-success" style="font-size:1.8rem;">
+                    <h2 class="kpi-value fw-bold font-mono mb-1 text-success">
                         $@Model.TotalRemaining.ToString("N2")
                     </h2>
                     <small class="text-muted">@L["Bud_AvailableToSpend"]</small>
@@ -170,14 +171,14 @@
             </div>
 
             <!-- KPI: Over Budget -->
-            <div class="col-sm-6 col-xl-3">
-                <div class="kpi-card h-100 p-4">
+            <div class="col-6 col-xl-3">
+                <div class="kpi-card h-100 p-3 p-md-4">
                     <div class="kpi-accent kpi-accent-red"></div>
                     <div class="d-flex justify-content-between align-items-center mb-3 pt-1">
                         <span class="text-muted fw-semibold small text-uppercase" style="letter-spacing:.5px;">@L["Bud_OverBudget"]</span>
                         <div class="kpi-icon kpi-icon-red"><i class="bi bi-exclamation-triangle"></i></div>
                     </div>
-                    <h2 class="fw-bold font-mono mb-1 @(Model.BudgetsExceeded > 0 ? "text-danger" : "text-muted")" style="font-size:1.8rem;">
+                    <h2 class="kpi-value fw-bold font-mono mb-1 @(Model.BudgetsExceeded > 0 ? "text-danger" : "text-muted")">
                         @Model.BudgetsExceeded
                     </h2>
                     <small class="text-muted">@L["Bud_CategoriesExceeded"]</small>
