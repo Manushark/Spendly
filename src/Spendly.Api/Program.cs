@@ -271,6 +271,9 @@ builder.Services.AddScoped<LoginUseCase>();
 builder.Services.AddScoped<RegisterUseCase>();
 builder.Services.AddScoped<ForgotPasswordUseCase>();
 builder.Services.AddScoped<ResetPasswordUseCase>();
+builder.Services.AddScoped<DemoLoginUseCase>();
+builder.Services.AddScoped<ResetDemoDataUseCase>();
+builder.Services.AddScoped<IDemoDataSeeder, DemoDataSeeder>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 
 // ── Email service: SMTP when configured, otherwise Console (dev) ──────────
