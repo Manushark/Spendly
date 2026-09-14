@@ -159,6 +159,28 @@
         transform: translateY(0);
     }
 
+    .btn-demo-quick {
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(99, 102, 241, 0.2) 100%);
+        color: #ffffff;
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        border-radius: 14px;
+        padding: 13px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 20px rgba(56, 189, 248, 0.15);
+    }
+    .btn-demo-quick:hover {
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.35) 100%);
+        border-color: rgba(56, 189, 248, 0.7);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(56, 189, 248, 0.25);
+        color: #ffffff;
+    }
+    .btn-demo-quick:active {
+        transform: translateY(0);
+    }
+
     @@media (max-width: 575.98px) {
         .auth-bg {
             padding: 30px 14px;
@@ -221,6 +243,29 @@
             </button>
         </form>
 
+        <!-- Recruiter / Demo Showcase -->
+        <div class="position-relative my-4 text-center">
+            <hr style="border-color: rgba(255, 255, 255, 0.12);" />
+            <span class="position-absolute top-50 start-50 translate-middle px-3" style="background: #0f1624; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.2px; color: rgba(255, 255, 255, 0.55); font-weight: 700;">
+                Recruiter Showcase
+            </span>
+        </div>
+
+        <form asp-action="DemoLogin" method="post" id="demoLoginForm">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-demo-quick w-100">
+                <span class="d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-rocket-takeoff-fill" style="font-size: 1.15rem; color: #38bdf8;"></i>
+                    <span><strong>Acceso Rápido / Modo Demo</strong> (1 Clic)</span>
+                </span>
+            </button>
+            <div class="text-center mt-2">
+                <small style="color: rgba(255, 255, 255, 0.5); font-size: 0.75rem;">
+                    <i class="bi bi-stars text-warning me-1"></i> Precarga balance, presupuestos, alertas y métricas sin registro
+                </small>
+            </div>
+        </form>
+
         <div class="text-center mt-4 pt-4 border-top" style="border-color: rgba(255, 255, 255, 0.08) !important;">
             <p class="text-muted mb-0" style="font-size: 0.95rem;">
                 @L["Auth_NoAccount"] <a asp-action="Register" class="text-primary fw-semibold text-decoration-none">@L["Auth_SignUp"]</a>
@@ -254,10 +299,20 @@
         }
     })();
 
-    // Show loading overlay
+    // Show loading overlay for regular login
     var form = document.getElementById('loginForm');
     if (form) {
         form.addEventListener('submit', function (e) {
+            document.getElementById('authLoadingOverlay').style.display = 'flex';
+            var btn = this.querySelector('button[type="submit"]');
+            if (btn) btn.disabled = true;
+        });
+    }
+
+    // Show loading overlay for demo login
+    var demoForm = document.getElementById('demoLoginForm');
+    if (demoForm) {
+        demoForm.addEventListener('submit', function (e) {
             document.getElementById('authLoadingOverlay').style.display = 'flex';
             var btn = this.querySelector('button[type="submit"]');
             if (btn) btn.disabled = true;
