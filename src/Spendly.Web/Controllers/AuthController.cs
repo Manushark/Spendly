@@ -126,6 +126,49 @@ namespace Spendly.Web.Controllers
             TempData["Success"] = "Password reset successfully. You can now log in with your new password.";
             return RedirectToAction("Login");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DemoLogin()
+        {
+            var (result, errorMessage) = await _authApi.DemoLoginAsync();
+
+            if (result == null)
+            {
+                ViewBag.Error = errorMessage ?? "Failed to initialize demo session.";
+                return View("Login", new LoginViewModel());
+            }
+
+            TokenHelper.SetToken(HttpContext, result.Token);
+            HttpContext.Session.SetString("userEmail", "demo@spendly.com");
+            var profile = await _userApi.GetProfileAsync();
+            if (profile != null)
+                HttpContext.Session.SetString("userTimeZone", profile.TimeZone);
+
+            TempData["Success"] = "Welcome to Spendly Recruiter Demo! Realistic financial data, budgets, and savings goals have been preloaded.";
+            return RedirectToAction("Index", "Expenses");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetDemo()
+        {
+            var token = TokenHelper.GetToken(HttpContext);
+            var email = HttpContext.Session.GetString("userEmail");
+
+            if (string.IsNullOrEmpty(token) || email != "demo@spendly.com")
+                return RedirectToAction("Index", "Expenses");
+
+            var (success, error) = await _authApi.ResetDemoDataAsync(token);
+            if (success)
+            {
+                TempData["Success"] = "Demo data has been restored to its default state.";
+            }
+            else
+            {
+                TempData["Error"] = error ?? "Failed to reset demo data.";
+            }
+
+            return RedirectToAction("Index", "Expenses");
+        }
     }
 }
 
