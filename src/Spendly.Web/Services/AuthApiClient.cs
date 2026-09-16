@@ -89,6 +89,41 @@ namespace Spendly.Web.Services
                 return (false, "Could not connect to the server. Please try again in a moment.");
             }
         }
+
+        public async Task<(AuthResponse? Result, string? ErrorMessage)> DemoLoginAsync()
+        {
+            try
+            {
+                var response = await _http.PostAsync("api/auth/demo-login", null);
+
+                if (response.IsSuccessStatusCode)
+                    return (await response.Content.ReadFromJsonAsync<AuthResponse>(), null);
+
+                return (null, "Could not start demo session. Please try again.");
+            }
+            catch (Exception)
+            {
+                return (null, "Could not connect to the server. Please try again in a moment.");
+            }
+        }
+
+        public async Task<(bool Success, string? ErrorMessage)> ResetDemoDataAsync(string token)
+        {
+            try
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Post, "api/auth/demo-reset");
+                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                var response = await _http.SendAsync(request);
+
+                return response.IsSuccessStatusCode
+                    ? (true, null)
+                    : (false, "Could not reset demo data.");
+            }
+            catch (Exception)
+            {
+                return (false, "Could not connect to the server. Please try again in a moment.");
+            }
+        }
     }
 }
 

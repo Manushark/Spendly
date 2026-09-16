@@ -7,11 +7,11 @@ namespace Spendly.Domain.Entities
     {
         public int Id { get; private set; }
         public int UserId { get; private set; }          // ← dueño del gasto
-        public Money Amount { get; private set; }
+        public Money Amount { get; private set; } = null!;
         public string Currency { get; private set; } = "USD";
-        public string Description { get; private set; }
+        public string Description { get; private set; } = null!;
         public DateTime Date { get; private set; }
-        public string Category { get; private set; }
+        public string Category { get; private set; } = null!;
         
         // Soft delete properties
         public bool IsDeleted { get; private set; }

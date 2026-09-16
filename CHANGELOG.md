@@ -7,6 +7,34 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.23.0] - 2026-09-15
+*(Modo Demo para Reclutadores con acceso rápido en 1 clic, dataset financiero preconfigurado con presupuestos en alerta y metas de ahorro, restablecimiento de datos en tiempo real, limpieza integral de advertencias de nulabilidad del compilador y actualización completa del README)*
+
+### Añadido
+- **Modo Demostración para Reclutadores (1 Clic)**:
+  - Botón de acceso directo en la vista de inicio de sesión (`Login.cshtml`) con diseño glassmorphism y autologin instantáneo sin requerir registro previo.
+  - Servicio `DemoDataSeeder` e interfaz `IDemoDataSeeder` en `Spendly.Infrastructure` para precargar de forma determinista un ecosistema financiero completo:
+    - Balance neto positivo con 2 fuentes de ingresos (salario corporativo y consultoría freelance).
+    - Presupuesto de *Entertainment* con utilización del 88% para demostrar en vivo el motor de alertas de dominio en amarillo.
+    - 15+ gastos del mes actual y 5 del mes anterior para graficación rica en Chart.js.
+    - 4 gastos recurrentes activos (Netflix, Spotify, Renta, Gimnasio).
+    - 3 metas de ahorro con barras de progreso visual (Fondo de emergencia al 65%, Viaje a Tokio al 80%, Laptop al 48%).
+  - Endpoints dedicados `POST /api/auth/demo-login` y `POST /api/auth/demo-reset`.
+  - Casos de uso `DemoLoginUseCase` y `ResetDemoDataUseCase` en `Spendly.Application`.
+  - Botón flotante y de menú lateral `🔄 Resetear Datos Demo` para restaurar los datos de prueba a su estado original con un clic tras interactuar con la app.
+  - Indicador visual `🎭 Modo Demo Activo` en la cabecera superior y barra lateral.
+  - Pruebas unitarias completas en `DemoLoginUseCaseTests.cs` (suite expandida a 120 pruebas, 100% pasando).
+
+### Arreglado
+- **Limpieza de Advertencias de Nulabilidad (CS8618)**:
+  - Inicialización adecuada de propiedades no anulables en entidades del Dominio (`User.cs`, `Expense.cs`) y DTOs de Aplicación (`AuthResponseDto.cs`, `LoginDto.cs`, `ExpenseResponseDto.cs`), logrando una compilación perfecta con 0 advertencias y 0 errores bajo C# 12 nullable reference types.
+
+### Cambiado
+- **Renovación Integral del README.md**:
+  - Incorporación de badges oficiales (.NET 8, C# 12, Clean Architecture, 120 tests passed, GitFlow, Azure App Service).
+  - Enlace y botón visual a la demo activa en producción en Azure.
+  - Diagrama ASCII de Clean Architecture y matriz de responsabilidades por capa.
+
 ## [1.22.2] - 2026-09-10
 *(Optimización ejecutiva de tarjetas de resumen financiero en móviles: Grids compactos 2x2 para Dashboard, Presupuestos, Análisis y Metas de Ahorro, Grid 2x3 en Reportes, visualización balanceada en Gastos Recurrentes y 2 columnas para Categorías)*
 
