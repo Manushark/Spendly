@@ -62,5 +62,21 @@ namespace Spendly.Api.Controllers
             await _resetPasswordUseCase.ExecuteAsync(dto);
             return Ok(new { message = "Password has been reset successfully." });
         }
+
+        [HttpPost("demo-login")]
+        public async Task<IActionResult> DemoLogin([FromServices] DemoLoginUseCase demoLoginUseCase)
+        {
+            var result = await demoLoginUseCase.ExecuteAsync();
+            return Ok(result);
+        }
+
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        [HttpPost("demo-reset")]
+        public async Task<IActionResult> DemoReset([FromServices] ResetDemoDataUseCase resetDemoDataUseCase)
+        {
+            var userId = Spendly.Api.Extensions.ClaimsPrincipalExtensions.GetUserId(User);
+            await resetDemoDataUseCase.ExecuteAsync(userId);
+            return Ok(new { message = "Demo data has been reset successfully." });
+        }
     }
 }
