@@ -117,6 +117,12 @@ builder.Services.AddHttpClient<ReportApiClient>(client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+// AI Copilot API client
+builder.Services.AddHttpClient<AiApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
 // Report export (PDF + CSV)
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 builder.Services.AddSingleton<Spendly.Web.Services.ReportExportService>();
