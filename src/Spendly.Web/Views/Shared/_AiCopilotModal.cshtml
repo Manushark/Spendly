@@ -1,0 +1,643 @@
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer L
+@{
+    var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+    var isSpanish = currentCulture.StartsWith("es", StringComparison.OrdinalIgnoreCase);
+}
+
+<!-- Spendly AI Copilot Modal -->
+<div class="modal fade" id="aiCopilotModal" tabindex="-1" aria-labelledby="aiCopilotModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-content-premium border-0 shadow-2xl position-relative overflow-hidden" 
+             style="border-radius: 24px; background: var(--clr-surface); border: 1px solid var(--clr-border) !important; backdrop-filter: blur(20px);">
+            
+            <!-- Subtle Top Gradient Glow -->
+            <div class="copilot-glow-bar position-absolute top-0 start-0 w-100" 
+                 style="height: 4px; background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #3b82f6);"></div>
+
+            <!-- Modal Header -->
+            <div class="modal-header border-0 pb-1 px-4 pt-4 align-items-start">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="copilot-avatar-badge rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                         style="width: 44px; height: 44px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: #fff; font-size: 1.3rem;">
+                        <i class="bi bi-stars"></i>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <h5 class="modal-title fw-bold mb-0" id="aiCopilotModalLabel" style="font-family: var(--font-heading); color: var(--clr-text); font-size: 1.25rem;">
+                                Spendly AI Copilot
+                            </h5>
+                            <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-0" style="font-size: 0.68rem; font-weight: 700; letter-spacing: 0.5px;">
+                                GEMINI 1.5 FLASH
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-0 mt-1" style="font-size: 0.84rem;">
+                            @(isSpanish ? "Registra gastos y presupuestos hablando por voz o escribiendo" : "Register expenses & budgets naturally by voice or text")
+                        </p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <kbd class="d-none d-sm-inline-block px-2 py-1 small text-muted border border-secondary border-opacity-25" 
+                         style="border-radius: 6px; background: var(--clr-surface-alt, rgba(0,0,0,0.05)); font-size: 0.72rem;">
+                        ESC
+                    </kbd>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btnCloseAiCopilot"></button>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body px-4 py-3">
+                <!-- 1. Voice Interaction Centerpiece -->
+                <div class="text-center py-2">
+                    <div class="copilot-mic-container position-relative d-inline-block">
+                        <button type="button" class="copilot-mic-btn position-relative rounded-circle border-0 text-white shadow-lg"
+                                id="btnAiCopilotMic"
+                                onclick="toggleAiVoiceRecognition()"
+                                title="@(isSpanish ? "Haz clic para hablar" : "Click to speak")"
+                                style="width: 68px; height: 68px; font-size: 1.8rem; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; z-index: 2;">
+                            <i class="bi bi-mic-fill" id="micIcon"></i>
+                        </button>
+                        <div class="copilot-ripple" id="copilotRipple"></div>
+                    </div>
+                    
+                    <div class="mt-2">
+                        <span class="fw-semibold small d-inline-flex align-items-center gap-1" id="micStatusText" style="color: var(--clr-text-muted); font-size: 0.85rem;">
+                            <i class="bi bi-soundwave text-primary"></i>
+                            @(isSpanish ? "Haz clic en el micrófono para hablar" : "Click the microphone to start speaking")
+                        </span>
+                        <div id="speechUnsupportedWarning" class="alert alert-warning py-1 px-3 mt-2 d-none small" style="border-radius: 12px; font-size: 0.78rem;">
+                            @(isSpanish ? "Tu navegador no soporta reconocimiento de voz nativo. Puedes escribir tu orden en el cuadro de texto." : "Your browser doesn't support native speech recognition. You can type your command below.")
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Text Input & Actions -->
+                <div class="position-relative mt-2">
+                    <textarea class="form-control copilot-textarea shadow-none" 
+                              id="aiCopilotInput" 
+                              rows="2" 
+                              placeholder="@(isSpanish ? "Ej: \"Gasté 600 en almuerzo con etiqueta cena y 45 en gasolina hoy\"..." : "E.g. \"Spent 60 on lunch with tag dinner and 40 on gas today\"...")"
+                              style="border-radius: 16px; background: var(--clr-surface-alt, rgba(125,125,125,0.06)); border: 1px solid var(--clr-border); padding: 12px 50px 12px 14px; font-size: 0.95rem; resize: none; color: var(--clr-text);"></textarea>
+                    
+                    <button type="button" 
+                            class="btn btn-sm btn-primary rounded-circle position-absolute d-flex align-items-center justify-content-center shadow-sm"
+                            id="btnAiCopilotSend"
+                            onclick="submitAiCommand()"
+                            title="@(isSpanish ? "Procesar comando" : "Process command")"
+                            style="width: 36px; height: 36px; top: 12px; right: 12px;">
+                        <i class="bi bi-arrow-up"></i>
+                    </button>
+                </div>
+
+                <!-- 3. Example Chips -->
+                <div class="d-flex flex-wrap gap-1 align-items-center mt-2 pt-1" id="copilotSuggestions">
+                    <span class="text-muted" style="font-size: 0.74rem;">@(isSpanish ? "Prueba diciendo:" : "Try saying:")</span>
+                    <button type="button" class="badge rounded-pill copilot-chip border-0 py-1 px-2" onclick="setAiPrompt(this.innerText)">
+                        🍽️ @(isSpanish ? "Gasté 600 en almuerzo con etiqueta cena" : "Spent 60 on dinner with tag dining")
+                    </button>
+                    <button type="button" class="badge rounded-pill copilot-chip border-0 py-1 px-2" onclick="setAiPrompt(this.innerText)">
+                        ⛽ @(isSpanish ? "45 en gasolina hoy" : "45 on gas today")
+                    </button>
+                    <button type="button" class="badge rounded-pill copilot-chip border-0 py-1 px-2" onclick="setAiPrompt(this.innerText)">
+                        📊 @(isSpanish ? "Presupuesto de 400 en Entretenimiento" : "Budget of 400 for Entertainment")
+                    </button>
+                </div>
+
+                <!-- 4. Loading Spinner -->
+                <div id="aiCopilotLoading" class="text-center py-4 d-none">
+                    <div class="spinner-border text-primary" role="status" style="width: 2.2rem; height: 2.2rem;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="mt-2 text-muted small fw-medium" id="aiCopilotLoadingText">
+                        @(isSpanish ? "Analizando tu orden con Gemini 1.5 Flash..." : "Analyzing your request with Gemini 1.5 Flash...")
+                    </div>
+                </div>
+
+                <!-- 5. Error Alert -->
+                <div id="aiCopilotError" class="alert alert-danger py-2 px-3 mt-3 d-none d-flex align-items-center gap-2 small" style="border-radius: 14px;">
+                    <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                    <span id="aiCopilotErrorMessage"></span>
+                </div>
+
+                <!-- 6. Preview Card (Human-in-the-Loop Confirmation) -->
+                <div id="aiCopilotPreview" class="mt-3 p-3 d-none border" style="border-radius: 18px; background: var(--clr-surface-alt, rgba(125,125,125,0.04)); border-color: var(--clr-border) !important;">
+                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="border-color: var(--clr-border) !important;">
+                        <span class="fw-bold small d-flex align-items-center gap-2" style="color: var(--clr-text);">
+                            <i class="bi bi-stars text-primary"></i>
+                            @(isSpanish ? "Previsualización Detectada" : "Detected Preview")
+                        </span>
+                        <span class="badge rounded-pill bg-success bg-opacity-10 text-success fw-semibold" id="aiPreviewStatusBadge" style="font-size: 0.7rem;">
+                            @(isSpanish ? "Listo para registrar" : "Ready to register")
+                        </span>
+                    </div>
+
+                    <p class="small text-muted mb-2 fst-italic" id="aiPlanSummaryText"></p>
+
+                    <!-- Expenses List -->
+                    <div id="aiPreviewExpensesContainer" class="d-none mb-2">
+                        <div class="text-muted fw-bold mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                            @(isSpanish ? "Gastos a registrar" : "Expenses to register")
+                        </div>
+                        <div class="d-flex flex-column gap-2" id="aiPreviewExpensesList"></div>
+                    </div>
+
+                    <!-- Budgets List -->
+                    <div id="aiPreviewBudgetsContainer" class="d-none mb-2">
+                        <div class="text-muted fw-bold mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                            @(isSpanish ? "Presupuestos a configurar" : "Budgets to set")
+                        </div>
+                        <div class="d-flex flex-column gap-2" id="aiPreviewBudgetsList"></div>
+                    </div>
+
+                    <!-- Preview Action Buttons -->
+                    <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top" style="border-color: var(--clr-border) !important;">
+                        <button type="button" class="btn btn-sm btn-outline-secondary px-3 rounded-pill" onclick="resetAiCopilotPreview()">
+                            @(isSpanish ? "Descartar" : "Discard")
+                        </button>
+                        <button type="button" class="btn btn-sm btn-success px-4 rounded-pill fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
+                                id="btnAiConfirmExecution"
+                                onclick="executeConfirmedAiPlan()">
+                            <i class="bi bi-check-circle-fill"></i>
+                            @(isSpanish ? "Confirmar y Registrar" : "Confirm and Save")
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 7. Success State -->
+                <div id="aiCopilotSuccess" class="text-center py-4 d-none">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success mb-2" style="width: 54px; height: 54px; font-size: 1.8rem;">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="color: var(--clr-text);" id="aiSuccessTitle">
+                        @(isSpanish ? "¡Transacciones registradas con éxito!" : "Transactions registered successfully!")
+                    </h6>
+                    <p class="text-muted small mb-0" id="aiSuccessMessage"></p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+/* AI Copilot Styling */
+.copilot-chip {
+    background: var(--clr-surface-alt, rgba(125,125,125,0.08));
+    color: var(--clr-text-muted);
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid var(--clr-border);
+}
+.copilot-chip:hover {
+    background: var(--clr-primary);
+    color: #fff;
+    transform: translateY(-1px);
+}
+.copilot-mic-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5) !important;
+}
+.copilot-mic-btn.recording {
+    background: linear-gradient(135deg, #ef4444 0%, #f43f5e 100%) !important;
+    animation: micPulse 1.4s infinite ease-in-out;
+}
+.copilot-ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+.copilot-ripple.active {
+    animation: copilotRippleAnim 1.6s infinite ease-out;
+}
+
+@@keyframes copilotRippleAnim {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2.2);
+        opacity: 0;
+    }
+}
+
+@@keyframes micPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+/* Glassmorphism item row in preview */
+.ai-preview-item {
+    background: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.15s ease;
+}
+.ai-preview-item:hover {
+    background: var(--clr-surface-alt, rgba(0,0,0,0.02));
+}
+</style>
+
+<script>
+// State variables for AI Copilot
+let aiActivePlan = null;
+let aiSpeechRecognition = null;
+let isAiRecording = false;
+
+document.addEventListener('DOMContentLoaded', function () {
+    initAiSpeechRecognition();
+    setupAiGlobalShortcuts();
+});
+
+function initAiSpeechRecognition() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        const warning = document.getElementById('speechUnsupportedWarning');
+        if (warning) warning.classList.remove('d-none');
+        return;
+    }
+
+    aiSpeechRecognition = new SpeechRecognition();
+    aiSpeechRecognition.continuous = false;
+    aiSpeechRecognition.interimResults = true;
+    
+    // Auto-detect language
+    const htmlLang = document.documentElement.lang || navigator.language || 'es-ES';
+    aiSpeechRecognition.lang = htmlLang.startsWith('es') ? 'es-ES' : 'en-US';
+
+    aiSpeechRecognition.onstart = function () {
+        isAiRecording = true;
+        updateMicUi(true);
+    };
+
+    aiSpeechRecognition.onresult = function (event) {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            transcript += event.results[i][0].transcript;
+        }
+        const input = document.getElementById('aiCopilotInput');
+        if (input && transcript) {
+            input.value = transcript;
+        }
+    };
+
+    aiSpeechRecognition.onerror = function (event) {
+        console.warn('Speech recognition error:', event.error);
+        isAiRecording = false;
+        updateMicUi(false);
+        const status = document.getElementById('micStatusText');
+        if (status) {
+            status.innerHTML = `<span class="text-danger"><i class="bi bi-exclamation-circle me-1"></i>${event.error === 'not-allowed' ? '@(isSpanish ? "Permiso de micrófono denegado" : "Microphone permission denied")' : '@(isSpanish ? "Error de micrófono" : "Microphone error")'}</span>`;
+        }
+    };
+
+    aiSpeechRecognition.onend = function () {
+        isAiRecording = false;
+        updateMicUi(false);
+        const input = document.getElementById('aiCopilotInput');
+        if (input && input.value.trim().length > 3) {
+            // Automatically analyze once speech has finished
+            submitAiCommand();
+        }
+    };
+}
+
+function toggleAiVoiceRecognition() {
+    if (!aiSpeechRecognition) {
+        initAiSpeechRecognition();
+        if (!aiSpeechRecognition) return;
+    }
+
+    if (isAiRecording) {
+        aiSpeechRecognition.stop();
+    } else {
+        const input = document.getElementById('aiCopilotInput');
+        if (input) input.value = '';
+        resetAiCopilotPreview();
+        try {
+            aiSpeechRecognition.start();
+        } catch (e) {
+            console.error('Failed to start speech recognition', e);
+        }
+    }
+}
+
+function updateMicUi(recording) {
+    const micBtn = document.getElementById('btnAiCopilotMic');
+    const micIcon = document.getElementById('micIcon');
+    const ripple = document.getElementById('copilotRipple');
+    const status = document.getElementById('micStatusText');
+
+    if (recording) {
+        if (micBtn) micBtn.classList.add('recording');
+        if (micIcon) {
+            micIcon.classList.remove('bi-mic-fill');
+            micIcon.classList.add('bi-stop-fill');
+        }
+        if (ripple) ripple.classList.add('active');
+        if (status) {
+            status.innerHTML = `<span class="text-danger fw-bold"><i class="bi bi-soundwave me-1"></i>@(isSpanish ? "Escuchando... habla ahora" : "Listening... speak now")</span>`;
+        }
+    } else {
+        if (micBtn) micBtn.classList.remove('recording');
+        if (micIcon) {
+            micIcon.classList.remove('bi-stop-fill');
+            micIcon.classList.add('bi-mic-fill');
+        }
+        if (ripple) ripple.classList.remove('active');
+        if (status) {
+            status.innerHTML = `<i class="bi bi-soundwave text-primary me-1"></i>@(isSpanish ? "Haz clic en el micrófono para hablar" : "Click the microphone to start speaking")`;
+        }
+    }
+}
+
+function setAiPrompt(text) {
+    const cleaned = text.replace(/^[^\w$]+/, '').trim();
+    const input = document.getElementById('aiCopilotInput');
+    if (input) {
+        input.value = cleaned;
+        submitAiCommand();
+    }
+}
+
+function openAiCopilotModal() {
+    const modalEl = document.getElementById('aiCopilotModal');
+    if (!modalEl) return;
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.show();
+    setTimeout(() => {
+        const input = document.getElementById('aiCopilotInput');
+        if (input) input.focus();
+    }, 300);
+}
+
+function setupAiGlobalShortcuts() {
+    document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            openAiCopilotModal();
+        }
+    });
+
+    // Enter in textarea to submit (Shift+Enter for newline)
+    const textarea = document.getElementById('aiCopilotInput');
+    if (textarea) {
+        textarea.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitAiCommand();
+            }
+        });
+    }
+}
+
+async function submitAiCommand() {
+    const input = document.getElementById('aiCopilotInput');
+    const prompt = input ? input.value.trim() : '';
+
+    if (!prompt) return;
+
+    hideAiError();
+    showAiLoading(true);
+    resetAiCopilotPreview();
+
+    try {
+        const response = await fetch('/Ai/Parse', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ prompt: prompt })
+        });
+
+        const data = await response.json();
+        showAiLoading(false);
+
+        if (!response.ok || !data.success || !data.plan) {
+            showAiError(data.message || '@(isSpanish ? "No pudimos interpretar el comando. Intenta con más detalles." : "Could not interpret command. Please try with more details.")');
+            return;
+        }
+
+        aiActivePlan = data.plan;
+        renderAiPlanPreview(data.plan);
+    } catch (err) {
+        showAiLoading(false);
+        showAiError('@(isSpanish ? "Error de conexión al procesar el comando." : "Connection error while processing command.")');
+        console.error(err);
+    }
+}
+
+function renderAiPlanPreview(plan) {
+    const previewContainer = document.getElementById('aiCopilotPreview');
+    const summaryText = document.getElementById('aiPlanSummaryText');
+    const expensesContainer = document.getElementById('aiPreviewExpensesContainer');
+    const expensesList = document.getElementById('aiPreviewExpensesList');
+    const budgetsContainer = document.getElementById('aiPreviewBudgetsContainer');
+    const budgetsList = document.getElementById('aiPreviewBudgetsList');
+
+    if (!plan || (!plan.expenses?.length && !plan.budgets?.length)) {
+        showAiError('@(isSpanish ? "No se reconocieron gastos ni presupuestos en el comando." : "No expenses or budgets detected in the command.")');
+        return;
+    }
+
+    summaryText.innerText = plan.summary || '@(isSpanish ? "Se han interpretado las siguientes acciones:" : "The following actions were recognized:")';
+
+    // Render Expenses
+    if (plan.expenses && plan.expenses.length > 0) {
+        expensesContainer.classList.remove('d-none');
+        expensesList.innerHTML = '';
+        plan.expenses.forEach((exp, idx) => {
+            const formattedDate = exp.date ? new Date(exp.date).toLocaleDateString() : '';
+            const tagsBadges = (exp.tags || []).map(t => `<span class="badge bg-light text-dark border me-1" style="font-size:0.68rem;">#${t}</span>`).join('');
+            
+            const itemEl = document.createElement('div');
+            itemEl.className = 'ai-preview-item';
+            itemEl.innerHTML = `
+                <div class="d-flex align-items-center gap-3">
+                    <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold" style="font-size:0.75rem;">
+                        ${exp.category || 'Other'}
+                    </span>
+                    <div>
+                        <div class="fw-semibold text-truncate" style="max-width: 240px; font-size: 0.9rem;">
+                            ${exp.description || 'Gasto'}
+                        </div>
+                        <div class="text-muted" style="font-size: 0.75rem;">
+                            ${formattedDate} ${tagsBadges}
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold fs-6" style="color: var(--clr-text);">
+                        ${Number(exp.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                    <button type="button" class="btn btn-link text-danger p-0 border-0 ms-1" title="Eliminar" onclick="removeAiPreviewExpense(${idx})">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </div>
+            `;
+            expensesList.appendChild(itemEl);
+        });
+    } else {
+        expensesContainer.classList.add('d-none');
+    }
+
+    // Render Budgets
+    if (plan.budgets && plan.budgets.length > 0) {
+        budgetsContainer.classList.remove('d-none');
+        budgetsList.innerHTML = '';
+        plan.budgets.forEach((b, idx) => {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'ai-preview-item';
+            itemEl.innerHTML = `
+                <div class="d-flex align-items-center gap-3">
+                    <span class="badge rounded-pill bg-info bg-opacity-10 text-info fw-semibold" style="font-size:0.75rem;">
+                        <i class="bi bi-pie-chart me-1"></i>${b.category || 'Other'}
+                    </span>
+                    <div>
+                        <div class="fw-semibold" style="font-size: 0.9rem;">
+                            @(isSpanish ? "Presupuesto Mensual" : "Monthly Budget")
+                        </div>
+                        <div class="text-muted" style="font-size: 0.75rem;">
+                            Mes: ${b.month}/${b.year}
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold fs-6 text-info">
+                        ${Number(b.monthlyLimit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                    <button type="button" class="btn btn-link text-danger p-0 border-0 ms-1" title="Eliminar" onclick="removeAiPreviewBudget(${idx})">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </div>
+            `;
+            budgetsList.appendChild(itemEl);
+        });
+    } else {
+        budgetsContainer.classList.add('d-none');
+    }
+
+    previewContainer.classList.remove('d-none');
+}
+
+function removeAiPreviewExpense(index) {
+    if (!aiActivePlan || !aiActivePlan.expenses) return;
+    aiActivePlan.expenses.splice(index, 1);
+    if (aiActivePlan.expenses.length === 0 && (!aiActivePlan.budgets || aiActivePlan.budgets.length === 0)) {
+        resetAiCopilotPreview();
+    } else {
+        renderAiPlanPreview(aiActivePlan);
+    }
+}
+
+function removeAiPreviewBudget(index) {
+    if (!aiActivePlan || !aiActivePlan.budgets) return;
+    aiActivePlan.budgets.splice(index, 1);
+    if ((!aiActivePlan.expenses || aiActivePlan.expenses.length === 0) && aiActivePlan.budgets.length === 0) {
+        resetAiCopilotPreview();
+    } else {
+        renderAiPlanPreview(aiActivePlan);
+    }
+}
+
+async function executeConfirmedAiPlan() {
+    if (!aiActivePlan) return;
+
+    const confirmBtn = document.getElementById('btnAiConfirmExecution');
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> @(isSpanish ? "Guardando..." : "Saving...")`;
+    }
+
+    try {
+        const response = await fetch('/Ai/Execute', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(aiActivePlan)
+        });
+
+        const data = await response.json();
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = `<i class="bi bi-check-circle-fill"></i> @(isSpanish ? "Confirmar y Registrar" : "Confirm and Save")`;
+        }
+
+        if (!response.ok || !data.success) {
+            showAiError(data.message || '@(isSpanish ? "Error al registrar el plan." : "Failed to register plan.")');
+            return;
+        }
+
+        // Show Success
+        document.getElementById('aiCopilotPreview').classList.add('d-none');
+        const successContainer = document.getElementById('aiCopilotSuccess');
+        const successMsg = document.getElementById('aiSuccessMessage');
+        if (successMsg) {
+            successMsg.innerText = data.result?.message || '@(isSpanish ? "Todos los elementos han sido guardados en tu cuenta." : "All items have been saved to your account.")';
+        }
+        successContainer.classList.remove('d-none');
+
+        // Automatically reload page or update dashboard after 1.4s
+        setTimeout(() => {
+            window.location.reload();
+        }, 1400);
+
+    } catch (err) {
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = `<i class="bi bi-check-circle-fill"></i> @(isSpanish ? "Confirmar y Registrar" : "Confirm and Save")`;
+        }
+        showAiError('@(isSpanish ? "Error de conexión al guardar el plan." : "Connection error saving plan.")');
+        console.error(err);
+    }
+}
+
+function showAiLoading(show) {
+    const el = document.getElementById('aiCopilotLoading');
+    if (el) {
+        if (show) el.classList.remove('d-none');
+        else el.classList.add('d-none');
+    }
+}
+
+function showAiError(msg) {
+    const errBox = document.getElementById('aiCopilotError');
+    const msgSpan = document.getElementById('aiCopilotErrorMessage');
+    if (errBox && msgSpan) {
+        msgSpan.innerText = msg;
+        errBox.classList.remove('d-none');
+    }
+}
+
+function hideAiError() {
+    const errBox = document.getElementById('aiCopilotError');
+    if (errBox) errBox.classList.add('d-none');
+}
+
+function resetAiCopilotPreview() {
+    const preview = document.getElementById('aiCopilotPreview');
+    const success = document.getElementById('aiCopilotSuccess');
+    if (preview) preview.classList.add('d-none');
+    if (success) success.classList.add('d-none');
+    aiActivePlan = null;
+}
+</script>
