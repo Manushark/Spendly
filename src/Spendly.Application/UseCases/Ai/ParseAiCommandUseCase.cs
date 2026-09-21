@@ -43,12 +43,15 @@ namespace Spendly.Application.UseCases.Ai
                 categoryNames = ["Food & Dining", "Transportation", "Entertainment", "Shopping", "Bills & Utilities", "Health", "Other"];
             }
 
-            return await _aiService.ParseCommandAsync(
+            var plan = await _aiService.ParseCommandAsync(
                 prompt,
                 referenceDate,
                 timeZone,
                 categoryNames,
                 cancellationToken);
+
+            plan.AvailableCategories = categoryNames;
+            return plan;
         }
     }
 }
