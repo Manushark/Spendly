@@ -27,7 +27,7 @@
                                 Spendly AI Copilot
                             </h5>
                             <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-0" style="font-size: 0.68rem; font-weight: 700; letter-spacing: 0.5px;">
-                                GEMINI 1.5 FLASH
+                                @(isSpanish ? "ASISTENTE INTELIGENTE" : "SMART ASSISTANT")
                             </span>
                         </div>
                         <p class="text-muted small mb-0 mt-1" style="font-size: 0.84rem;">
@@ -76,7 +76,7 @@
                     <textarea class="form-control copilot-textarea shadow-none" 
                               id="aiCopilotInput" 
                               rows="2" 
-                              placeholder="@(isSpanish ? "Ej: \"Gasté 600 en almuerzo con etiqueta cena y 45 en gasolina hoy\"..." : "E.g. \"Spent 60 on lunch with tag dinner and 40 on gas today\"...")"
+                              placeholder="@(isSpanish ? "Ej: \"200 para el salón para el día de ayer con etiqueta personal\"..." : "E.g. \"200 for beauty salon yesterday with tag personal\"...")"
                               style="border-radius: 16px; background: var(--clr-surface-alt, rgba(125,125,125,0.06)); border: 1px solid var(--clr-border); padding: 12px 50px 12px 14px; font-size: 0.95rem; resize: none; color: var(--clr-text);"></textarea>
                     
                     <button type="button" 
@@ -93,7 +93,10 @@
                 <div class="d-flex flex-wrap gap-1 align-items-center mt-2 pt-1" id="copilotSuggestions">
                     <span class="text-muted" style="font-size: 0.74rem;">@(isSpanish ? "Prueba diciendo:" : "Try saying:")</span>
                     <button type="button" class="badge rounded-pill copilot-chip border-0 py-1 px-2" onclick="setAiPrompt(this.innerText)">
-                        🍽️ @(isSpanish ? "Gasté 600 en almuerzo con etiqueta cena" : "Spent 60 on dinner with tag dining")
+                        💇‍♀️ @(isSpanish ? "200 para el salón para el día de ayer" : "200 for hair salon yesterday")
+                    </button>
+                    <button type="button" class="badge rounded-pill copilot-chip border-0 py-1 px-2" onclick="setAiPrompt(this.innerText)">
+                        🍽️ @(isSpanish ? "Gasté 600 en almuerzo con etiqueta cena" : "Spent 60 on lunch with tag dining")
                     </button>
                     <button type="button" class="badge rounded-pill copilot-chip border-0 py-1 px-2" onclick="setAiPrompt(this.innerText)">
                         ⛽ @(isSpanish ? "45 en gasolina hoy" : "45 on gas today")
@@ -109,7 +112,7 @@
                         <span class="visually-hidden">Loading...</span>
                     </div>
                     <div class="mt-2 text-muted small fw-medium" id="aiCopilotLoadingText">
-                        @(isSpanish ? "Analizando tu orden con Gemini 1.5 Flash..." : "Analyzing your request with Gemini 1.5 Flash...")
+                        @(isSpanish ? "Analizando tu orden con inteligencia artificial..." : "Analyzing your request with AI...")
                     </div>
                 </div>
 
@@ -119,13 +122,15 @@
                     <span id="aiCopilotErrorMessage"></span>
                 </div>
 
-                <!-- 6. Preview Card (Human-in-the-Loop Confirmation) -->
+                <!-- 6. Preview Card (Human-in-the-Loop & Interactive Edit) -->
                 <div id="aiCopilotPreview" class="mt-3 p-3 d-none border" style="border-radius: 18px; background: var(--clr-surface-alt, rgba(125,125,125,0.04)); border-color: var(--clr-border) !important;">
                     <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="border-color: var(--clr-border) !important;">
-                        <span class="fw-bold small d-flex align-items-center gap-2" style="color: var(--clr-text);">
-                            <i class="bi bi-stars text-primary"></i>
-                            @(isSpanish ? "Previsualización Detectada" : "Detected Preview")
-                        </span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fw-bold small d-flex align-items-center gap-2" style="color: var(--clr-text);">
+                                <i class="bi bi-pencil-square text-primary"></i>
+                                @(isSpanish ? "Previsualización (Puedes editar antes de guardar)" : "Preview (You can edit before saving)")
+                            </span>
+                        </div>
                         <span class="badge rounded-pill bg-success bg-opacity-10 text-success fw-semibold" id="aiPreviewStatusBadge" style="font-size: 0.7rem;">
                             @(isSpanish ? "Listo para registrar" : "Ready to register")
                         </span>
@@ -134,25 +139,25 @@
                     <p class="small text-muted mb-2 fst-italic" id="aiPlanSummaryText"></p>
 
                     <!-- Expenses List -->
-                    <div id="aiPreviewExpensesContainer" class="d-none mb-2">
-                        <div class="text-muted fw-bold mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <div id="aiPreviewExpensesContainer" class="d-none mb-3">
+                        <div class="text-muted fw-bold mb-2" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
                             @(isSpanish ? "Gastos a registrar" : "Expenses to register")
                         </div>
                         <div class="d-flex flex-column gap-2" id="aiPreviewExpensesList"></div>
                     </div>
 
                     <!-- Budgets List -->
-                    <div id="aiPreviewBudgetsContainer" class="d-none mb-2">
-                        <div class="text-muted fw-bold mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <div id="aiPreviewBudgetsContainer" class="d-none mb-3">
+                        <div class="text-muted fw-bold mb-2" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
                             @(isSpanish ? "Presupuestos a configurar" : "Budgets to set")
                         </div>
                         <div class="d-flex flex-column gap-2" id="aiPreviewBudgetsList"></div>
                     </div>
 
                     <!-- Preview Action Buttons -->
-                    <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top" style="border-color: var(--clr-border) !important;">
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top" style="border-color: var(--clr-border) !important;">
                         <button type="button" class="btn btn-sm btn-outline-secondary px-3 rounded-pill" onclick="resetAiCopilotPreview()">
-                            @(isSpanish ? "Descartar" : "Discard")
+                            <i class="bi bi-x me-1"></i>@(isSpanish ? "Descartar" : "Discard")
                         </button>
                         <button type="button" class="btn btn-sm btn-success px-4 rounded-pill fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
                                 id="btnAiConfirmExecution"
@@ -240,7 +245,7 @@
     }
 }
 
-/* Glassmorphism item row in preview */
+/* Glassmorphism item row in preview - sleek, compact single-line */
 .ai-preview-item {
     background: var(--clr-surface);
     border: 1px solid var(--clr-border);
@@ -249,10 +254,81 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: background 0.15s ease;
+    transition: all 0.15s ease;
 }
 .ai-preview-item:hover {
-    background: var(--clr-surface-alt, rgba(0,0,0,0.02));
+    border-color: var(--clr-primary);
+    background: var(--clr-surface-alt, rgba(125,125,125,0.02));
+}
+
+/* Category Pill Select inside the compact item */
+.badge-category-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: rgba(99, 102, 241, 0.12);
+    color: #4f46e5;
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 50rem;
+    padding: 3px 22px 3px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234f46e5' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+    background-size: 10px 8px;
+    transition: all 0.2s ease;
+    outline: none;
+    max-width: 140px;
+}
+.badge-category-select:hover, .badge-category-select:focus {
+    background-color: rgba(99, 102, 241, 0.2);
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+}
+
+.badge-budget-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: rgba(14, 165, 233, 0.12);
+    color: #0284c7;
+    border: 1px solid rgba(14, 165, 233, 0.25);
+    border-radius: 50rem;
+    padding: 3px 22px 3px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%230284c7' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+    background-size: 10px 8px;
+    transition: all 0.2s ease;
+    outline: none;
+    max-width: 140px;
+}
+.badge-budget-select:hover, .badge-budget-select:focus {
+    background-color: rgba(14, 165, 233, 0.2);
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.25);
+}
+
+[data-bs-theme="dark"] .badge-category-select {
+    color: #a5b4fc;
+    border-color: rgba(165, 180, 252, 0.3);
+    background-color: rgba(99, 102, 241, 0.2);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23a5b4fc' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+[data-bs-theme="dark"] .badge-budget-select {
+    color: #7dd3fc;
+    border-color: rgba(125, 211, 252, 0.3);
+    background-color: rgba(14, 165, 233, 0.2);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%237dd3fc' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+.badge-category-select option, .badge-budget-select option {
+    background-color: var(--clr-surface, #ffffff);
+    color: var(--clr-text, #1e293b);
 }
 </style>
 
@@ -261,6 +337,20 @@
 let aiActivePlan = null;
 let aiSpeechRecognition = null;
 let isAiRecording = false;
+let isAiSubmitting = false;
+let speechSilenceTimer = null;
+const SILENCE_TIMEOUT_MS = 2500; // 2.5 seconds pause debounce before finishing
+
+const defaultFallbackCategories = [
+    "Food & Dining",
+    "Transportation",
+    "Entertainment",
+    "Shopping",
+    "Health",
+    "Education",
+    "Bills & Utilities",
+    "Other"
+];
 
 document.addEventListener('DOMContentLoaded', function () {
     initAiSpeechRecognition();
@@ -276,7 +366,7 @@ function initAiSpeechRecognition() {
     }
 
     aiSpeechRecognition = new SpeechRecognition();
-    aiSpeechRecognition.continuous = false;
+    aiSpeechRecognition.continuous = true; // Stay active during conversational pauses
     aiSpeechRecognition.interimResults = true;
     
     // Auto-detect language
@@ -290,17 +380,30 @@ function initAiSpeechRecognition() {
 
     aiSpeechRecognition.onresult = function (event) {
         let transcript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
+        for (let i = 0; i < event.results.length; ++i) {
             transcript += event.results[i][0].transcript;
         }
         const input = document.getElementById('aiCopilotInput');
         if (input && transcript) {
             input.value = transcript;
         }
+
+        // Reset silence timer on every utterance: gives user 2.5s of thinking/hesitation time
+        clearTimeout(speechSilenceTimer);
+        speechSilenceTimer = setTimeout(function () {
+            if (isAiRecording && aiSpeechRecognition) {
+                try {
+                    aiSpeechRecognition.stop();
+                } catch (e) {
+                    console.warn(e);
+                }
+            }
+        }, SILENCE_TIMEOUT_MS);
     };
 
     aiSpeechRecognition.onerror = function (event) {
         console.warn('Speech recognition error:', event.error);
+        clearTimeout(speechSilenceTimer);
         isAiRecording = false;
         updateMicUi(false);
         const status = document.getElementById('micStatusText');
@@ -310,11 +413,12 @@ function initAiSpeechRecognition() {
     };
 
     aiSpeechRecognition.onend = function () {
+        clearTimeout(speechSilenceTimer);
+        const wasRecording = isAiRecording;
         isAiRecording = false;
         updateMicUi(false);
         const input = document.getElementById('aiCopilotInput');
-        if (input && input.value.trim().length > 3) {
-            // Automatically analyze once speech has finished
+        if (wasRecording && input && input.value.trim().length > 3 && !isAiSubmitting) {
             submitAiCommand();
         }
     };
@@ -327,12 +431,25 @@ function toggleAiVoiceRecognition() {
     }
 
     if (isAiRecording) {
-        aiSpeechRecognition.stop();
+        clearTimeout(speechSilenceTimer);
+        isAiRecording = false;
+        updateMicUi(false);
+        try {
+            aiSpeechRecognition.stop();
+        } catch (e) {
+            console.warn(e);
+        }
+        // Immediately submit captured audio transcription if valid and not already submitting
+        const input = document.getElementById('aiCopilotInput');
+        if (input && input.value.trim().length > 3 && !isAiSubmitting) {
+            submitAiCommand();
+        }
     } else {
         const input = document.getElementById('aiCopilotInput');
         if (input) input.value = '';
         resetAiCopilotPreview();
         try {
+            clearTimeout(speechSilenceTimer);
             aiSpeechRecognition.start();
         } catch (e) {
             console.error('Failed to start speech recognition', e);
@@ -354,7 +471,7 @@ function updateMicUi(recording) {
         }
         if (ripple) ripple.classList.add('active');
         if (status) {
-            status.innerHTML = `<span class="text-danger fw-bold"><i class="bi bi-soundwave me-1"></i>@(isSpanish ? "Escuchando... habla ahora" : "Listening... speak now")</span>`;
+            status.innerHTML = `<span class="text-danger fw-bold"><i class="bi bi-soundwave me-1"></i>@(isSpanish ? "Escuchando... puedes pausar hasta 2.5s para pensar" : "Listening... you can pause up to 2.5s to think")</span>`;
         }
     } else {
         if (micBtn) micBtn.classList.remove('recording');
@@ -410,11 +527,13 @@ function setupAiGlobalShortcuts() {
 }
 
 async function submitAiCommand() {
+    if (isAiSubmitting) return;
     const input = document.getElementById('aiCopilotInput');
     const prompt = input ? input.value.trim() : '';
 
     if (!prompt) return;
 
+    isAiSubmitting = true;
     hideAiError();
     showAiLoading(true);
     resetAiCopilotPreview();
@@ -442,12 +561,16 @@ async function submitAiCommand() {
         showAiLoading(false);
         showAiError('@(isSpanish ? "Error de conexión al procesar el comando." : "Connection error while processing command.")');
         console.error(err);
+    } finally {
+        isAiSubmitting = false;
+        showAiLoading(false);
     }
 }
 
 function renderAiPlanPreview(plan) {
     const previewContainer = document.getElementById('aiCopilotPreview');
     const summaryText = document.getElementById('aiPlanSummaryText');
+    const statusBadge = document.getElementById('aiPreviewStatusBadge');
     const expensesContainer = document.getElementById('aiPreviewExpensesContainer');
     const expensesList = document.getElementById('aiPreviewExpensesList');
     const budgetsContainer = document.getElementById('aiPreviewBudgetsContainer');
@@ -458,29 +581,73 @@ function renderAiPlanPreview(plan) {
         return;
     }
 
-    summaryText.innerText = plan.summary || '@(isSpanish ? "Se han interpretado las siguientes acciones:" : "The following actions were recognized:")';
+    if (statusBadge) {
+        if (plan.source === 'Gemini') {
+            statusBadge.className = 'badge rounded-pill bg-success bg-opacity-10 text-success fw-semibold';
+            statusBadge.innerHTML = '<i class="bi bi-stars me-1"></i>Gemini AI';
+        } else {
+            statusBadge.className = 'badge rounded-pill bg-warning bg-opacity-10 text-warning fw-semibold';
+            statusBadge.innerHTML = '<i class="bi bi-cpu me-1"></i>@(isSpanish ? "Modo local" : "Local mode")';
+        }
+    }
 
-    // Render Expenses
+    summaryText.innerText = plan.summary || '@(isSpanish ? "Se han interpretado las siguientes acciones (puedes modificarlas antes de guardar):" : "The following actions were recognized (you can edit them before saving):")';
+
+    const categories = (plan.availableCategories && plan.availableCategories.length > 0)
+        ? plan.availableCategories
+        : defaultFallbackCategories;
+
+    // Render Expenses in compact single-line mold
     if (plan.expenses && plan.expenses.length > 0) {
         expensesContainer.classList.remove('d-none');
         expensesList.innerHTML = '';
         plan.expenses.forEach((exp, idx) => {
-            const formattedDate = exp.date ? new Date(exp.date).toLocaleDateString() : '';
-            const tagsBadges = (exp.tags || []).map(t => `<span class="badge bg-light text-dark border me-1" style="font-size:0.68rem;">#${t}</span>`).join('');
-            
+            let dateLabel = '';
+            if (exp.date) {
+                const dateStr = exp.date.split('T')[0];
+                const parts = dateStr.split('-').map(Number);
+                if (parts.length === 3) {
+                    const itemDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                    const now = new Date();
+                    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+
+                    if (itemDate.getTime() === today.getTime()) {
+                        dateLabel = '@(isSpanish ? "Hoy" : "Today")';
+                    } else if (itemDate.getTime() === yesterday.getTime()) {
+                        dateLabel = '@(isSpanish ? "Ayer" : "Yesterday")';
+                    } else {
+                        dateLabel = itemDate.toLocaleDateString();
+                    }
+                }
+            }
+
+            const dateBadge = dateLabel
+                ? `<span class="badge bg-secondary bg-opacity-10 text-muted border border-secondary border-opacity-25" style="font-size:0.7rem;"><i class="bi bi-calendar3 me-1"></i>${dateLabel}</span>`
+                : '';
+
+            const tagsBadges = (exp.tags || []).map(t => 
+                `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25" style="font-size:0.68rem;">#${escapeHtml(t)}</span>`
+            ).join(' ');
+
+            const categoryOptionsHtml = categories.map(c => 
+                `<option value="${c}" ${c.toLowerCase() === (exp.category || '').toLowerCase() ? 'selected' : ''}>${c}</option>`
+            ).join('');
+
             const itemEl = document.createElement('div');
             itemEl.className = 'ai-preview-item';
             itemEl.innerHTML = `
                 <div class="d-flex align-items-center gap-3">
-                    <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold" style="font-size:0.75rem;">
-                        ${exp.category || 'Other'}
-                    </span>
+                    <select class="badge-category-select" title="@(isSpanish ? "Cambiar categoría" : "Change category")" onchange="updateAiExpenseCategory(${idx}, this.value)">
+                        ${categoryOptionsHtml}
+                    </select>
                     <div>
-                        <div class="fw-semibold text-truncate" style="max-width: 240px; font-size: 0.9rem;">
-                            ${exp.description || 'Gasto'}
+                        <div class="fw-semibold text-truncate" style="max-width: 250px; font-size: 0.9rem; color: var(--clr-text);">
+                            ${escapeHtml(exp.description || 'Gasto')}
                         </div>
-                        <div class="text-muted" style="font-size: 0.75rem;">
-                            ${formattedDate} ${tagsBadges}
+                        <div class="d-flex align-items-center flex-wrap gap-1 mt-1" style="font-size: 0.75rem;">
+                            ${dateBadge}
+                            ${tagsBadges}
                         </div>
                     </div>
                 </div>
@@ -488,7 +655,7 @@ function renderAiPlanPreview(plan) {
                     <span class="fw-bold fs-6" style="color: var(--clr-text);">
                         ${Number(exp.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
-                    <button type="button" class="btn btn-link text-danger p-0 border-0 ms-1" title="Eliminar" onclick="removeAiPreviewExpense(${idx})">
+                    <button type="button" class="btn btn-link text-danger p-0 border-0 ms-1" title="@(isSpanish ? "Eliminar" : "Delete")" onclick="removeAiPreviewExpense(${idx})">
                         <i class="bi bi-trash3"></i>
                     </button>
                 </div>
@@ -499,20 +666,24 @@ function renderAiPlanPreview(plan) {
         expensesContainer.classList.add('d-none');
     }
 
-    // Render Budgets
+    // Render Budgets in compact single-line mold
     if (plan.budgets && plan.budgets.length > 0) {
         budgetsContainer.classList.remove('d-none');
         budgetsList.innerHTML = '';
         plan.budgets.forEach((b, idx) => {
+            const categoryOptionsHtml = categories.map(c => 
+                `<option value="${c}" ${c.toLowerCase() === (b.category || '').toLowerCase() ? 'selected' : ''}>${c}</option>`
+            ).join('');
+
             const itemEl = document.createElement('div');
             itemEl.className = 'ai-preview-item';
             itemEl.innerHTML = `
                 <div class="d-flex align-items-center gap-3">
-                    <span class="badge rounded-pill bg-info bg-opacity-10 text-info fw-semibold" style="font-size:0.75rem;">
-                        <i class="bi bi-pie-chart me-1"></i>${b.category || 'Other'}
-                    </span>
+                    <select class="badge-budget-select" title="@(isSpanish ? "Cambiar categoría" : "Change category")" onchange="updateAiBudgetCategory(${idx}, this.value)">
+                        ${categoryOptionsHtml}
+                    </select>
                     <div>
-                        <div class="fw-semibold" style="font-size: 0.9rem;">
+                        <div class="fw-semibold" style="font-size: 0.9rem; color: var(--clr-text);">
                             @(isSpanish ? "Presupuesto Mensual" : "Monthly Budget")
                         </div>
                         <div class="text-muted" style="font-size: 0.75rem;">
@@ -524,7 +695,7 @@ function renderAiPlanPreview(plan) {
                     <span class="fw-bold fs-6 text-info">
                         ${Number(b.monthlyLimit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
-                    <button type="button" class="btn btn-link text-danger p-0 border-0 ms-1" title="Eliminar" onclick="removeAiPreviewBudget(${idx})">
+                    <button type="button" class="btn btn-link text-danger p-0 border-0 ms-1" title="@(isSpanish ? "Eliminar" : "Delete")" onclick="removeAiPreviewBudget(${idx})">
                         <i class="bi bi-trash3"></i>
                     </button>
                 </div>
@@ -536,6 +707,19 @@ function renderAiPlanPreview(plan) {
     }
 
     previewContainer.classList.remove('d-none');
+}
+
+// In-Place Category Update Helpers
+function updateAiExpenseCategory(idx, val) {
+    if (aiActivePlan?.expenses?.[idx]) {
+        aiActivePlan.expenses[idx].category = val;
+    }
+}
+
+function updateAiBudgetCategory(idx, val) {
+    if (aiActivePlan?.budgets?.[idx]) {
+        aiActivePlan.budgets[idx].category = val;
+    }
 }
 
 function removeAiPreviewExpense(index) {
@@ -639,5 +823,15 @@ function resetAiCopilotPreview() {
     if (preview) preview.classList.add('d-none');
     if (success) success.classList.add('d-none');
     aiActivePlan = null;
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 </script>
