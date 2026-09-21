@@ -89,5 +89,40 @@ namespace Spendly.Tests.UseCases.Ai
             Assert.False(result.Success);
             Assert.Equal(0, result.CreatedExpensesCount);
         }
+
+        [Fact]
+        public async Task ParseAiCommandUseCase_Should_Populate_AvailableCategories_On_Plan()
+        {
+            // Arrange
+            const int userId = 10;
+            var user = User.Create("user@spendly.com", "hash");
+            user.UpdateProfile("User", "DOP", "America/Santo_Domingo");
+
+            _userRepo.Setup(r => r.GetByIdAsync(userId)).ReturnsAsync(user);
+            _dateTimeProvider.Setup(d => d.Now("America/Santo_Domingo")).Returns(new DateTime(2026, 9, 19, 10, 0, 0));
+            _categoryRepo.Setup(c => c.GetAllByUserAsync(userId)).ReturnsAsync(new List<Category>
+            {
+                Category.Create(userId, "Food & Dining", "bi-cup", "#ff0000"),
+                Category.Create(userId, "Health", "bi-heart", "#00ff00")
+            });
+
+            _aiService.Setup(s => s.ParseCommandAsync(
+                It.IsAny<string>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<string>(),
+                It.IsAny<IEnumerable<string>>(),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new AiFinancialPlanDto());
+
+            var useCase = new ParseAiCommandUseCase(_aiService.Object, _categoryRepo.Object, _userRepo.Object, _dateTimeProvider.Object);
+
+            // Act
+            var result = await useCase.ExecuteAsync(userId, "200 para el salón");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Contains("Food & Dining", result.AvailableCategories);
+            Assert.Contains("Health", result.AvailableCategories);
+        }
     }
 }
