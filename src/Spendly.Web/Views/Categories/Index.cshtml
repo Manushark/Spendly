@@ -32,7 +32,7 @@
             @foreach (var cat in Model)
             {
                 <div class="col-6 col-md-6 col-lg-4 cat-card-col">
-                    <div class="card shadow-sm border-0 h-100" style="border-left: 4px solid @cat.Color !important;">
+                    <div class="card shadow-sm border-0 h-100" style="border-left: 4px solid @cat.Color !important; overflow: visible !important;">
                         <div class="card-body p-2 p-sm-3 d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center gap-2 gap-sm-3 overflow-hidden">
                                 <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
@@ -188,3 +188,20 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.cat-card-col .dropdown').forEach(function (dd) {
+                dd.addEventListener('show.bs.dropdown', function () {
+                    var card = this.closest('.card');
+                    if (card) card.style.zIndex = '1050';
+                });
+                dd.addEventListener('hidden.bs.dropdown', function () {
+                    var card = this.closest('.card');
+                    if (card) card.style.zIndex = '';
+                });
+            });
+        });
+    </script>
+}
