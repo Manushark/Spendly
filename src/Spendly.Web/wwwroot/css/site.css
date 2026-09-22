@@ -861,6 +861,22 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
     border-color  var(--dur-base) var(--ease-out);
 }
 
+/* Allow dropdown menus inside cards to overflow and not be clipped */
+.card:has(.dropdown),
+.cat-card-col .card {
+  overflow: visible !important;
+}
+
+.card:has(.dropdown.show),
+.cat-card-col .card:has(.dropdown.show),
+.cat-card-col .card:focus-within {
+  z-index: 1050;
+}
+
+.cat-card-col .dropdown-menu {
+  z-index: 1060 !important;
+}
+
 /* Glass micro-shine */
 .card::before {
   content: '';
