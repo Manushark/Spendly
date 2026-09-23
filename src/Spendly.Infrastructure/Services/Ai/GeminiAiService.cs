@@ -43,7 +43,7 @@ namespace Spendly.Infrastructure.Services.Ai
                          ?? Environment.GetEnvironmentVariable("GEMINI_API_KEY")
                          ?? string.Empty;
 
-            var model = _config["Gemini:Model"] ?? "gemini-3.5-flash";
+            var model = _config["Gemini:Model"] ?? "gemini-3.5-flash-lite";
             var categoryList = validCategories.ToList();
 
             // Fallback parsing if no API key is set yet (allows development and offline testing)
@@ -151,7 +151,7 @@ STRICT RULES:
                     }
                 };
 
-                var candidateModels = new[] { model, model.Contains("lite") ? "gemini-3.5-flash" : "gemini-3.5-flash-lite", "gemini-flash-latest" }.Distinct().ToList();
+                var candidateModels = new[] { "gemini-3.5-flash-lite", model }.Distinct().ToList();
 
                 HttpResponseMessage? response = null;
                 string? lastError = null;
@@ -161,7 +161,11 @@ STRICT RULES:
                     var url = $"https://generativelanguage.googleapis.com/v1beta/models/{currentModel}:generateContent?key={apiKey}";
                     try
                     {
-                        response = await _http.PostAsJsonAsync(url, requestBody, cancellationToken);
+                        // Strict 5-second timeout per model attempt to prevent hanging on Google Cloud queue spikes
+                        using var perAttemptCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                        perAttemptCts.CancelAfter(TimeSpan.FromSeconds(5));
+
+                        response = await _http.PostAsJsonAsync(url, requestBody, perAttemptCts.Token);
                         if (response.IsSuccessStatusCode)
                         {
                             break;
@@ -169,6 +173,11 @@ STRICT RULES:
 
                         lastError = await response.Content.ReadAsStringAsync(cancellationToken);
                         _logger.LogWarning("Gemini model {Model} returned status {StatusCode}: {ErrorBody}. Trying alternative model...", currentModel, response.StatusCode, lastError);
+                    }
+                    catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+                    {
+                        lastError = $"Model {currentModel} timed out after 5 seconds.";
+                        _logger.LogWarning("Gemini API call timed out after 5 seconds for model {Model}. Trying alternative model...", currentModel);
                     }
                     catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                     {
@@ -234,7 +243,7 @@ STRICT RULES:
         {
             ["Health"] = ["salón", "salon", "peluqueria", "peluquería", "barberia", "barbería", "uñas", "spa", "peinado", "belleza", "estetica", "estética", "farmacia", "medicina", "doctor", "dentista", "salud", "médico", "clinica", "clínica", "hospital", "corte", "manicura", "pedicura", "masaje"],
             ["Transportation"] = ["uber", "taxi", "gasolina", "combustible", "peaje", "metro", "pasaje", "carro", "vehiculo", "vehículo", "transporte", "taller", "mecanico", "mecánico", "parqueo", "estacionamiento", "guagua"],
-            ["Food & Dining"] = ["almuerzo", "cena", "desayuno", "comida", "supermercado", "restaurante", "restaurant", "café", "cafe", "pizza", "hamburguesa", "colmado", "mercado", "abarrotes", "merienda", "snack", "alimentos"],
+            ["Food & Dining"] = ["almuerzo", "cena", "desayuno", "comida", "supermercado", "restaurante", "restaurant", "café", "cafe", "pizza", "hamburguesa", "colmado", "mercado", "abarrotes", "merienda", "snack", "alimentos", "chuleta", "carne", "pollo", "azafran", "azafrán", "arroz", "habichuela", "viveres", "víveres", "pan", "queso", "leche", "huevo", "huevos", "embutidos"],
             ["Entertainment"] = ["cine", "netflix", "spotify", "salida", "juego", "videojuego", "concierto", "fiesta", "bar", "discoteca", "diversion", "diversión", "hobby", "entretenimiento"],
             ["Bills & Utilities"] = ["luz", "agua", "internet", "telefono", "teléfono", "celular", "cable", "factura", "electricidad", "gas", "servicio", "servicios", "facturas"],
             ["Shopping"] = ["ropa", "zapato", "zapatos", "tienda", "mall", "camisa", "pantalon", "pantalón", "vestido", "compra", "compras"],
@@ -274,12 +283,6 @@ STRICT RULES:
                 }
             }
 
-            var exact = validCategories.FirstOrDefault(c => string.Equals(c, suggested, StringComparison.OrdinalIgnoreCase));
-            if (exact != null) return exact;
-
-            var partial = validCategories.FirstOrDefault(c => c.Contains(suggested, StringComparison.OrdinalIgnoreCase));
-            if (partial != null) return partial;
-
             return validCategories.FirstOrDefault(c =>
                 c.Equals("Other", StringComparison.OrdinalIgnoreCase) ||
                 c.Equals("Otros", StringComparison.OrdinalIgnoreCase) ||
@@ -316,7 +319,7 @@ STRICT RULES:
                 @"\by\s+hoy\b",
                 @"\badem[aá]s\b",
                 @"\by\b",
-                @"[;\.\n]+"
+                @"[;,\.\n]+"
             };
             var splitPattern = string.Join("|", clauseDelimiters);
             var rawClauses = Regex.Split(prompt, splitPattern, RegexOptions.IgnoreCase);
@@ -391,8 +394,8 @@ STRICT RULES:
                 {
                     // Try "amount before text" (e.g. "500 pesos para pagar la farmacia")
                     var amtFirst = Regex.Match(clause, @"(?:(\d+(?:[.,]\d+)?))\s*(?:pesos|d[oó]lares|usd|dop|\$)?\s*(?:en|de|para|por)?\s*([a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+)", RegexOptions.IgnoreCase);
-                    // Try "text before amount" (e.g. "cocinamos ... que fueron 30 pesos")
-                    var amtSecond = Regex.Match(clause, @"([a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+?)\s*(?:de|en|por|para|que fueron|fueron)?\s*(\$?\s*\d+(?:[.,]\d+)?)\s*(?:pesos|d[oó]lares|usd|dop|\$)?", RegexOptions.IgnoreCase);
+                    // Try "text before amount" (e.g. "dos azafranes que costaron 200 pesos" / "cocinamos ... que fueron 30 pesos")
+                    var amtSecond = Regex.Match(clause, @"([a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+?)\s*(?:de|en|por|para|que fueron|fueron|que costaron|costaron|que me costaron)?\s*(\$?\s*\d+(?:[.,]\d+)?)\s*(?:pesos|d[oó]lares|usd|dop|\$)?", RegexOptions.IgnoreCase);
 
                     if (amtFirst.Success && decimal.TryParse(amtFirst.Groups[1].Value.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var parsed1) && parsed1 > 0)
                     {
