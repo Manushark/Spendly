@@ -165,7 +165,8 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 app.UseSession();
 app.UseAuthorization();
 
-app.MapMethods("/ping", new[] { "GET", "HEAD" }, () => Results.Ok(new { status = "alive", timestamp = DateTime.UtcNow }));
+app.MapMethods("/ping", ["GET", "HEAD"], () => Results.Ok(new { status = "alive", timestamp = DateTime.UtcNow }));
+
 
 app.MapControllerRoute(
     name: "default",
