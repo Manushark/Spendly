@@ -7,6 +7,29 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.24.0] - 2026-09-25
+*(Copiloto Financiero IA multimodal con Google Gemini 3.5 Flash Lite y reconocimiento por voz nativo, interpretación de lenguaje natural con fallback local determinista, internacionalización del módulo de análisis y corrección de z-index en tarjetas de categorías)*
+
+### Añadido
+- **Copiloto Financiero IA (Spendly AI Copilot)**:
+  - Asistente multimodal para registro inteligente de gastos y presupuestos mediante lenguaje natural (texto o voz por Web Speech API).
+  - Integración con Google Gemini API (`IAiAssistantService`, `GeminiAiService`) usando arquitectura multi-modelo (`gemini-3.5-flash-lite`) y failover automático con timeout de 5 segundos.
+  - Parser local determinista offline con diccionario semántico ampliado de sinónimos y expresiones dominicanas/hispanas (alimentos, servicios, transporte, salud, etc.).
+  - Modal interactivo con previsualización en tiempo real, selector de categorías tipo píldora, mitigación de condiciones de carrera y ejecución atómica.
+  - Endpoints de backend `POST /api/ai/parse` y `POST /api/ai/execute` con rate limiting por usuario.
+  - Casos de uso de aplicación `ParseAiCommandUseCase` y `ExecuteAiPlanUseCase` con asignación automática de etiquetas y persistencia transaccional.
+  - Suite de pruebas unitarias ampliada a 124 pruebas con `AiUseCasesTests.cs` (100% aprobadas).
+- **Internacionalización de Proyecciones en Análisis (Insights)**:
+  - Nuevas cadenas de localización en inglés y español para la tarjeta de Proyección vs Ingresos (Techo de Presupuesto) y etiquetas dinámicas de Chart.js.
+
+### Arreglado
+- **Recorte y Z-Index en Tarjetas de Categorías**:
+  - Corrección de `overflow: visible !important` y elevación dinámica de `z-index` (1050/1060) en el menú de acciones de las tarjetas de categorías para evitar que el menú quede tapado o cortado.
+
+### Cambiado
+- **Modernización de Sintaxis en .NET 8**:
+  - Simplificación de inicialización de arreglos en `Program.cs` con expresiones de colección de C# 12 (`["GET", "HEAD"]`).
+
 ## [1.23.0] - 2026-09-15
 *(Modo Demo para Reclutadores con acceso rápido en 1 clic, dataset financiero preconfigurado con presupuestos en alerta y metas de ahorro, restablecimiento de datos en tiempo real, limpieza integral de advertencias de nulabilidad del compilador y actualización completa del README)*
 
