@@ -606,6 +606,30 @@
   <data name="Ins_Percentage">
     <value>Percentage</value>
   </data>
+  <data name="Ins_ProjectedVsIncome">
+    <value>Projected vs Income (Budget Ceiling)</value>
+  </data>
+  <data name="Ins_StatusOnTrack">
+    <value>✅ On Track</value>
+  </data>
+  <data name="Ins_StatusWatchOut">
+    <value>⚠️ Watch Out</value>
+  </data>
+  <data name="Ins_StatusOverBudget">
+    <value>🚨 Over Budget</value>
+  </data>
+  <data name="Ins_ProjectedLabel">
+    <value>Projected</value>
+  </data>
+  <data name="Ins_IncomeLabel">
+    <value>Income</value>
+  </data>
+  <data name="Ins_Used">
+    <value>used</value>
+  </data>
+  <data name="Ins_New">
+    <value>New</value>
+  </data>
   <!-- ═══════ Import ═══════ -->
   <data name="Imp_Title">
     <value>Import Data</value>

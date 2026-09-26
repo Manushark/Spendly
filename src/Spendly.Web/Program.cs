@@ -117,6 +117,12 @@ builder.Services.AddHttpClient<ReportApiClient>(client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+// AI Copilot API client
+builder.Services.AddHttpClient<AiApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
 // Report export (PDF + CSV)
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 builder.Services.AddSingleton<Spendly.Web.Services.ReportExportService>();
@@ -159,7 +165,8 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 app.UseSession();
 app.UseAuthorization();
 
-app.MapMethods("/ping", new[] { "GET", "HEAD" }, () => Results.Ok(new { status = "alive", timestamp = DateTime.UtcNow }));
+app.MapMethods("/ping", ["GET", "HEAD"], () => Results.Ok(new { status = "alive", timestamp = DateTime.UtcNow }));
+
 
 app.MapControllerRoute(
     name: "default",

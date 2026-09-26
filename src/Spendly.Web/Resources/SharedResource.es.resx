@@ -606,6 +606,30 @@
   <data name="Ins_Percentage">
     <value>Porcentaje</value>
   </data>
+  <data name="Ins_ProjectedVsIncome">
+    <value>Proyección vs Ingresos (Techo de Presupuesto)</value>
+  </data>
+  <data name="Ins_StatusOnTrack">
+    <value>✅ En Buen Camino</value>
+  </data>
+  <data name="Ins_StatusWatchOut">
+    <value>⚠️ Precaución</value>
+  </data>
+  <data name="Ins_StatusOverBudget">
+    <value>🚨 Fuera de Presupuesto</value>
+  </data>
+  <data name="Ins_ProjectedLabel">
+    <value>Proyectado</value>
+  </data>
+  <data name="Ins_IncomeLabel">
+    <value>Ingresos</value>
+  </data>
+  <data name="Ins_Used">
+    <value>utilizado</value>
+  </data>
+  <data name="Ins_New">
+    <value>Nuevo</value>
+  </data>
   <!-- ═══════ Importar ═══════ -->
   <data name="Imp_Title">
     <value>Importar Datos</value>
