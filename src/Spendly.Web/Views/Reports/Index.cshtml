@@ -511,16 +511,16 @@
                         <h5 class="mb-0 fw-semibold">
                             <i class="bi bi-bar-chart-line-fill text-primary me-2"></i> @L["Rep_TrendTitle"]
                         </h5>
-                        <small class="text-muted">Income vs Expenses comparison</small>
+                        <small class="text-muted">@L["Rep_IncomeVsExpensesComp"]</small>
                     </div>
                     @if (trend.Any())
                     {
                         <div class="btn-group btn-group-sm p-1 rounded-pill border" style="background: var(--clr-bg-card); border-color: var(--clr-border) !important;">
                             <button type="button" class="btn btn-sm btn-chart-mode rounded-pill px-3 fw-semibold active" id="btnModeGrouped" onclick="setTrendChartMode(false)">
-                                <i class="bi bi-bar-chart-fill me-1"></i> Grouped
+                                <i class="bi bi-bar-chart-fill me-1"></i> @L["Rep_Grouped"]
                             </button>
                             <button type="button" class="btn btn-sm btn-chart-mode rounded-pill px-3 fw-semibold" id="btnModeStacked" onclick="setTrendChartMode(true)">
-                                <i class="bi bi-distribute-vertical me-1"></i> Stacked
+                                <i class="bi bi-distribute-vertical me-1"></i> @L["Rep_Stacked"]
                             </button>
                         </div>
                     }
