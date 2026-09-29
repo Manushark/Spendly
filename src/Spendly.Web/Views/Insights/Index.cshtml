@@ -214,7 +214,7 @@
                     {
                         var pctUsed     = Math.Min(100m, (Model.ProjectedMonthEnd / Model.TotalIncome) * 100m);
                         var statusColor = pctUsed <= 80 ? "#10b981" : pctUsed <= 100 ? "#f59e0b" : "#ef4444";
-                        var statusLabel = pctUsed <= 80 ? "✅ On Track" : pctUsed <= 100 ? "⚠️ Watch Out" : "🚨 Over Budget";
+                        var statusLabel = pctUsed <= 80 ? L["Ins_StatusOnTrack"].Value : pctUsed <= 100 ? L["Ins_StatusWatchOut"].Value : L["Ins_StatusOverBudget"].Value;
                         var barGrad     = pctUsed <= 80
                             ? "linear-gradient(90deg,#10b981,#34d399,#10b981)"
                             : pctUsed <= 100
@@ -224,7 +224,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="fw-semibold" style="font-size:.82rem;">
                                     <i class="bi bi-bar-chart-steps me-1 text-primary"></i>
-                                    Projected vs Income (Budget Ceiling)
+                                    @L["Ins_ProjectedVsIncome"]
                                 </span>
                                 <span class="fw-bold rounded-pill px-3 py-1"
                                       style="font-size:.75rem; background: color-mix(in srgb, @statusColor 15%, transparent); color: @statusColor; border: 1px solid color-mix(in srgb, @statusColor 40%, transparent);">
@@ -238,10 +238,10 @@
                             </div>
                             <div class="d-flex justify-content-between">
                                 <small class="text-muted font-mono" style="font-size:.73rem;">
-                                    Projected: <strong style="color:@statusColor;">$@Model.ProjectedMonthEnd.ToString("N0")</strong>
+                                    @L["Ins_ProjectedLabel"]: <strong style="color:@statusColor;">$@Model.ProjectedMonthEnd.ToString("N0")</strong>
                                 </small>
                                 <small class="text-muted font-mono" style="font-size:.73rem;">
-                                    Income: $@Model.TotalIncome.ToString("N0") · @pctUsed.ToString("N0")% used
+                                    @L["Ins_IncomeLabel"]: $@Model.TotalIncome.ToString("N0") · @pctUsed.ToString("N0")% @L["Ins_Used"]
                                 </small>
                             </div>
                         </div>
@@ -345,7 +345,7 @@
                                                 }
                                                 else
                                                 {
-                                                    <span class="badge rounded-pill border text-muted" style="background-color: var(--clr-bg-hover); border-color: var(--clr-border) !important; font-size: 0.78rem;">New</span>
+                                                    <span class="badge rounded-pill border text-muted" style="background-color: var(--clr-bg-hover); border-color: var(--clr-border) !important; font-size: 0.78rem;">@L["Ins_New"]</span>
                                                 }
                                             </td>
                                         </tr>
@@ -502,7 +502,7 @@
                                 fontSize: '11px',
                                 padding: { left: 8, right: 8, top: 3, bottom: 3 }
                             },
-                            text: 'Projected: $' + Number(@Model.ProjectedMonthEnd.ToString(System.Globalization.CultureInfo.InvariantCulture)).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0})
+                            text: '@L["Ins_ProjectedLabel"].Value: $' + Number(@Model.ProjectedMonthEnd.ToString(System.Globalization.CultureInfo.InvariantCulture)).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0})
                         }
                     }]
                 },

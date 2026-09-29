@@ -35,6 +35,8 @@ using Spendly.Application.UseCase.Reports;
 using Spendly.Api.Security;
 using Spendly.Infrastructure.Services;
 using Spendly.Infrastructure.BackgroundServices;
+using Spendly.Application.UseCases.Ai;
+using Spendly.Infrastructure.Services.Ai;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
@@ -275,6 +277,13 @@ builder.Services.AddScoped<DemoLoginUseCase>();
 builder.Services.AddScoped<ResetDemoDataUseCase>();
 builder.Services.AddScoped<IDemoDataSeeder, DemoDataSeeder>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+
+// ────────────────────────────────────────────────────────────────
+// Use Cases — AI Copilot (Natural Language & Voice)
+// ────────────────────────────────────────────────────────────────
+builder.Services.AddHttpClient<IAiAssistantService, GeminiAiService>();
+builder.Services.AddScoped<ParseAiCommandUseCase>();
+builder.Services.AddScoped<ExecuteAiPlanUseCase>();
 
 // ── Email service: SMTP when configured, otherwise Console (dev) ──────────
 var smtpSettings = builder.Configuration.GetSection("Smtp").Get<SmtpSettings>() ?? new SmtpSettings();
