@@ -40,7 +40,7 @@ namespace Spendly.Application.UseCases.Auth
             await _tokenRepo.AddAsync(resetToken);
 
             // Construimos el link que irá en el email
-            var resetLink = $"{baseUrl}/auth/reset-password?token={rawToken}";
+            var resetLink = $"{baseUrl.TrimEnd('/')}/Auth/ResetPassword?token={rawToken}";
 
             await _emailService.SendPasswordResetEmailAsync(email, resetLink);
         }
