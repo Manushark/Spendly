@@ -3,6 +3,7 @@ namespace Spendly.Application.DTOs.Auth
     public class ForgotPasswordDto
     {
         public string Email { get; set; } = string.Empty;
+        public string? ClientBaseUrl { get; set; }
     }
 
     public class ResetPasswordDto
