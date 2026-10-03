@@ -37,13 +37,14 @@
 <body>
     
     @{
-        var isAuth = Context.Session.GetString("token") != null;
+        var isAuth = Spendly.Web.Helpers.TokenHelper.GetToken(Context) != null;
         var controller = ViewContext.RouteData.Values["Controller"]?.ToString();
+        var isAuthPage = string.Equals(controller, "Auth", StringComparison.OrdinalIgnoreCase);
         var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
         var currentUrl = Context.Request.Path + Context.Request.QueryString;
     }
 
-    @if (isAuth)
+    @if (isAuth && !isAuthPage)
     {
         <!-- Authenticated Layout with Sidebar -->
         <div class="app-wrapper">
