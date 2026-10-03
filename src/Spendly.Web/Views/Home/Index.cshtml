@@ -4,44 +4,63 @@
 }
 
 <style>
-    /* Premium Dark Theme Base */
+    /* ═══════════════════════════════════════════════════════════════
+       SPENDLY — Premium Sleek Midnight Dark Theme
+       Ajustado a un tono más claro, cálido y legible (Deep Slate #111827 / #0f172a)
+       en lugar del negro carbón (#080b11), con resplandor neón e iluminación viva.
+       ═══════════════════════════════════════════════════════════════ */
+
     body {
-        background-color: #080b11 !important;
-        color: #ffffff;
+        background-color: #111827 !important;
+        color: #F8FAFC !important;
         font-family: var(--font-body);
         overflow-x: hidden;
     }
 
     /* Navbar styling override */
-    .navbar {
-        background-color: transparent !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+    .public-navbar {
+        background: rgba(17, 24, 39, 0.85) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
     }
-    .navbar-brand, .nav-link {
+    .public-navbar .navbar-brand {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+    .public-navbar .nav-link {
+        color: #cbd5e1 !important;
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+    .public-navbar .nav-link:hover {
+        color: #ffffff !important;
+    }
+    .public-navbar .navbar-toggler i {
         color: #ffffff !important;
     }
 
-    /* Hero Section */
+    /* ── Hero Section ────────────────────────────────────────── */
     .hero-section {
         position: relative;
-        padding: 160px 0 120px;
+        padding: 150px 0 110px;
         overflow: hidden;
-        background: radial-gradient(circle at 90% 10%, rgba(99, 102, 241, 0.12) 0%, rgba(8, 11, 17, 0) 60%),
-                    radial-gradient(circle at 10% 90%, rgba(162, 155, 254, 0.08) 0%, rgba(8, 11, 17, 0) 60%);
+        background: radial-gradient(circle at 85% 15%, rgba(99, 102, 241, 0.18) 0%, rgba(17, 24, 39, 0) 60%),
+                    radial-gradient(circle at 15% 85%, rgba(16, 185, 129, 0.12) 0%, rgba(17, 24, 39, 0) 60%),
+                    linear-gradient(180deg, #111827 0%, #0d131f 100%);
     }
 
-    /* Ambient Glow Effects */
+    /* Ambient Glow Effects (iluminación ambiental viva) */
     .glow-bg {
         position: absolute;
         border-radius: 50%;
-        filter: blur(150px);
-        opacity: 0.3;
+        filter: blur(140px);
+        opacity: 0.45;
         z-index: 1;
+        pointer-events: none;
     }
-    .glow-1 { top: 15%; right: 5%; width: 450px; height: 450px; background: var(--clr-primary); }
-    .glow-2 { bottom: 10%; left: -5%; width: 350px; height: 350px; background: var(--clr-secondary); }
+    .glow-1 { top: 10%; right: 5%; width: 450px; height: 450px; background: #6366f1; }
+    .glow-2 { bottom: 5%; left: -5%; width: 380px; height: 380px; background: #10b981; opacity: 0.25; }
 
     .hero-content {
         position: relative;
@@ -51,11 +70,11 @@
     /* Animated text gradient */
     .hero-title {
         font-family: var(--font-heading);
-        font-size: 4.25rem;
+        font-size: 4.1rem;
         font-weight: 800;
         line-height: 1.15;
         margin-bottom: 24px;
-        background: linear-gradient(135deg, #ffffff 10%, #a5b4fc 50%, #818cf8 100%);
+        background: linear-gradient(135deg, #ffffff 15%, #c7d2fe 55%, #818cf8 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         letter-spacing: -1.5px;
@@ -63,17 +82,17 @@
 
     .hero-subtitle {
         font-size: 1.25rem;
-        color: rgba(255, 255, 255, 0.6);
-        margin-bottom: 44px;
+        color: #cbd5e1;
+        margin-bottom: 42px;
         font-weight: 400;
-        line-height: 1.65;
+        line-height: 1.68;
         max-width: 540px;
     }
 
     /* Smooth Floating Animation */
     @@keyframes floatingMockup {
         0% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-12px) rotate(0.3deg); }
+        50% { transform: translateY(-10px) rotate(0.2deg); }
         100% { transform: translateY(0px) rotate(0deg); }
     }
 
@@ -85,10 +104,11 @@
     
     .hero-mockup-shadow {
         position: relative;
-        border-radius: 24px;
-        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.65), 
-                    0 0 100px rgba(99, 102, 241, 0.25);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 22px;
+        box-shadow: 0 35px 70px rgba(0, 0, 0, 0.55), 
+                    0 0 90px rgba(99, 102, 241, 0.22);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #1e293b;
         overflow: hidden;
     }
     .hero-mockup-shadow img {
@@ -100,104 +120,144 @@
     /* Premium Neon-Glow Buttons */
     .btn-glow-premium {
         background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
-        color: #ffffff;
+        color: #ffffff !important;
         border: none;
         border-radius: 50px;
         padding: 16px 40px;
         font-size: 1.1rem;
         font-weight: 600;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        box-shadow: 0 10px 24px rgba(99, 102, 241, 0.3);
+        box-shadow: 0 10px 24px rgba(99, 102, 241, 0.35);
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
     }
     .btn-glow-premium:hover {
         transform: translateY(-3px);
-        box-shadow: 0 15px 30px rgba(99, 102, 241, 0.5);
-        color: #ffffff;
+        box-shadow: 0 16px 32px rgba(99, 102, 241, 0.55);
+        color: #ffffff !important;
     }
 
     .btn-glass-premium {
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.06);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        color: #ffffff;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.14);
         border-radius: 50px;
         padding: 16px 40px;
         font-size: 1.1rem;
         font-weight: 600;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
     }
     .btn-glass-premium:hover {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255, 255, 255, 0.2);
-        color: #ffffff;
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #ffffff !important;
         transform: translateY(-3px);
     }
 
-    /* Benefits Section Glassmorphism */
+    /* ── Benefits Section Glassmorphism ──────────────────────── */
     .features-section {
-        padding: 120px 0;
-        background-color: #080b11;
+        padding: 115px 0;
+        background-color: #0d131f;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
         position: relative;
     }
 
     .glass-card-premium {
-        background: rgba(255, 255, 255, 0.01);
+        background: rgba(255, 255, 255, 0.035);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        border-radius: 24px;
-        padding: 48px 36px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 22px;
+        padding: 44px 34px;
         height: 100%;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        text-align: left;
     }
     .glass-card-premium:hover {
-        background: rgba(255, 255, 255, 0.03);
-        border-color: rgba(99, 102, 241, 0.3);
-        transform: translateY(-8px);
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 
-                    inset 0 0 20px rgba(99, 102, 241, 0.05);
+        background: rgba(255, 255, 255, 0.065);
+        border-color: rgba(99, 102, 241, 0.45);
+        transform: translateY(-6px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.45), 
+                    inset 0 0 25px rgba(99, 102, 241, 0.08);
     }
 
     .feature-icon-premium {
-        width: 64px;
-        height: 64px;
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%);
-        color: var(--clr-primary-light);
+        width: 62px;
+        height: 62px;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(99, 102, 241, 0.08) 100%);
+        color: #a5b4fc;
         border-radius: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 28px;
-        margin-bottom: 28px;
-        border: 1px solid rgba(99, 102, 241, 0.2);
-        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.1);
+        font-size: 26px;
+        margin-bottom: 26px;
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
     }
 
-    /* Footer styling */
+    .glass-card-premium h4 {
+        color: #ffffff;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.35rem;
+    }
+    .glass-card-premium p {
+        color: #94a3b8;
+        font-size: 0.95rem;
+        line-height: 1.65;
+    }
+
+    /* ── CTA Banner Section ──────────────────────────────────── */
+    .cta-section {
+        padding: 95px 0;
+        background: linear-gradient(180deg, #0d131f 0%, #111827 100%);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .cta-card-wrapper {
+        background: rgba(99, 102, 241, 0.05);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        border-radius: 26px;
+        padding: 75px 28px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    /* ── Footer ──────────────────────────────────────────────── */
     .dark-footer {
-        background-color: #05070a;
-        border-top: 1px solid rgba(255, 255, 255, 0.03);
+        background-color: #0b0f19;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
         padding: 48px 0;
+        color: #94a3b8;
+    }
+    .dark-footer h5 {
+        color: #ffffff;
+        font-family: var(--font-heading);
+        font-weight: 700;
     }
 
     /* Responsive Media Queries */
     @@media (max-width: 991.98px) {
         .hero-section {
-            padding: 120px 0 80px;
+            padding: 110px 0 70px;
         }
         .hero-title {
             font-size: 3.25rem;
         }
         .hero-mockup-container {
-            margin-top: 20px;
+            margin-top: 24px;
         }
     }
 
     @@media (max-width: 767.98px) {
         .hero-section {
-            padding: 90px 0 50px;
+            padding: 85px 0 45px;
         }
         .hero-title {
             font-size: 2.25rem;
@@ -214,7 +274,7 @@
             padding: 14px 28px;
             font-size: 1rem;
             width: 100%;
-            text-align: center;
+            justify-content: center;
         }
         .features-section {
             padding: 70px 0;
@@ -224,6 +284,9 @@
         }
         .glass-card-premium {
             padding: 32px 24px;
+        }
+        .cta-card-wrapper {
+            padding: 48px 20px;
         }
     }
 
@@ -263,7 +326,7 @@
                     }
                 </div>
                 
-                <div class="mt-5 d-flex align-items-center justify-content-center justify-content-lg-start gap-3 opacity-75">
+                <div class="mt-5 d-flex align-items-center justify-content-center justify-content-lg-start gap-3">
                     <div class="d-flex text-warning">
                         <i class="bi bi-star-fill"></i>
                         <i class="bi bi-star-fill"></i>
@@ -271,7 +334,7 @@
                         <i class="bi bi-star-fill"></i>
                         <i class="bi bi-star-fill"></i>
                     </div>
-                    <span class="small text-muted">@L["Home_Trusted"]</span>
+                    <span class="small" style="color: #94a3b8; font-weight: 500;">@L["Home_Trusted"]</span>
                 </div>
             </div>
 
@@ -290,7 +353,7 @@
     <div class="container text-center">
         <div class="mb-5 pb-3">
             <h2 class="fw-bold" style="font-family: var(--font-heading); font-size: 2.75rem; color: #ffffff; letter-spacing: -0.5px;">@L["Home_SmarterWealth"]</h2>
-            <p class="text-muted" style="font-size: 1.15rem; max-width: 600px; margin: 0 auto;">
+            <p style="font-size: 1.15rem; color: #94a3b8; max-width: 600px; margin: 0 auto; line-height: 1.6;">
                 @L["Home_SmarterDesc"]
             </p>
         </div>
@@ -301,8 +364,8 @@
                     <div class="feature-icon-premium">
                         <i class="bi bi-bar-chart-fill"></i>
                     </div>
-                    <h4 class="mb-3 fw-bold text-white" style="font-family: var(--font-heading);">@L["Home_VisualAnalytics"]</h4>
-                    <p class="text-muted mb-0" style="font-size: 0.95rem; line-height: 1.6;">
+                    <h4 class="mb-3">@L["Home_VisualAnalytics"]</h4>
+                    <p class="mb-0">
                         @L["Home_VisualDesc"]
                     </p>
                 </div>
@@ -313,8 +376,8 @@
                     <div class="feature-icon-premium">
                         <i class="bi bi-bullseye"></i>
                     </div>
-                    <h4 class="mb-3 fw-bold text-white" style="font-family: var(--font-heading);">@L["Home_PrecisionBudgets"]</h4>
-                    <p class="text-muted mb-0" style="font-size: 0.95rem; line-height: 1.6;">
+                    <h4 class="mb-3">@L["Home_PrecisionBudgets"]</h4>
+                    <p class="mb-0">
                         @L["Home_PrecisionDesc"]
                     </p>
                 </div>
@@ -325,8 +388,8 @@
                     <div class="feature-icon-premium">
                         <i class="bi bi-arrow-repeat"></i>
                     </div>
-                    <h4 class="mb-3 fw-bold text-white" style="font-family: var(--font-heading);">@L["Home_Automation"]</h4>
-                    <p class="text-muted mb-0" style="font-size: 0.95rem; line-height: 1.6;">
+                    <h4 class="mb-3">@L["Home_Automation"]</h4>
+                    <p class="mb-0">
                         @L["Home_AutomationDesc"]
                     </p>
                 </div>
@@ -336,17 +399,23 @@
 </section>
 
 <!-- CALL TO ACTION -->
-<section class="py-5" style="background: linear-gradient(0deg, #05070a 0%, #080b11 100%);">
+<section class="cta-section">
     <div class="container">
-        <div class="glass-card-premium text-center" style="padding: 80px 20px; background: rgba(99, 102, 241, 0.02); border-color: rgba(99, 102, 241, 0.15);">
+        <div class="glass-card-premium text-center cta-card-wrapper">
             <h2 class="fw-bold text-white mb-3" style="font-family: var(--font-heading); font-size: 2.5rem; letter-spacing: -0.5px;">@L["Home_CTA"]</h2>
-            <p class="text-muted mb-4 fs-5" style="max-width: 600px; margin: 0 auto 32px;">
+            <p class="mb-4 fs-5" style="color: #cbd5e1; max-width: 600px; margin: 0 auto 32px; line-height: 1.6;">
                 @L["Home_CTADesc"]
             </p>
             @if (string.IsNullOrEmpty(token))
             {
                 <a asp-controller="Auth" asp-action="Register" class="btn btn-glow-premium btn-lg px-5">
-                    @L["Home_StartJourney"]
+                    @L["Home_StartJourney"] <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Dashboard" asp-action="Index" class="btn btn-glow-premium btn-lg px-5">
+                    @L["Home_OpenDashboard"] <i class="bi bi-arrow-right ms-2"></i>
                 </a>
             }
         </div>
@@ -358,9 +427,9 @@
     <div class="container">
         <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
             <i class="bi bi-wallet2 text-primary fs-4"></i>
-            <h5 class="mb-0 fw-bold text-white tracking-widest" style="font-family: var(--font-heading);">Spendly</h5>
+            <h5 class="mb-0 tracking-widest">Spendly</h5>
         </div>
-        <small class="text-muted">
+        <small style="color: #64748b;">
             © @DateTime.Now.Year Spendly Inc. @L["Home_Footer"]
         </small>
     </div>
