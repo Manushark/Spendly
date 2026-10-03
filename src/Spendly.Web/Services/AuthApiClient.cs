@@ -52,11 +52,11 @@ namespace Spendly.Web.Services
                 return (null, "Could not connect to the server. Please try again in a moment.");
             }
         }
-        public async Task<(bool Success, string? ErrorMessage)> ForgotPasswordAsync(string email)
+        public async Task<(bool Success, string? ErrorMessage)> ForgotPasswordAsync(string email, string? clientBaseUrl = null)
         {
             try
             {
-                var response = await _http.PostAsJsonAsync("api/auth/forgot-password", new { email });
+                var response = await _http.PostAsJsonAsync("api/auth/forgot-password", new { email, clientBaseUrl });
                 return response.IsSuccessStatusCode
                     ? (true, null)
                     : (false, "Something went wrong. Please try again.");

@@ -7,6 +7,17 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.24.1] - 2026-10-02
+*(Corrección crítica de notificaciones por correo SMTP, sanitización de credenciales, bloqueo de rebotes para cuentas demo y enlaces de recuperación de contraseña apuntando al frontend web)*
+
+### Arreglado
+- **Notificaciones por Correo SMTP y Recuperación de Contraseña**:
+  - Sanitización automática de credenciales SMTP en `SmtpEmailService` (eliminación de espacios en contraseñas de app de Google y recorte de espacios en blanco en host y usuario).
+  - Bloqueo y descarte preventivo de envíos a cuentas y dominios demo (`@spendly.com`, `@example.com`, `@test.com`) para evitar rebotes de entrega (`mailer-daemon`).
+  - Desactivación de preferencias de notificación por correo en la cuenta demo seeded en `DemoDataSeeder`.
+  - Corrección de enlaces en correos electrónicos de presupuestos y resumen semanal para apuntar dinámicamente al dominio web real de producción (`WebBaseUrl`).
+  - Corrección del enlace de recuperación de contraseña: `AuthController` y `AuthApiClient` ahora envían `ClientBaseUrl` a la API, resolviendo la pantalla 404 y apuntando correctamente a la vista web `/Auth/ResetPassword`.
+
 ## [1.24.0] - 2026-09-25
 *(Copiloto Financiero IA multimodal con Google Gemini 3.5 Flash Lite y reconocimiento por voz nativo, interpretación de lenguaje natural con fallback local determinista, internacionalización del módulo de análisis y corrección de z-index en tarjetas de categorías)*
 

@@ -14,17 +14,20 @@ namespace Spendly.Api.Controllers
         private readonly RegisterUseCase _registerUseCase;
         private readonly ForgotPasswordUseCase _forgotPasswordUseCase;
         private readonly ResetPasswordUseCase _resetPasswordUseCase;
+        private readonly IConfiguration _configuration;
 
         public AuthController(
             LoginUseCase loginUseCase,
             RegisterUseCase registerUseCase,
             ForgotPasswordUseCase forgotPasswordUseCase,
-            ResetPasswordUseCase resetPasswordUseCase)
+            ResetPasswordUseCase resetPasswordUseCase,
+            IConfiguration configuration)
         {
             _loginUseCase = loginUseCase;
             _registerUseCase = registerUseCase;
             _forgotPasswordUseCase = forgotPasswordUseCase;
             _resetPasswordUseCase = resetPasswordUseCase;
+            _configuration = configuration;
         }
 
         [EnableRateLimiting(RateLimitPolicies.Auth)]
@@ -47,8 +50,14 @@ namespace Spendly.Api.Controllers
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
-            // Construimos la URL base del Web app para el link del email
-            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var fallbackWebUrl = _configuration["Smtp:WebBaseUrl"]
+                ?? _configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()?.FirstOrDefault()
+                ?? "https://spendly-web-cncja8b2edephcd6.westus2-01.azurewebsites.net";
+
+            var baseUrl = !string.IsNullOrWhiteSpace(dto.ClientBaseUrl)
+                ? dto.ClientBaseUrl.TrimEnd('/')
+                : fallbackWebUrl.TrimEnd('/');
+
             await _forgotPasswordUseCase.ExecuteAsync(dto, baseUrl);
 
             // Siempre respondemos igual — no revelamos si el email existe
