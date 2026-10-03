@@ -39,12 +39,13 @@
     @{
         var isAuth = Spendly.Web.Helpers.TokenHelper.GetToken(Context) != null;
         var controller = ViewContext.RouteData.Values["Controller"]?.ToString();
-        var isAuthPage = string.Equals(controller, "Auth", StringComparison.OrdinalIgnoreCase);
+        var isPublicPage = string.Equals(controller, "Home", StringComparison.OrdinalIgnoreCase)
+                        || string.Equals(controller, "Auth", StringComparison.OrdinalIgnoreCase);
         var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
         var currentUrl = Context.Request.Path + Context.Request.QueryString;
     }
 
-    @if (isAuth && !isAuthPage)
+    @if (isAuth && !isPublicPage)
     {
         <!-- Authenticated Layout with Sidebar -->
         <div class="app-wrapper">
@@ -362,12 +363,21 @@
                                     </button>
                                 </form>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Auth" asp-action="Login">@L["Nav_Login"]</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-primary rounded-pill px-4" asp-controller="Auth" asp-action="Register">@L["Nav_GetStarted"]</a>
-                            </li>
+                            @if (isAuth)
+                            {
+                                <li class="nav-item">
+                                    <a class="btn btn-primary rounded-pill px-4" asp-controller="Dashboard" asp-action="Index">@L["Nav_Dashboard"]</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Auth" asp-action="Login">@L["Nav_Login"]</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="btn btn-primary rounded-pill px-4" asp-controller="Auth" asp-action="Register">@L["Nav_GetStarted"]</a>
+                                </li>
+                            }
                         </ul>
                     </div>
                 </div>
@@ -387,7 +397,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    @if (isAuth)
+    @if (isAuth && !isPublicPage)
     {
         <script>
             // ── Notification System ─────────────────────────────────────────
