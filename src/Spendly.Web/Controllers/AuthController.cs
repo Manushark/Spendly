@@ -18,8 +18,14 @@ namespace Spendly.Web.Controllers
             _apiBaseUrl = configuration["ApiBaseUrl"] ?? "";
         }
 
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Login()
         {
+            if (!string.IsNullOrEmpty(TokenHelper.GetToken(HttpContext)))
+            {
+                return RedirectToAction("Index", "Expenses");
+            }
+
             ViewBag.ApiBaseUrl = _apiBaseUrl;
             return View(new LoginViewModel());
         }
@@ -45,8 +51,14 @@ namespace Spendly.Web.Controllers
             return RedirectToAction("Index", "Expenses");
         }
 
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Register()
         {
+            if (!string.IsNullOrEmpty(TokenHelper.GetToken(HttpContext)))
+            {
+                return RedirectToAction("Index", "Expenses");
+            }
+
             ViewBag.ApiBaseUrl = _apiBaseUrl;
             return View(new RegisterViewModel());
         }
@@ -84,7 +96,16 @@ namespace Spendly.Web.Controllers
             return RedirectToAction("Login");
         }
 
-        public IActionResult ForgotPassword() => View();
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ForgotPassword()
+        {
+            if (!string.IsNullOrEmpty(TokenHelper.GetToken(HttpContext)))
+            {
+                return RedirectToAction("Index", "Expenses");
+            }
+
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(string email)
@@ -102,8 +123,14 @@ namespace Spendly.Web.Controllers
             return View();
         }
 
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult ResetPassword(string token)
         {
+            if (!string.IsNullOrEmpty(TokenHelper.GetToken(HttpContext)))
+            {
+                return RedirectToAction("Index", "Expenses");
+            }
+
             if (string.IsNullOrWhiteSpace(token))
                 return RedirectToAction("Login");
 
