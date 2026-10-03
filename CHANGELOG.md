@@ -7,6 +7,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.24.1] - 2026-10-02
+*(Corrección crítica de notificaciones por correo SMTP, sanitización de credenciales, bloqueo de rebotes para cuentas demo y enlaces de recuperación de contraseña apuntando al frontend web)*
+
 ### Arreglado
 - **Notificaciones por Correo SMTP y Recuperación de Contraseña**:
   - Sanitización automática de credenciales SMTP en `SmtpEmailService` (eliminación de espacios en contraseñas de app de Google y recorte de espacios en blanco en host y usuario).
