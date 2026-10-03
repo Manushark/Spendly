@@ -95,13 +95,17 @@ namespace Spendly.Web.Controllers
                 return View();
             }
 
-            await _authApi.ForgotPasswordAsync(email);
+            var clientBaseUrl = $"{Request.Scheme}://{Request.Host}";
+            await _authApi.ForgotPasswordAsync(email, clientBaseUrl);
 
             // Siempre mostramos el mismo mensaje — no revelamos si el email existe
             ViewBag.Success = "If that email is registered, you will receive a reset link shortly. Check your inbox (and spam folder).";
             return View();
         }
 
+        [HttpGet]
+        [Route("Auth/ResetPassword")]
+        [Route("auth/reset-password")]
         public IActionResult ResetPassword(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
@@ -112,6 +116,8 @@ namespace Spendly.Web.Controllers
         }
 
         [HttpPost]
+        [Route("Auth/ResetPassword")]
+        [Route("auth/reset-password")]
         public async Task<IActionResult> ResetPassword(string token, string newPassword, string confirmPassword)
         {
             var (success, error) = await _authApi.ResetPasswordAsync(token, newPassword, confirmPassword);
