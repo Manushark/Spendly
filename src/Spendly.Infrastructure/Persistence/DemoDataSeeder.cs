@@ -27,6 +27,7 @@ namespace Spendly.Infrastructure.Persistence
                 var passwordHash = BCrypt.Net.BCrypt.HashPassword("DemoPassword123!");
                 user = User.Create(DemoEmail, passwordHash);
                 user.UpdateProfile("Recruiter Demo User", "USD", "America/New_York");
+                user.UpdateNotificationPreferences(false, false, false);
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
 
@@ -35,6 +36,13 @@ namespace Spendly.Infrastructure.Persistence
             }
             else
             {
+                // Ensure notification preferences are off for demo user to avoid bounce emails
+                if (user.EmailNotificationsEnabled || user.BudgetAlertEmailEnabled || user.WeeklySummaryEmailEnabled)
+                {
+                    user.UpdateNotificationPreferences(false, false, false);
+                    await _context.SaveChangesAsync();
+                }
+
                 // Ensure the user has categories
                 var categoryCount = await _context.Categories.CountAsync(c => c.UserId == user.Id);
                 if (categoryCount == 0)
@@ -70,6 +78,13 @@ namespace Spendly.Infrastructure.Persistence
 
             var existingGoals = await _context.SavingsGoals.Where(s => s.UserId == userId).ToListAsync();
             _context.SavingsGoals.RemoveRange(existingGoals);
+
+            // Ensure notification preferences remain disabled for demo user
+            var demoUser = await _context.Users.FindAsync(userId);
+            if (demoUser != null && (demoUser.EmailNotificationsEnabled || demoUser.BudgetAlertEmailEnabled || demoUser.WeeklySummaryEmailEnabled))
+            {
+                demoUser.UpdateNotificationPreferences(false, false, false);
+            }
 
             await _context.SaveChangesAsync();
 

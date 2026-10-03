@@ -22,11 +22,17 @@ namespace Spendly.Infrastructure.Services
 
         // ── Helpers ─────────────────────────────────────────────────────────
 
+        private static readonly string[] DummyDomains = { "@spendly.com", "@example.com", "@test.com" };
+
         private SmtpClient BuildClient()
         {
-            return new SmtpClient(_settings.Host, _settings.Port)
+            var host = _settings.Host?.Trim() ?? string.Empty;
+            var username = _settings.Username?.Trim() ?? string.Empty;
+            var password = _settings.Password?.Replace(" ", "").Trim() ?? string.Empty;
+
+            return new SmtpClient(host, _settings.Port)
             {
-                Credentials = new NetworkCredential(_settings.Username, _settings.Password),
+                Credentials = new NetworkCredential(username, password),
                 EnableSsl    = _settings.EnableSsl
             };
         }
@@ -35,7 +41,7 @@ namespace Spendly.Infrastructure.Services
         {
             var msg = new MailMessage
             {
-                From       = new MailAddress(_settings.FromEmail, _settings.FromName),
+                From       = new MailAddress(_settings.FromEmail?.Trim() ?? string.Empty, _settings.FromName?.Trim() ?? "Spendly"),
                 Subject    = subject,
                 IsBodyHtml = true
             };
@@ -43,10 +49,25 @@ namespace Spendly.Infrastructure.Services
             return msg;
         }
 
+        private string GetWebUrl(string path)
+        {
+            var baseUri = string.IsNullOrWhiteSpace(_settings.WebBaseUrl)
+                ? "https://spendly-web-cncja8b2edephcd6.westus2-01.azurewebsites.net"
+                : _settings.WebBaseUrl.Trim().TrimEnd('/');
+            return $"{baseUri}/{path.TrimStart('/')}";
+        }
+
         private async Task SendAsync(MailMessage message)
         {
             try
             {
+                var recipient = message.To.FirstOrDefault()?.Address ?? string.Empty;
+                if (DummyDomains.Any(d => recipient.EndsWith(d, StringComparison.OrdinalIgnoreCase)))
+                {
+                    _logger.LogInformation("[SMTP] Skipped sending email to demo/test recipient: {To}", recipient);
+                    return;
+                }
+
                 using var client = BuildClient();
                 await client.SendMailAsync(message);
                 _logger.LogInformation("[SMTP] Email sent to {To}: {Subject}", message.To, message.Subject);
@@ -87,6 +108,7 @@ namespace Spendly.Infrastructure.Services
                 ? $"Budget Exceeded — {category}"
                 : $"Budget Warning (80%) — {category}";
 
+            var budgetsUrl = GetWebUrl("Budgets");
             var msg  = BaseMessage(toEmail, subject);
             msg.Body = $@"
 <div style='font-family:sans-serif;max-width:520px;margin:auto;padding:32px;background:#0f1117;color:#e2e8f0;border-radius:12px;'>
@@ -99,7 +121,7 @@ namespace Spendly.Infrastructure.Services
       <div style='background:{color};border-radius:4px;height:8px;width:{Math.Min((double)percentageUsed, 100):N0}%;'></div>
     </div>
   </div>
-  <a href='https://spendly.azurewebsites.net/budgets' style='display:inline-block;padding:12px 28px;background:#6c5ce7;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;'>
+  <a href='{budgetsUrl}' style='display:inline-block;padding:12px 28px;background:#6c5ce7;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;'>
     View Budgets
   </a>
   <hr style='border-color:#2d3748;margin:24px 0;'/>
@@ -113,6 +135,7 @@ namespace Spendly.Infrastructure.Services
             decimal weekTotal, decimal monthTotal,
             string topCategory, int transactionCount)
         {
+            var dashboardUrl = GetWebUrl("Dashboard");
             var msg  = BaseMessage(toEmail, "Your Spendly Weekly Summary 📊");
             msg.Body = $@"
 <div style='font-family:sans-serif;max-width:520px;margin:auto;padding:32px;background:#0f1117;color:#e2e8f0;border-radius:12px;'>
@@ -138,7 +161,7 @@ namespace Spendly.Infrastructure.Services
       </tr>
     </table>
   </div>
-  <a href='https://spendly.azurewebsites.net/dashboard' style='display:inline-block;padding:12px 28px;background:#6c5ce7;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;'>
+  <a href='{dashboardUrl}' style='display:inline-block;padding:12px 28px;background:#6c5ce7;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;'>
     View Dashboard
   </a>
   <hr style='border-color:#2d3748;margin:24px 0;'/>
@@ -151,12 +174,13 @@ namespace Spendly.Infrastructure.Services
     /// <summary>Modelo de configuración SMTP leído desde appsettings.json → "Smtp" section.</summary>
     public class SmtpSettings
     {
-        public string Host      { get; set; } = string.Empty;
-        public int    Port      { get; set; } = 587;
-        public bool   EnableSsl { get; set; } = true;
-        public string Username  { get; set; } = string.Empty;
-        public string Password  { get; set; } = string.Empty;
-        public string FromEmail { get; set; } = string.Empty;
-        public string FromName  { get; set; } = "Spendly";
+        public string Host       { get; set; } = string.Empty;
+        public int    Port       { get; set; } = 587;
+        public bool   EnableSsl  { get; set; } = true;
+        public string Username   { get; set; } = string.Empty;
+        public string Password   { get; set; } = string.Empty;
+        public string FromEmail  { get; set; } = string.Empty;
+        public string FromName   { get; set; } = "Spendly";
+        public string WebBaseUrl { get; set; } = "https://spendly-web-cncja8b2edephcd6.westus2-01.azurewebsites.net";
     }
 }
