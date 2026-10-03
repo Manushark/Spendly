@@ -1,6 +1,5 @@
 @{
     ViewData["Title"] = "Spendly - Smart Expense Tracking";
-    var token = Spendly.Web.Helpers.TokenHelper.GetToken(Context);
 }
 
 <style>
@@ -309,21 +308,12 @@
                     @L["Home_HeroDesc"]
                 </p>
                 <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
-                    @if (string.IsNullOrEmpty(token))
-                    {
-                        <a asp-controller="Auth" asp-action="Register" class="btn btn-glow-premium">
-                            @L["Home_CreateAccount"] <i class="bi bi-arrow-right ms-2"></i>
-                        </a>
-                        <a asp-controller="Auth" asp-action="Login" class="btn btn-glass-premium">
-                            @L["Auth_SignIn"]
-                        </a>
-                    }
-                    else
-                    {
-                        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-glow-premium">
-                            @L["Home_OpenDashboard"] <i class="bi bi-arrow-right ms-2"></i>
-                        </a>
-                    }
+                    <a asp-controller="Auth" asp-action="Register" class="btn btn-glow-premium">
+                        @L["Home_CreateAccount"] <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                    <a asp-controller="Auth" asp-action="Login" class="btn btn-glass-premium">
+                        @L["Auth_SignIn"]
+                    </a>
                 </div>
                 
                 <div class="mt-5 d-flex align-items-center justify-content-center justify-content-lg-start gap-3">
@@ -406,18 +396,9 @@
             <p class="mb-4 fs-5" style="color: #cbd5e1; max-width: 600px; margin: 0 auto 32px; line-height: 1.6;">
                 @L["Home_CTADesc"]
             </p>
-            @if (string.IsNullOrEmpty(token))
-            {
-                <a asp-controller="Auth" asp-action="Register" class="btn btn-glow-premium btn-lg px-5">
-                    @L["Home_StartJourney"] <i class="bi bi-arrow-right ms-2"></i>
-                </a>
-            }
-            else
-            {
-                <a asp-controller="Dashboard" asp-action="Index" class="btn btn-glow-premium btn-lg px-5">
-                    @L["Home_OpenDashboard"] <i class="bi bi-arrow-right ms-2"></i>
-                </a>
-            }
+            <a asp-controller="Auth" asp-action="Register" class="btn btn-glow-premium btn-lg px-5">
+                @L["Home_StartJourney"] <i class="bi bi-arrow-right ms-2"></i>
+            </a>
         </div>
     </div>
 </section>
