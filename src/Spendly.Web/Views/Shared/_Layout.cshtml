@@ -363,21 +363,12 @@
                                     </button>
                                 </form>
                             </li>
-                            @if (isAuth)
-                            {
-                                <li class="nav-item">
-                                    <a class="btn btn-primary rounded-pill px-4" asp-controller="Dashboard" asp-action="Index">@L["Nav_Dashboard"]</a>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Auth" asp-action="Login">@L["Nav_Login"]</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="btn btn-primary rounded-pill px-4" asp-controller="Auth" asp-action="Register">@L["Nav_GetStarted"]</a>
-                                </li>
-                            }
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Auth" asp-action="Login">@L["Nav_Login"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary rounded-pill px-4" asp-controller="Auth" asp-action="Register">@L["Nav_GetStarted"]</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
