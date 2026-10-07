@@ -7,6 +7,23 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Añadido
+- **Alternador de Modo de Gráfica Dual en Dashboard y Reportes**:
+  - Selector interactivo tipo píldora para alternar sin recargar entre gráfico de barras comparativo mensual y gráfico de línea de tendencia diaria de 30 días.
+  - Cadenas de localización completas en español e inglés para etiquetas de botones y subtítulos de gráficos.
+  - Clases utilitarias reutilizables `.chart-toggle-group` y `.chart-toggle-btn` en `site.css`.
+
+### Arreglado
+- **Aislamiento de Vistas Públicas en Layout Principal**:
+  - Exclusión explícita de `Home` y `Auth` del contenedor autenticado con barra lateral (`@if (isAuth && !isPublicPage)`), previniendo que la landing page y formularios de login queden incrustados dentro del menú lateral al navegar hacia atrás en el navegador.
+  - Restauración incondicional de los botones de llamada a la acción ("Crear Cuenta" e "Iniciar Sesión") en la landing page y en la barra de navegación pública.
+  - Remoción de listeners `pageshow` con `window.location.reload()` en Login, Registro y Home para evitar el error `ERR_CACHE_MISS` y advertencias de reenvío de formulario en navegadores Chromium.
+  - Restricción de scripts del panel (sondeo de notificaciones periódicas, modales de Copilot AI y atajos de teclado) exclusivamente a páginas privadas de la aplicación.
+
+### Cambiado
+- **Rediseño de Landing Page**:
+  - Aplicación del tema oscuro refinado *Sleek Midnight Slate* (`#111827` / `#0f172a`) con resplandor neón ambiental, tarjetas glassmorphic y tipografía optimizada.
+
 ## [1.24.1] - 2026-10-02
 *(Corrección crítica de notificaciones por correo SMTP, sanitización de credenciales, bloqueo de rebotes para cuentas demo y enlaces de recuperación de contraseña apuntando al frontend web)*
 
