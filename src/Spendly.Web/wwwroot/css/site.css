@@ -877,6 +877,22 @@ h1, .h1, h2, .h2 { font-family: var(--font-heading); letter-spacing: -0.01em; }
   z-index: 1060 !important;
 }
 
+/* ── Chart Mode Switcher ── */
+.btn-chart-mode {
+  border: none;
+  background: transparent;
+  color: var(--clr-text-muted);
+  transition: all 0.2s ease;
+}
+.btn-chart-mode:hover {
+  color: var(--clr-text);
+}
+.btn-chart-mode.active {
+  background: var(--clr-primary) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px var(--clr-primary-semi);
+}
+
 /* Glass micro-shine */
 .card::before {
   content: '';
