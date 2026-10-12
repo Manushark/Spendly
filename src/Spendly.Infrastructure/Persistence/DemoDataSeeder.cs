@@ -152,7 +152,7 @@ namespace Spendly.Infrastructure.Persistence
             // 4. Previous Month Expenses (Gives depth to month-over-month charts and trendlines)
             var prevMonthDate = now.AddMonths(-1);
             var prevMonthDaysInMonth = DateTime.DaysInMonth(prevMonthDate.Year, prevMonthDate.Month);
-            var prevMonthMid = new DateTime(prevMonthDate.Year, prevMonthDate.Month, Math.Min(15, prevMonthDaysInMonth));
+            var prevMonthMid = new DateTime(prevMonthDate.Year, prevMonthDate.Month, Math.Min(15, prevMonthDaysInMonth), 0, 0, 0, DateTimeKind.Utc);
 
             var previousMonthExpenses = new List<Expense>
             {
