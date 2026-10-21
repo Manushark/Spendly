@@ -277,7 +277,7 @@
                         <small class="text-muted text-truncate" style="max-width:85px;" title="@Model.TopCategory">
                             <i class="bi bi-tag me-1"></i>@Model.TopCategory
                         </small>
-                        <small class="text-muted font-mono">@Model.TotalExpensesCount txs</small>
+                        <small class="text-muted font-mono">@Model.TotalExpensesCount @L["Dash_Transactions"]</small>
                     </div>
                 </div>
             </div>
@@ -288,15 +288,28 @@
         <div class="row g-3 mb-4">
             <div class="col-lg-8">
                 <div class="glass-card h-100">
-                    <div class="card-header border-0 bg-transparent pt-4 pb-2 px-4 d-flex align-items-center justify-content-between">
+                    <div class="card-header border-0 bg-transparent pt-4 pb-2 px-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div class="d-flex align-items-center gap-2">
-                            <i class="bi bi-bar-chart-line text-primary"></i>
-                            <h5 class="mb-0 fw-semibold">Income vs Expenses</h5>
+                            <i class="bi bi-bar-chart-line text-primary" id="trendChartIcon"></i>
+                            <h5 class="mb-0 fw-semibold" id="trendChartTitle">@L["Dash_IncomeVsExpenses"]</h5>
                         </div>
-                        <div class="d-flex align-items-center gap-3" style="font-size:.78rem;">
-                            <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#10b981;display:inline-block;"></span><span class="text-muted">Income</span></span>
-                            <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#ef4444;display:inline-block;"></span><span class="text-muted">This month</span></span>
-                            <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#94a3b8;display:inline-block;"></span><span class="text-muted">Last month</span></span>
+                        <div class="d-flex align-items-center flex-wrap gap-3">
+                            <div class="btn-group btn-group-sm p-1 rounded-pill border" style="background: var(--clr-bg-card, var(--clr-surface-2)); border-color: var(--clr-border) !important;">
+                                <button type="button" class="btn btn-sm btn-chart-mode rounded-pill px-3 fw-semibold active" id="btnDashMonthly" onclick="setDashboardChartMode('monthly')">
+                                    <i class="bi bi-bar-chart-fill me-1"></i> @L["Dash_Monthly"]
+                                </button>
+                                <button type="button" class="btn btn-sm btn-chart-mode rounded-pill px-3 fw-semibold" id="btnDashDaily" onclick="setDashboardChartMode('daily')">
+                                    <i class="bi bi-graph-up me-1"></i> @L["Dash_DailyTrend"]
+                                </button>
+                            </div>
+                            <div id="dashLegendMonthly" class="d-flex align-items-center gap-3" style="font-size:.78rem;">
+                                <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#10b981;display:inline-block;"></span><span class="text-muted">@L["Dash_Income"]</span></span>
+                                <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#ef4444;display:inline-block;"></span><span class="text-muted">@L["Dash_ThisMonth"]</span></span>
+                                <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#94a3b8;display:inline-block;"></span><span class="text-muted">@L["Dash_LastMonth"]</span></span>
+                            </div>
+                            <div id="dashLegendDaily" class="d-none align-items-center gap-2" style="font-size:.78rem;">
+                                <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#3b82f6;display:inline-block;"></span><span class="text-muted">@L["Dash_DailyExpenses"]</span></span>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body pt-2 px-3 pb-3">
@@ -489,16 +502,21 @@
     @if (hasData)
     {
         <text>
-        // ── Income vs Expenses grouped bar chart ──────────────────────
-        const incomeVal   = @Model.CurrentMonthIncome.ToString(System.Globalization.CultureInfo.InvariantCulture);
-        const expenseCurr = @Model.CurrentMonthTotal.ToString(System.Globalization.CultureInfo.InvariantCulture);
-        const expensePrev = @Model.PreviousMonthTotal.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        // ── Data inputs ───────────────────────────────────────────────
+        const incomeVal    = @Model.CurrentMonthIncome.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        const expenseCurr  = @Model.CurrentMonthTotal.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        const expensePrev  = @Model.PreviousMonthTotal.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        const dailyLabels  = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DailyTrend.Select(d => d.Date)));
+        const dailyAmounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DailyTrend.Select(d => d.Amount)));
 
-        // Month labels
-        const now       = new Date();
-        const thisMonth = now.toLocaleString('default', { month: 'long' });
-        const prevDate  = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const prevMonth = prevDate.toLocaleString('default', { month: 'long' });
+        // Month labels formatted according to active culture
+        const uiCulture    = '@System.Globalization.CultureInfo.CurrentUICulture.Name';
+        const now          = new Date();
+        const thisMonthRaw = now.toLocaleString(uiCulture || 'default', { month: 'long' });
+        const thisMonth    = thisMonthRaw.charAt(0).toUpperCase() + thisMonthRaw.slice(1);
+        const prevDate     = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const prevMonthRaw = prevDate.toLocaleString(uiCulture || 'default', { month: 'long' });
+        const prevMonth    = prevMonthRaw.charAt(0).toUpperCase() + prevMonthRaw.slice(1);
 
         function getChartColors() {
             const dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
@@ -512,82 +530,196 @@
             };
         }
 
-        let c = getChartColors();
-        const ctx = document.getElementById('dailyTrendChart').getContext('2d');
+        let trendChart = null;
+        let currentChartMode = 'monthly';
 
-        const trendChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: [prevMonth, thisMonth],
-                datasets: [
-                    {
-                        label: 'Income',
-                        data: [0, incomeVal],
-                        backgroundColor: 'rgba(16,185,129,.75)',
-                        borderColor: '#10b981',
-                        borderWidth: 2,
-                        borderRadius: 8,
-                        borderSkipped: false
-                    },
-                    {
-                        label: 'Expenses',
-                        data: [expensePrev, expenseCurr],
-                        backgroundColor: ['rgba(148,163,184,.55)', 'rgba(239,68,68,.75)'],
-                        borderColor: ['#94a3b8', '#ef4444'],
-                        borderWidth: 2,
-                        borderRadius: 8,
-                        borderSkipped: false
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { intersect: false, mode: 'index' },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: c.tooltipBg,
-                        titleColor: c.tooltipTitle,
-                        bodyColor:  c.tooltipBody,
-                        borderColor: c.tooltipBorder,
-                        borderWidth: 1, padding: 12, cornerRadius: 12,
-                        titleFont: { family: 'Inter', size: 13, weight: 'bold' },
-                        bodyFont:  { family: 'JetBrains Mono', size: 12 },
-                        callbacks: {
-                            label: ctx2 => ` ${ctx2.dataset.label}: $${ctx2.parsed.y.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid:  { color: c.grid, drawBorder: false },
-                        ticks: {
-                            color: c.ticks,
-                            font: { family: 'JetBrains Mono', size: 11 },
-                            callback: v => '$' + v.toLocaleString()
-                        }
-                    },
-                    x: {
-                        grid:  { display: false },
-                        ticks: { color: c.ticks, font: { family: 'Inter', size: 12, weight: '600' } }
-                    }
+        function renderDashboardChart(mode) {
+            currentChartMode = mode;
+            const isMonthly = mode === 'monthly';
+
+            document.getElementById('btnDashMonthly')?.classList.toggle('active', isMonthly);
+            document.getElementById('btnDashDaily')?.classList.toggle('active', !isMonthly);
+
+            const legendMonthly = document.getElementById('dashLegendMonthly');
+            const legendDaily = document.getElementById('dashLegendDaily');
+            if (legendMonthly && legendDaily) {
+                if (isMonthly) {
+                    legendMonthly.classList.remove('d-none');
+                    legendMonthly.classList.add('d-flex');
+                    legendDaily.classList.remove('d-flex');
+                    legendDaily.classList.add('d-none');
+                } else {
+                    legendMonthly.classList.remove('d-flex');
+                    legendMonthly.classList.add('d-none');
+                    legendDaily.classList.remove('d-none');
+                    legendDaily.classList.add('d-flex');
                 }
             }
-        });
+
+            const titleEl = document.getElementById('trendChartTitle');
+            const iconEl = document.getElementById('trendChartIcon');
+            if (titleEl) {
+                titleEl.textContent = isMonthly ? '@L["Dash_IncomeVsExpenses"].Value' : '@L["Dash_DailySpending"].Value';
+            }
+            if (iconEl) {
+                iconEl.className = isMonthly ? 'bi bi-bar-chart-line text-primary' : 'bi bi-graph-up text-primary';
+            }
+
+            if (trendChart) {
+                trendChart.destroy();
+            }
+
+            const c = getChartColors();
+            const canvas = document.getElementById('dailyTrendChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            if (isMonthly) {
+                trendChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: [prevMonth, thisMonth],
+                        datasets: [
+                            {
+                                label: '@L["Dash_Income"].Value',
+                                data: [0, incomeVal],
+                                backgroundColor: 'rgba(16,185,129,.75)',
+                                borderColor: '#10b981',
+                                borderWidth: 2,
+                                borderRadius: 8,
+                                borderSkipped: false
+                            },
+                            {
+                                label: '@L["Dash_Expenses"].Value',
+                                data: [expensePrev, expenseCurr],
+                                backgroundColor: ['rgba(148,163,184,.55)', 'rgba(239,68,68,.75)'],
+                                borderColor: ['#94a3b8', '#ef4444'],
+                                borderWidth: 2,
+                                borderRadius: 8,
+                                borderSkipped: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { intersect: false, mode: 'index' },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: c.tooltipBg,
+                                titleColor: c.tooltipTitle,
+                                bodyColor:  c.tooltipBody,
+                                borderColor: c.tooltipBorder,
+                                borderWidth: 1, padding: 12, cornerRadius: 12,
+                                titleFont: { family: 'Inter', size: 13, weight: 'bold' },
+                                bodyFont:  { family: 'JetBrains Mono', size: 12 },
+                                callbacks: {
+                                    label: ctx2 => ` ${ctx2.dataset.label}: $${ctx2.parsed.y.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid:  { color: c.grid, drawBorder: false },
+                                ticks: {
+                                    color: c.ticks,
+                                    font: { family: 'JetBrains Mono', size: 11 },
+                                    callback: v => '$' + v.toLocaleString()
+                                }
+                            },
+                            x: {
+                                grid:  { display: false },
+                                ticks: { color: c.ticks, font: { family: 'Inter', size: 12, weight: '600' } }
+                            }
+                        }
+                    }
+                });
+            } else {
+                // Line chart: Daily expenses with smooth curve and area fill
+                const gradient = ctx.createLinearGradient(0, 0, 0, 280);
+                gradient.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
+                gradient.addColorStop(1, 'rgba(59, 130, 246, 0.00)');
+
+                trendChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dailyLabels,
+                        datasets: [
+                            {
+                                label: '@L["Dash_DailyExpenses"].Value',
+                                data: dailyAmounts,
+                                borderColor: '#3b82f6',
+                                borderWidth: 2.5,
+                                backgroundColor: gradient,
+                                fill: true,
+                                tension: 0.35,
+                                pointBackgroundColor: '#3b82f6',
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 1.5,
+                                pointRadius: 3,
+                                pointHoverRadius: 6,
+                                pointHoverBackgroundColor: '#2563eb',
+                                pointHoverBorderColor: '#ffffff',
+                                pointHoverBorderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { intersect: false, mode: 'index' },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: c.tooltipBg,
+                                titleColor: c.tooltipTitle,
+                                bodyColor:  c.tooltipBody,
+                                borderColor: c.tooltipBorder,
+                                borderWidth: 1, padding: 12, cornerRadius: 12,
+                                titleFont: { family: 'Inter', size: 13, weight: 'bold' },
+                                bodyFont:  { family: 'JetBrains Mono', size: 12 },
+                                callbacks: {
+                                    label: ctx2 => ` @L["Dash_DailyExpenses"].Value: $${ctx2.parsed.y.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid:  { color: c.grid, drawBorder: false },
+                                ticks: {
+                                    color: c.ticks,
+                                    font: { family: 'JetBrains Mono', size: 11 },
+                                    callback: v => '$' + v.toLocaleString()
+                                }
+                            },
+                            x: {
+                                grid:  { display: false },
+                                ticks: {
+                                    color: c.ticks,
+                                    font: { family: 'Inter', size: 11 },
+                                    maxTicksLimit: 10
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        window.setDashboardChartMode = function(mode) {
+            renderDashboardChart(mode);
+        };
+
+        // Initial render
+        renderDashboardChart('monthly');
 
         window.addEventListener('themeChanged', () => {
-            c = getChartColors();
-            const s = trendChart.options.scales;
-            s.y.grid.color  = c.grid;
-            s.y.ticks.color = c.ticks;
-            s.x.ticks.color = c.ticks;
-            trendChart.options.plugins.tooltip.backgroundColor = c.tooltipBg;
-            trendChart.options.plugins.tooltip.titleColor      = c.tooltipTitle;
-            trendChart.options.plugins.tooltip.bodyColor       = c.tooltipBody;
-            trendChart.options.plugins.tooltip.borderColor     = c.tooltipBorder;
-            trendChart.update();
+            if (trendChart) {
+                renderDashboardChart(currentChartMode);
+            }
         });
         </text>
     }

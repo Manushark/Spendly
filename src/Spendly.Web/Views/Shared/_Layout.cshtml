@@ -37,13 +37,15 @@
 <body>
     
     @{
-        var isAuth = Context.Session.GetString("token") != null;
+        var isAuth = Spendly.Web.Helpers.TokenHelper.GetToken(Context) != null;
         var controller = ViewContext.RouteData.Values["Controller"]?.ToString();
+        var isPublicPage = string.Equals(controller, "Home", StringComparison.OrdinalIgnoreCase)
+                        || string.Equals(controller, "Auth", StringComparison.OrdinalIgnoreCase);
         var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
         var currentUrl = Context.Request.Path + Context.Request.QueryString;
     }
 
-    @if (isAuth)
+    @if (isAuth && !isPublicPage)
     {
         <!-- Authenticated Layout with Sidebar -->
         <div class="app-wrapper">
@@ -386,7 +388,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    @if (isAuth)
+    @if (isAuth && !isPublicPage)
     {
         <script>
             // ── Notification System ─────────────────────────────────────────

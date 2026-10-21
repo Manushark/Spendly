@@ -322,6 +322,24 @@
   <data name="Dash_IncomeVsExpenses">
     <value>Income vs. Expenses</value>
   </data>
+  <data name="Dash_Income">
+    <value>Income</value>
+  </data>
+  <data name="Dash_Expenses">
+    <value>Expenses</value>
+  </data>
+  <data name="Dash_LastMonth">
+    <value>Last Month</value>
+  </data>
+  <data name="Dash_Monthly">
+    <value>Monthly</value>
+  </data>
+  <data name="Dash_DailyTrend">
+    <value>Daily Trend</value>
+  </data>
+  <data name="Dash_DailyExpenses">
+    <value>Daily Expenses</value>
+  </data>
   <!-- ═══════ Expenses ═══════ -->
   <data name="Exp_Title">
     <value>Expenses</value>
@@ -1460,6 +1478,15 @@
   </data>
   <data name="Rep_TrendTitle">
     <value>6-Month Financial Trend</value>
+  </data>
+  <data name="Rep_IncomeVsExpensesComp">
+    <value>Income vs Expenses comparison</value>
+  </data>
+  <data name="Rep_Grouped">
+    <value>Grouped</value>
+  </data>
+  <data name="Rep_Stacked">
+    <value>Stacked</value>
   </data>
   <data name="Rep_NoTrendData">
     <value>No trend data available.</value>
