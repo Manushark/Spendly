@@ -120,7 +120,8 @@ namespace Spendly.Web.Controllers
             await _authApi.ForgotPasswordAsync(email, clientBaseUrl);
 
             // Siempre mostramos el mismo mensaje — no revelamos si el email existe
-            ViewBag.Success = "If that email is registered, you will receive a reset link shortly. Check your inbox (and spam folder).";
+            ViewBag.Success = true;
+            ViewBag.Email = email;
             return View();
         }
 
