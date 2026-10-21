@@ -1747,4 +1747,28 @@
   <data name="Rep_InsightsBtn">
     <value>Perspectivas</value>
   </data>
+  <data name="Auth_ForgotPassword">
+    <value>Recuperar Contraseña</value>
+  </data>
+  <data name="Auth_ForgotSubtitle">
+    <value>Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</value>
+  </data>
+  <data name="Auth_SendResetLink">
+    <value>Enviar Enlace de Recuperación</value>
+  </data>
+  <data name="Auth_BackToLogin">
+    <value>Volver a Iniciar Sesión</value>
+  </data>
+  <data name="Auth_SuccessSent">
+    <value>¡Enlace enviado! Si tu correo está registrado en Spendly, recibirás las instrucciones en breve.</value>
+  </data>
+  <data name="Auth_SpamCloudTitle">
+    <value>¿No encuentras el correo?</value>
+  </data>
+  <data name="Auth_SpamCloudBody">
+    <value>Revisa tu carpeta de spam o correo no deseado. Los filtros automáticos de correo a veces desvían estos mensajes allí.</value>
+  </data>
+  <data name="Auth_SpamCloudTip">
+    <value>Consejo: Si no lo ves en un par de minutos, verifica que el correo esté bien escrito o solicita uno nuevo.</value>
+  </data>
 </root>

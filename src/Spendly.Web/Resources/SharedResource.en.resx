@@ -1763,4 +1763,28 @@
   <data name="Rep_InsightsBtn">
     <value>Insights</value>
   </data>
+  <data name="Auth_ForgotPassword">
+    <value>Forgot Password</value>
+  </data>
+  <data name="Auth_ForgotSubtitle">
+    <value>Enter your email and we'll send you a link to reset your password.</value>
+  </data>
+  <data name="Auth_SendResetLink">
+    <value>Send Reset Link</value>
+  </data>
+  <data name="Auth_BackToLogin">
+    <value>Back to Login</value>
+  </data>
+  <data name="Auth_SuccessSent">
+    <value>Link sent! If your email is registered with Spendly, you will receive instructions shortly.</value>
+  </data>
+  <data name="Auth_SpamCloudTitle">
+    <value>Can't find the email?</value>
+  </data>
+  <data name="Auth_SpamCloudBody">
+    <value>Please check your spam or junk folder. Automated email filters occasionally misplace these messages there.</value>
+  </data>
+  <data name="Auth_SpamCloudTip">
+    <value>Tip: If you don't see it in a few minutes, make sure your email is spelled correctly or request a new one.</value>
+  </data>
 </root>

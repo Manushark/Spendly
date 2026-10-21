@@ -7,6 +7,13 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Añadido
+- **Nube de Pensamiento Animada de Notificación de Spam en Olvidé Contraseña**:
+  - Componente visual interactivo y animado estilo nube de ensueño (`.thought-cloud` con estela de burbujas `.thought-dots-container`) tras enviar la solicitud de recuperación en `/Auth/ForgotPassword`.
+  - Micro-animaciones fluidas de entrada con rebote (`cloudPopIn`), efecto de flotación continuo (`floatCloud`) y pulsación suave de emoji (`pulseEmoji`).
+  - Claves de internacionalización añadidas en `SharedResource.es.resx` y `SharedResource.en.resx` (`Auth_SpamCloudTitle`, `Auth_SpamCloudBody`, `Auth_SpamCloudTip`, etc.) para instruir al usuario a revisar su bandeja de spam o correo no deseado.
+  - Diseño glassmórfico adaptativo para temas claro y oscuro con degradados violeta/púrpura de alto contraste y soporte responsivo para móviles.
+
 ## [1.26.0] - 2026-10-22
 *(Migración completa a PostgreSQL en Supabase, eliminación del cold sleep, normalización universal de fechas UTC, corrección de codificación en gráficas de Análisis, internacionalización de Perspectivas en Reportes y resiliencia multi-modelo para Spendly AI Copilot)*
 
