@@ -7,6 +7,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.25.0] - 2026-10-21
+*(Alternador de gráfica dual mensual y tendencia diaria de 30 días en Dashboard y Reportes con soporte bilingüe, aislamiento total de vistas públicas frente al layout autenticado, y rediseño visual de la landing page con tema Midnight Slate)*
+
 ### Añadido
 - **Alternador de Modo de Gráfica Dual en Dashboard y Reportes**:
   - Selector interactivo tipo píldora para alternar sin recargar entre gráfico de barras comparativo mensual y gráfico de línea de tendencia diaria de 30 días.
