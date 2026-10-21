@@ -14,6 +14,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
   - Claves de internacionalización añadidas en `SharedResource.es.resx` y `SharedResource.en.resx` (`Auth_SpamCloudTitle`, `Auth_SpamCloudBody`, `Auth_SpamCloudTip`, etc.) para instruir al usuario a revisar su bandeja de spam o correo no deseado.
   - Diseño glassmórfico adaptativo para temas claro y oscuro con degradados violeta/púrpura de alto contraste y soporte responsivo para móviles.
 
+### Arreglado
+- **Ajuste de Altura y Cobertura de Fondo en Recuperación de Contraseña**:
+  - Corrección de la altura mínima (`calc(100vh - 76px)`) y forzado de fondo `#080b11` en `html`, `body` y contenedores principales en `/Auth/ForgotPassword`, eliminando la franja blanca visible en la parte inferior en pantallas altas o de alta resolución.
+
 ## [1.26.0] - 2026-10-22
 *(Migración completa a PostgreSQL en Supabase, eliminación del cold sleep, normalización universal de fechas UTC, corrección de codificación en gráficas de Análisis, internacionalización de Perspectivas en Reportes y resiliencia multi-modelo para Spendly AI Copilot)*
 
