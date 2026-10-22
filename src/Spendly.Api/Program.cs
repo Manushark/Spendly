@@ -282,7 +282,10 @@ builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepo
 // ────────────────────────────────────────────────────────────────
 // Use Cases — AI Copilot (Natural Language & Voice)
 // ────────────────────────────────────────────────────────────────
-builder.Services.AddHttpClient<IAiAssistantService, GeminiAiService>();
+builder.Services.AddHttpClient<IAiAssistantService, GeminiAiService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(25);
+});
 builder.Services.AddScoped<ParseAiCommandUseCase>();
 builder.Services.AddScoped<ExecuteAiPlanUseCase>();
 

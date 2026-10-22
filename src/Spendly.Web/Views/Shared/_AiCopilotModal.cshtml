@@ -41,7 +41,9 @@
                          style="border-radius: 6px; background: var(--clr-surface-alt, rgba(0,0,0,0.05)); font-size: 0.72rem;">
                         ESC
                     </kbd>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btnCloseAiCopilot"></button>
+                    <button type="button" class="btn copilot-close-btn" data-bs-dismiss="modal" aria-label="Close" id="btnCloseAiCopilot" title="@(isSpanish ? "Cerrar" : "Close")">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                 </div>
             </div>
 
@@ -199,6 +201,31 @@
     background: var(--clr-primary);
     color: #fff;
     transform: translateY(-1px);
+}
+.copilot-close-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50% !important;
+    background: var(--clr-surface-alt, rgba(125, 125, 125, 0.12)) !important;
+    color: var(--clr-text) !important;
+    border: 1px solid var(--clr-border) !important;
+    font-size: 0.85rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    cursor: pointer;
+}
+.copilot-close-btn:hover {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #ef4444 !important;
+    border-color: rgba(239, 68, 68, 0.4) !important;
+    transform: scale(1.08);
+}
+.copilot-close-btn:active {
+    transform: scale(0.95);
 }
 .copilot-mic-btn:hover {
     transform: scale(1.06);
@@ -507,6 +534,18 @@ function openAiCopilotModal() {
 }
 
 function setupAiGlobalShortcuts() {
+    const modalEl = document.getElementById('aiCopilotModal');
+    if (modalEl) {
+        modalEl.addEventListener('hide.bs.modal', function () {
+            if (isAiRecording && aiSpeechRecognition) {
+                clearTimeout(speechSilenceTimer);
+                isAiRecording = false;
+                try { aiSpeechRecognition.abort(); } catch (e) {}
+                updateMicUi(false);
+            }
+        });
+    }
+
     document.addEventListener('keydown', function (e) {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
             e.preventDefault();

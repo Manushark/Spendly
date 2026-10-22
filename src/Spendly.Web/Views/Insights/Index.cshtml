@@ -458,10 +458,10 @@
             var isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
             var dailyOptions = {
                 series: [{
-                    name: '@L["Ins_Spent"].Value',
+                    name: '@Html.Raw(L["Ins_Spent"].Value)',
                     data: actualSeries
                 }, {
-                    name: '@L["Ins_ProjectedMonthEnd"].Value',
+                    name: '@Html.Raw(L["Ins_ProjectedMonthEnd"].Value)',
                     data: projectedSeries
                 }],
                 chart: {
@@ -502,7 +502,7 @@
                                 fontSize: '11px',
                                 padding: { left: 8, right: 8, top: 3, bottom: 3 }
                             },
-                            text: '@L["Ins_ProjectedLabel"].Value: $' + Number(@Model.ProjectedMonthEnd.ToString(System.Globalization.CultureInfo.InvariantCulture)).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0})
+                            text: '@Html.Raw(L["Ins_ProjectedLabel"].Value): $' + Number(@Model.ProjectedMonthEnd.ToString(System.Globalization.CultureInfo.InvariantCulture)).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0})
                         }
                     }]
                 },
@@ -563,7 +563,7 @@
                     x: {
                         show: true,
                         formatter: function(val) {
-                            return "@L["Ins_Day"].Value " + val;
+                            return "@Html.Raw(L["Ins_Day"].Value) " + val;
                         }
                     },
                     y: {
@@ -583,7 +583,7 @@
             var isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
             var weekOptions = {
                 series: [{
-                    name: '@L["Ins_Average"].Value',
+                    name: '@Html.Raw(L["Ins_Average"].Value)',
                     data: weekData.map(w => Number(w.average.toFixed(2)))
                 }],
                 chart: {

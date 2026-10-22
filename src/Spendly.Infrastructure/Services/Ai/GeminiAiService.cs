@@ -151,7 +151,10 @@ STRICT RULES:
                     }
                 };
 
-                var candidateModels = new[] { "gemini-3.5-flash-lite", model }.Distinct().ToList();
+                var candidateModels = new[] { "gemini-3-flash-preview", model, "gemini-3.5-flash-lite", "gemini-flash-lite-latest" }
+                    .Where(m => !string.IsNullOrWhiteSpace(m))
+                    .Distinct()
+                    .ToList();
 
                 HttpResponseMessage? response = null;
                 string? lastError = null;
@@ -161,9 +164,9 @@ STRICT RULES:
                     var url = $"https://generativelanguage.googleapis.com/v1beta/models/{currentModel}:generateContent?key={apiKey}";
                     try
                     {
-                        // Strict 5-second timeout per model attempt to prevent hanging on Google Cloud queue spikes
+                        // 15-second timeout per model attempt allows LLM JSON generation without premature cancellation
                         using var perAttemptCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                        perAttemptCts.CancelAfter(TimeSpan.FromSeconds(5));
+                        perAttemptCts.CancelAfter(TimeSpan.FromSeconds(15));
 
                         response = await _http.PostAsJsonAsync(url, requestBody, perAttemptCts.Token);
                         if (response.IsSuccessStatusCode)
@@ -176,8 +179,8 @@ STRICT RULES:
                     }
                     catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                     {
-                        lastError = $"Model {currentModel} timed out after 5 seconds.";
-                        _logger.LogWarning("Gemini API call timed out after 5 seconds for model {Model}. Trying alternative model...", currentModel);
+                        lastError = $"Model {currentModel} timed out after 15 seconds.";
+                        _logger.LogWarning("Gemini API call timed out after 15 seconds for model {Model}. Trying alternative model...", currentModel);
                     }
                     catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                     {

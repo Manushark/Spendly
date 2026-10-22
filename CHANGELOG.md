@@ -7,6 +7,19 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Arreglado
+- **Codificación de texto en gráficas de Análisis (Insights)**:
+  - Uso de `@Html.Raw` en scripts de ApexCharts para series como "Proyección Fin de Mes", "Gastado" y "Promedio", evitando que Razor escape caracteres acentuados en entidades HTML (como `&#xF3;`).
+- **Internacionalización del botón de Perspectivas en Reportes**:
+  - Traducción al español ("Perspectivas") mediante la clave `Rep_InsightsBtn` en `SharedResource.es.resx` y `SharedResource.en.resx`.
+- **Contraste y usabilidad del botón de cierre ('X') en Spendly AI Copilot**:
+  - Estilización circular de alto contraste (`.copilot-close-btn`) con icono `bi bi-x-lg`, fondo visible en temas claro/oscuro y estado hover con alerta suave.
+  - Cancelación limpia de la grabación por voz al cerrar el modal (`hide.bs.modal`).
+- **Resiliencia y modelos de Spendly AI Copilot (Google Gemini)**:
+  - Configuración de cadena de fallback multi-modelo (`gemini-3-flash-preview` -> `gemini-3.5-flash-lite` -> `gemini-flash-lite-latest`) que previene caídas por sobrecarga (HTTP 503).
+  - Incremento del timeout por intento de 5 a 15 segundos en `GeminiAiService`, y ampliación de timeouts en clientes HTTP (25s en API, 30s en Web), permitiendo que las llamadas a Gemini se completen con éxito sin caer falsamente en "Modo local".
+
+
 ## [1.25.0] - 2026-10-21
 *(Alternador de gráfica dual mensual y tendencia diaria de 30 días en Dashboard y Reportes con soporte bilingüe, aislamiento total de vistas públicas frente al layout autenticado, y rediseño visual de la landing page con tema Midnight Slate)*
 

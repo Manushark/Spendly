@@ -1744,4 +1744,7 @@
   <data name="Tags_FilterByTags">
     <value>Filtrar por Etiquetas</value>
   </data>
+  <data name="Rep_InsightsBtn">
+    <value>Perspectivas</value>
+  </data>
 </root>
