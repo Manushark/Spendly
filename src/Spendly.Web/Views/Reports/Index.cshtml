@@ -278,7 +278,7 @@
             {
                 <button class="btn btn-outline-primary border-primary border-opacity-25 shadow-sm" style="background-color: var(--clr-bg-card); color: var(--clr-text);" type="button" 
                         data-bs-toggle="offcanvas" data-bs-target="#insightsOffcanvas">
-                    ✨ <span class="fw-semibold ms-1">Insights</span>
+                    ✨ <span class="fw-semibold ms-1">@L["Rep_InsightsBtn"]</span>
                     <span class="badge bg-primary rounded-pill ms-1">@Model.Insights.Count</span>
                 </button>
             }
@@ -851,10 +851,10 @@
 
             var trendOptions = {
                 series: [{
-                    name: '@L["Rep_TotalIncome"].Value',
+                    name: '@Html.Raw(L["Rep_TotalIncome"].Value)',
                     data: incomeData
                 }, {
-                    name: '@L["Rep_TotalExpenses"].Value',
+                    name: '@Html.Raw(L["Rep_TotalExpenses"].Value)',
                     data: expenseData
                 }],
                 chart: {
