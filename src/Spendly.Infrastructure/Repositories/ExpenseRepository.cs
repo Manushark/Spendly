@@ -69,10 +69,16 @@ namespace Spendly.Infrastructure.Repositories
                 query = query.Where(e => e.Description.ToLower().Contains(search.ToLower()));
 
             if (dateFrom.HasValue)
-                query = query.Where(e => e.Date >= dateFrom.Value);
+            {
+                var dfUtc = dateFrom.Value.Kind == DateTimeKind.Utc ? dateFrom.Value : DateTime.SpecifyKind(dateFrom.Value, DateTimeKind.Utc);
+                query = query.Where(e => e.Date >= dfUtc);
+            }
 
             if (dateTo.HasValue)
-                query = query.Where(e => e.Date <= dateTo.Value);
+            {
+                var dtUtc = dateTo.Value.Kind == DateTimeKind.Utc ? dateTo.Value : DateTime.SpecifyKind(dateTo.Value, DateTimeKind.Utc);
+                query = query.Where(e => e.Date <= dtUtc);
+            }
 
             if (tagIds != null && tagIds.Any())
             {
@@ -163,8 +169,11 @@ namespace Spendly.Infrastructure.Repositories
 
         public async Task<IEnumerable<Expense>> GetByDateRangeAsync(int userId, DateTime startDate, DateTime endDate)
         {
+            var startUtc = startDate.Kind == DateTimeKind.Utc ? startDate : DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            var endUtc = endDate.Kind == DateTimeKind.Utc ? endDate : DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
             return await _context.Expenses
-                .Where(e => !e.IsDeleted && e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
+                .Where(e => !e.IsDeleted && e.UserId == userId && e.Date >= startUtc && e.Date <= endUtc)
                 .OrderByDescending(e => e.Date)
                 .ThenByDescending(e => e.Id)
                 .ToListAsync();
@@ -172,8 +181,11 @@ namespace Spendly.Infrastructure.Repositories
 
         public async Task<Dictionary<string, decimal>> GetTotalByCategoryAsync(int userId, DateTime startDate, DateTime endDate)
         {
+            var startUtc = startDate.Kind == DateTimeKind.Utc ? startDate : DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            var endUtc = endDate.Kind == DateTimeKind.Utc ? endDate : DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
             var expenses = await _context.Expenses
-                .Where(e => !e.IsDeleted && e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
+                .Where(e => !e.IsDeleted && e.UserId == userId && e.Date >= startUtc && e.Date <= endUtc)
                 .ToListAsync();
 
             return expenses
@@ -197,8 +209,11 @@ namespace Spendly.Infrastructure.Repositories
 
         public async Task<decimal> GetTotalAmountAsync(int userId, DateTime startDate, DateTime endDate)
         {
+            var startUtc = startDate.Kind == DateTimeKind.Utc ? startDate : DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            var endUtc = endDate.Kind == DateTimeKind.Utc ? endDate : DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
             var expenses = await _context.Expenses
-                .Where(e => !e.IsDeleted && e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
+                .Where(e => !e.IsDeleted && e.UserId == userId && e.Date >= startUtc && e.Date <= endUtc)
                 .ToListAsync();
 
             return expenses.Sum(e => e.Amount.Value);
@@ -208,9 +223,10 @@ namespace Spendly.Infrastructure.Repositories
         {
             var reference = referenceDate ?? DateTime.UtcNow;
             var startDate = reference.AddMonths(-monthsBack).Date;
+            var startUtc = startDate.Kind == DateTimeKind.Utc ? startDate : DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
 
             var expenses = await _context.Expenses
-                .Where(e => !e.IsDeleted && e.UserId == userId && e.Date >= startDate)
+                .Where(e => !e.IsDeleted && e.UserId == userId && e.Date >= startUtc)
                 .ToListAsync();
 
             return expenses
@@ -244,20 +260,25 @@ namespace Spendly.Infrastructure.Repositories
 
         public async Task<bool> ExistsByRecurrenceOnDateAsync(int userId, string description, string category, DateTime date)
         {
+            var dateUtc = date.Kind == DateTimeKind.Utc ? date.Date : DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
+
             return await _context.Expenses
                 .AnyAsync(e =>
                     e.UserId == userId &&
                     e.Description == description &&
                     e.Category.ToLower() == category.ToLower() &&
-                    e.Date == date.Date);
+                    e.Date == dateUtc);
         }
 
         public async Task<string> GetPredominantCurrencyAsync(int userId, string category, DateTime startDate, DateTime endDate)
         {
+            var startUtc = startDate.Kind == DateTimeKind.Utc ? startDate : DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            var endUtc = endDate.Kind == DateTimeKind.Utc ? endDate : DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
             var currency = await _context.Expenses
                 .Where(e => e.UserId == userId
                     && e.Category.ToLower() == category.ToLower()
-                    && e.Date >= startDate && e.Date <= endDate)
+                    && e.Date >= startUtc && e.Date <= endUtc)
                 .GroupBy(e => e.Currency)
                 .OrderByDescending(g => g.Count())
                 .Select(g => g.Key)
