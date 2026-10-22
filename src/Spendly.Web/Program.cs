@@ -121,6 +121,7 @@ builder.Services.AddHttpClient<ReportApiClient>(client =>
 builder.Services.AddHttpClient<AiApiClient>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
 
 // Report export (PDF + CSV)

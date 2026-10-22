@@ -1760,4 +1760,7 @@
   <data name="Tags_FilterByTags">
     <value>Filter by Tags</value>
   </data>
+  <data name="Rep_InsightsBtn">
+    <value>Insights</value>
+  </data>
 </root>

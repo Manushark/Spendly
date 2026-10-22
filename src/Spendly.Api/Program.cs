@@ -38,6 +38,8 @@ using Spendly.Infrastructure.BackgroundServices;
 using Spendly.Application.UseCases.Ai;
 using Spendly.Infrastructure.Services.Ai;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
@@ -168,15 +170,14 @@ if (string.IsNullOrWhiteSpace(connectionString))
 }
 
 builder.Services.AddDbContext<SpendlyDbContext>(options =>
-    options.UseSqlServer(connectionString, sqlOptions =>
+    options.UseNpgsql(connectionString, npgsqlOptions =>
     {
-        // Retry on transient failures (Azure SQL wake-up from auto-pause, network blips)
-        sqlOptions.EnableRetryOnFailure(
+        // Retry on transient network blips
+        npgsqlOptions.EnableRetryOnFailure(
             maxRetryCount: 5,
             maxRetryDelay: TimeSpan.FromSeconds(30),
-            errorNumbersToAdd: null);
-        // Give Azure SQL enough time to wake from auto-pause
-        sqlOptions.CommandTimeout(60);
+            errorCodesToAdd: null);
+        npgsqlOptions.CommandTimeout(60);
     }));
 
 // ────────────────────────────────────────────────────────────
@@ -281,7 +282,10 @@ builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepo
 // ────────────────────────────────────────────────────────────────
 // Use Cases — AI Copilot (Natural Language & Voice)
 // ────────────────────────────────────────────────────────────────
-builder.Services.AddHttpClient<IAiAssistantService, GeminiAiService>();
+builder.Services.AddHttpClient<IAiAssistantService, GeminiAiService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(25);
+});
 builder.Services.AddScoped<ParseAiCommandUseCase>();
 builder.Services.AddScoped<ExecuteAiPlanUseCase>();
 
