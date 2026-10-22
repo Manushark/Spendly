@@ -168,15 +168,14 @@ if (string.IsNullOrWhiteSpace(connectionString))
 }
 
 builder.Services.AddDbContext<SpendlyDbContext>(options =>
-    options.UseSqlServer(connectionString, sqlOptions =>
+    options.UseNpgsql(connectionString, npgsqlOptions =>
     {
-        // Retry on transient failures (Azure SQL wake-up from auto-pause, network blips)
-        sqlOptions.EnableRetryOnFailure(
+        // Retry on transient network blips
+        npgsqlOptions.EnableRetryOnFailure(
             maxRetryCount: 5,
             maxRetryDelay: TimeSpan.FromSeconds(30),
-            errorNumbersToAdd: null);
-        // Give Azure SQL enough time to wake from auto-pause
-        sqlOptions.CommandTimeout(60);
+            errorCodesToAdd: null);
+        npgsqlOptions.CommandTimeout(60);
     }));
 
 // ────────────────────────────────────────────────────────────

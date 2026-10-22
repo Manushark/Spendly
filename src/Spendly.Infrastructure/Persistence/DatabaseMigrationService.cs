@@ -44,7 +44,7 @@ namespace Spendly.Infrastructure.Persistence
                     foreach (var u in usersToFix)
                     {
                         var prop = typeof(Spendly.Domain.Entities.User).GetProperty("CreatedAt");
-                        prop?.SetValue(u, new DateTime(2026, 5, 20, 12, 0, 0));
+                        prop?.SetValue(u, new DateTime(2026, 5, 20, 12, 0, 0, DateTimeKind.Utc));
                     }
                     await db.SaveChangesAsync(stoppingToken);
                     _logger.LogInformation("DatabaseMigrationService: Users fixed successfully.");
