@@ -49,7 +49,7 @@ namespace Spendly.Infrastructure.Repositories
 
         public async Task<List<RecurringExpense>> GetAllDueForGenerationAsync()
         {
-            var today = DateTime.UtcNow.Date;
+            var today = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Utc);
 
             return await _context.RecurringExpenses
                 .Where(r => r.IsActive && r.StartDate <= today)

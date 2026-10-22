@@ -38,6 +38,8 @@ using Spendly.Infrastructure.BackgroundServices;
 using Spendly.Application.UseCases.Ai;
 using Spendly.Infrastructure.Services.Ai;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 

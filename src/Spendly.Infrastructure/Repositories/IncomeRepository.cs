@@ -55,8 +55,11 @@ namespace Spendly.Infrastructure.Repositories
 
         public async Task<IEnumerable<Income>> GetByDateRangeAsync(int userId, DateTime startDate, DateTime endDate)
         {
+            var startUtc = startDate.Kind == DateTimeKind.Utc ? startDate : DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            var endUtc = endDate.Kind == DateTimeKind.Utc ? endDate : DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
             return await _context.Incomes
-                .Where(i => i.UserId == userId && i.Date >= startDate && i.Date <= endDate)
+                .Where(i => i.UserId == userId && i.Date >= startUtc && i.Date <= endUtc)
                 .OrderByDescending(i => i.Date)
                 .ToListAsync();
         }
@@ -65,8 +68,11 @@ namespace Spendly.Infrastructure.Repositories
         {
             // Money is a Value Object that EF Core can't translate in aggregate queries.
             // Materialize first, then sum in-memory (same approach as ExpenseRepository).
+            var startUtc = startDate.Kind == DateTimeKind.Utc ? startDate : DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            var endUtc = endDate.Kind == DateTimeKind.Utc ? endDate : DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
             var incomes = await _context.Incomes
-                .Where(i => i.UserId == userId && i.Date >= startDate && i.Date <= endDate)
+                .Where(i => i.UserId == userId && i.Date >= startUtc && i.Date <= endUtc)
                 .ToListAsync();
 
             return incomes.Sum(i => i.Amount.Value);
