@@ -151,7 +151,7 @@ STRICT RULES:
                     }
                 };
 
-                var candidateModels = new[] { model, "gemini-3.5-flash-lite", "gemini-3.5-flash" }
+                var candidateModels = new[] { "gemini-3-flash-preview", model, "gemini-3.5-flash-lite", "gemini-flash-lite-latest" }
                     .Where(m => !string.IsNullOrWhiteSpace(m))
                     .Distinct()
                     .ToList();
@@ -164,9 +164,9 @@ STRICT RULES:
                     var url = $"https://generativelanguage.googleapis.com/v1beta/models/{currentModel}:generateContent?key={apiKey}";
                     try
                     {
-                        // 12-second timeout per model attempt allows LLM JSON generation without premature cancellation
+                        // 15-second timeout per model attempt allows LLM JSON generation without premature cancellation
                         using var perAttemptCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                        perAttemptCts.CancelAfter(TimeSpan.FromSeconds(12));
+                        perAttemptCts.CancelAfter(TimeSpan.FromSeconds(15));
 
                         response = await _http.PostAsJsonAsync(url, requestBody, perAttemptCts.Token);
                         if (response.IsSuccessStatusCode)
@@ -179,8 +179,8 @@ STRICT RULES:
                     }
                     catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                     {
-                        lastError = $"Model {currentModel} timed out after 12 seconds.";
-                        _logger.LogWarning("Gemini API call timed out after 12 seconds for model {Model}. Trying alternative model...", currentModel);
+                        lastError = $"Model {currentModel} timed out after 15 seconds.";
+                        _logger.LogWarning("Gemini API call timed out after 15 seconds for model {Model}. Trying alternative model...", currentModel);
                     }
                     catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                     {
