@@ -7,17 +7,31 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.26.0] - 2026-10-22
+*(Migración completa a PostgreSQL en Supabase, eliminación del cold sleep, normalización universal de fechas UTC, corrección de codificación en gráficas de Análisis, internacionalización de Perspectivas en Reportes y resiliencia multi-modelo para Spendly AI Copilot)*
+
+### Añadido
+- **Migración a PostgreSQL (Supabase Database & Connection Pooler)**:
+  - Transición completa del proveedor de datos de `Microsoft.EntityFrameworkCore.SqlServer` a `Npgsql.EntityFrameworkCore.PostgreSQL`.
+  - Configuración del pooler transaccional optimizado de Supabase en `appsettings.json` y `appsettings.Development.json` con reintentos automáticos ante fallas transitorias (`EnableRetryOnFailure`).
+  - Generación de migración limpia inicial `InitialPostgres` con tablas, relaciones foráneas, índices de usuario y restricciones de borrado lógico.
+  - Seeder de datos demo (`DemoDataSeeder`) y servicio de inicialización automática en segundo plano (`DatabaseMigrationService`) actualizados para PostgreSQL.
+- **Internacionalización del Botón de Perspectivas en Reportes**:
+  - Clave de localización `Rep_InsightsBtn` agregada a `SharedResource.es.resx` ("Perspectivas") y `SharedResource.en.resx` ("Insights").
+
 ### Arreglado
-- **Codificación de texto en gráficas de Análisis (Insights)**:
-  - Uso de `@Html.Raw` en scripts de ApexCharts para series como "Proyección Fin de Mes", "Gastado" y "Promedio", evitando que Razor escape caracteres acentuados en entidades HTML (como `&#xF3;`).
-- **Internacionalización del botón de Perspectivas en Reportes**:
-  - Traducción al español ("Perspectivas") mediante la clave `Rep_InsightsBtn` en `SharedResource.es.resx` y `SharedResource.en.resx`.
-- **Contraste y usabilidad del botón de cierre ('X') en Spendly AI Copilot**:
-  - Estilización circular de alto contraste (`.copilot-close-btn`) con icono `bi bi-x-lg`, fondo visible en temas claro/oscuro y estado hover con alerta suave.
-  - Cancelación limpia de la grabación por voz al cerrar el modal (`hide.bs.modal`).
-- **Resiliencia y modelos de Spendly AI Copilot (Google Gemini)**:
-  - Configuración de cadena de fallback multi-modelo (`gemini-3-flash-preview` -> `gemini-3.5-flash-lite` -> `gemini-flash-lite-latest`) que previene caídas por sobrecarga (HTTP 503).
-  - Incremento del timeout por intento de 5 a 15 segundos en `GeminiAiService`, y ampliación de timeouts en clientes HTTP (25s en API, 30s en Web), permitiendo que las llamadas a Gemini se completen con éxito sin caer falsamente en "Modo local".
+- **Compatibilidad de Fechas y Zonas Horarias UTC en PostgreSQL**:
+  - Activación del interruptor de compatibilidad `Npgsql.EnableLegacyTimestampBehavior` en `SpendlyDbContext` para prevenir errores de tipo `DateTimeKind.Unspecified`.
+  - Conversores de valor globales de Entity Framework Core para garantizar que toda propiedad `DateTime` y `DateTime?` se persista y lea siempre con `DateTimeKind.Utc`.
+  - Normalización en `SaveChangesAsync` y en consultas de repositorios (`ExpenseRepository`, `IncomeRepository`, `RecurringExpenseRepository`) para transformar fechas de filtrado a UTC antes de su evaluación por Npgsql.
+- **Codificación de Caracteres en Gráficas de Análisis (Insights)**:
+  - Uso de `@Html.Raw` en scripts de ApexCharts para series como "Proyección Fin de Mes", "Gastado" y "Promedio", evitando que el motor Razor transforme caracteres acentuados en entidades HTML (como `&#xF3;`).
+- **Contraste y Usabilidad del Botón de Cierre en Spendly AI Copilot**:
+  - Botón circular estilizado `.copilot-close-btn` con icono `bi bi-x-lg`, fondo con contraste definido para temas claro y oscuro, y micro-interacción hover con alerta suave.
+  - Aborto preventivo del motor de reconocimiento por voz nativo al cerrar el modal (`hide.bs.modal`) para no dejar el micrófono activo en segundo plano.
+- **Resiliencia y Cadena de Fallback de Spendly AI Copilot (Google Gemini)**:
+  - Incorporación de cadena multi-modelo resiliente (`gemini-3-flash-preview` -> `gemini-3.5-flash-lite` -> `gemini-flash-lite-latest`) que previene caídas cuando un modelo se encuentra temporalmente saturado (HTTP 503).
+  - Ampliación del timeout por intento de 5 a 15 segundos en `GeminiAiService`, y ampliación de los timeouts de cliente HTTP (25s en API, 30s en Web), garantizando que las llamadas a Gemini completen la generación estructurada sin caer erróneamente en el modo local de contingencia.
 
 
 ## [1.25.0] - 2026-10-21
