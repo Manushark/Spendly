@@ -7,6 +7,24 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.27.0] - 2026-10-24
+*(Nube de pensamiento animada para recordatorio de spam en recuperación de contraseña, cobertura completa de fondo oscuro sin franjas residuales y migración completa de datos históricos de Azure SQL a Supabase PostgreSQL)*
+
+### Añadido
+- **Nube de Pensamiento Animada de Notificación de Spam en Olvidé Contraseña**:
+  - Componente visual interactivo y animado estilo nube de ensueño (`.thought-cloud` con estela de burbujas `.thought-dots-container`) tras enviar la solicitud de recuperación en `/Auth/ForgotPassword`.
+  - Micro-animaciones fluidas de entrada con rebote (`cloudPopIn`), efecto de flotación continuo (`floatCloud`) y pulsación suave de emoji (`pulseEmoji`).
+  - Claves de internacionalización añadidas en `SharedResource.es.resx` y `SharedResource.en.resx` (`Auth_SpamCloudTitle`, `Auth_SpamCloudBody`, `Auth_SpamCloudTip`, etc.) para instruir al usuario a revisar su bandeja de spam o correo no deseado.
+  - Diseño glassmórfico adaptativo para temas claro y oscuro con degradados violeta/púrpura de alto contraste y soporte responsivo para móviles.
+- **Migración y Respaldo de Datos Históricos a Supabase**:
+  - Migración exitosa de todos los registros de usuarios, categorías personalizadas, gastos, presupuestos, ingresos y metas de ahorro desde Azure SQL hacia Supabase PostgreSQL.
+  - Sincronización y reinicio de secuencias (`setval`) en PostgreSQL para auto-incrementos consistentes.
+  - Activación de Row Level Security (RLS) en todas las tablas y revocación de permisos anónimos en la API pública de Supabase.
+
+### Arreglado
+- **Ajuste de Altura y Cobertura de Fondo en Recuperación de Contraseña**:
+  - Corrección de la altura mínima (`calc(100vh - 76px)`) y forzado de fondo `#080b11` en `html`, `body` y contenedores principales en `/Auth/ForgotPassword`, eliminando la franja blanca visible en la parte inferior en pantallas altas o de alta resolución.
+
 ## [1.26.0] - 2026-10-22
 *(Migración completa a PostgreSQL en Supabase, eliminación del cold sleep, normalización universal de fechas UTC, corrección de codificación en gráficas de Análisis, internacionalización de Perspectivas en Reportes y resiliencia multi-modelo para Spendly AI Copilot)*
 
