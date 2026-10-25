@@ -7,6 +7,14 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Añadido
+- **Actualización Dinámica Mensual y Variación Realista en Modo Visita (Demo)**:
+  - Detección automática del mes calendario activo en `DemoDataSeeder.EnsureDemoUserAndDataAsync()`: al iniciar sesión en el modo visita (o al cambiar de mes), si los datos corresponden a un mes anterior, el sistema limpia las transacciones vencidas y siembra automáticamente un ecosistema financiero completo para el mes en curso.
+  - Generación de gastos e ingresos distribuidos de forma natural entre el día 1 del mes y la fecha actual, garantizando que nunca se generen fechas futuras ni se dejen presupuestos en cero.
+  - Algoritmo de fluctuación y variación realista en montos (`Jitter`) que simula recibos del mundo real con centavos variados, preservando matemáticamente las reglas de negocio (ej. gasto en Entretenimiento entre 82% y 94% para disparar la alerta preventiva del 80% sin exceder el 100%).
+  - Precarga de presupuestos y gastos históricos del mes anterior para poblar de inmediato las gráficas comparativas mensuales y la tendencia diaria de 30 días.
+  - Generación de notificaciones in-app contextuales (`BudgetWarning` y `SavingsGoalMilestone`) visibles en el centro de alertas al ingresar a la demo.
+
 ## [1.27.0] - 2026-10-24
 *(Nube de pensamiento animada para recordatorio de spam en recuperación de contraseña, cobertura completa de fondo oscuro sin franjas residuales y migración completa de datos históricos de Azure SQL a Supabase PostgreSQL)*
 
