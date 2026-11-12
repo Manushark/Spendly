@@ -1,0 +1,31 @@
+name: Supabase Database Keep Alive
+
+on:
+  schedule:
+    # GitHub Actions cron uses UTC. 13:00 UTC = 9:00 AM in the Dominican Republic.
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Check Supabase PostgreSQL connection
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::Missing GitHub Actions secret SUPABASE_DB_URL"
+            exit 1
+          fi
+
+          psql "$SUPABASE_DB_URL" \
+            --no-psqlrc \
+            --set=ON_ERROR_STOP=1 \
+            --command="SELECT 1;" \
+            --tuples-only \
+            --no-align
+
+          echo "Supabase PostgreSQL keep-alive query succeeded."
